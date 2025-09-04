@@ -43,6 +43,7 @@ This project is built with a modern tech stack to provide a seamless and interac
 - **React:** A popular JavaScript library for building user interfaces.
 - **shadcn-ui:** A collection of re-usable components that helps us build beautiful and accessible user interfaces.
 - **Tailwind CSS:** A utility-first CSS framework that allows for rapid UI development.
+- **Wikipedia API:** Powers our historical and educational content, enabling interactive learning with accurate information from Wikipedia's vast knowledge base.
 
 ## Getting Started
 
@@ -129,4 +130,9 @@ We welcome contributions to AI-Debate.Tech! This is an open-source project, and 
 
 Thank you for your interest in AI-Debate.Tech! We hope you enjoy using our educational apps.
 
-**SPECIAL THANKS TO GOOGLE** for providing the powerful Gemini API that makes these educational applications possible.
+**SPECIAL THANKS**
+
+- **Google** for providing the powerful Gemini API that makes these educational applications possible.
+- **Wikipedia** for their comprehensive API that enables access to a vast repository of knowledge, allowing users to chat about any topic available on Wikipedia.
+
+All our applications implement the Wikipedia API to provide accurate and up-to-date information, making learning interactive and engaging. You can chat with AI about virtually any topic covered in Wikipedia's extensive database.

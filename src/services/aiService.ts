@@ -6,15 +6,18 @@ const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 let genAI: GoogleGenerativeAI;
 let model: GenerativeModel;
 
-if (apiKey) {
+if (apiKey && apiKey !== 'your_api_key_here') {
   try {
     genAI = new GoogleGenerativeAI(apiKey);
     model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-001" });
+    console.log("Google AI service initialized successfully");
   } catch (error) {
     console.error("Error initializing GoogleGenerativeAI:", error);
+    console.warn("AI Service initialization failed. Please check your API key.");
   }
 } else {
   console.warn("Gemini API key is not configured. AI Service will be disabled.");
+  console.info("Please add your API key to the .env file as VITE_GEMINI_API_KEY");
 }
 
 /**
@@ -34,7 +37,11 @@ export const startChat = (
   systemInstructionText?: string
 ): ChatSession => {
   if (!isAiServiceAvailable()) {
-    throw new Error("AI Service is not configured. Cannot start chat.");
+    throw new Error("AI Service is not configured. Cannot start chat. Please check your VITE_GEMINI_API_KEY in the .env file.");
+  }
+
+  if (!model) {
+    throw new Error("AI model is not initialized. This should not happen if isAiServiceAvailable() returns true.");
   }
 
   const chatOptions: { history: { role: "user" | "model"; parts: Part[] }[], systemInstruction?: { role: string, parts: Part[] } } = { history };

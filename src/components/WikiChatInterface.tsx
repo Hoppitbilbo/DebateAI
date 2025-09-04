@@ -24,7 +24,7 @@ interface SessionData {
   topic?: string;
 }
 
-import { model } from "@/services/aiService";
+import { startChat, isAiServiceAvailable } from "@/services/aiService";
 
 
 const WikiChatInterface = ({ wikiTitle, wikiSummary, onSessionComplete }: WikiChatInterfaceProps) => {
@@ -48,26 +48,40 @@ const WikiChatInterface = ({ wikiTitle, wikiSummary, onSessionComplete }: WikiCh
 
 ${wikiSummary}`;
     
-    const initialChat = model.startChat({
-      history: [
-        {
-          role: "user",
-          parts: [{ text: systemPrompt }],
-        },
-        {
-          role: "model",
-          parts: [{ text: "Okay, I am ready to act as the Wikipedia page for " + wikiTitle + "."}],
-        },
-      ],
-      generationConfig: {
-        maxOutputTokens: 1000, // Adjust as needed
-      },
-    });
-    setChat(initialChat);
+    if (!isAiServiceAvailable()) {
+      console.error("AI Service is not available. Please check your API key configuration.");
+      setMessages([
+        { role: "assistant", content: "⚠️ AI Service is not available. Please configure your Google Gemini API key in the .env file." }
+      ]);
+      return;
+    }
 
-    setMessages([
-      { role: "assistant", content: t('apps.wikiChat.welcome', { title: wikiTitle, defaultValue: `Benvenuto! Sono ${wikiTitle}. Cosa vorresti sapere?` }) }
-    ]);
+    try {
+      const initialChat = startChat(
+        [
+          {
+            role: "user" as const,
+            parts: [{ text: systemPrompt }],
+          },
+          {
+            role: "model" as const,
+            parts: [{ text: "Okay, I am ready to act as the Wikipedia page for " + wikiTitle + "." }],
+          }
+        ],
+        systemPrompt
+      );
+      setChat(initialChat);
+
+      setMessages([
+        { role: "assistant", content: t('apps.wikiChat.welcome', { title: wikiTitle, defaultValue: `Benvenuto! Sono ${wikiTitle}. Cosa vorresti sapere?` }) }
+      ]);
+    } catch (error) {
+      console.error("Failed to initialize chat:", error);
+      const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
+      setMessages([
+        { role: "assistant", content: `Sorry, I couldn't initialize the chat: ${errorMessage}` }
+      ]);
+    }
   }, [wikiTitle, wikiSummary, t]);
 
   const handleSendMessage = async (message: string) => {
@@ -132,40 +146,46 @@ ${wikiSummary}`;
   };
   
   const handleStartNewChat = () => {
+    if (!isAiServiceAvailable()) {
+      console.error("AI Service is not available. Please check your API key configuration.");
+      return;
+    }
+
     const systemPrompt = `${t('apps.wikiChat.systemPrompt', {
       defaultValue: 'You are the living embodiment of the Wikipedia page provided below. Answer from a first-person perspective, using information from the text. Be the character. Do not break character. Do not say you are an AI.',
-    })}
-
-${wikiSummary}`;
+    })}\n\n${wikiSummary}`;
     
-    const newChat = model.startChat({
-      history: [
-        {
-          role: "user",
-          parts: [{ text: systemPrompt }],
-        },
-        {
-          role: "model",
-          parts: [{ text: "Okay, I am ready to act as the Wikipedia page for " + wikiTitle + "."}],
-        },
-      ],
-      generationConfig: {
-        maxOutputTokens: 1000, // Adjust as needed
-      },
-    });
-    setChat(newChat);
-
-    setMessages([
-      { role: "assistant", content: t('apps.wikiChat.welcome', { title: wikiTitle, defaultValue: `Benvenuto! Sono ${wikiTitle}. Cosa vorresti sapere?` }) }
-    ]);
-    setActivityPhase("chatting");
-    setUserReflection("");
-    setAiEvaluation(null);
-    setIsLoading(false); // Reset chat loading state
-    setIsEvaluating(false);
-    
-    toast.success(t('apps.wikiChat.newConversation', { defaultValue: "Nuova conversazione iniziata!" }));
-    onSessionComplete?.(); // Notify parent that the session is complete
+    try {
+      const newChat = startChat(
+        [
+          {
+            role: "user" as const,
+            parts: [{ text: systemPrompt }],
+          },
+          {
+            role: "model" as const,
+            parts: [{ text: "Okay, I am ready to act as the Wikipedia page for " + wikiTitle + "." }],
+          }
+        ],
+        systemPrompt
+      );
+      
+      setChat(newChat);
+      setMessages([
+        { role: "assistant", content: t('apps.wikiChat.welcome', { title: wikiTitle, defaultValue: `Benvenuto! Sono ${wikiTitle}. Cosa vorresti sapere?` }) }
+      ]);
+      setActivityPhase("chatting");
+      setUserReflection("");
+      setAiEvaluation(null);
+      setIsLoading(false);
+      setIsEvaluating(false);
+      
+      toast.success(t('apps.wikiChat.newConversation', { defaultValue: "Nuova conversazione iniziata!" }));
+      onSessionComplete?.();
+    } catch (error) {
+      console.error("Failed to start new chat:", error);
+      toast.error(t('apps.wikiChat.errorStartingChat', { defaultValue: "Failed to start a new chat. Please try again." }));
+    }
   };
 
   return (
