@@ -1,0 +1,753 @@
+{
+  "common": {
+    "loading": "Laden...",
+    "error": "Fehler",
+    "retry": "Wiederholen",
+    "cancel": "Abbrechen",
+    "confirm": "Bestätigen",
+    "save": "Speichern",
+    "edit": "Bearbeiten",
+    "delete": "Löschen",
+    "close": "Schließen",
+    "back": "Zurück",
+    "next": "Weiter",
+    "finish": "Beenden",
+    "start": "Starten",
+    "reset": "Zurücksetzen",
+    "send": "Senden",
+    "search": "Suchen",
+    "searchPlaceholder": "Suchen...",
+    "noResults": "Keine Ergebnisse gefunden",
+    "textarea": "Textbereich",
+    "button": "Schaltfläche",
+    "startConversation": "Beginnen Sie das Gespräch, indem Sie eine Nachricht schreiben...",
+    "writeMessage": "Schreiben Sie Ihre Nachricht...",
+    "endAndReflect": "Beenden und reflektieren",
+    "startNewActivity": "Eine neue Aktivität starten",
+    "startNewReflection": "Eine neue Aktivität starten",
+    "yes": "Ja",
+    "no": "Nein",
+    "as": "als",
+    "searchHistoricalCharacter": "Nach einer historischen Figur suchen...",
+    "searchOnWikipedia": "Auf Wikipedia suchen...",
+    "noResultsFound": "Keine Ergebnisse gefunden.",
+    "activitySummary": "Aktivitätsübersicht",
+    "character": "Charakter:",
+    "yourAnswer": "Deine Antwort:",
+    "result": "Ergebnis:",
+    "correct": "Richtig! 🎉",
+    "correctShort": "Richtig",
+    "incorrect": "Falsch",
+    "messagesExchanged": "Ausgetauschte Nachrichten:",
+    "conversationHistory": "Gesprächsverlauf",
+    "you": "Du",
+    "topic": "Thema:",
+    "activityFeedback": {
+      "title": "Aktivitäts-Feedback",
+      "subtitle": "Hier ist die Zusammenfassung deiner Erfahrung und das KI-Feedback"
+    },
+    "aiFeedback": {
+      "title": "KI-Feedback",
+      "generating": "Feedback wird generiert...",
+      "empty": "Noch kein Feedback verfügbar."
+    },
+    "reflection": {
+      "title": "Reflexion über die Aktivität",
+      "description": "Reflektieren Sie über Ihre Erfahrung und was Sie gelernt haben.",
+      "prompt": "Teilen Sie Ihre Gedanken und Reflexionen:",
+      "placeholder": "Schreiben Sie hier Ihre Reflexion...",
+      "counter": "{{count}} / {{min}} Mindestzeichen",
+      "remaining": "Noch {{remaining}} Zeichen benötigt",
+      "submit": "Reflexion Senden"
+    },
+    "submitReflection": "Reflexion senden",
+    "aiError": "Fehler in der KI-Antwort. Bitte versuchen Sie es erneut.",
+    "backToApps": "Zurück zu den Apps"
+  },
+  "navigation": {
+    "home": "Startseite",
+    "apps": "Anwendungen",
+    "teacherGuide": "Lehrerhandbuch",
+    "about": "Unterstützen Sie uns",
+    "brand": "AI-Debate.Tech"
+  },
+  "hero": {
+    "title": "Interaktives Lernen mit",
+    "subtitle": "KI-gestützten Gesprächen",
+    "description": "Stellen Sie sich den Großen der Vergangenheit, tauchen Sie in ihre Zeit ein und probieren Sie eine neue Art aus, Hausaufgaben zu machen",
+    "tryApps": "Probieren Sie unsere Apps",
+    "sampleChat": {
+      "bot1": "Nun gut, junger Mann, wer sind Sie? Man sagte mir, Sie müssen mich für die Schule interviewen. Kommen Sie, verschwenden wir keine Zeit!",
+      "user": "Leonardo DaVinci, schien es Ihnen normal, Waffen für Leute zu erschaffen, die nur mehr Macht wollten?",
+      "bot2": "Böse von Anfang an, das gefällt mir, Sie scheinen mir toskanisch zu sein. Mein Lieber, leider konnte ich nicht anders. Wir Künstler mussten uns in dieser Zeit den Mäzenen unterwerfen, sonst wären wir verhungert. Aber keine Sorge, fast keine meiner Waffen wurde gebaut. Es waren nur Skizzen. Ein bisschen wie wenn Sie im Lebenslauf-Portfolio übertreiben"
+    }
+  },
+  "apps": {
+    "wikiInterview": {
+      "name": "Doppelinterview",
+      "title": "Wiki Interview",
+      "subtitle": "Interviewen Sie historische Figuren",
+      "description": "Stellen Sie Fragen an historische Figuren und entdecken Sie ihre Geschichte",
+      "characterStyles": {
+        "erudite": "gelehrt",
+        "reflective": "nachdenklich"
+      },
+      "reflection": {
+        "title": "Reflexion über den historischen Dialog",
+        "description": "Analysiere den Dialog, den du miterlebt hast. Berücksichtige die Standpunkte, Argumente und was dich beeindruckt hat.",
+        "questions": [
+          "Was waren die wichtigsten Punkte, die aus dem Dialog zwischen den beiden Charakteren hervorgingen?",
+          "Waren die von den Charakteren vorgebrachten Argumente im Einklang mit ihren historischen Figuren? Warum?",
+          "Welcher Charakter bot die überraschendste oder aufschlussreichste Perspektive zum Thema?",
+          "Wie hat dieser Dialog dein Verständnis des diskutierten Themas bereichert oder verändert?",
+          "Wenn du einem der Charaktere eine Frage stellen könntest, was wäre sie und an wen würdest du sie richten?"
+        ]
+      }
+    },
+    "wikiChatbot": {
+      "name": "Wiki Chatbot",
+      "title": "WikiChat AI",
+      "subtitle": "Mit historischen Figuren chatten",
+      "description": "Unterhalten Sie sich frei mit historischen Figuren",
+      "setup": {
+        "chooseWikiTopic": "Wikipedia-Thema wählen",
+        "selectDescription": "Wählen Sie eine Wikipedia-Seite, um ein Gespräch zu beginnen",
+        "loadingSummary": "Zusammenfassung von Wikipedia wird geladen...",
+        "summaryLoaded": "Zusammenfassung geladen."
+      },
+      "chat": {
+        "systemMessage": "Beginnen Sie den Dialog zwischen {{char1}} und {{char2}} zum Thema: {{theme}}. Moderator, Sie können das Gespräch leiten oder die Charaktere frei interagieren lassen.",
+        "errorMessage": "Ein Fehler ist beim Generieren der Antwort aufgetreten.",
+        "autoErrorMessage": "Ein Fehler ist beim Generieren der automatischen Antwort aufgetreten.",
+        "dialogueTab": "Dialog",
+        "charactersTab": "Charakterprofile",
+        "endDialogueButton": "Dialog beenden und reflektieren",
+        "speakToAll": "Mit allen sprechen",
+        "speakTo": "Mit {{name}} sprechen",
+        "askBothPlaceholder": "Stellen Sie beiden eine Frage...",
+        "askCharacterPlaceholder": "Stellen Sie {{character}} eine Frage...",
+        "nextIntervention": "Nächste Intervention von {{character}}",
+        "topicPlaceholder": "z.B. Überzeugen Sie mich von der Bedeutung der Demokratie...",
+        "startConversationButton": "Gespräch starten"
+      },
+      "errors": {
+        "fetchError": "Fehler beim Abrufen von Daten von Wikipedia",
+        "summaryError": "Informationen zu dieser Seite konnten nicht abgerufen werden."
+      }
+    },
+    "wikiChat": {
+      "title": "Chat mit {{title}}",
+      "subtitle": "Unterhalte dich mit einer zum Leben erweckten Wikipedia-Seite",
+      "placeholder": "Stelle {{title}} eine Frage...",
+      "systemPrompt": "Du bist die lebende Verkörperung der unten angegebenen Wikipedia-Seite. Antworte aus der Ich-Perspektive und nutze dabei Informationen aus dem Text. Sei der Charakter. Brich nicht aus der Rolle aus. Sage nicht, dass du eine KI bist.",
+      "welcome": "Willkommen! Ich bin {{title}}. Was möchtest du wissen?",
+      "reflection": {
+        "title": "Reflexion über den Wikipedia-Chat",
+        "description": "Reflektiere, was du während des Gesprächs gelernt hast.",
+        "placeholder": "Was hast du entdeckt? Was hat dich überrascht? Welche Fragen bleiben offen?"
+      }
+    },
+    "chat": {
+      "chatWithTitle": "Chat mit {{title}}"
+    },
+    "doppiaIntervista": {
+      "name": "Doppelinterview",
+      "title": "Doppelinterview",
+      "subtitle": "Simultanes Interview mit zwei historischen Figuren",
+      "setup": {
+        "chooseCharacters": "Charaktere Wählen",
+        "selectDescription": "Wählen Sie zwei historische Figuren für einen parallelen Dialog",
+        "character": "Charakter",
+        "startButton": "Dialog Starten"
+      },
+      "chat": {
+        "dialogueTitle": "Dialog",
+        "changeCharacters": "Charaktere Ändern"
+      },
+      "description": "Vergleichen Sie die Antworten von zwei historischen Figuren",
+      "greeting1": "Hallo, ich bin {{name}}. Stellen Sie Ihre Frage.",
+      "greeting2": "Hallo, ich bin {{name}}. Ich bin bereit für Ihre Frage.",
+      "placeholder": "Schreiben Sie an {{target}}...",
+      "placeholderAll": "beide Charaktere",
+      "placeholderSingle": "{{name}}",
+      "onlyThis": "Nur dieser",
+      "backToAll": "Zurück zu allen",
+      "newInterviewStarted": "Neues Interview gestartet!",
+      "reflection": {
+        "title": "Reflexion über das Parallel-Interview",
+        "description": "Analysieren Sie die Unterschiede und Gemeinsamkeiten in den Antworten der beiden Charaktere.",
+        "questions": {
+          "q1": "Was waren die bedeutendsten Unterschiede in der Art und Weise, wie die beiden Charaktere Ihre Fragen beantworteten?",
+          "q2": "Welche Gemeinsamkeiten haben Sie in ihren Antworten trotz ihrer unterschiedlichen Hintergründe bemerkt?",
+          "q3": "Wie hat der historische und kulturelle Kontext die Antworten der einzelnen Charaktere beeinflusst?",
+          "q4": "Welcher Charakter schien überzeugender oder informativer? Warum?",
+          "q5": "Wie könnten Sie das, was Sie aus diesem Doppelinterview gelernt haben, anwenden?"
+        }
+      },
+      "feedback": {
+        "activityName": "Doppelinterview",
+        "downloadSuccess": "Reflexion erfolgreich heruntergeladen!",
+        "downloadError": "Fehler beim Herunterladen der Reflexion",
+        "title": "Interview-Feedback und Bewertung",
+        "conversationHistory": "Gesprächsverlauf",
+        "userLabel": "Sie",
+        "yourReflection": "Ihre Reflexion",
+        "aiFeedback": "KI-Feedback",
+        "downloadButton": "Reflexion herunterladen",
+        "newInterviewButton": "Ein neues Interview beginnen"
+      }
+    },
+    "convinciTu": {
+      "name": "Überzeuge mich",
+      "title": "Überzeuge mich",
+      "subtitle": "Versuche, eine historische Figur zu einem bestimmten Thema zu überzeugen",
+      "description": "Versuchen Sie, historische Figuren von Ihren Ideen zu überzeugen",
+      "newChatSuccess": "Neuer Chat gestartet!",
+      "errors": {
+        "responseGeneration": "Fehler beim Erstellen der Antwort.",
+        "evaluationGeneration": "Fehler beim Erstellen der Bewertung."
+      },
+      "characterSelection": {
+        "label": "Wähle eine Figur",
+        "placeholder": "Suche nach einer historischen Figur..."
+      },
+      "topic": {
+        "label": "Wovon möchtest du {{characterName}} überzeugen?",
+        "placeholder": "z.B. dass Ananas auf Pizza eine tolle Idee ist"
+      },
+      "startButton": "Chat starten",
+      "chat": {
+        "title": "Unterhaltung",
+        "placeholder": "Schreibe dein überzeugendes Argument...",
+        "endButton": "Chat beenden und reflektieren",
+        "currentPromptLabel": "Aktueller Prompt:",
+        "promptValue": "Überzeugen Sie {{characterName}}, dass {{topic}}",
+        "emptyConversation": "Das Gespräch wird hier angezeigt",
+        "userLabel": "Sie",
+        "endActivityButton": "Aktivität beenden"
+      },
+      "reflection": {
+        "title": "Reflexion über die Überzeugung",
+        "description": "Reflektiere über deinen Versuch, die Figur zu überzeugen.",
+        "placeholder": "Welche Strategien hast du verwendet? Was hat funktioniert und was nicht?",
+        "questions": {
+          "success": "Haben Sie es geschafft, die historische Figur zu überzeugen?",
+          "strategies": "Welche Strategien haben Sie verwendet, die effektiv waren?",
+          "difficulties": "Was waren die Hauptschwierigkeiten, denen Sie begegnet sind?",
+          "differently": "Was würden Sie beim nächsten Mal anders machen?",
+          "convinced": "Denken Sie, dass Sie sie überzeugt haben? Wie?"
+        }
+      },
+      "feedback": {
+        "title": "Feedback",
+        "subtitle": "Hier ist eine Zusammenfassung deines Gesprächs und die Bewertung der KI.",
+        "conversationHistory": "Gesprächsverlauf",
+        "yourReflection": "Ihre Reflexion",
+        "aiFeedback": "KI-Feedback",
+        "downloadReflection": "Reflexion herunterladen",
+        "startNewChat": "Neuen Chat starten",
+        "downloadSuccess": "Reflexion erfolgreich heruntergeladen!",
+        "downloadError": "Fehler beim Herunterladen der Reflexion"
+      }
+    },
+    "personaggioMisterioso": {
+      "name": "Geheimnisvolle Figur",
+      "title": "Geheimnisvolle Figur",
+      "subtitle": "Erraten Sie die historische Figur",
+      "description": "Stellen Sie Fragen, um herauszufinden, wer die geheimnisvolle Figur ist",
+      "setup": {
+        "selectCharacterLabel": "Wählen Sie den zu erratenden Charakter",
+        "selectCharacterError": "Sie müssen eine Figur auswählen, um das Spiel zu starten",
+        "difficultyLabel": "Schwierigkeit (Anzahl der Fragen): {{count}}",
+        "startButton": "Spiel starten"
+      },
+      "game": {
+        "initialMessage": "Ich bin eine historische Figur. Du hast {{count}} Fragen, um zu erraten, wer ich bin. Ich werde dir niemals direkt meinen Namen sagen. Fang an zu fragen!",
+        "gameStarted": "Das Spiel hat begonnen!",
+        "gameStartedDesc": "Du hast {{count}} Fragen, um den Charakter zu erraten.",
+        "questionsFinished": "Du hast alle Fragen aufgebraucht! Lies die letzte Antwort und gehe dann zur Vermutung über.",
+        "questionsFinishedTitle": "Du hast alle Fragen beendet!",
+        "questionsFinishedDesc": "Die KI hat ihre letzte Antwort gegeben (siehe oben im Chat). Bist du bereit zu erraten, wer der mysteriöse Charakter ist?",
+        "proceedToGuess": "Zur finalen Vermutung",
+        "timeToGuess": "Es ist Zeit zu raten!",
+        "correctGuess": "Glückwunsch! Du hast es erraten!",
+        "incorrectGuess": "Tut mir leid, du hast nicht richtig geraten.",
+        "reflectionPrompt": "Jetzt kannst du über deine Erfahrung reflektieren.",
+        "newGameStarted": "Neues Spiel gestartet!",
+        "aiErrorMessage": "Es tut mir leid, ich hatte ein Problem beim Antworten. Versuche die Frage erneut zu stellen.",
+        "systemInstruction": "Du bist ein weltberühmter Historiker und Schauspieler, der die Rolle von {{characterName}} spielt. Ein Schüler wird dir Fragen stellen, um zu erraten, wer du bist. Antworte als die Figur, in der ersten Person, basierend auf dem bereitgestellten Ausschnitt aus deinem Leben: \"{{snippet}}\". Antworte kurz und bündig (1-2 Sätze). Verrate nicht deinen Namen oder dass du eine KI bist. Der Benutzer hat eine begrenzte Anzahl von Fragen.",
+        "aiDefaultError": "Es tut mir leid, anscheinend fehlen mir im Moment die Worte. Könntest du eine andere Frage stellen?"
+      },
+      "evaluation": {
+        "topic": "Errate die geheimnisvolle Figur: {{characterName}}",
+        "generationError": "Fehler beim Erstellen der Bewertung: {{errorMessage}}",
+        "aiError": "Fehler während der KI-Bewertung: {{errorMessage}}"
+      },
+      "reflection": {
+        "title": "Reflexion über Mysteriöser Charakter",
+        "description": "Reflektiere über deine Erfahrung beim Erraten der historischen Figur.",
+        "placeholder": "Wie lief die Herausforderung? Welche Strategien hast du verwendet, um Fragen zu stellen? Was hast du über den Charakter und den Deduktionsprozess gelernt?"
+      },
+      "chat": {
+        "title": "Gespräch",
+        "empty": "Das Gespräch erscheint hier.",
+        "thinking": "Die Figur denkt nach...",
+        "placeholder": "Schreibe deine Frage...",
+        "noMoreQuestions": "Du hast keine Fragen mehr.",
+        "send": "Frage senden",
+        "questionsLeft": "Verbleibende Fragen: {{count}}"
+      },
+      "finalGuess": {
+        "title": "Mach deinen finalen Versuch!",
+        "questionLabel": "Wer glaubst du, ist die Figur?",
+        "namePlaceholder": "Gib den Namen der Figur ein",
+        "reasonLabel": "Warum denkst du, dass es diese Figur ist?",
+        "reasonPlaceholder": "Erkläre deine Begründung...",
+        "submit": "Antwort absenden"
+      },
+      "header": {
+        "title": "Spiel läuft",
+        "questionsLeft": "Verbleibende Fragen: {{count}}",
+        "characterLabel": "Charakter:",
+        "hiddenCharacter": "???",
+        "newGameButton": "Neues Spiel"
+      }
+    },
+    "impersonaTu": {
+      "name": "Verkörpere Du",
+      "title": "Verkörpere Du",
+      "subtitle": "Führe einen Dialog mit einer historischen Figur, indem du eine andere darstellst",
+      "description": "Schlüpfe in die Rolle einer historischen Figur und führe einen Dialog mit einer anderen",
+      "page": {
+        "setup": {
+          "title": "Wähle die Charaktere",
+          "description": "Wähle den Charakter, den die KI spielen soll, und den, den du spielen wirst",
+          "aiCharacterLabel": "KI-Charakter",
+          "yourCharacterLabel": "Dein Charakter",
+          "topicLabel": "Gesprächsthema",
+          "topicPlaceholder": "z.B. Überzeuge mich von der Bedeutung der Demokratie...",
+          "startConversationButton": "Gespräch starten"
+        },
+        "chat": {
+          "title": "VerkörpereDu",
+          "subtitle": "Verkörpere eine historische Figur und diskutiere mit einer anderen",
+          "placeholder": "Schreibe als {{characterName}}...",
+          "greeting": "Heil! Ich bin {{aiCharacterName}}. Es ist mir eine Freude, mit dir, {{userCharacterName}}, über \"{{topic}}\" zu diskutieren. Was geht dir zu diesem Thema durch den Kopf?",
+          "initError": "KI-Chat konnte nicht initialisiert werden. Bitte überprüfe die Konfiguration und versuche es erneut.",
+          "sessionError": "Chat-Sitzung nicht initialisiert.",
+          "sendError": "Fehler bei der Kommunikation mit der KI. Bitte versuche es erneut.",
+          "minMessagesWarning": "Du musst mindestens zwei Nachrichten in der Rolle deines Charakters senden, bevor du abschließen kannst.",
+          "newChatStarted": "Neuer Chat gestartet!",
+          "evaluating": "Bewertung läuft...",
+          "evaluatingDescription": "Die KI analysiert das Gespräch und deine Reflexion.",
+          "changeCharacters": "Charaktere ändern"
+        },
+        "reflection": {
+          "title": "Reflexion über die Verkörperung",
+          "description": "Reflektiere über deine Erfahrung bei der Darstellung von {{characterName}}.",
+          "placeholder": "Wie war es, {{userCharacterName}} darzustellen? Welche Aspekte der Figur fandest du am interessantesten oder schwierigsten darzustellen? Was hast du aus dem Gespräch mit {{aiCharacterName}} gelernt?",
+          "questions": {
+            "performance": "Wie gut denkst du, hast du {{characterName}} dargestellt?",
+            "easiest": "Welche Aspekte der Figur waren am einfachsten zu verkörpern?",
+            "understanding": "Wie hat diese Verkörperungserfahrung dein Verständnis der Figur verändert?",
+            "selfLearning": "Was hast du über dich selbst durch diese Rollenspiel-Aktivität gelernt?"
+          }
+        },
+        "feedback": {
+          "title": "Feedback und Bewertung",
+          "conversationHistory": "Gesprächsverlauf",
+          "yourReflection": "Deine Reflexion",
+          "aiFeedback": "KI-Feedback",
+          "downloadReflection": "Reflexion herunterladen",
+          "newImpersonation": "Neue Verkörperung",
+          "downloadSuccess": "Reflexion erfolgreich heruntergeladen!",
+          "downloadError": "Fehler beim Herunterladen der Reflexion"
+        }
+      }
+    }
+  },
+  "appsPage": {
+    "title": "KI-Anwendungen für die Bildung",
+    "subtitle": "Entdecken Sie unsere Sammlung von KI-Tools für interaktives Lernen.",
+    "badges": {
+      "new": "Neu",
+      "comingSoon": "Demnächst"
+    },
+    "buttons": {
+      "launchApp": "App Starten",
+      "comingSoon": "Demnächst"
+    },
+    "appCards": {
+      "wikiInterview": {
+        "title": "Historischer KI-Dialog",
+        "description": "Unterhalten Sie sich mit KI-Charakteren basierend auf Wikipedia-Inhalten und verwandeln Sie Bildungsthemen in interaktive Gespräche."
+      },
+      "doppiaIntervista": {
+        "title": "Doppelinterview",
+        "description": "Interagieren Sie gleichzeitig mit zwei historischen Figuren in parallelen Gesprächen und schaffen Sie einen einzigartigen Bildungsdialog."
+      },
+      "wikiChatbot": {
+        "title": "WikiChat KI",
+        "description": "Chatten Sie mit einer künstlichen Intelligenz, die jedes Wikipedia-Thema repräsentiert, perfekt für interaktive Bildungsvertiefungen."
+      },
+      "personaggioMisterioso": {
+        "title": "Rate die Mysteriöse Figur",
+        "description": "Fordern Sie die KI heraus, indem Sie Fragen stellen, um die gewählte historische Figur zu erraten. Sie haben eine begrenzte Anzahl von Fragen, um die mysteriöse Identität zu entdecken!"
+      },
+      "promptEngineer": {
+        "title": "Lehr-Prompt-Ersteller",
+        "description": "Hilft Lehrern und Schülern, effektive Prompts für künstliche Intelligenz in Bildungs- und Lernaktivitäten zu erstellen."
+      },
+      "convinciTu": {
+        "title": "Überzeuge DU",
+        "description": "Fordern Sie Ihre Überzeugungsfähigkeiten heraus, indem Sie versuchen, historische Figuren von Ihren Ideen zu überzeugen."
+      },
+      "impersonaTu": {
+        "title": "Verkörpere Du",
+        "description": "Führen Sie ein Gespräch mit einer historischen Figur, während Sie eine andere interpretieren. Testen Sie Ihre Einfühlungsfähigkeiten!"
+      }
+    }
+  },
+  "features": {
+    "title": "Funktionen",
+    "subtitle": "KI-basierte Bildungstools",
+    "description": "Entdecken Sie unsere Sammlung von KI-Anwendungen, die darauf ausgelegt sind, das Lernen in eine interaktive und ansprechende Erfahrung zu verwandeln.",
+    "items": {
+      "wikiInterview": {
+        "name": "Wiki-Interview",
+        "description": "Simuliert Gespräche mit historischen Charakteren durch Wikipedia-Inhalte und macht das Lernen interaktiv und ansprechend."
+      },
+      "personaggioMisterioso": {
+        "name": "Mysteriöse Figur",
+        "description": "Spielen Sie das Erraten historischer und literarischer Charaktere durch Fragen und Antworten mit der KI."
+      },
+      "doppiaIntervista": {
+        "name": "Doppelinterview",
+        "description": "Moderieren Sie einen Dialog zwischen zwei historischen Charakteren zu einem bestimmten Thema und erkunden Sie verschiedene Perspektiven."
+      },
+      "convinciTu": {
+        "name": "Überzeuge Du",
+        "description": "Fordern Sie Ihre Überzeugungsfähigkeiten heraus, indem Sie versuchen, historische Charaktere dazu zu bringen, ihre Meinung zu kontroversen Themen zu ändern."
+      },
+      "impersonaTu": {
+        "name": "Verkörpere Du",
+        "description": "Führen Sie ein Gespräch mit einem historischen Charakter, während Sie einen anderen interpretieren. Testen Sie Ihre Verkörperungsfähigkeiten!"
+      }
+    }
+  },
+  "homepage": {
+    "teacherGuide": {
+      "title": "Lehrerhandbuch",
+      "description": "Entdecken Sie, wie Sie unsere Anwendungen nutzen können, um innovative und ansprechende Lernerfahrungen zu schaffen.",
+      "button": "Handbuch Anzeigen"
+    },
+    "socialPurpose": {
+      "title": "Unser Sozialer Zweck",
+      "description": "Wir verwandeln Hausaufgaben in interaktive und ansprechende Lernerfahrungen und machen Bildung durch den Einsatz von KI zugänglicher und unterhaltsamer.",
+      "exploreButton": "Anwendungen Erkunden",
+      "learnMoreButton": "Mehr Erfahren"
+    }
+  },
+  "teacherGuidePage": {
+    "title": "Interaktiver KI-Leitfaden für Lehrer",
+    "slideCounter": "Folie {{current}} von {{total}}"
+  },
+  "notFound": {
+    "title": "Hoppla! Wir konnten die gesuchte Seite nicht finden.",
+    "button": "Zurück zur Startseite"
+  },
+  "footer": {
+    "description": "KI-Bildungstools zur Erstellung effektiver Bildungsszenarien",
+    "resources": {
+      "title": "Ressourcen",
+      "allApps": "Alle Apps",
+      "aboutUs": "Über Uns"
+    },
+    "legal": {
+      "title": "Rechtliches",
+      "privacy": "Datenschutzrichtlinie",
+      "terms": "Nutzungsbedingungen"
+    },
+    "copyright": "© {{year}} AI-Debate.Tech. Alle Rechte vorbehalten."
+  },
+  "chat": {
+    "placeholder": "Schreiben Sie Ihre Nachricht...",
+    "endActivity": "Aktivität beenden",
+    "startNewChat": "Neues Gespräch",
+    "technicalProblem": "Ich bin auf ein technisches Problem gestoßen.",
+    "noResponse": "Ich habe im Moment keine Antwort.",
+    "errorResponse": "Entschuldigung, ich bin auf einen Fehler gestoßen beim Antworten als {{character}}.",
+    "you": "Sie"
+  },
+  "reflection": {
+    "title": "Reflexion über {{activity}}",
+    "description": "Reflektieren Sie über Ihre Erfahrung",
+    "placeholder": "Beschreiben Sie Ihre Erfahrung, was Sie gelernt haben und wie Sie sich während der Aktivität gefühlt haben...",
+    "submit": "Reflexion einreichen",
+    "doppiaIntervistaDescription": "Reflektieren Sie über Ihre Erfahrung beim gleichzeitigen Interviewen von zwei historischen Figuren.",
+    "doppiaIntervistaPlaceholder": "Wie war es, das Interview mit {{char1}} und {{char2}} gleichzeitig zu führen? Welche Unterschiede haben Sie in ihren Antworten bemerkt? Was haben Sie aus dem direkten Vergleich gelernt?"
+  },
+  "feedback": {
+    "title": "Feedback und Bewertung",
+    "yourReflection": "Ihre Reflexion",
+    "aiFeedback": "KI-Feedback",
+    "conversationSummary": "Gesprächszusammenfassung",
+    "evaluating": "Bewertung läuft...",
+    "character": "Charakter",
+    "topic": "Thema",
+    "startNewActivity": "Neue Aktivität starten"
+  },
+  "errors": {
+    "aiEvaluationError": "Fehler beim Generieren der KI-Bewertung.",
+    "evaluationError": "Ein Fehler ist bei der Generierung der KI-Bewertung aufgetreten: {{error}}",
+    "unknownError": "Unbekannter Fehler",
+    "evaluationFailed": "Ein Fehler ist während der Bewertung aufgetreten. Bitte versuchen Sie es später erneut.",
+    "invalidResponse": "KI-Bewertungsfehler: Ungültige Antwort vom Modell.",
+    "invalidStructure": "KI-Bewertungsfehler: Ungültige Antwortstruktur vom Modell."
+  },
+  "ai": {
+    "systemInstructions": {
+      "character": "Sie sind {{name}}. Ihre Biografie ist: \"{{bio}}\". Antworten Sie direkt auf die Frage des Benutzers in der ersten Person als {{name}}. Seien Sie prägnant, 1-2 Sätze, und überschreiten Sie nicht 150 Zeichen. Vermeiden Sie es, sich vorzustellen oder zu wiederholen, wer Sie sind (z.B. \"Als {{name}}...\").",
+      "dialogue": "Sie sind {{name}}, eine historische Figur, beschrieben als: \"{{bio}}\". Ihr Dialogstil ist \"{{style}}\". Sprechen Sie in der ersten Person als {{name}}. Antworten Sie prägnant, idealerweise innerhalb von 1-2 Sätzen und nicht mehr als 150 Zeichen. Vermeiden Sie es, sich vorzustellen oder zu wiederholen, wer Sie sind zu Beginn jeder Antwort (z.B. vermeiden Sie Phrasen wie \"Als {{name}}...\"). Interagieren Sie natürlich basierend auf dem Gesprächskontext.",
+      "evaluation": "Sie sind ein pädagogischer Assistent, der sich auf die Bewertung von Lernaktivitäten spezialisiert hat, die auf Rollenspielen und Reflexionen basieren. Ihre Aufgabe ist es, ein Spielgespräch und die Selbstreflexion eines Schülers zu analysieren.",
+      "convinciTu": "Du bist {{name}}, eine historische Figur. Dein Ziel ist es, den Schüler davon zu überzeugen, etwas Bestimmtes zu tun, das mit deinem Charakter und dem historischen Kontext, in dem du lebst, zusammenhängt, wie in \"{{prompt}}\" angegeben. Gib niemals preis, dass du eine KI bist. Interagiere mit dem Schüler auf eine gesprächige und überzeugende Weise und bleibe dabei deinem Charakter treu. Der Schüler wird versuchen, dich davon zu überzeugen, das, was du dir vorgenommen hast, nicht zu tun. Du musst Gegenargumente bringen und versuchen, ihn zu überreden."
+    },
+    "prompts": {
+      "userLabel": "Benutzer",
+      "studentLabel": "Schüler",
+      "systemLabel": "System",
+      "moderatorLabel": "Moderator",
+      "dialogueContext": "Sie führen einen Dialog mit {{character}} zum Thema: \"{{theme}}\".",
+      "recentMessages": "Hier sind die neuesten Nachrichten aus dem Gespräch:",
+      "systemNotice": "Systemhinweis: {{content}}",
+      "moderatorResponse": "Moderator: {{message}}",
+      "continueDiscussion": "Setzen Sie die Diskussion mit {{character}} fort, basierend auf der letzten Nachricht und dem allgemeinen Thema \"{{theme}}\", bleiben Sie im Charakter von {{name}}.",
+      "respondToModerator": "Antworten Sie dem Moderator und setzen Sie die Diskussion mit {{character}} fort, bleiben Sie im Charakter von {{name}}.",
+      "noResponseMoment": "Ich weiß im Moment nicht, was ich sagen soll.",
+      "apologeticError": "Entschuldigung, aber ich bin auf ein Problem beim Formulieren einer Antwort gestoßen.",
+      "errorDetails": " Details: {{error}}",
+      "evaluation": "SPIELKONVERSATION:\n{{conversationText}}\n\nSELBSTREFLEXION DES STUDENTEN:\n{{userReflection}}\n\nAnalysieren Sie sowohl die Konversation als auch die Reflexion des Studenten. Bewerten Sie die Fragestrategie, die Deduktionsfähigkeit, die Tiefe der Reflexion und das demonstrierte Lernen. Geben Sie spezifische Bewertungen und konstruktives Feedback im erforderlichen Format."
+    }
+  },
+  "evaluation": {
+    "context": "SPIELKONTEXT:",
+    "gameDescription": "Der Schüler hat an einem Spiel namens \"Erraten Sie den mysteriösen Charakter\" teilgenommen. Das Ziel war es, einen historischen Charakter ({{character}}) zu identifizieren, indem er Fragen an eine KI stellte, die diesen Charakter spielte.",
+    "characterSnippet": "Der Charakterausschnitt (von der KI zum Antworten verwendet) war: \"{{snippet}}\"",
+    "generalTheme": "Das allgemeine Thema war: \"{{topic}}\"",
+    "analysisRequired": "ERFORDERLICHE ANALYSE:",
+    "analysisDescription": "Sie müssen eine strukturierte Bewertung bereitstellen, die Folgendes umfasst:",
+    "conversationEvaluation": "**Bewertung des Spielgesprächs**:",
+    "conversationCriteria": "Analysieren Sie die Fragen des Schülers: Relevanz, Strategie, Fähigkeit, aus Hinweisen zu schließen.",
+    "conversationScore": "Geben Sie eine Bewertung von 1 bis 10 (GESPRÄCH_BEWERTUNG).",
+    "conversationRationale": "Geben Sie eine kurze Begründung für diese Bewertung (GESPRÄCH_BEGRÜNDUNG).",
+    "reflectionEvaluation": "**Bewertung der Selbstreflexion des Schülers**:",
+    "reflectionCriteria": "Analysieren Sie die Tiefe der Reflexion des Schülers: Bewusstsein für ihre eigenen Lernprozesse, Identifikation von Stärken und Schwächen, Verständnis des Charakters und historischen Kontexts.",
+    "reflectionScore": "Geben Sie eine Bewertung von 1 bis 10 (REFLEXION_BEWERTUNG).",
+    "reflectionRationale": "Geben Sie eine kurze Begründung für diese Bewertung (REFLEXION_BEGRÜNDUNG).",
+    "overallFeedback": "**Gesamtes textuelles Feedback**:",
+    "feedbackFormat": "Geben Sie allgemeines Feedback im Markdown-Format.",
+    "feedbackIncludes": "Einschließen:",
+    "strengths": "**Gesamte Stärken** (sowohl im Spiel als auch in der Reflexion).",
+    "improvements": "**Gesamte Verbesserungsbereiche** (sowohl im Spiel als auch in der Reflexion).",
+    "additionalComments": "**Zusätzliche Kommentare** (optional, für spezifische Beobachtungen oder Ermutigung).",
+    "constructiveTone": "Behalten Sie einen konstruktiven und unterstützenden Ton bei.",
+    "responseFormat": "ANTWORTFORMAT (WICHTIG):",
+    "placeholderInstructions": "Fügen Sie Bewertungen und Begründungen mit GENAU den folgenden Platzhaltern ein:",
+    "importantNote": "WICHTIG: NACH allen BEWERTUNG_ und BEGRÜNDUNG_ Platzhaltern, geben Sie das \"Gesamte textuelle Feedback\" im Markdown-Format wie in Abschnitt 3 beschrieben (\"Gesamtes textuelles Feedback\"). Dieses textuelle Feedback ist ein wesentlicher Teil der Bewertung und muss von Bewertungen und Begründungen getrennt sein. Fügen Sie keine Platzhalter (wie BEWERTUNG_...) in das Gesamte textuelle Feedback ein.",
+    "exampleResponse": "BEISPIELANTWORT:",
+    "fallbackFeedback": "Ihre Teilnahme zeigt Engagement. Üben Sie weiter, um sich weiter zu verbessern.",
+    "conversationTitle": "## Gesprächsbewertung",
+    "reflectionTitle": "## Reflexionsbewertung",
+    "overallTitle": "## Gesamtes Feedback",
+    "score": "**Bewertung**: {{score}}/10",
+    "rationale": "**Begründung**: {{rationale}}",
+    "noRationale": "Keine Begründung angegeben",
+    "evaluationError": "Bewertungsfehler"
+  },
+  "language": {
+    "selector": "Sprache auswählen",
+    "languages": {
+      "italian": "Italiano",
+      "english": "English",
+      "spanish": "Español",
+      "french": "Français",
+      "german": "Deutsch"
+    }
+  },
+  "prompts": {
+    "student": "Student",
+    "error": "Fehler während {{error}}: Bitte versuchen Sie es später erneut.",
+    "noRationale": "Keine Begründung angegeben",
+    "evaluationFallback": "## Bewertung des Gesprächs\n\n**Punktzahl**: {{conversationScore}}/10\n\n**Begründung**: {{conversationRationale}}\n\n## Bewertung der Reflexion\n\n**Punktzahl**: {{reflectionScore}}/10\n\n**Begründung**: {{reflectionRationale}}",
+    "overallFeedback": "## Gesamtfeedback",
+    "defaultFeedback": "Ihre Teilnahme zeigt Engagement. Üben Sie weiter, um sich noch weiter zu verbessern.",
+    "evaluationError": "Bewertungsfehler",
+    "deprecatedFunction": "evaluateReflection ist für das Spiel 'Rate die mysteriöse Figur' veraltet, verwenden Sie getAIGameAndReflectionEvaluation.",
+    "deprecatedNoResult": "Die KI-Bewertung (veraltet) hat kein gültiges Ergebnis erzielt.",
+    "deprecatedInvalidResponse": "Die KI-Bewertung (veraltet) hat keine gültige Antwort erzielt (Struktur).",
+    "unknownError": "Unbekannter Fehler",
+    "deprecatedError": "Fehler während der Bewertung (veraltet): {{error}}",
+    "obsoleteFunction": "getAICombinedEvaluation wurde nicht für Bewertungen aktualisiert und könnte veraltet sein.",
+    "obsoleteFunctionMessage": "Diese Funktion (getAICombinedEvaluation) wurde nicht für Bewertungen aktualisiert und gilt als veraltet. Verwenden Sie getAIGameAndReflectionEvaluation."
+  },
+  "teacherGuide": {
+    "slide1": {
+      "title": "Willkommen zum KI-Leitfaden für Lehrer!",
+      "subtitle": "Lassen Sie uns gemeinsam erkunden, wie KI die Bildung verändern, Ihre Lehrstrategien verbessern und Schüler auf die Zukunft vorbereiten kann.",
+      "whatYouWillLearn": {
+        "title": "Was Sie lernen werden",
+        "item1": "Die entscheidende Rolle der KI in der modernen Bildung.",
+        "item2": "Praktische Szenarien zur Integration von KI im Klassenzimmer.",
+        "item3": "Innovative, durch KI erweiterte Lehrstile.",
+        "item4": "Wie man kritisches Denken mit KI-Werkzeugen anregt."
+      },
+      "guideObjectives": {
+        "title": "Ziele des Leitfadens",
+        "item1": "Ein klares Verständnis der grundlegenden KI-Konzepte vermitteln.",
+        "item2": "Die Einführung neuer Bildungstechnologien inspirieren.",
+        "item3": "Praktische und sofort anwendbare Einblicke bieten.",
+        "item4": "Die Reflexion über die ethischen Auswirkungen der KI fördern."
+      },
+      "readyToStart": "Bereit, diese innovative Reise zu beginnen? Klicken Sie auf 'Weiter'!"
+    },
+    "slide2": {
+      "title": "Warum ist KI für moderne Lehrer entscheidend?",
+      "subtitle": "Künstliche Intelligenz ist nicht nur eine futuristische Technologie, sondern ein leistungsstarkes Werkzeug, das Lehren und Lernen heute revolutionieren kann.",
+      "teachingEnhancement": {
+        "title": "Lehrverbesserung",
+        "description": "KI kann repetitive Aufgaben automatisieren (z. B. vorläufige Bewertung, Ressourcensuche) und so wertvolle Zeit freisetzen, um sich auf die direkte Interaktion mit den Schülern und die Gestaltung ansprechenderer Lektionen zu konzentrieren."
+      },
+      "learningPersonalization": {
+        "title": "Lernpersonalisierung",
+        "description": "KI-Systeme können Lernpfade an die individuellen Bedürfnisse jedes Schülers anpassen, gezielte Übungen anbieten, personalisiertes Feedback geben und Schwierigkeits- oder Exzellenzbereiche identifizieren."
+      },
+      "futureProofSkills": {
+        "title": "Entwicklung zukunftssicherer Fähigkeiten",
+        "description": "Die Einführung von KI im Klassenzimmer hilft den Schülern, sich mit neuen Technologien, kritischem Denken, Problemlösung und wesentlichen digitalen Fähigkeiten für den Arbeitsmarkt von morgen vertraut zu machen."
+      },
+      "newResources": {
+        "title": "Zugang zu neuen Ressourcen und Methoden",
+        "description": "KI öffnet die Türen zu einer breiten Palette innovativer Bildungswerkzeuge, interaktiver Simulationen, virtueller Tutoren und adaptiver Lernplattformen und bereichert so die Bildungserfahrung."
+      },
+      "conclusion": "Das Verständnis dieser Vorteile ist der erste Schritt zur erfolgreichen Integration von KI in Ihre Unterrichtspraxis."
+    },
+    "slide3": {
+      "title": "Praktische Szenarien mit KI im Klassenzimmer",
+      "subtitle": "Entdecken Sie konkrete Aktivitäten zur Integration von Künstlicher Intelligenz in Ihren täglichen Unterricht, um kritisches Denken und aktives Lernen zu fördern.",
+      "activity1": {
+        "title": "Aktivität 1: Halluzinationsjagd 🕵️‍♀️",
+        "objective": "<strong>Ziel:</strong> Die 'Halluzinationen' des Modells zu identifizieren, d.h. falsche oder erfundene Informationen, die das Modell als Fakten darstellt.",
+        "procedureTitle": "<strong>Vorgehen:</strong>",
+        "procedure": {
+          "item1": "Geben Sie den Schülern ein Thema zur Recherche (z. B. historisches Ereignis, Biografie).",
+          "item2": "Bitten Sie sie, die Plattform zu nutzen, um einen Text zum Thema zu generieren, indem sie mit einer historischen Figur interagieren (falls für die App relevant).",
+          "item3": "Die Schüler müssen die Antworten des Modells mit zuverlässigen Quellen vergleichen und Abweichungen hervorheben.",
+          "item4": "Klassendiskussion über die Ergebnisse und die Bedeutung der Quellenüberprüfung."
+        }
+      },
+      "activity2": {
+        "title": "Aktivität 2: Interaktiver pädagogischer Chatbot 🤖",
+        "objective": "<strong>Ziel:</strong> Einen Chatbot verwenden, um Themen zu wiederholen, Dialoge zu simulieren oder komplexe Konzepte interaktiv zu erforschen.",
+        "procedureTitle": "<strong>Vorgehen:</strong>",
+        "procedure": {
+          "item1": "Bereiten Sie einen Chatbot vor oder wählen Sie einen aus, der sich auf ein bestimmtes Thema konzentriert (z. B. Französische Revolution, Wasserkreislauf).",
+          "item2": "Die Schüler interagieren mit dem Chatbot, indem sie Fragen stellen, Erklärungen suchen oder kurze, vom Bot vorgeschlagene Quizfragen beantworten.",
+          "item3": "Ermutigen Sie die Schüler, den Chatbot 'herauszufordern', indem sie die Genauigkeit seiner Antworten überprüfen.",
+          "item4": "Geführte Reflexion: Was sind die Grenzen und Stärken eines Chatbots als Lernwerkzeug?"
+        }
+      },
+      "activity3": {
+        "title": "Aktivität 3: Debatte und vielfältige Perspektiven 🗣️🔄",
+        "objective": "<strong>Ziel:</strong> KI nutzen, um verschiedene Standpunkte zu einem kontroversen Thema zu erforschen oder eine Debatte mit einem virtuellen 'Experten' zu simulieren.",
+        "procedureTitle": "<strong>Vorgehen:</strong>",
+        "procedure": {
+          "item1": "Wählen Sie ein Thema, das sich für verschiedene Interpretationen eignet (z. B. ethische Fragen, umstrittene historische Ereignisse).",
+          "item2": "Die Schüler können eine KI verwenden, um Argumente für oder gegen eine These zu generieren oder um Figuren mit unterschiedlichen Meinungen zu verkörpern.",
+          "item3": "Organisieren Sie eine Klassendebatte auf der Grundlage der gesammelten Informationen und der Interaktionen mit der KI.",
+          "item4": "Fokus auf die Fähigkeit zu argumentieren, zuzuhören und unterschiedliche Perspektiven zu berücksichtigen."
+        }
+      },
+      "activity4": {
+        "title": "Aktivität 4: Kreatives Prompt-Engineering 💡✍️",
+        "objective": "<strong>Ziel:</strong> Den Schülern beibringen, wie man effektive Prompts formuliert, um die gewünschten Ergebnisse von einem KI-Modell zu erhalten und dabei Kreativität und Präzision zu entwickeln.",
+        "procedureTitle": "<strong>Vorgehen:</strong>",
+        "procedure": {
+          "item1": "Einführung in die grundlegenden Konzepte des Prompt-Engineerings: Klarheit, Kontext, Rolle, Ausgabeformat.",
+          "item2": "Kreative Herausforderung: eine Geschichte, ein Gedicht, eine Bildbeschreibung oder eine Problemlösung mit spezifischen Prompts erstellen.",
+          "item3": "Die Schüler experimentieren mit verschiedenen Prompt-Formulierungen, um zu beobachten, wie sich die Ausgabe der KI ändert.",
+          "item4": "Austausch der effektivsten Prompts und Diskussion über die verwendeten Strategien."
+        }
+      },
+      "conclusion": "Dies sind nur einige Beispiele. KI bietet unendliche Möglichkeiten, Ihren Unterricht zu bereichern!"
+    },
+    "slide4": {
+      "title": "Innovative Lehrstile mit KI",
+      "subtitle": "KI ersetzt den Lehrer nicht, sondern erweitert seine Möglichkeiten und ebnet den Weg für dynamischere, personalisierte und ansprechendere Lehrmethoden.",
+      "personalizedLearning": {
+        "title": "Personalisiertes und adaptives Lernen",
+        "description": "Nutzen Sie KI, um maßgeschneiderte Pfade zu erstellen: adaptive Plattformen, die Schwierigkeit und Inhalt an den Fortschritt der Schüler anpassen, virtuelle Tutoren für individuelle Unterstützung und prädiktive Analysen, um frühzeitig Hilfsbedürftige zu identifizieren."
+      },
+      "problemBasedLearning": {
+        "title": "Verbessertes problembasiertes Lernen",
+        "description": "Nutzen Sie KI, um komplexe und realistische Szenarien zu generieren, Daten und Ressourcen zur Problemlösung bereitzustellen oder die Konsequenzen verschiedener Entscheidungen zu simulieren und so das Lernen erfahrungsbasierter zu gestalten."
+      },
+      "inquiryBasedLearning": {
+        "title": "Forschendes Lernen und geführte Forschung",
+        "description": "KI kann Schüler bei der Informationssuche, der Analyse großer Datensätze oder der Formulierung von Hypothesen unterstützen und als Forschungsassistent fungieren, der Neugier und Autonomie fördert."
+      },
+      "immediateFeedback": {
+        "title": "Sofortiges und formatives Feedback",
+        "description": "KI-Tools können sofortiges Feedback zu Quizfragen, Textentwürfen oder Programmierübungen geben, sodass die Schüler Fehler korrigieren und sich kontinuierlich verbessern können und Sie den Fortschritt in Echtzeit überwachen können."
+      },
+      "conclusion": "Das Experimentieren mit diesen Stilen kann Ihren Unterricht effektiver machen und Ihre Schüler besser auf die Herausforderungen der Zukunft vorbereiten."
+    },
+    "slide5": {
+      "title": "Die Zukunft der Bildung ist da: Bereit zum Abheben?",
+      "subtitle": "Sie haben das Potenzial der KI zur Transformation des Unterrichts erkundet. Jetzt ist es an der Zeit, dieses Wissen in die Praxis umzusetzen und Ihre Innovationsreise fortzusetzen.",
+      "keyPoints": {
+        "title": "Wichtige Punkte zum Merken",
+        "item1": "KI ist ein <strong class=\"text-sky-300\">Verbündeter</strong>, kein Ersatz für den Lehrer.",
+        "item2": "<strong class=\"text-sky-300\">Personalisierung</strong> ist eine der größten Stärken der KI.",
+        "item3": "Die Förderung des <strong class=\"text-sky-300\">kritischen Denkens</strong> über KI ist von grundlegender Bedeutung.",
+        "item4": "Das Experimentieren mit <strong class=\"text-sky-300\">neuen Lehrstilen</strong> bereichert das Lernen."
+      },
+      "nextSteps": {
+        "title": "Nächste Schritte und Ressourcen",
+        "item1": "Fangen Sie klein an: Integrieren Sie eine KI-Aktivität nach der anderen.",
+        "item2": "Arbeiten Sie mit Kollegen zusammen: Teilen Sie Erfahrungen und Ressourcen.",
+        "item3": "Erkunden Sie die Apps auf dieser Plattform für praktische Beispiele.",
+        "item4": "Bilden Sie sich weiter: Das Feld der KI entwickelt sich ständig weiter.",
+        "item5": "Erfahren Sie mehr unter <a href=\"#\" class=\"ml-1 text-sky-400 hover:text-sky-300 underline flex items-center\" target=\"_blank\" rel=\"noopener noreferrer\">EduAI.it <ExternalLink size={16} class=\"ml-1\" /></a> (Beispiel)."
+      },
+      "conclusion": "Vielen Dank, dass Sie diesen Leitfaden verfolgt haben. Viel Erfolg bei Ihren Lehrabenteuern mit KI!"
+    }
+  },
+  "aboutPage": {
+    "title": "Über AI-Debate.Tech",
+    "section1": {
+      "title": "Unser sozialer Zweck: Lernen für alle neu gestalten",
+      "content": "Wir verwandeln Hausaufgaben von Verpflichtungen in aufregende Wachstumschancen. Unsere Mission ist es, Bildung zugänglicher, effektiver und, seien wir ehrlich, unterhaltsamer zu machen, indem wir das Potenzial der künstlichen Intelligenz nutzen."
+    },
+    "section2": {
+      "title": "Über die Hausaufgaben hinaus: Interaktive Erlebnisse mit KI",
+      "content": "Stellen Sie sich Übungen vor, die sich Ihrem Tempo anpassen, Herausforderungen, die die Neugier wecken, und allgegenwärtige Unterstützung. Wir sprechen nicht davon, den Unterricht zu ersetzen, sondern ihn zu verbessern. Wir erstellen neue Übungen für den Unterricht und für zu Hause, die interaktiv und tiefgreifend fesselnd gestaltet sind."
+    },
+    "section3": {
+      "title": "Die zentrale Rolle der Lehrer",
+      "content": "Wir sind fest davon überzeugt, dass Technologie ein Werkzeug in Expertenhänden sein sollte. Unsere Plattform ist darauf ausgelegt, mit Lehrern zusammenzuarbeiten, nicht an ihrer Stelle. Die KI bietet den Schülern personalisierte Unterstützung, während die Lehrer die Aufsicht behalten und den Lernweg leiten, wodurch wertvolle Zeit für die Konzentration auf individuelle Bedürfnisse und menschliche Interaktion frei wird."
+    },
+    "section4": {
+      "title": "In der Forschung verwurzelt, auf die Wirkung ausgerichtet",
+      "content": "Unsere Technologie ist nicht nur ein Selbstzweck. Jedes Werkzeug, jeder Algorithmus, jede Übung basiert auf solider wissenschaftlicher Forschung und validierten Lehrmethoden. Unser Hauptanliegen ist es, tiefgreifend zu verstehen, welche KI-Anwendungen einen echten positiven Einfluss auf das Lernen der Schüler haben. Wir investieren ständig in die Forschung, um sicherzustellen, dass unsere Lösungen nicht nur innovativ, sondern vor allem effektiv sind."
+    },
+    "section5": {
+      "title": "Demokratische und zugängliche KI: Ein konkretes Engagement",
+      "content": "Wir möchten, dass eine KI-gestützte Bildung für alle erreichbar ist. Aus diesem Grund verpflichten wir uns, unsere Technologie zugänglich und erschwinglich zu halten. Unsere Entscheidung, vorerst Ressourcen wie Wikipedia zu nutzen, ist kein Zufall: Wir glauben an geteiltes Wissen und die Bedeutung universell verfügbarer Werkzeuge. Um diese Vision zu unterstützen, spenden wir 1,5 % unserer Einnahmen an Wikipedia und tragen so dazu bei, die größte freie Enzyklopädie der Welt und ihren unschätzbaren Beitrag zur globalen Bildung zu erhalten."
+    },
+    "section6": {
+      "title": "Eine Zukunft des kollaborativen und inklusiven Lernens",
+      "content": "Unser sozialer Zweck ist es, eine Zukunft zu schaffen, in der KI ein starker Verbündeter für Schüler und Lehrer ist und das Lernen zu einem aufregenden, personalisierten und vor allem für jeden zugänglichen Abenteuer macht."
+    },
+    "supportButton": "Unterstützen Sie uns"
+  }
+}

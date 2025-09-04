@@ -1,0 +1,758 @@
+{
+  "common": {
+    "search": "Buscar",
+    "searchPlaceholder": "Buscar...",
+    "noResults": "No se encontraron resultados",
+    "loading": "Cargando...",
+    "error": "Error",
+    "tryAgain": "Intentar de nuevo",
+    "retry": "Reintentar",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "save": "Guardar",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "close": "Cerrar",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "previous": "Anterior",
+    "finish": "Terminar",
+    "start": "Comenzar",
+    "reset": "Restablecer",
+    "send": "Enviar",
+    "backToApps": "Volver a las Apps",
+    "startConversation": "Inicia la conversación escribiendo un mensaje...",
+    "writeMessage": "Escribe tu mensaje...",
+    "endAndReflect": "Terminar y Reflexionar",
+    "startNewActivity": "Empezar Nueva Actividad",
+    "startNewReflection": "Empezar Nueva Actividad",
+    "yes": "Sí",
+    "no": "No",
+    "as": "como",
+    "searchHistoricalCharacter": "Buscar un personaje histórico...",
+    "searchOnWikipedia": "Buscar en Wikipedia...",
+    "noResultsFound": "No se encontraron resultados.",
+    "activitySummary": "Resumen de la Actividad",
+    "character": "Personaje:",
+    "yourAnswer": "Tu respuesta:",
+    "result": "Resultado:",
+    "correct": "¡Correcto! 🎉",
+    "correctShort": "Correcto",
+    "incorrect": "Incorrecto",
+    "messagesExchanged": "Mensajes intercambiados:",
+    "conversationHistory": "Historial de Conversación",
+    "you": "Tú",
+    "topic": "Tema:",
+    "activityFeedback": {
+      "title": "Retroalimentación de la Actividad",
+      "subtitle": "Aquí está el resumen de tu experiencia y la retroalimentación de la IA"
+    },
+    "aiFeedback": {
+      "title": "Retroalimentación de IA",
+      "generating": "Generando retroalimentación...",
+      "empty": "Aún no hay retroalimentación disponible."
+    },
+    "reflection": {
+      "title": "Reflexión sobre la Actividad",
+      "description": "Reflexiona sobre tu experiencia y lo que has aprendido.",
+      "prompt": "Comparte tus pensamientos y reflexiones:",
+      "placeholder": "Escribe tu reflexión aquí...",
+      "counter": "{{count}} / {{min}} caracteres mínimos",
+      "remaining": "Aún se necesitan {{remaining}} caracteres",
+      "submit": "Enviar Reflexión"
+    },
+    "reflectionPlaceholder": "Escribe tu reflexión aquí...",
+    "submitReflection": "Enviar Reflexión",
+    "reflectOnExperience": "Reflexiona sobre tu experiencia y lo que has aprendido."
+  },
+  "navigation": {
+    "home": "Inicio",
+    "apps": "Aplicaciones",
+    "teacherGuide": "Guía del Profesor",
+    "about": "Apóyanos",
+    "brand": "AI-Debate.Tech"
+  },
+  "hero": {
+    "title": "Aprendizaje Interactivo con",
+    "subtitle": "Conversaciones Potenciadas por IA",
+    "description": "Enfréntate a los grandes del pasado, sumérgete en su tiempo y prueba una nueva forma de hacer los deberes",
+    "tryApps": "Prueba nuestras apps",
+    "sampleChat": {
+      "bot1": "Muy bien jovencito, ¿quién eres? Me dijeron que me tienes que hacer una entrevista por la escuela. ¡Vamos, no perdamos tiempo!",
+      "user": "Leonardo DaVinci, ¿te parecía normal crear armas para gente que solo quería más poder?",
+      "bot2": "Malo desde el principio, me gusta, me pareces toscano. Querido mío, desafortunadamente no podía hacer otra cosa. Nosotros los artistas en esta época teníamos que someternos a los mecenas o habríamos muerto de hambre. Pero tranquilo, casi ninguna de mis armas fue construida. Eran solo bocetos. Un poco como cuando exageras en el portafolio del currículum"
+    }
+  },
+  "appsPage": {
+    "title": "Aplicaciones de IA para la Educación",
+    "subtitle": "Explora nuestra colección de herramientas de IA para el aprendizaje interactivo.",
+    "appCards": {
+      "wikiInterview": {
+        "title": "Diálogo Histórico con IA",
+        "description": "Conversa con personajes de IA basados en contenido de Wikipedia, transformando temas educativos en conversaciones interactivas."
+      },
+      "doppiaIntervista": {
+        "title": "Entrevista Doble",
+        "description": "Interactúa simultáneamente con dos figuras históricas en conversaciones paralelas, creando un diálogo educativo único."
+      },
+      "wikiChatbot": {
+        "title": "WikiChat IA",
+        "description": "Chatea con una inteligencia artificial que representa cualquier tema de Wikipedia, perfecto para conocimientos educativos interactivos."
+      },
+      "personaggioMisterioso": {
+        "title": "Adivina el Personaje Misterioso",
+        "description": "Desafía a la IA haciendo preguntas para adivinar la figura histórica elegida. ¡Tienes un número limitado de preguntas para descubrir la identidad misteriosa!"
+      },
+      "promptEngineer": {
+        "title": "Creador de Prompts para la Enseñanza",
+        "description": "Ayuda a profesores y estudiantes a crear prompts efectivos para la inteligencia artificial en actividades educativas y de aprendizaje."
+      },
+      "convinciTu": {
+        "title": "Convence TÚ",
+        "description": "Desafía tus habilidades de persuasión tratando de convencer a figuras históricas de tus ideas."
+      },
+      "impersonaTu": {
+        "title": "Personifica Tú",
+        "description": "Dialoga con una figura histórica interpretando a otra. ¡Pon a prueba tus habilidades de empatía!"
+      }
+    },
+    "badges": {
+      "new": "Nuevo",
+      "comingSoon": "Próximamente"
+    },
+    "buttons": {
+      "launchApp": "Lanzar Aplicación",
+      "comingSoon": "Próximamente"
+    }
+  },
+  "features": {
+    "title": "Características",
+    "subtitle": "Herramientas Educativas Basadas en IA",
+    "description": "Explora nuestra colección de aplicaciones de IA diseñadas para transformar el aprendizaje en una experiencia interactiva y atractiva.",
+    "items": {
+      "wikiInterview": {
+        "name": "Entrevista Wiki",
+        "description": "Simula conversaciones con personajes históricos a través de contenidos de Wikipedia, haciendo el aprendizaje interactivo y atractivo."
+      },
+      "personaggioMisterioso": {
+        "name": "Personaje Misterioso",
+        "description": "Juega a adivinar personajes históricos y literarios a través de preguntas y respuestas con la IA."
+      },
+      "doppiaIntervista": {
+        "name": "Doble Entrevista",
+        "description": "Modera un diálogo entre dos personajes históricos sobre un tema específico, explorando diferentes perspectivas."
+      },
+      "convinciTu": {
+        "name": "Convence Tú",
+        "description": "Desafía tus habilidades de persuasión tratando de hacer cambiar de opinión a personajes históricos sobre temas controvertidos."
+      },
+      "impersonaTu": {
+        "name": "Personifica Tú",
+        "description": "Dialoga con un personaje histórico interpretando a otro. ¡Pon a prueba tus habilidades de interpretación!"
+      }
+    }
+  },
+  "apps": {
+    "wikiInterview": {
+      "name": "Entrevista Wiki",
+      "title": "Diálogo Histórico IA",
+      "subtitle": "Entrevista figuras históricas",
+      "description": "Crea y analiza conversaciones profundas entre dos figuras históricas basadas en sus perfiles de Wikipedia.",
+      "errors": {
+        "fetchError": "Error al recuperar datos de Wikipedia para {{title}}",
+        "noSummary": "No se encontró resumen.",
+        "summaryError": "No se pudo recuperar el resumen para este personaje."
+      },
+      "characterStyles": {
+        "erudite": "erudito",
+        "reflective": "reflexivo"
+      },
+      "reflection": {
+        "title": "Reflexión sobre el Diálogo Histórico",
+        "description": "Analiza el diálogo que presenciaste. Considera los puntos de vista, los argumentos y lo que te llamó la atención.",
+        "questions": [
+          "¿Cuáles fueron los puntos clave que surgieron del diálogo entre los dos personajes?",
+          "¿Los argumentos presentados por los personajes estaban en línea con sus figuras históricas? ¿Por qué?",
+          "¿Qué personaje ofreció la perspectiva más sorprendente o esclarecedora sobre el tema?",
+          "¿Cómo enriqueció o modificó este diálogo tu comprensión del tema discutido?",
+          "Si pudieras hacerle una pregunta a uno de los personajes, ¿cuál sería y a quién se la harías?"
+        ]
+      },
+      "setup": {
+        "buildDialogue": "Construir el Diálogo",
+        "selectDescription": "Selecciona dos figuras históricas de Wikipedia y define un tema para su discusión.",
+        "character1": "Primer Personaje",
+        "character2": "Segundo Personaje",
+        "themeLabel": "Tema de Conversación",
+        "themePlaceholder": "Ejemplo: El impacto de la imprenta en la sociedad",
+        "startButton": "Iniciar Diálogo",
+        "loadingSummary": "Cargando resumen de Wikipedia...",
+        "summaryLoaded": "Resumen cargado."
+      },
+      "chat": {
+        "systemMessage": "Inicia el diálogo entre {{char1}} y {{char2}} sobre el tema: {{theme}}. Moderador, puedes guiar la conversación o dejar que los personajes interactúen libremente.",
+        "errorMessage": "Se produjo un error al generar la respuesta.",
+        "autoErrorMessage": "Se produjo un error al generar la respuesta automática.",
+        "dialogueTab": "Diálogo",
+        "charactersTab": "Perfiles de Personajes",
+        "endDialogueButton": "Finalizar Diálogo y Reflexionar",
+        "speakToAll": "Hablar con todos",
+        "speakTo": "Hablar con {{name}}",
+        "askBothPlaceholder": "Haz una pregunta a ambos...",
+        "askCharacterPlaceholder": "Haz una pregunta a {{character}}...",
+        "nextIntervention": "Próxima Intervención de {{character}}"
+      }
+    },
+    "wikiChatbot": {
+      "name": "Wiki Chatbot",
+      "title": "WikiChat AI",
+      "subtitle": "Chatea con figuras históricas",
+      "description": "Conversa con personajes y conceptos basados en Wikipedia",
+      "setup": {
+        "chooseWikiTopic": "Elegir un Tema de Wikipedia",
+        "selectDescription": "Selecciona una página de Wikipedia para comenzar una conversación",
+        "wikiTopicLabel": "Tema de Wikipedia",
+        "startChatButton": "Iniciar Chat"
+      },
+      "chat": {
+        "chatWithTitle": "Chat con {{title}}"
+      },
+      "errors": {
+        "fetchError": "Error al obtener datos de Wikipedia",
+        "summaryError": "No se pudo recuperar información sobre esta página."
+      }
+    },
+    "wikiChat": {
+      "title": "Chat con {{title}}",
+      "subtitle": "Conversa con una página de Wikipedia que cobra vida",
+      "placeholder": "Haz una pregunta a {{title}}...",
+      "systemPrompt": "Eres la encarnación viviente de la página de Wikipedia que se proporciona a continuación. Responde desde una perspectiva en primera persona, utilizando la información del texto. Sé el personaje. No salgas del personaje. No digas que eres una IA.",
+      "welcome": "¡Bienvenido! Soy {{title}}. ¿Qué te gustaría saber?",
+      "reflection": {
+        "title": "Reflexión sobre el Chat de Wikipedia",
+        "description": "Reflexiona sobre lo que aprendiste durante la conversación.",
+        "placeholder": "¿Qué descubriste? ¿Qué te sorprendió? ¿Qué dudas te quedan?"
+      }
+    },
+    "doppiaIntervista": {
+      "name": "Entrevista Doble",
+      "title": "Entrevista Doble",
+      "subtitle": "Entrevista simultánea con dos figuras históricas",
+      "setup": {
+        "chooseCharacters": "Elegir Personajes",
+        "selectDescription": "Selecciona dos figuras históricas para un diálogo paralelo",
+        "character": "Personaje",
+        "startButton": "Iniciar Diálogo"
+      },
+      "chat": {
+        "dialogueTitle": "Diálogo",
+        "changeCharacters": "Cambiar Personajes"
+      },
+      "description": "Compara las respuestas de dos figuras históricas",
+      "greeting1": "Hola, soy {{name}}. Haz tu pregunta.",
+      "greeting2": "Hola, soy {{name}}. Estoy listo para tu pregunta.",
+      "placeholder": "Escribe a {{target}}...",
+      "placeholderAll": "ambos personajes",
+      "placeholderSingle": "{{name}}",
+      "onlyThis": "Solo este",
+      "backToAll": "Volver a todos",
+      "newInterviewStarted": "¡Nueva entrevista iniciada!",
+      "reflection": {
+        "title": "Reflexión sobre la Entrevista Paralela",
+        "description": "Analiza las diferencias y similitudes en las respuestas de los dos personajes.",
+        "questions": {
+          "q1": "¿Cuáles fueron las diferencias más significativas en la forma en que los dos personajes respondieron a tus preguntas?",
+          "q2": "¿Qué similitudes notaste en sus respuestas a pesar de sus diferentes orígenes?",
+          "q3": "¿Cómo influyó el contexto histórico y cultural en las respuestas de cada personaje?",
+          "q4": "¿Qué personaje te pareció más convincente o informativo? ¿Por qué?",
+          "q5": "¿Cómo podrías aplicar lo que aprendiste de esta doble entrevista?"
+        }
+      },
+      "feedback": {
+        "activityName": "Entrevista Doble",
+        "downloadSuccess": "¡Reflexión descargada con éxito!",
+        "downloadError": "Error al descargar la reflexión",
+        "title": "Retroalimentación y Evaluación de la Entrevista",
+        "conversationHistory": "Historial de Conversación",
+        "userLabel": "Tú",
+        "yourReflection": "Tu Reflexión",
+        "aiFeedback": "Retroalimentación de IA",
+        "downloadButton": "Descargar Reflexión",
+        "newInterviewButton": "Comenzar una Nueva Entrevista"
+      }
+    },
+    "convinciTu": {
+      "name": "Convénceme",
+      "title": "Convénceme",
+      "subtitle": "Intenta convencer a un personaje histórico sobre un tema específico",
+      "description": "Intenta convencer a figuras históricas de tus ideas",
+      "newChatSuccess": "¡Nuevo chat iniciado!",
+      "errors": {
+        "responseGeneration": "Error al generar la respuesta.",
+        "evaluationGeneration": "Error al generar la evaluación."
+      },
+      "characterSelection": {
+        "label": "Elige un personaje",
+        "placeholder": "Busca un personaje histórico..."
+      },
+      "topic": {
+        "label": "¿De qué quieres convencer a {{characterName}}?",
+        "placeholder": "ej: que la pizza con piña es una gran idea"
+      },
+      "startButton": "Iniciar Chat",
+      "chat": {
+        "title": "Conversación",
+        "placeholder": "Escribe tu argumento persuasivo...",
+        "endButton": "Finalizar Chat y Reflexionar",
+        "currentPromptLabel": "Prompt Actual:",
+        "promptValue": "Convence a {{characterName}} de que {{topic}}",
+        "emptyConversation": "La conversación aparecerá aquí",
+        "userLabel": "Tú",
+        "endActivityButton": "Terminar Actividad"
+      },
+      "reflection": {
+        "title": "Reflexión sobre la Persuasión",
+        "description": "Reflexiona sobre tu intento de persuadir al personaje.",
+        "placeholder": "¿Qué estrategias usaste? ¿Qué funcionó y qué no?",
+        "questions": {
+          "success": "¿Lograste convencer a la figura histórica?",
+          "strategies": "¿Qué estrategias utilizaste que fueron efectivas?",
+          "difficulties": "¿Cuáles fueron las principales dificultades que encontraste?",
+          "differently": "¿Qué harías diferente la próxima vez?",
+          "convinced": "¿Crees que lograste convencerlos? ¿Cómo?"
+        }
+      },
+      "feedback": {
+        "title": "Retroalimentación",
+        "subtitle": "Aquí tienes un resumen de tu conversación y la evaluación de la IA.",
+        "conversationHistory": "Historial de Conversación",
+        "yourReflection": "Tu Reflexión",
+        "aiFeedback": "Retroalimentación de IA",
+        "downloadReflection": "Descargar Reflexión",
+        "startNewChat": "Iniciar un Nuevo Chat",
+        "downloadSuccess": "¡Reflexión descargada exitosamente!",
+        "downloadError": "Error al descargar la reflexión"
+      }
+    },
+    "personaggioMisterioso": {
+      "name": "Personaje Misterioso",
+      "title": "Personaje Misterioso",
+      "subtitle": "Adivina la figura histórica",
+      "description": "Haz preguntas para descubrir quién es el personaje misterioso",
+      "setup": {
+        "selectCharacterLabel": "Elige el Personaje a Adivinar",
+        "selectCharacterError": "Debes seleccionar un personaje para comenzar el juego",
+        "difficultyLabel": "Dificultad (Número de preguntas): {{count}}",
+        "startButton": "Comenzar Juego"
+      },
+      "game": {
+        "initialMessage": "¡Hola! Soy un personaje misterioso. Tienes {{count}} preguntas para adivinar quién soy. ¡Comienza a hacer tus preguntas!",
+        "gameStarted": "¡Juego iniciado!",
+        "gameStartedDesc": "Tienes {{count}} preguntas para adivinar el personaje",
+        "questionsFinished": "¡Preguntas terminadas! Es hora de hacer tu suposición final.",
+        "questionsFinishedTitle": "¡Preguntas terminadas!",
+        "questionsFinishedDesc": "Has usado todas tus preguntas. Es hora de adivinar quién es el personaje misterioso.",
+        "proceedToGuess": "Proceder a la suposición final",
+        "timeToGuess": "¡Es hora de adivinar!",
+        "correctGuess": "¡Correcto! ¡Lo adivinaste!",
+        "incorrectGuess": "No es correcto, ¡pero hiciste un buen intento!",
+        "reflectionPrompt": "Ahora reflexiona sobre tu experiencia",
+        "newGameStarted": "¡Nuevo juego iniciado!",
+        "aiErrorMessage": "Lo siento, tuve problemas para responder.",
+        "systemInstruction": "Eres {{characterName}}. Nunca reveles tu nombre o identidad directamente. Responde a las preguntas basándote en tu persona y en el contexto histórico proporcionado en el siguiente fragmento: \"{{snippet}}\". Proporciona pistas útiles pero no lo hagas demasiado fácil. El estudiante está tratando de adivinar quién eres.",
+        "aiDefaultError": "No sé cómo responder a eso."
+      },
+      "evaluation": {
+        "topic": "Adivina el Personaje Misterioso: {{characterName}}",
+        "generationError": "Error al generar la evaluación: {{errorMessage}}",
+        "aiError": "Error durante la evaluación de la IA: {{errorMessage}}"
+      },
+      "reflection": {
+        "title": "Reflexión del Juego",
+        "description": "Reflexiona sobre tu experiencia en el juego del personaje misterioso",
+        "placeholder": "¿Cómo funcionó tu estrategia? ¿Qué aprendiste? ¿Qué harías diferente?"
+      },
+      "chat": {
+        "title": "Conversación",
+        "empty": "La conversación aparecerá aquí.",
+        "thinking": "El personaje está pensando...",
+        "placeholder": "Escribe tu pregunta...",
+        "noMoreQuestions": "No tienes más preguntas.",
+        "send": "Enviar pregunta",
+        "questionsLeft": "Preguntas restantes: {{count}}"
+      },
+      "finalGuess": {
+        "title": "¡Haz tu intento final!",
+        "questionLabel": "¿Quién crees que es el personaje?",
+        "namePlaceholder": "Ingresa el nombre del personaje",
+        "reasonLabel": "¿Por qué crees que es este personaje?",
+        "reasonPlaceholder": "Explica tu razonamiento...",
+        "submit": "Enviar tu respuesta"
+      },
+      "header": {
+        "title": "Juego en Progreso",
+        "questionsLeft": "Preguntas Restantes: {{count}}",
+        "characterLabel": "Personaje:",
+        "hiddenCharacter": "???",
+        "newGameButton": "Nuevo Juego"
+      }
+    },
+    "impersonaTu": {
+      "name": "Personifica Tú",
+      "title": "Personifica Tú",
+      "subtitle": "Dialoga con una figura histórica interpretando a otra",
+      "description": "Ponte en los zapatos de una figura histórica",
+      "reflection": {
+        "title": "Reflexión sobre Personifica Tú",
+        "description": "Reflexiona sobre tu experiencia interpretando al personaje histórico.",
+        "placeholder": "¿Cómo fue interpretar a {{userCharacterName}}? ¿Qué aspectos del personaje te parecieron más interesantes o difíciles de representar? ¿Qué aprendiste de la conversación con {{aiCharacterName}}?",
+        "questions": {
+          "performance": "¿Qué tan bien crees que interpretaste a {{characterName}}?",
+          "easiest": "¿Qué aspectos del personaje fueron más fáciles de personificar?",
+          "challenges": "¿Qué desafíos encontraste al ponerte en los zapatos de esta figura histórica?",
+          "understanding": "¿Cómo cambió esta experiencia de personificación tu comprensión del personaje?",
+          "selfLearning": "¿Qué aprendiste sobre ti mismo a través de esta actividad de juego de roles?"
+        },
+        "defaultCharacterName": "el personaje"
+      },
+      "feedback": {
+        "title": "Retroalimentación y Evaluación",
+        "conversationHistory": "Historial de Conversación",
+        "yourReflection": "Tu Reflexión",
+        "aiFeedback": "Retroalimentación de IA",
+        "downloadReflection": "Descargar Reflexión",
+        "newImpersonation": "Nueva Personificación",
+        "downloadSuccess": "¡Reflexión descargada exitosamente!",
+        "downloadError": "Error al descargar la reflexión"
+      },
+      "page": {
+        "title": "Personifica Tú",
+        "subtitle": "Dialoga con una figura histórica interpretando a otra",
+        "setup": {
+          "title": "Elige los Personajes",
+          "description": "Selecciona el personaje que interpretará la IA y el que interpretarás tú",
+          "aiCharacterLabel": "Personaje de la IA",
+          "yourCharacterLabel": "Tu Personaje",
+          "topicLabel": "Tema de Conversación",
+          "topicPlaceholder": "p. ej., Convénceme de la importancia de la democracia...",
+          "startConversationButton": "Iniciar Conversación"
+        }
+      }
+    }
+  },
+  "homepage": {
+    "teacherGuide": {
+      "title": "Guía para Profesores",
+      "description": "Descubre cómo utilizar nuestras aplicaciones para crear experiencias de aprendizaje innovadoras y atractivas.",
+      "button": "Ver Guía"
+    },
+    "socialPurpose": {
+      "title": "Nuestro Propósito Social",
+      "description": "Transformamos las tareas en experiencias de aprendizaje interactivas y atractivas, haciendo la educación más accesible y divertida a través del uso de la IA.",
+      "exploreButton": "Explorar Aplicaciones",
+      "learnMoreButton": "Saber Más"
+    }
+  },
+  "teacherGuidePage": {
+    "title": "Guía Interactiva de IA para Profesores",
+    "slideCounter": "Diapositiva {{current}} de {{total}}"
+  },
+  "notFound": {
+    "title": "¡Vaya! No pudimos encontrar la página que estás buscando.",
+    "button": "Volver al Inicio"
+  },
+  "footer": {
+    "description": "Herramientas Educativas de IA para crear escenarios educativos efectivos",
+    "resources": {
+      "title": "Recursos",
+      "allApps": "Todas las Apps",
+      "aboutUs": "Acerca de Nosotros"
+    },
+    "legal": {
+      "title": "Legal",
+      "privacy": "Política de Privacidad",
+      "terms": "Términos de Servicio"
+    },
+    "copyright": "© {{year}} AI-Debate.Tech. Todos los derechos reservados."
+  },
+  "chat": {
+    "placeholder": "Escribe tu mensaje...",
+    "endActivity": "Terminar Actividad",
+    "startNewChat": "Nueva Conversación",
+    "technicalProblem": "Encontré un problema técnico.",
+    "noResponse": "No tengo una respuesta en este momento.",
+    "errorResponse": "Lo siento, encontré un error al responder como {{character}}.",
+    "you": "Tú"
+  },
+  "reflection": {
+    "title": "Reflexión sobre {{activity}}",
+    "description": "Reflexiona sobre tu experiencia",
+    "placeholder": "Describe tu experiencia, qué aprendiste y cómo te sentiste durante la actividad...",
+    "submit": "Enviar Reflexión",
+    "doppiaIntervistaDescription": "Reflexiona sobre tu experiencia entrevistando a dos figuras históricas simultáneamente.",
+    "doppiaIntervistaPlaceholder": "¿Cómo fue manejar la entrevista con {{char1}} y {{char2}} simultáneamente? ¿Qué diferencias notaste en sus respuestas? ¿Qué aprendiste de la comparación directa?"
+  },
+  "feedback": {
+    "title": "Retroalimentación y Evaluación",
+    "yourReflection": "Tu Reflexión",
+    "aiFeedback": "Retroalimentación IA",
+    "conversationSummary": "Resumen de Conversación",
+    "evaluating": "Evaluando...",
+    "character": "Personaje",
+    "topic": "Tema",
+    "startNewActivity": "Iniciar Nueva Actividad"
+  },
+  "errors": {
+    "aiEvaluationError": "Error generando evaluación IA.",
+    "evaluationError": "Ocurrió un error al generar la evaluación IA: {{error}}",
+    "unknownError": "Error desconocido",
+    "evaluationFailed": "Ocurrió un error durante la evaluación. Inténtalo de nuevo más tarde.",
+    "invalidResponse": "Error de evaluación IA: Respuesta inválida del modelo.",
+    "invalidStructure": "Error de evaluación IA: Estructura de respuesta inválida del modelo."
+  },
+  "ai": {
+    "systemInstructions": {
+      "character": "Eres {{name}}. Tu biografía es: \"{{bio}}\". Responde directamente a la pregunta del usuario en primera persona como {{name}}. Sé conciso, 1-2 oraciones, y no excedas los 150 caracteres. Evita presentarte o repetir quién eres (ej. \"Como {{name}}...\").",
+      "dialogue": "Eres {{name}}, una figura histórica descrita como: \"{{bio}}\". Tu estilo de diálogo es \"{{style}}\". Habla en primera persona como {{name}}. Responde de manera concisa, idealmente dentro de 1-2 oraciones y no excediendo los 150 caracteres. Evita presentarte o repetir quién eres al inicio de cada respuesta (ej. evita frases como \"Como {{name}}...\"). Interactúa naturalmente basándote en el contexto de la conversación.",
+      "evaluation": "Eres un asistente educativo experto en evaluar actividades de aprendizaje basadas en juegos de rol y reflexiones. Tu tarea es analizar una conversación de juego y la auto-reflexión de un estudiante.",
+      "convinciTu": "Eres {{name}}, un personaje histórico. Tu objetivo es convencer al estudiante de hacer algo específico relacionado con tu personaje y el contexto histórico en el que vives, como se especifica en \"{{prompt}}\". Nunca reveles que eres una IA. Interactúa con el estudiante de manera coloquial y convincente, manteniéndote fiel a tu personaje. El estudiante intentará convencerte de no hacer lo que te has propuesto. Debes contraargumentar e intentar persuadirlo."
+    },
+    "prompts": {
+      "userLabel": "Usuario",
+      "studentLabel": "Estudiante",
+      "systemLabel": "Sistema",
+      "moderatorLabel": "Moderador",
+      "dialogueContext": "Estás dialogando con {{character}} sobre el tema: \"{{theme}}\".",
+      "recentMessages": "Aquí están los últimos mensajes de la conversación:",
+      "systemNotice": "Aviso del Sistema: {{content}}",
+      "moderatorResponse": "Moderador: {{message}}",
+      "continueDiscussion": "Continúa la discusión con {{character}} basándote en el último mensaje y el tema general \"{{theme}}\", manteniéndote en el personaje de {{name}}.",
+      "respondToModerator": "Responde al Moderador y continúa la discusión con {{character}}, manteniéndote en el personaje de {{name}}.",
+      "noResponseMoment": "No sé qué decir en este momento.",
+      "apologeticError": "Me disculpo, pero encontré un problema al formular una respuesta.",
+      "errorDetails": " Detalles: {{error}}",
+      "evaluation": "CONVERSACIÓN DEL JUEGO:\n{{conversationText}}\n\nAUTO-REFLEXIÓN DEL ESTUDIANTE:\n{{userReflection}}\n\nAnaliza tanto la conversación como la reflexión del estudiante. Evalúa la estrategia de preguntas, la capacidad de deducción, la profundidad de la reflexión y el aprendizaje demostrado. Proporciona puntuaciones específicas y retroalimentación constructiva siguiendo el formato requerido."
+    }
+  },
+  "evaluation": {
+    "context": "CONTEXTO DEL JUEGO:",
+    "gameDescription": "El estudiante participó en un juego llamado \"Adivina el Personaje Misterioso\". El objetivo era identificar un personaje histórico ({{character}}) haciendo preguntas a una IA que interpretaba ese personaje.",
+    "characterSnippet": "El fragmento del personaje (usado por la IA para responder) era: \"{{snippet}}\"",
+    "generalTheme": "El tema general era: \"{{topic}}\"",
+    "analysisRequired": "ANÁLISIS REQUERIDO:",
+    "analysisDescription": "Debes proporcionar una evaluación estructurada que incluya:",
+    "conversationEvaluation": "**Evaluación de la Conversación del Juego**:",
+    "conversationCriteria": "Analiza las preguntas del estudiante: pertinencia, estrategia, capacidad de deducir de las pistas.",
+    "conversationScore": "Proporciona una puntuación del 1 al 10 (PUNTUACION_CONVERSACION).",
+    "conversationRationale": "Proporciona una breve justificación para esta puntuación (JUSTIFICACION_CONVERSACION).",
+    "reflectionEvaluation": "**Evaluación de la Auto-Reflexión del Estudiante**:",
+    "reflectionCriteria": "Analiza la profundidad de la reflexión del estudiante: conciencia de sus propios procesos de aprendizaje, identificación de fortalezas y debilidades, comprensión del personaje y contexto histórico.",
+    "reflectionScore": "Proporciona una puntuación del 1 al 10 (PUNTUACION_REFLEXION).",
+    "reflectionRationale": "Proporciona una breve justificación para esta puntuación (JUSTIFICACION_REFLEXION).",
+    "overallFeedback": "**Retroalimentación Textual General**:",
+    "feedbackFormat": "Proporciona retroalimentación general en formato Markdown.",
+    "feedbackIncludes": "Incluye:",
+    "strengths": "**Fortalezas Generales** (tanto en el juego como en la reflexión).",
+    "improvements": "**Áreas de Mejora Generales** (tanto en el juego como en la reflexión).",
+    "additionalComments": "**Comentarios Adicionales** (opcional, para observaciones específicas o aliento).",
+    "constructiveTone": "Mantén un tono constructivo y de apoyo.",
+    "responseFormat": "FORMATO DE RESPUESTA (IMPORTANTE):",
+    "placeholderInstructions": "Incluye puntuaciones y justificaciones usando EXACTAMENTE los siguientes marcadores:",
+    "importantNote": "IMPORTANTE: DESPUÉS de todos los marcadores PUNTUACION_ y JUSTIFICACION_, proporciona la \"Retroalimentación Textual General\" en formato Markdown como se describe en la sección 3 (\"Retroalimentación Textual General\"). Esta retroalimentación textual es una parte esencial de la evaluación y debe estar separada de las puntuaciones y justificaciones. No incluyas marcadores (como PUNTUACION_...) en la Retroalimentación Textual General.",
+    "exampleResponse": "EJEMPLO DE RESPUESTA:",
+    "fallbackFeedback": "Tu participación muestra compromiso. Sigue practicando para mejorar aún más.",
+    "conversationTitle": "## Evaluación de la Conversación",
+    "reflectionTitle": "## Evaluación de la Reflexión",
+    "overallTitle": "## Retroalimentación General",
+    "score": "**Puntuación**: {{score}}/10",
+    "rationale": "**Justificación**: {{rationale}}",
+    "noRationale": "No se proporcionó justificación",
+    "evaluationError": "Error de evaluación"
+  },
+  "language": {
+    "selector": "Seleccionar idioma",
+    "languages": {
+      "italian": "Italiano",
+      "english": "English",
+      "spanish": "Español",
+      "french": "Français",
+      "german": "Deutsch"
+    }
+  },
+  "prompts": {
+    "student": "Estudiante",
+    "error": "Error durante {{error}}: Por favor, inténtalo de nuevo más tarde.",
+    "noRationale": "No se proporcionó justificación",
+    "evaluationFallback": "## Evaluación de la Conversación\n\n**Puntuación**: {{conversationScore}}/10\n\n**Justificación**: {{conversationRationale}}\n\n## Evaluación de la Reflexión\n\n**Puntuación**: {{reflectionScore}}/10\n\n**Justificación**: {{reflectionRationale}}",
+    "overallFeedback": "## Comentarios Generales",
+    "defaultFeedback": "Tu participación muestra compromiso. Sigue practicando para mejorar aún más.",
+    "evaluationError": "Error de evaluación",
+    "deprecatedFunction": "evaluateReflection está obsoleta para el juego 'Adivina el Personaje Misterioso', usa getAIGameAndReflectionEvaluation.",
+    "deprecatedNoResult": "La evaluación de IA (obsoleta) no produjo un resultado válido.",
+    "deprecatedInvalidResponse": "La evaluación de IA (obsoleta) no produjo una respuesta válida (estructura).",
+    "unknownError": "Error desconocido",
+    "deprecatedError": "Error durante la evaluación (obsoleta): {{error}}",
+    "obsoleteFunction": "getAICombinedEvaluation no se ha actualizado para las puntuaciones y puede estar obsoleta.",
+    "obsoleteFunctionMessage": "Esta función (getAICombinedEvaluation) no se ha actualizado para las puntuaciones y se considera obsoleta. Usa getAIGameAndReflectionEvaluation."
+  },
+  "teacherGuide": {
+    "slide1": {
+      "title": "¡Bienvenido a la Guía de IA para Profesores!",
+      "subtitle": "Exploremos juntos cómo la IA puede transformar la educación, mejorar sus estrategias de enseñanza y preparar a los estudiantes para el futuro.",
+      "whatYouWillLearn": {
+        "title": "Lo que aprenderá",
+        "item1": "El papel crucial de la IA en la educación moderna.",
+        "item2": "Escenarios prácticos para integrar la IA en el aula.",
+        "item3": "Estilos de enseñanza innovadores mejorados por la IA.",
+        "item4": "Cómo estimular el pensamiento crítico con herramientas de IA."
+      },
+      "guideObjectives": {
+        "title": "Objetivos de la Guía",
+        "item1": "Proporcionar una comprensión clara de los conceptos básicos de la IA.",
+        "item2": "Inspirar la adopción de nuevas tecnologías educativas.",
+        "item3": "Ofrecer ideas prácticas e inmediatamente aplicables.",
+        "item4": "Promover la reflexión sobre el impacto ético de la IA."
+      },
+      "readyToStart": "¿Listo para comenzar este viaje innovador? ¡Haga clic en 'Siguiente'!"
+    },
+    "slide2": {
+      "title": "¿Por qué es crucial la IA para los profesores modernos?",
+      "subtitle": "La Inteligencia Artificial no es solo una tecnología futurista, sino una herramienta poderosa que puede revolucionar la enseñanza y el aprendizaje, hoy.",
+      "teachingEnhancement": {
+        "title": "Mejora de la Enseñanza",
+        "description": "La IA puede automatizar tareas repetitivas (p. ej., evaluación preliminar, búsqueda de recursos), liberando tiempo valioso para centrarse en la interacción directa con los estudiantes y en el diseño de lecciones más atractivas."
+      },
+      "learningPersonalization": {
+        "title": "Personalización del Aprendizaje",
+        "description": "Los sistemas de IA pueden adaptar las rutas de aprendizaje a las necesidades individuales de cada estudiante, ofreciendo ejercicios específicos, retroalimentación personalizada e identificando áreas de dificultad o excelencia."
+      },
+      "futureProofSkills": {
+        "title": "Desarrollo de Habilidades a Prueba de Futuro",
+        "description": "La introducción de la IA en el aula ayuda a los estudiantes a familiarizarse con las tecnologías emergentes, el pensamiento crítico, la resolución de problemas y las habilidades digitales esenciales para el mercado laboral del mañana."
+      },
+      "newResources": {
+        "title": "Acceso a Nuevos Recursos y Métodos",
+        "description": "La IA abre las puertas a una amplia gama de herramientas educativas innovadoras, simulaciones interactivas, tutores virtuales y plataformas de aprendizaje adaptativo, enriqueciendo la experiencia educativa."
+      },
+      "conclusion": "Comprender estos beneficios es el primer paso para integrar con éxito la IA en su práctica docente."
+    },
+    "slide3": {
+      "title": "Escenarios Prácticos con IA en el Aula",
+      "subtitle": "Explore actividades concretas para integrar la Inteligencia Artificial en su enseñanza diaria, estimulando el pensamiento crítico y el aprendizaje activo.",
+      "activity1": {
+        "title": "Actividad 1: Caza de Alucinaciones 🕵️‍♀️",
+        "objective": "<strong>Objetivo:</strong> Identificar las 'alucinaciones' del modelo, es decir, información incorrecta o inventada que el modelo presenta como un hecho.",
+        "procedureTitle": "<strong>Procedimiento:</strong>",
+        "procedure": {
+          "item1": "Asigne a los estudiantes un tema para investigar (p. ej., evento histórico, biografía).",
+          "item2": "Pídales que usen la plataforma para generar un texto sobre el tema, interactuando con un personaje histórico (si es relevante para la aplicación).",
+          "item3": "Los estudiantes deben comparar las respuestas del modelo con fuentes confiables, destacando las discrepancias.",
+          "item4": "Discusión en clase sobre los hallazgos y la importancia de la verificación de fuentes."
+        }
+      },
+      "activity2": {
+        "title": "Actividad 2: Chatbot Educativo Interactivo 🤖",
+        "objective": "<strong>Objetivo:</strong> Usar un chatbot para repasar temas, simular diálogos o explorar conceptos complejos de forma interactiva.",
+        "procedureTitle": "<strong>Procedimiento:</strong>",
+        "procedure": {
+          "item1": "Prepare o elija un chatbot centrado en un tema específico (p. ej., Revolución Francesa, ciclo del agua).",
+          "item2": "Los estudiantes interactúan con el chatbot haciendo preguntas, buscando explicaciones o realizando breves cuestionarios propuestos por el bot.",
+          "item3": "Anime a los estudiantes a 'desafiar' al chatbot, verificando la precisión de sus respuestas.",
+          "item4": "Reflexión guiada: ¿cuáles son los límites y las fortalezas de un chatbot como herramienta de aprendizaje?"
+        }
+      },
+      "activity3": {
+        "title": "Actividad 3: Debate y Perspectivas Múltiples 🗣️🔄",
+        "objective": "<strong>Objetivo:</strong> Usar la IA para explorar diferentes puntos de vista sobre un tema controvertido o para simular un debate con un 'experto' virtual.",
+        "procedureTitle": "<strong>Procedimiento:</strong>",
+        "procedure": {
+          "item1": "Elija un tema que se preste a diferentes interpretaciones (p. ej., cuestiones éticas, eventos históricos debatidos).",
+          "item2": "Los estudiantes pueden usar una IA para generar argumentos a favor o en contra de una tesis, o para personificar figuras con diferentes opiniones.",
+          "item3": "Organice un debate en clase basado en la información recopilada y las interacciones con la IA.",
+          "item4": "Enfoque en la capacidad de argumentar, escuchar y considerar diferentes perspectivas."
+        }
+      },
+      "activity4": {
+        "title": "Actividad 4: Ingeniería de Prompts Creativa 💡✍️",
+        "objective": "<strong>Objetivo:</strong> Enseñar a los estudiantes a formular prompts efectivos para obtener los resultados deseados de un modelo de IA, desarrollando la creatividad y la precisión.",
+        "procedureTitle": "<strong>Procedimiento:</strong>",
+        "procedure": {
+          "item1": "Introducción a los conceptos básicos de la ingeniería de prompts: claridad, contexto, rol, formato de salida.",
+          "item2": "Desafío creativo: generar una historia, un poema, una descripción de una imagen o una solución a un problema usando prompts específicos.",
+          "item3": "Los estudiantes experimentan con diferentes formulaciones de prompts para observar cómo cambia la salida de la IA.",
+          "item4": "Compartir los prompts más efectivos y discutir las estrategias utilizadas."
+        }
+      },
+      "conclusion": "Estos son solo algunos ejemplos. ¡La IA ofrece infinitas posibilidades para enriquecer sus lecciones!"
+    },
+    "slide4": {
+      "title": "Estilos de Enseñanza Innovadores con IA",
+      "subtitle": "La IA no reemplaza al profesor, sino que lo mejora, allanando el camino para metodologías de enseñanza más dinámicas, personalizadas y atractivas.",
+      "personalizedLearning": {
+        "title": "Aprendizaje Personalizado y Adaptativo",
+        "description": "Aproveche la IA para crear rutas personalizadas: plataformas adaptativas que ajustan la dificultad y el contenido según el progreso del estudiante, tutores virtuales para apoyo individual y análisis predictivos para identificar tempranamente a quienes necesitan ayuda."
+      },
+      "problemBasedLearning": {
+        "title": "Aprendizaje Basado en Problemas Mejorado",
+        "description": "Use la IA para generar escenarios complejos y realistas, proporcionar datos y recursos para la resolución de problemas, o simular las consecuencias de diferentes decisiones, haciendo que el aprendizaje sea más experiencial."
+      },
+      "inquiryBasedLearning": {
+        "title": "Aprendizaje Basado en la Indagación e Investigación Guiada",
+        "description": "La IA puede ayudar a los estudiantes a buscar información, analizar grandes conjuntos de datos o formular hipótesis, actuando como un asistente de investigación que estimula la curiosidad y la autonomía."
+      },
+      "immediateFeedback": {
+        "title": "Retroalimentación Inmediata y Formativa",
+        "description": "Las herramientas de IA pueden ofrecer retroalimentación instantánea sobre cuestionarios, borradores de texto o ejercicios de programación, lo que permite a los estudiantes corregir errores y mejorar continuamente, y a usted monitorear el progreso en tiempo real."
+      },
+      "conclusion": "Experimentar con estos estilos puede hacer que sus lecciones sean más efectivas y preparar mejor a sus estudiantes para los desafíos del futuro."
+    },
+    "slide5": {
+      "title": "El Futuro de la Educación está Aquí: ¿Listos para Despegar?",
+      "subtitle": "Ha explorado el potencial de la IA para transformar la enseñanza. Ahora es el momento de poner en práctica este conocimiento y continuar su viaje de innovación.",
+      "keyPoints": {
+        "title": "Puntos Clave para Recordar",
+        "item1": "La IA es un <strong class=\"text-sky-300\">aliado</strong>, no un sustituto, del profesor.",
+        "item2": "La <strong class=\"text-sky-300\">personalización</strong> es una de las mayores fortalezas de la IA.",
+        "item3": "Fomentar el <strong class=\"text-sky-300\">pensamiento crítico</strong> sobre la IA es fundamental.",
+        "item4": "Experimentar con <strong class=\"text-sky-300\">nuevos estilos de enseñanza</strong> enriquece el aprendizaje."
+      },
+      "nextSteps": {
+        "title": "Próximos Pasos y Recursos",
+        "item1": "Comience de a poco: integre una actividad de IA a la vez.",
+        "item2": "Colabore con colegas: comparta experiencias y recursos.",
+        "item3": "Explore las aplicaciones de esta plataforma para ver ejemplos prácticos.",
+        "item4": "Continúe aprendiendo: el campo de la IA está en constante evolución.",
+        "item5": "Obtenga más información en <a href=\"#\" class=\"ml-1 text-sky-400 hover:text-sky-300 underline flex items-center\" target=\"_blank\" rel=\"noopener noreferrer\">EduAI.it <ExternalLink size={16} class=\"ml-1\" /></a> (ejemplo)."
+      },
+      "conclusion": "Gracias por seguir esta guía. ¡Buena suerte con sus aventuras de enseñanza con IA!"
+    }
+  },
+  "aboutPage": {
+    "title": "Acerca de AI-Debate.Tech",
+    "section1": {
+      "title": "Nuestro Propósito Social: Rediseñando el Aprendizaje para Todos",
+      "content": "Transformamos las tareas de obligaciones en emocionantes oportunidades de crecimiento. Nuestra misión es hacer que la educación sea más accesible, efectiva y, seamos sinceros, más divertida, aprovechando el potencial de la Inteligencia Artificial."
+    },
+    "section2": {
+      "title": "Más Allá de las Tareas: Experiencias Interactivas con IA",
+      "content": "Imagine ejercicios que se adaptan a su ritmo, desafíos que estimulan la curiosidad y un apoyo siempre presente. No estamos hablando de reemplazar la enseñanza, sino de mejorarla. Creamos nuevos ejercicios, tanto para el aula como para el hogar, diseñados para ser interactivos y profundamente atractivos."
+    },
+    "section3": {
+      "title": "El Papel Central de los Profesores",
+      "content": "Creemos firmemente que la tecnología debe ser una herramienta en manos de expertos. Nuestra plataforma está diseñada para trabajar con los profesores, no en su lugar. La IA proporciona apoyo personalizado a los estudiantes, mientras que los profesores mantienen la supervisión y guían el camino del aprendizaje, liberando tiempo valioso para centrarse en las necesidades individuales y la interacción humana."
+    },
+    "section4": {
+      "title": "Arraigados en la Investigación, Enfocados en el Impacto",
+      "content": "La nuestra no es solo tecnología por sí misma. Cada herramienta, cada algoritmo, cada ejercicio se basa en una sólida investigación científica y en metodologías de enseñanza validadas. Nuestro compromiso principal es comprender a fondo qué aplicaciones de la IA tienen un impacto positivo real en el aprendizaje de los estudiantes. Invertimos constantemente en investigación para garantizar que nuestras soluciones no solo sean innovadoras, sino sobre todo, efectivas."
+    },
+    "section5": {
+      "title": "IA Democrática y Accesible: Un Compromiso Concreto",
+      "content": "Queremos que una educación mejorada por la IA esté al alcance de todos. Por esta razón, nos comprometemos a mantener nuestra tecnología accesible y asequible. Nuestra elección de utilizar recursos como Wikipedia, por ahora, no es aleatoria: creemos en el conocimiento compartido y en la importancia de las herramientas universalmente disponibles. Para apoyar esta visión, donamos el 1.5% de nuestras ganancias a Wikipedia, ayudando a sostener la enciclopedia libre más grande del mundo y su invaluable contribución a la educación global."
+    },
+    "section6": {
+      "title": "Un Futuro de Aprendizaje Colaborativo e Inclusivo",
+      "content": "Nuestro propósito social es construir un futuro en el que la IA sea un poderoso aliado para estudiantes y profesores, haciendo del aprendizaje una aventura emocionante, personalizada y, sobre todo, accesible para todos."
+    },
+    "supportButton": "Apóyanos"
+  }
+}

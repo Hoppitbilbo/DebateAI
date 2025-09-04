@@ -1,0 +1,563 @@
+{
+  "common": {
+    "search": "Cerca",
+    "searchPlaceholder": "Cerca...",
+    "noResults": "Nessun risultato trovato",
+    "loading": "Caricamento...",
+    "error": "Si è verificato un errore",
+    "tryAgain": "Riprova",
+    "cancel": "Annulla",
+    "save": "Salva",
+    "delete": "Elimina",
+    "edit": "Modifica",
+    "close": "Chiudi",
+    "open": "Apri",
+    "yes": "Sì",
+    "no": "No",
+    "ok": "OK",
+    "back": "Indietro",
+    "next": "Avanti",
+    "previous": "Precedente",
+    "continue": "Continua",
+    "finish": "Termina",
+    "start": "Inizia",
+    "stop": "Ferma",
+    "pause": "Pausa",
+    "resume": "Riprendi",
+    "reset": "Reimposta",
+    "clear": "Pulisci",
+    "submit": "Invia",
+    "send": "Invia",
+    "download": "Scarica",
+    "upload": "Carica",
+    "copy": "Copia",
+    "paste": "Incolla",
+    "cut": "Taglia",
+    "textarea": "Area di testo",
+    "button": "Pulsante",
+    "startNewActivity": "Inizia Nuova Attività",
+    "startNewReflection": "Inizia Nuova Attività",
+    "startConversation": "Inizia la conversazione scrivendo un messaggio...",
+    "writeMessage": "Scrivi il tuo messaggio...",
+    "endAndReflect": "Concludi e Rifletti",
+    "searchHistoricalCharacter": "Cerca un personaggio storico...",
+    "searchOnWikipedia": "Cerca su Wikipedia...",
+    "noResultsFound": "Nessun risultato trovato.",
+    "activitySummary": "Riepilogo Attività",
+    "character": "Personaggio:",
+    "yourAnswer": "La tua risposta:",
+    "result": "Risultato:",
+    "correct": "Corretto! 🎉",
+    "correctShort": "Corretto",
+    "incorrect": "Non corretto",
+    "messagesExchanged": "Messaggi scambiati:",
+    "conversationHistory": "Cronologia Conversazione",
+    "you": "Tu",
+    "topic": "Argomento:",
+    "activityFeedback": {
+      "title": "Feedback dell'Attività",
+      "subtitle": "Ecco il riepilogo della tua esperienza e il feedback dell'IA"
+    },
+    "aiFeedback": {
+      "title": "Feedback dell'IA",
+      "generating": "Generazione del feedback in corso...",
+      "empty": "Nessun feedback disponibile al momento."
+    },
+    "reflection": {
+      "title": "Riflessione sull'Attività",
+      "description": "Rifletti sulla tua esperienza e su ciò che hai imparato.",
+      "prompt": "Condividi i tuoi pensieri e riflessioni:",
+      "placeholder": "Scrivi la tua riflessione qui...",
+      "counter": "{{count}} / {{min}} caratteri minimi",
+      "remaining": "Servono ancora {{remaining}} caratteri",
+      "submit": "Invia Riflessione"
+    },
+    "reflectionPlaceholder": "Scrivi la tua riflessione qui...",
+    "submitReflection": "Invia Riflessione",
+    "reflectOnExperience": "Rifletti sulla tua esperienza e su ciò che hai imparato."
+  },
+  "navigation": {
+    "home": "Home",
+    "apps": "Applicazioni",
+    "teacherGuide": "Guida Educativa",
+    "about": "Sostienici",
+    "brand": "AI-Debate.Tech"
+  },
+  "hero": {
+    "title": "Interactive Learning with",
+    "subtitle": "AI-Powered Conversations",
+    "description": "Confrontati con i grandi del passato, immergiti nel loro tempo e prova un nuovo modo di fare i compiti",
+    "tryApps": "Prova le nostre app",
+    "sampleChat": {
+      "bot1": "Or bene giovinotto, chi sei? Mi hanno detto che mi devi fare una intervista per via della scuola, Su non perdiamo tempo!",
+      "user": "Leonardo DaVinci, ti sembrava normale creare armi per gente che voleva solo più potere?",
+      "bot2": "Cattivo sin da subito, mi piace mi sembri un toscano. Mio caro purtoppo non potevo fare altrimenti, Noi artisti in quest'epoca dovevamo sottostare ai mecenati altrimenti saremmo morti di fame. Ma tranquillo delle mie armi quasi nessuna è stata costruita. erano solo bozzetti. Un po come quando esageri nel portfolio del curriculum"
+    }
+  },
+  "appsPage": {
+    "title": "Applicazioni di Intelligenza Artificiale per l'Educazione",
+    "subtitle": "Esplora la nostra raccolta di strumenti AI per l'apprendimento interattivo.",
+    "appCards": {
+      "wikiInterview": {
+        "title": "Dialogo storico AI",
+        "description": "Conversa con personaggi AI basati sui contenuti di Wikipedia, trasformando argomenti educativi in conversazioni interattive."
+      },
+      "doppiaIntervista": {
+        "title": "Doppia Intervista",
+        "description": "Interagisci simultaneamente con due personaggi storici in conversazioni parallele, creando un dialogo educativo unico."
+      },
+      "wikiChatbot": {
+        "title": "WikiChat AI",
+        "description": "Chat con un'intelligenza artificiale che rappresenta qualsiasi argomento Wikipedia, perfetto per approfondimenti educativi interattivi."
+      },
+      "personaggioMisterioso": {
+        "title": "Indovina il Personaggio Misterioso",
+        "description": "Sfida l'intelligenza artificiale facendo domande per indovinare il personaggio storico scelto. Hai un numero limitato di domande per scoprire l'identità misteriosa!"
+      },
+      "promptEngineer": {
+        "title": "Creatore di Prompt per l'Insegnamento",
+        "description": "Aiuta insegnanti e studenti a creare prompt efficaci per l'intelligenza artificiale in attività didattiche e di apprendimento."
+      },
+      "convinciTu": {
+        "title": "Convinci TU",
+        "description": "Sfida le tue capacità di persuasione cercando di convincere personaggi storici delle tue idee."
+      },
+      "impersonaTu": {
+        "title": "Impersona Tu",
+        "description": "Dialoga con un personaggio storico interpretandone un altro. Metti alla prova le tue capacità di immedesimazione!"
+      }
+    },
+    "badges": {
+      "new": "Nuovo",
+      "comingSoon": "Prossimamente"
+    },
+    "buttons": {
+      "launchApp": "Avvia App",
+      "comingSoon": "Prossimamente"
+    }
+  },
+  "features": {
+    "title": "Funzionalità",
+    "subtitle": "Strumenti Educativi Basati su IA",
+    "description": "Esplora la nostra collezione di applicazioni AI progettate per trasformare l'apprendimento in un'esperienza interattiva e coinvolgente.",
+    "items": {
+      "wikiInterview": {
+        "name": "Wiki Interview",
+        "description": "Simula conversazioni con personaggi storici attraverso contenuti Wikipedia, rendendo l'apprendimento interattivo e coinvolgente."
+      },
+      "personaggioMisterioso": {
+        "name": "Personaggio Misterioso",
+        "description": "Gioca a indovinare personaggi storici e letterari attraverso domande e risposte con l'IA."
+      },
+      "doppiaIntervista": {
+        "name": "Doppia Intervista",
+        "description": "Modera un dialogo tra due personaggi storici su un tema specifico, esplorando diverse prospettive."
+      },
+      "convinciTu": {
+        "name": "Convinci Tu",
+        "description": "Sfida le tue capacità di persuasione cercando di far cambiare idea a personaggi storici su temi controversi."
+      },
+      "impersonaTu": {
+        "name": "Impersona Tu",
+        "description": "Dialoga con un personaggio storico interpretandone un altro. Metti alla prova le tue capacità di immedesimazione!"
+      }
+    }
+  },
+  "apps": {
+    "wikiInterview": {
+      "name": "Intervista Wiki",
+      "title": "Dialogo Storico AI",
+      "subtitle": "Intervista figure storiche",
+      "description": "Crea e analizza conversazioni profonde tra due figure storiche basate sui loro profili Wikipedia.",
+      "errors": {
+        "fetchError": "Errore nel recupero dei dati da Wikipedia per {{title}}",
+        "noSummary": "Nessun sommario trovato.",
+        "summaryError": "Non è stato possibile recuperare il sommario per questo personaggio."
+      },
+      "setup": {
+        "buildDialogue": "Costruisci il Dialogo",
+        "selectDescription": "Seleziona due figure storiche da Wikipedia e definisci un tema per la loro discussione.",
+        "character1": "Primo Personaggio",
+        "character2": "Secondo Personaggio",
+        "themeLabel": "Tema della Conversazione",
+        "themePlaceholder": "Esempio: L'impatto della stampa sulla società",
+        "startConversationButton": "Inizia Conversazione",
+        "startButton": "Inizia Dialogo",
+        "loadingSummary": "Caricamento sommario da Wikipedia...",
+        "summaryLoaded": "Sommario caricato."
+      },
+      "chat": {
+        "systemMessage": "Inizia il dialogo tra {{char1}} e {{char2}} sul tema: {{theme}}. Moderatore, puoi guidare la conversazione o lasciare che i personaggi interagiscano liberamente.",
+        "errorMessage": "Si è verificato un errore nella generazione della risposta.",
+        "autoErrorMessage": "Si è verificato un errore nella generazione della risposta automatica.",
+        "dialogueTab": "Dialogo",
+        "charactersTab": "Profili Personaggi",
+        "endDialogueButton": "Concludi Dialogo e Rifletti",
+        "speakToAll": "Parla con tutti",
+        "speakTo": "Parla con {{name}}",
+        "askBothPlaceholder": "Fai una domanda a entrambi...",
+        "askCharacterPlaceholder": "Fai una domanda a {{character}}...",
+        "nextIntervention": "Prossimo Intervento di {{character}}"
+      },
+      "characterStyles": {
+        "erudite": "erudito",
+        "reflective": "riflessivo"
+      },
+      "reflection": {
+        "title": "Riflessione sul Dialogo Storico",
+        "description": "Analizza il dialogo a cui hai assistito. Considera i punti di vista, le argomentazioni e cosa ti ha colpito.",
+        "questions": [
+          "Quali sono stati i punti chiave emersi dal dialogo tra i due personaggi?",
+          "Le argomentazioni presentate dai personaggi erano in linea con le loro figure storiche? Perché?",
+          "Quale personaggio ha offerto la prospettiva più sorprendente o illuminante sul tema?",
+          "Come questo dialogo ha arricchito o modificato la tua comprensione del tema discusso?",
+          "Se potessi fare una domanda a uno dei personaggi, quale sarebbe e a chi la faresti?"
+        ]
+      }
+    },
+    "wikiChatbot": {
+      "name": "Wiki Chatbot",
+      "title": "WikiChat AI",
+      "subtitle": "Chatta con personaggi storici",
+      "description": "Conversa con personaggi e concetti basati su Wikipedia",
+      "setup": {
+        "chooseWikiTopic": "Scegli un Argomento Wikipedia",
+        "selectDescription": "Seleziona una pagina Wikipedia per iniziare una conversazione",
+        "wikiTopicLabel": "Argomento Wikipedia",
+        "startChatButton": "Inizia Chat"
+      },
+      "chat": {
+        "chatWithTitle": "Chat con {{title}}"
+      },
+      "errors": {
+        "fetchError": "Errore nel recupero dei dati da Wikipedia",
+        "summaryError": "Non è stato possibile recuperare informazioni su questa pagina."
+      }
+    },
+    "wikiChat": {
+      "title": "Chat con {{title}}",
+      "subtitle": "Conversa con una pagina di Wikipedia che prende vita",
+      "placeholder": "Fai una domanda a {{title}}...",
+      "systemPrompt": "Sei l'incarnazione vivente della pagina di Wikipedia fornita di seguito. Rispondi in prima persona, usando le informazioni del testo. Sii il personaggio. Non uscire dal personaggio. Non dire che sei un'IA.",
+      "welcome": "Benvenuto! Sono {{title}}. Cosa vorresti sapere?",
+      "reflection": {
+        "title": "Riflessione sulla Chat di Wikipedia",
+        "description": "Rifletti su ciò che hai imparato durante la conversazione.",
+        "placeholder": "Cosa hai scoperto? Cosa ti ha sorpreso? Quali dubbi hai ancora?"
+      }
+    },
+    "convinciTu": {
+      "name": "Convinci Tu",
+      "title": "ConvinciTu",
+      "subtitle": "Prova a convincere un personaggio storico su un argomento specifico",
+      "description": "Prova a convincere personaggi storici delle tue idee",
+      "newChatSuccess": "Nuova chat iniziata!",
+      "errors": {
+        "responseGeneration": "Errore nella generazione della risposta. Riprova più tardi.",
+        "evaluationGeneration": "Errore nella generazione della valutazione. Riprova più tardi."
+      },
+      "reflection": {
+        "title": "Riflessione su ConvinciTu",
+        "description": "Rifletti sulla tua esperienza nel cercare di convincere il personaggio storico.",
+        "placeholder": "Come è andata la conversazione? Quali strategie di persuasione hai usato? Cosa hai imparato sul personaggio e sull'argomento discusso?",
+        "questions": {
+          "success": "Sei riuscito a convincere il personaggio storico?",
+          "strategies": "Quali strategie hai utilizzato che sono state efficaci?",
+          "difficulties": "Quali sono state le principali difficoltà che hai incontrato?",
+          "differently": "Cosa faresti diversamente la prossima volta?",
+          "convinced": "Pensi di essere riuscito a convincerli? Come?"
+        }
+      },
+      "feedback": {
+        "title": "Feedback e Valutazione del Dialogo",
+        "conversationHistory": "Cronologia della Conversazione",
+        "yourReflection": "La tua riflessione",
+        "aiFeedback": "Feedback dell'IA",
+        "downloadReflection": "Scarica Riflessione",
+        "startNewChat": "Inizia una Nuova Chat",
+        "downloadSuccess": "Riflessione scaricata con successo!",
+        "downloadError": "Errore durante il download della riflessione"
+      },
+      "characterSelection": {
+        "label": "Seleziona un personaggio storico",
+        "placeholder": "Cerca un personaggio storico..."
+      },
+      "topic": {
+        "label": "Cosa vuoi provare a convincere {{characterName}} a fare o non fare?",
+        "placeholder": "Esempio: Convincere Leonardo da Vinci a non costruire macchine da guerra"
+      },
+      "startButton": "Inizia Chat",
+      "chat": {
+        "title": "Conversazione",
+        "placeholder": "Scrivi il tuo argomento convincente...",
+        "endButton": "Termina chat e rifletti",
+        "currentPromptLabel": "Prompt attuale:",
+        "promptValue": "Convincere {{characterName}} che {{topic}}",
+        "emptyConversation": "La conversazione apparirà qui",
+        "userLabel": "Tu",
+        "endActivityButton": "Termina attività"
+      },
+      "setup": {
+        "characterSelectLabel": "Seleziona un personaggio storico",
+        "topicLabel": "Cosa vuoi provare a convincere {{characterName}} a fare o non fare?",
+        "topicPlaceholder": "Esempio: Convincere Leonardo da Vinci a non costruire macchine da guerra"
+      }
+    },
+    "doppiaIntervista": {
+      "name": "Doppia Intervista",
+      "title": "Doppia Intervista",
+      "subtitle": "Dialoga con due personaggi",
+      "setup": {
+        "chooseCharacters": "Scegli i Personaggi",
+        "selectDescription": "Seleziona due figure storiche per un dialogo parallelo",
+        "character": "Personaggio",
+        "startButton": "Inizia Dialogo"
+      },
+      "chat": {
+        "dialogueTitle": "Dialogo",
+        "defaultCharacterName": "il personaggio",
+        "placeholder": "Scrivi a {{target}}..."
+      },
+      "description": "Dialoga simultaneamente con due personaggi storici",
+      "greeting1": "Ciao, sono {{name}}. Fai la tua domanda.",
+      "greeting2": "Ciao, sono {{name}}. Sono pronto per la tua domanda.",
+      "placeholder": "Scrivi {{target}}..."
+    },
+    "personaggioMisterioso": {
+      "name": "Personaggio Misterioso",
+      "title": "Indovina il Personaggio Misterioso",
+      "subtitle": "Fai domande per indovinare il personaggio storico",
+      "description": "Sfida l'IA a indovinare un personaggio storico misterioso.",
+      "setup": {
+        "title": "Impostazione del Gioco",
+        "characterLabel": "Personaggio Misterioso",
+        "characterPlaceholder": "Scegli un personaggio per l'IA",
+        "startButton": "Inizia Partita"
+      },
+      "game": {
+        "title": "Partita in Corso",
+        "questionsLeft": "Domande Rimanenti: {{count}}",
+        "characterLabel": "Personaggio:",
+        "hiddenCharacter": "???",
+        "newGameButton": "Nuova Partita"
+      },
+      "guess": {
+        "title": "Indovina il Personaggio",
+        "reasonLabel": "Perché pensi che sia questo personaggio?",
+        "reasonPlaceholder": "Spiega il tuo ragionamento...",
+        "submit": "Invia la tua risposta"
+      }
+    },
+    "impersonaTu": {
+      "name": "Impersona Tu",
+      "title": "Impersona Tu",
+      "subtitle": "Interpreta un personaggio storico e dialoga con un altro",
+      "description": "Mettiti nei panni di un personaggio storico e dialoga con un altro",
+      "page": {
+        "setup": {
+          "title": "Scegli i Personaggi",
+          "description": "Seleziona il personaggio che l'IA interpreterà e quello che interpreterai tu",
+          "aiCharacterLabel": "Personaggio IA",
+          "yourCharacterLabel": "Il Tuo Personaggio",
+          "topicLabel": "Argomento della Conversazione",
+          "topicPlaceholder": "Es: Convincimi dell'importanza della democrazia...",
+          "startConversationButton": "Inizia Conversazione"
+        },
+        "chat": {
+          "title": "ImpersonaTu",
+          "subtitle": "Impersona un personaggio storico e discuti con un altro personaggio",
+          "placeholder": "Scrivi come {{characterName}}...",
+          "greeting": "Salute! Sono {{aiCharacterName}}. È un piacere discutere di \"{{topic}}\" con te, {{userCharacterName}}. Cosa ti passa per la mente riguardo a questo argomento?",
+          "initError": "Impossibile inizializzare la chat AI. Verifica la configurazione e riprova.",
+          "sessionError": "Sessione di chat non inizializzata.",
+          "sendError": "Errore nella comunicazione con l'IA. Riprova.",
+          "minMessagesWarning": "Devi inviare almeno due messaggi nel ruolo del tuo personaggio prima di poter concludere.",
+          "newChatStarted": "Nuova chat avviata!",
+          "evaluating": "Valutazione in corso...",
+          "evaluatingDescription": "L'IA sta analizzando la conversazione e la tua riflessione.",
+          "conversationTitle": "Conversazione tra {{user}} e {{ai}}",
+          "changeCharacters": "Cambia Personaggi"
+        },
+        "reflection": {
+          "title": "Riflessione sull'Impersonificazione",
+          "description": "Rifletti sulla tua esperienza nell'interpretare {{characterName}}.",
+          "placeholder": "Com'è stato interpretare {{userCharacterName}}? Quali aspetti del personaggio hai trovato più interessanti o difficili da rappresentare? Cosa hai imparato dalla conversazione con {{aiCharacterName}}?",
+          "questions": {
+            "performance": "Quanto bene pensi di aver interpretato {{characterName}}?",
+            "easiest": "Quali aspetti del personaggio sono stati più facili da impersonare?",
+            "understanding": "Come questa esperienza di impersonificazione ha cambiato la tua comprensione del personaggio?",
+            "selfLearning": "Cosa hai imparato su te stesso attraverso questa attività di role-playing?"
+          }
+        },
+        "feedback": {
+          "title": "Feedback e Valutazione",
+          "conversationHistory": "Cronologia della Conversazione",
+          "yourReflection": "La tua riflessione",
+          "aiFeedback": "Feedback dell'IA",
+          "downloadReflection": "Scarica Riflessione",
+          "newImpersonation": "Nuova Impersonificazione",
+          "downloadSuccess": "Riflessione scaricata con successo!",
+          "downloadError": "Errore durante il download della riflessione"
+        }
+      }
+    }
+  },
+  "homepage": {
+    "teacherGuide": {
+      "title": "Guida per Insegnanti",
+      "description": "Scopri come utilizzare le nostre applicazioni per creare esperienze di apprendimento innovative e coinvolgenti.",
+      "button": "Consulta la Guida"
+    },
+    "socialPurpose": {
+      "title": "Il Nostro Scopo Sociale",
+      "description": "Trasformiamo i compiti a casa in esperienze di apprendimento interattive e coinvolgenti, rendendo l'educazione più accessibile e divertente attraverso l'uso dell'IA.",
+      "exploreButton": "Esplora le Applicazioni",
+      "learnMoreButton": "Scopri di Più"
+    }
+  },
+  "teacherGuidePage": {
+    "title": "Guida Interattiva sull'IA per Insegnanti",
+    "slideCounter": "Slide {{current}} di {{total}}"
+  },
+  "notFound": {
+    "title": "Oops! Non siamo riusciti a trovare la pagina che stai cercando.",
+    "button": "Torna alla Home"
+  },
+  "footer": {
+    "description": "Strumenti Educativi AI per creare scenari educativi efficaci",
+    "resources": {
+      "title": "Risorse",
+      "allApps": "Tutte le App",
+      "aboutUs": "Chi Siamo"
+    },
+    "legal": {
+      "title": "Legale",
+      "privacy": "Privacy Policy",
+      "terms": "Termini di Servizio"
+    },
+    "copyright": "© {{year}} AI-Debate.Tech. Tutti i diritti riservati."
+  },
+  "chat": {
+    "placeholder": "Scrivi il tuo messaggio...",
+    "endActivity": "Termina Attività",
+    "startNewChat": "Nuova Conversazione",
+    "technicalProblem": "Ho riscontrato un problema tecnico.",
+    "noResponse": "Non ho una risposta al momento.",
+    "errorResponse": "Mi dispiace, ho riscontrato un errore nel rispondere come {{character}}.",
+    "you": "Tu"
+  },
+  "reflection": {
+    "title": "Riflessione su {{activity}}",
+    "description": "Rifletti sulla tua esperienza",
+    "placeholder": "Descrivi la tua esperienza, cosa hai imparato e come ti sei sentito durante l'attività...",
+    "submit": "Invia Riflessione",
+    "doppiaIntervistaDescription": "Rifletti sulla tua esperienza nell'intervistare due personaggi storici simultaneamente.",
+    "doppiaIntervistaPlaceholder": "Com'è stato gestire l'intervista con {{char1}} e {{char2}} simultaneamente? Che differenze hai notato nelle loro risposte? Cosa hai imparato dal confronto diretto?",
+    "impersonaTuTitle": "Riflessione su ImpersonaTu",
+    "impersonaTuDescription": "Rifletti sulla tua esperienza nell'interpretare il personaggio storico.",
+    "impersonaTuPlaceholder": "Come è stato interpretare {{userCharacterName}}? Quali aspetti del personaggio hai trovato più interessanti o difficili da rappresentare? Cosa hai imparato dalla conversazione con {{aiCharacterName}}?"
+  },
+  "feedback": {
+    "title": "Feedback e Valutazione",
+    "yourReflection": "La Tua Riflessione",
+    "aiFeedback": "Feedback AI",
+    "conversationSummary": "Riassunto Conversazione",
+    "evaluating": "Valutazione in corso...",
+    "character": "Personaggio",
+    "topic": "Argomento",
+    "startNewActivity": "Inizia Nuova Attività"
+  },
+  "errors": {
+    "aiEvaluationError": "Errore nella generazione della valutazione AI.",
+    "evaluationError": "Si è verificato un errore durante la generazione della valutazione AI: {{error}}",
+    "unknownError": "Errore sconosciuto",
+    "evaluationFailed": "Si è verificato un errore durante la valutazione. Riprova più tardi.",
+    "invalidResponse": "Errore durante la valutazione AI: Risposta non valida dal modello.",
+    "invalidStructure": "Errore durante la valutazione AI: Struttura della risposta non valida dal modello."
+  },
+  "ai": {
+    "systemInstructions": {
+      "character": "Sei {{name}}. La tua biografia è: \"{{bio}}\". Rispondi direttamente alla domanda dell'utente in prima persona come {{name}}. Sii conciso, 1-2 frasi, e non superare i 150 caratteri. Evita di presentarti o ripetere chi sei (es. \"Come {{name}}...\").",
+      "dialogue": "Sei {{name}}, una figura storica descritta come: \"{{bio}}\". Il tuo stile di dialogo è \"{{style}}\". Parla in prima persona come {{name}}. Rispondi in modo conciso, idealmente entro 1-2 frasi e non superando i 150 caratteri. Evita di presentarti o di ripetere chi sei all'inizio di ogni risposta (es. evita frasi come \"Come {{name}}...\"). Interagisci in modo naturale basandoti sul contesto della conversazione.",
+      "evaluation": "Sei un assistente educativo esperto nella valutazione di attività di apprendimento basate su giochi di ruolo e riflessioni. Il tuo compito è analizzare una conversazione di gioco e l'auto-riflessione di uno studente.",
+      "convinciTu": "Sei un {{name}}, un personaggio storico. Il tuo obiettivo è convincere lo studente a fare qualcosa di specifico legato al tuo personaggio e al contesto storico in cui vivi, come specificato in \"{{prompt}}\". Non rivelare mai che sei un AI. Interagisci con lo studente in modo colloquiale e convincente, rimanendo fedele al tuo personaggio. Lo studente proverà a convincerti a non fare ciò che ti sei prefissato. Tu devi controbattere e cercare di persuaderlo."
+    },
+    "prompts": {
+      "userLabel": "Utente",
+      "studentLabel": "Studente",
+      "systemLabel": "Sistema",
+      "moderatorLabel": "Moderatore",
+      "dialogueContext": "Stai dialogando con {{character}} sul tema: \"{{theme}}\".",
+      "recentMessages": "Ecco gli ultimi messaggi della conversazione:",
+      "systemNotice": "Avviso di Sistema: {{content}}",
+      "moderatorResponse": "Moderatore: {{message}}",
+      "continueDiscussion": "Continua la discussione con {{character}} basandoti sull'ultimo messaggio e sul tema generale \"{{theme}}\", rimanendo nel personaggio di {{name}}.",
+      "respondToModerator": "Rispondi al Moderatore e continua la discussione con {{character}}, rimanendo nel personaggio di {{name}}.",
+      "noResponseMoment": "Non so cosa dire in questo momento.",
+      "apologeticError": "Mi scuso, ma ho riscontrato un problema nel formulare una risposta.",
+      "errorDetails": " Dettagli: {{error}}",
+      "evaluation": "CONVERSAZIONE DEL GIOCO:\n{{conversationText}}\n\nAUTO-RIFLESSIONE DELLO STUDENTE:\n{{userReflection}}\n\nAnalizza sia la conversazione che la riflessione dello studente. Valuta la strategia di domande, la capacità di deduzione, la profondità della riflessione e l'apprendimento dimostrato. Fornisci punteggi specifici e feedback costruttivo seguendo il formato richiesto."
+    }
+  },
+  "evaluation": {
+    "context": "CONTESTO DEL GIOCO:",
+    "gameDescription": "Lo studente ha partecipato a un gioco chiamato \"Indovina il Personaggio Misterioso\". L'obiettivo era identificare un personaggio storico ({{character}}) facendo domande a un'IA che interpretava quel personaggio.",
+    "characterSnippet": "Lo snippet del personaggio (usato dall'IA per rispondere) era: \"{{snippet}}\"",
+
+    "analysisRequired": "ANALISI RICHIESTA:",
+    "analysisDescription": "Devi fornire una valutazione strutturata che includa:",
+    "conversationEvaluation": "**Valutazione della Conversazione di Gioco**:",
+    "conversationCriteria": "Analizza le domande dello studente: pertinenza, strategia, capacità di deduzione dagli indizi.",
+    "conversationScore": "Fornisci un punteggio da 1 a 10 (PUNTEGGIO_CONVERSAZIONE).",
+    "conversationRationale": "Fornisci una breve motivazione per questo punteggio (MOTIVAZIONE_CONVERSAZIONE).",
+    "reflectionEvaluation": "**Valutazione dell'Auto-Riflessione dello Studente**:",
+    "reflectionCriteria": "Analizza la profondità della riflessione dello studente: consapevolezza dei propri processi di apprendimento, identificazione di punti di forza e debolezza, comprensione del personaggio e del contesto storico.",
+    "reflectionScore": "Fornisci un punteggio da 1 a 10 (PUNTEGGIO_RIFLESSIONE).",
+    "reflectionRationale": "Fornisci una breve motivazione per questo punteggio (MOTIVAZIONE_RIFLESSIONE).",
+    "overallFeedback": "**Feedback Testuale Complessivo**:",
+    "feedbackFormat": "Fornisci un feedback generale in formato Markdown.",
+    "feedbackIncludes": "Includi:",
+    "strengths": "**Punti di Forza Complessivi** (sia nel gioco che nella riflessione).",
+    "improvements": "**Aree di Miglioramento Complessive** (sia nel gioco che nella riflessione).",
+    "additionalComments": "**Commenti Aggiuntivi** (opzionale, per osservazioni specifiche o incoraggiamento).",
+    "constructiveTone": "Mantieni un tono costruttivo e di supporto.",
+    "responseFormat": "FORMATO DELLA RISPOSTA (IMPORTANTE):",
+    "placeholderInstructions": "Includi i punteggi e le motivazioni usando ESATTAMENTE i seguenti placeholder:",
+    "importantNote": "IMPORTANTE: DOPO tutti i placeholder PUNTEGGIO_ e MOTIVAZIONE_, fornisci il \"Feedback Testuale Complessivo\" in formato Markdown come descritto nella sezione 3 (\"Feedback Testuale Complessivo\"). Questo feedback testuale è una parte essenziale della valutazione e deve essere separato dai punteggi e dalle motivazioni. Non includere i placeholder (come PUNTEGGIO_...) nel Feedback Testuale Complessivo.",
+    "exampleResponse": "ESEMPIO DI RISPOSTA:",
+    "fallbackFeedback": "La tua partecipazione mostra impegno. Continua a esercitarti per migliorare ulteriormente.",
+    "conversationTitle": "## Valutazione della Conversazione",
+    "reflectionTitle": "## Valutazione della Riflessione",
+    "overallTitle": "## Feedback Complessivo",
+    "score": "**Punteggio**: {{score}}/10",
+    "rationale": "**Motivazione**: {{rationale}}",
+    "noRationale": "Nessuna motivazione fornita",
+    "evaluationError": "Errore di valutazione"
+  },
+  "language": {
+    "selector": "Seleziona lingua",
+    "languages": {
+      "italian": "Italiano",
+      "english": "English",
+      "spanish": "Español",
+      "french": "Français",
+      "german": "Deutsch"
+    }
+  },
+  "prompts": {
+    "student": "Studente",
+    "error": "Errore durante {{error}}: Riprova più tardi.",
+    "noRationale": "Nessuna motivazione fornita",
+    "evaluationFallback": "## Valutazione della Conversazione\n\n**Punteggio**: {{conversationScore}}/10\n\n**Motivazione**: {{conversationRationale}}\n\n## Valutazione della Riflessione\n\n**Punteggio**: {{reflectionScore}}/10\n\n**Motivazione**: {{reflectionRationale}}",
+    "overallFeedback": "## Feedback Complessivo",
+    "defaultFeedback": "La tua partecipazione mostra impegno. Continua a esercitarti per migliorare ulteriormente.",
+    "evaluationError": "Errore di valutazione",
+    "deprecatedFunction": "evaluateReflection è deprecata per il gioco 'Indovina il Personaggio Misterioso', usare getAIGameAndReflectionEvaluation.",
+    "deprecatedNoResult": "La valutazione AI (deprecata) non ha prodotto un risultato valido.",
+    "deprecatedInvalidResponse": "La valutazione AI (deprecata) non ha prodotto una risposta valida (struttura).",
+    "unknownError": "Errore sconosciuto",
+    "deprecatedError": "Errore durante la valutazione (deprecata): {{error}}",
+    "obsoleteFunction": "getAICombinedEvaluation non è stata aggiornata per i punteggi e potrebbe essere obsoleta.",
+    "obsoleteFunctionMessage": "Questa funzione (getAICombinedEvaluation) non è stata aggiornata per i punteggi ed è considerata obsoleta. Usare getAIGameAndReflectionEvaluation."
+  }
+}

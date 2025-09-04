@@ -1,0 +1,53 @@
+
+import React from "react";
+import { Toaster } from "@/components/ui/toaster";
+import { Toaster as Sonner } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AnimationProvider } from "@/context/AnimationContext";
+import PageFlipAnimation from "@/components/PageFlipAnimation";
+import Index from "./pages/Index";
+import AppsPage from "./pages/AppsPage";
+import WikiInterviewPage from "./pages/WikiInterviewPage";
+import WikiChatbotPage from "./pages/WikiChatbotPage";
+import DoppiaIntervistaPage from "./pages/DoppiaIntervistaPage";
+import AboutPage from "./pages/AboutPage";
+import NotFound from "./pages/NotFound";
+import ConvinciTuPage from "./pages/ConvinciTuPage";
+import PersonaggioMisteriosoPage from "./pages/PersonaggioMisteriosoPage";
+import TeacherGuidePage from "./pages/TeacherGuidePage";
+import ImpersonaTuPage from "./pages/ImpersonaTuPage";
+
+const queryClient = new QueryClient();
+
+const App = () => (
+  <React.StrictMode>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+          <AnimationProvider>
+            <Toaster />
+            <Sonner />
+            <PageFlipAnimation />
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/apps" element={<AppsPage />} />
+                <Route path="/apps/wiki-interview" element={<WikiInterviewPage />} />
+                <Route path="/apps/wiki-chatbot" element={<WikiChatbotPage />} />
+                <Route path="/apps/doppia-intervista" element={<DoppiaIntervistaPage />} />
+                <Route path="/apps/convinci-tu" element={<ConvinciTuPage />} />
+                <Route path="/apps/personaggio-misterioso" element={<PersonaggioMisteriosoPage />} />
+                <Route path="/apps/impersona-tu" element={<ImpersonaTuPage />} />
+                <Route path="/about" element={<AboutPage />} />
+                <Route path="/teacher-guide" element={<TeacherGuidePage />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </BrowserRouter>
+          </AnimationProvider>
+      </TooltipProvider>
+    </QueryClientProvider>
+  </React.StrictMode>
+);
+
+export default App;
