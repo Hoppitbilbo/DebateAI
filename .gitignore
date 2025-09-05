@@ -90,3 +90,4 @@ temp/
 .firebaserc
 firebase.json
 apphosting.yaml
+.idx/integrations.json
