@@ -1,6 +1,7 @@
 
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { Github } from "lucide-react";
 
 const Footer = () => {
   const { t } = useTranslation();
@@ -27,6 +28,12 @@ const Footer = () => {
                 <Link to="/about" className="text-sm text-gray-300 hover:text-education-light transition">
                   {t('footer.resources.aboutUs')}
                 </Link>
+              </li>
+              <li>
+                <a href="https://github.com/Hoppitbilbo/DebateAI" target="_blank" rel="noopener noreferrer" className="text-sm text-gray-300 hover:text-education-light transition flex items-center">
+                  <Github className="h-4 w-4 mr-2" />
+                  GitHub
+                </a>
               </li>
             </ul>
           </div>

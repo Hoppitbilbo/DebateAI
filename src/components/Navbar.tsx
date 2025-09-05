@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu } from "lucide-react";
+import { Menu, Github } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "@/components/shared/LanguageSwitcher";
 
@@ -45,8 +45,14 @@ const Navbar = () => {
               
               <LanguageSwitcher />
               
+              <a href="https://github.com/Hoppitbilbo/DebateAI" target="_blank" rel="noopener noreferrer">
+                <Button variant="outline" className="ml-2 border-education text-education hover:bg-education hover:text-education-dark font-heading">
+                  <Github className="h-4 w-4 mr-2" />
+                  GitHub
+                </Button>
+              </a>
               <Link to="/about">
-                <Button variant="outline" className="ml-4 border-education text-education hover:bg-education hover:text-education-dark font-heading">
+                <Button variant="outline" className="ml-2 border-education text-education hover:bg-education hover:text-education-dark font-heading">
                   {t('navigation.about')}
                 </Button>
               </Link>
@@ -75,6 +81,12 @@ const Navbar = () => {
             <Link to="/teacher-guide" className="block px-3 py-2 rounded-md text-base font-medium text-education hover:text-education-light font-heading" onClick={() => setIsMobileMenuOpen(false)}>
               {t('navigation.teacherGuide')}
             </Link>
+            <a href="https://github.com/Hoppitbilbo/DebateAI" target="_blank" rel="noopener noreferrer" className="block w-full my-2">
+              <Button className="w-full bg-education hover:bg-education-light text-education-dark font-heading">
+                <Github className="h-4 w-4 mr-2" />
+                GitHub
+              </Button>
+            </a>
             <Link to="/about" onClick={() => setIsMobileMenuOpen(false)}>
               <Button className="w-full my-2 bg-education hover:bg-education-light text-education-dark font-heading">
                 {t('navigation.about')}
