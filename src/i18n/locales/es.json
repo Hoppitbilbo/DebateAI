@@ -1107,5 +1107,78 @@
         }
       }
     }
+  },
+  "tutorial": {
+    "doppiaIntervista": {
+      "title": "Tutorial Doble Entrevista",
+      "subtitle": "Aprende a comparar personajes y desarrollar pensamiento crítico",
+      "startApp": "Iniciar Doble Entrevista",
+      "slides": {
+        "welcome": {
+          "title": "Bienvenido a Doble Entrevista",
+          "content": "La Doble Entrevista te permite comparar dos personajes históricos diferentes a través de preguntas estratégicas. Esta herramienta es perfecta para ver diferencias de perspectiva y desarrollar habilidades de análisis crítico.",
+          "bullet1": "💬 Entrevista simultáneamente a dos personajes históricos",
+          "bullet2": "🔍 Compara sus respuestas y perspectivas diferentes",
+          "bullet3": "🤝 Colabora con un compañero para análisis crítico",
+          "bullet4": "🧠 Desarrolla pensamiento crítico a través de la comparación"
+        },
+        "characterComparison": {
+          "title": "Comparación de Personajes",
+          "content": "El verdadero valor de la Doble Entrevista está en comparar las respuestas de dos personajes diferentes a la misma pregunta. Esto te permite ver cómo diferentes perspectivas, épocas y contextos influyen en las opiniones y decisiones.",
+          "bullet1": "⚖️ Compara respuestas a la misma pregunta desde perspectivas diferentes",
+          "bullet2": "🕰️ Observa cómo diferentes épocas influyen en las opiniones",
+          "bullet3": "🌍 Analiza el impacto del contexto cultural y social",
+          "bullet4": "💡 Identifica similitudes y diferencias inesperadas"
+        },
+        "strategicQuestioning": {
+          "title": "Preguntas Estratégicas",
+          "content": "Para obtener el máximo del comparison, es importante formular preguntas estratégicas que revelen las diferencias fundamentales entre personajes. Elige personajes con perspectivas contrastantes para maximizar el aprendizaje.",
+          "bullet1": "🎯 Elige personajes con perspectivas contrastantes",
+          "bullet2": "❓ Formula preguntas que revelen diferencias fundamentales",
+          "bullet3": "🔄 Haz la misma pregunta a ambos personajes",
+          "bullet4": "📊 Compara sistemáticamente sus respuestas"
+        },
+        "collaborativeAnalysis": {
+          "title": "Análisis Colaborativo",
+          "content": "Después de recopilar respuestas, trabaja con un compañero para analizar críticamente las respuestas de la IA. Juntos pueden identificar qué respuestas parecen más plausibles y cuáles podrían ser problemáticas o inexactas.",
+          "bullet1": "👥 Colabora con un compañero en el análisis de respuestas",
+          "bullet2": "🔍 Examinen juntos la plausibilidad de las respuestas",
+          "bullet3": "⚠️ Identifiquen posibles inexactitudes o problemas",
+          "bullet4": "💬 Discutan sus observaciones y conclusiones"
+        },
+        "criticalThinking": {
+          "title": "Desarrollo del Pensamiento Crítico",
+          "content": "El análisis colaborativo de respuestas de IA desarrolla importantes habilidades de pensamiento crítico. Aprenderás a evaluar la credibilidad de la información, identificar sesgos y distinguir entre hechos e interpretaciones.",
+          "bullet1": "🧐 Evalúa la credibilidad y precisión de la información",
+          "bullet2": "🎭 Identifica posibles sesgos en personajes históricos",
+          "bullet3": "📚 Distingue entre hechos históricos e interpretaciones",
+          "bullet4": "🤔 Desarrolla escepticismo constructivo hacia las fuentes"
+        },
+        "selfEvaluation": {
+          "title": "Autoevaluación Mejorada",
+          "content": "Comparar diferentes personajes hace que la autoevaluación sea más rica y significativa. Puedes reflexionar no solo sobre lo que aprendiste, sino también sobre cómo diferentes perspectivas enriquecieron tu comprensión del tema.",
+          "bullet1": "🪞 Reflexiona sobre cómo la comparación enriqueció tu comprensión",
+          "bullet2": "📈 Evalúa tu progreso en análisis crítico",
+          "bullet3": "🎯 Identifica áreas para mejorar tus preguntas",
+          "bullet4": "💭 Considera cómo aplicar estas habilidades en otros contextos"
+        },
+        "reflection": {
+          "title": "Reflexión y Autorreflexión",
+          "content": "La comparación y la autorreflexión son elementos fundamentales del aprendizaje profundo. A través de la Doble Entrevista, desarrollas la capacidad de ver problemas desde múltiples perspectivas y reflexionar críticamente sobre el proceso de aprendizaje mismo.",
+          "bullet1": "🔄 La comparación desarrolla la capacidad de ver múltiples perspectivas",
+          "bullet2": "🧠 La autorreflexión profundiza la comprensión personal",
+          "bullet3": "⚡ La combinación acelera el aprendizaje significativo",
+          "bullet4": "🌟 Desarrolla metacognición y conciencia de tu propio aprendizaje"
+        },
+        "examples": {
+          "title": "Ejemplos de Aplicación",
+          "content": "La Doble Entrevista puede usarse en diferentes materias para explorar perspectivas contrastantes y desarrollar comprensión crítica de eventos, teorías y fenómenos complejos.",
+          "bullet1": "📜 Historia: Compara líderes de diferentes épocas o ideologías",
+          "bullet2": "🔬 Ciencias: Entrevista científicos con teorías contrastantes",
+          "bullet3": "📖 Literatura: Explora personajes con visiones del mundo opuestas",
+          "bullet4": "🏛️ Filosofía: Compara filósofos con enfoques diferentes al mismo problema"
+        }
+      }
+    }
   }
 }

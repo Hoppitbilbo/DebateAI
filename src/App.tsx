@@ -13,6 +13,7 @@ import WikiInterviewPage from "./pages/WikiInterviewPage";
 import WikiInterviewTutorialPage from "./pages/WikiInterviewTutorialPage";
 import WikiChatbotPage from "./pages/WikiChatbotPage";
 import DoppiaIntervistaPage from "./pages/DoppiaIntervistaPage";
+import DoppiaIntervistaTutorialPage from "./pages/DoppiaIntervistaTutorialPage";
 import AboutPage from "./pages/AboutPage";
 import NotFound from "./pages/NotFound";
 import ConvinciTuPage from "./pages/ConvinciTuPage";
@@ -41,6 +42,7 @@ const App = () => (
                 <Route path="/apps/wiki-interview/tutorial" element={<WikiInterviewTutorialPage />} />
                 <Route path="/apps/wiki-chatbot" element={<WikiChatbotPage />} />
                 <Route path="/apps/doppia-intervista" element={<DoppiaIntervistaPage />} />
+                <Route path="/apps/doppia-intervista/tutorial" element={<DoppiaIntervistaTutorialPage />} />
                 <Route path="/apps/convinci-tu" element={<ConvinciTuPage />} />
                 <Route path="/apps/convinci-tu/tutorial" element={<ConvinciTuTutorialPage />} />
                 <Route path="/apps/personaggio-misterioso" element={<PersonaggioMisteriosoPage />} />

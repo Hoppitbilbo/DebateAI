@@ -1117,5 +1117,78 @@
         }
       }
     }
+  },
+  "tutorial": {
+    "doppiaIntervista": {
+      "title": "Double Interview Tutorial",
+      "subtitle": "Learn to compare characters and develop critical thinking",
+      "startApp": "Start Double Interview",
+      "slides": {
+        "welcome": {
+          "title": "Welcome to Double Interview",
+          "content": "Double Interview allows you to compare two different historical characters through strategic questioning. This tool is perfect for seeing perspective differences and developing critical analysis skills.",
+          "bullet1": "💬 Interview two historical characters simultaneously",
+          "bullet2": "🔍 Compare their responses and different perspectives",
+          "bullet3": "🤝 Collaborate with a peer for critical analysis",
+          "bullet4": "🧠 Develop critical thinking through comparison"
+        },
+        "characterComparison": {
+          "title": "Character Comparison",
+          "content": "The true value of Double Interview lies in comparing responses from two different characters to the same question. This allows you to see how different perspectives, eras, and contexts influence opinions and decisions.",
+          "bullet1": "⚖️ Compare responses to the same question from different perspectives",
+          "bullet2": "🕰️ Observe how different eras influence opinions",
+          "bullet3": "🌍 Analyze the impact of cultural and social context",
+          "bullet4": "💡 Identify unexpected similarities and differences"
+        },
+        "strategicQuestioning": {
+          "title": "Strategic Questioning",
+          "content": "To get the most from comparison, it's important to formulate strategic questions that reveal fundamental differences between characters. Choose characters with contrasting perspectives to maximize learning.",
+          "bullet1": "🎯 Choose characters with contrasting perspectives",
+          "bullet2": "❓ Formulate questions that reveal fundamental differences",
+          "bullet3": "🔄 Ask the same question to both characters",
+          "bullet4": "📊 Systematically compare their responses"
+        },
+        "collaborativeAnalysis": {
+          "title": "Collaborative Analysis",
+          "content": "After gathering responses, work with a peer to critically analyze the AI's answers. Together you can identify which responses seem most plausible and which might be problematic or inaccurate.",
+          "bullet1": "👥 Collaborate with a peer in analyzing responses",
+          "bullet2": "🔍 Examine together the plausibility of responses",
+          "bullet3": "⚠️ Identify possible inaccuracies or problems",
+          "bullet4": "💬 Discuss your observations and conclusions"
+        },
+        "criticalThinking": {
+          "title": "Critical Thinking Development",
+          "content": "Collaborative analysis of AI responses develops important critical thinking skills. You'll learn to evaluate information credibility, identify bias, and distinguish between facts and interpretations.",
+          "bullet1": "🧐 Evaluate credibility and accuracy of information",
+          "bullet2": "🎭 Identify possible bias in historical characters",
+          "bullet3": "📚 Distinguish between historical facts and interpretations",
+          "bullet4": "🤔 Develop constructive skepticism toward sources"
+        },
+        "selfEvaluation": {
+          "title": "Enhanced Self-Evaluation",
+          "content": "Comparing different characters makes self-evaluation richer and more meaningful. You can reflect not only on what you learned, but also on how different perspectives enriched your understanding of the topic.",
+          "bullet1": "🪞 Reflect on how comparison enriched your understanding",
+          "bullet2": "📈 Evaluate your progress in critical analysis",
+          "bullet3": "🎯 Identify areas to improve your questioning",
+          "bullet4": "💭 Consider how to apply these skills in other contexts"
+        },
+        "reflection": {
+          "title": "Reflection and Self-Reflection",
+          "content": "Comparison and self-reflection are fundamental elements of deep learning. Through Double Interview, you develop the ability to see problems from multiple perspectives and reflect critically on the learning process itself.",
+          "bullet1": "🔄 Comparison develops ability to see multiple perspectives",
+          "bullet2": "🧠 Self-reflection deepens personal understanding",
+          "bullet3": "⚡ The combination accelerates meaningful learning",
+          "bullet4": "🌟 Develops metacognition and awareness of your own learning"
+        },
+        "examples": {
+          "title": "Application Examples",
+          "content": "Double Interview can be used in different subjects to explore contrasting perspectives and develop critical understanding of events, theories, and complex phenomena.",
+          "bullet1": "📜 History: Compare leaders from different eras or ideologies",
+          "bullet2": "🔬 Science: Interview scientists with contrasting theories",
+          "bullet3": "📖 Literature: Explore characters with opposing worldviews",
+          "bullet4": "🏛️ Philosophy: Compare philosophers with different approaches to the same problem"
+        }
+      }
+    }
   }
 }
