@@ -10,14 +10,18 @@ import PageFlipAnimation from "@/components/PageFlipAnimation";
 import Index from "./pages/Index";
 import AppsPage from "./pages/AppsPage";
 import WikiInterviewPage from "./pages/WikiInterviewPage";
+import WikiInterviewTutorialPage from "./pages/WikiInterviewTutorialPage";
 import WikiChatbotPage from "./pages/WikiChatbotPage";
 import DoppiaIntervistaPage from "./pages/DoppiaIntervistaPage";
 import AboutPage from "./pages/AboutPage";
 import NotFound from "./pages/NotFound";
 import ConvinciTuPage from "./pages/ConvinciTuPage";
+import ConvinciTuTutorialPage from "./pages/ConvinciTuTutorialPage";
 import PersonaggioMisteriosoPage from "./pages/PersonaggioMisteriosoPage";
+import PersonaggioMisteriosoTutorialPage from "./pages/PersonaggioMisteriosoTutorialPage";
 import TeacherGuidePage from "./pages/TeacherGuidePage";
 import ImpersonaTuPage from "./pages/ImpersonaTuPage";
+import ImpersonaTuTutorialPage from "./pages/ImpersonaTuTutorialPage";
 
 const queryClient = new QueryClient();
 
@@ -34,11 +38,15 @@ const App = () => (
                 <Route path="/" element={<Index />} />
                 <Route path="/apps" element={<AppsPage />} />
                 <Route path="/apps/wiki-interview" element={<WikiInterviewPage />} />
+                <Route path="/apps/wiki-interview/tutorial" element={<WikiInterviewTutorialPage />} />
                 <Route path="/apps/wiki-chatbot" element={<WikiChatbotPage />} />
                 <Route path="/apps/doppia-intervista" element={<DoppiaIntervistaPage />} />
                 <Route path="/apps/convinci-tu" element={<ConvinciTuPage />} />
+                <Route path="/apps/convinci-tu/tutorial" element={<ConvinciTuTutorialPage />} />
                 <Route path="/apps/personaggio-misterioso" element={<PersonaggioMisteriosoPage />} />
+                <Route path="/apps/personaggio-misterioso/tutorial" element={<PersonaggioMisteriosoTutorialPage />} />
                 <Route path="/apps/impersona-tu" element={<ImpersonaTuPage />} />
+                <Route path="/apps/impersona-tu/tutorial" element={<ImpersonaTuTutorialPage />} />
                 <Route path="/about" element={<AboutPage />} />
                 <Route path="/teacher-guide" element={<TeacherGuidePage />} />
                 <Route path="*" element={<NotFound />} />

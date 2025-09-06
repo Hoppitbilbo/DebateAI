@@ -459,18 +459,21 @@
     }
   },
   "homepage": {
-    "teacherGuide": {
-      "title": "Teacher's Guide",
-      "description": "Discover how to use our applications to create innovative and engaging learning experiences.",
-      "button": "View Guide"
+      "teacherGuide": {
+        "title": "Teacher's Guide",
+        "description": "Discover how to use our applications to create innovative and engaging learning experiences.",
+        "viewTutorial": "View Tutorial",
+        "slide": "Slide",
+        "progress": "Progress",
+        "previous": "Previous"
+      },
+      "socialPurpose": {
+        "title": "Our Social Purpose",
+        "description": "We transform homework into interactive and engaging learning experiences, making education more accessible and fun through the use of AI.",
+        "exploreButton": "Explore Applications",
+        "learnMoreButton": "Learn More"
+      }
     },
-    "socialPurpose": {
-      "title": "Our Social Purpose",
-      "description": "We transform homework into interactive and engaging learning experiences, making education more accessible and fun through the use of AI.",
-      "exploreButton": "Explore Applications",
-      "learnMoreButton": "Learn More"
-    }
-  },
   "teacherGuidePage": {
     "title": "Interactive AI Guide for Teachers",
     "slideCounter": "Slide {{current}} of {{total}}"
@@ -763,5 +766,356 @@
       "content": "Our social purpose is to build a future where AI is a powerful ally for students and teachers, making learning an exciting, personalized, and, above all, accessible adventure for everyone."
     },
     "supportButton": "Support Us"
+  },
+  "tutorial": {
+    "personaggioMisterioso": {
+      "title": "Mystery Character Tutorial",
+      "subtitle": "Learn how to use the Mystery Character guessing game",
+      "startApp": "Start Mystery Character Game",
+      "slides": {
+        "welcome": {
+          "title": "Welcome to Mystery Character",
+          "content": "Mystery Character is a collaborative educational game designed for pairs - where one person (teacher, tutor, or peer) facilitates while the other plays. Together, you'll develop critical thinking and questioning skills by identifying historical figures through strategic questioning.",
+          "bullet1": "👥 Collaborative pair-based learning experience",
+          "bullet2": "🎯 Develop strategic questioning techniques together",
+          "bullet3": "📚 Learn about historical figures through guided interaction", 
+          "bullet4": "🧠 Enhance critical thinking through reflection and discussion"
+        },
+        "howItWorks": {
+          "title": "How the Collaborative Game Works",
+          "content": "This is a pair activity where roles are clearly defined. The facilitator guides the learning process while the player engages with the AI character.",
+          "bullet1": "👨‍🏫 Facilitator (teacher/tutor/peer) selects the character secretly",
+          "bullet2": "🎮 Player asks questions to guess the character's identity",
+          "bullet3": "💭 Player thinks aloud while facilitator guides the process",
+          "bullet4": "🤝 Both discuss strategies and reflect together"
+        },
+        "selectCharacter": {
+          "title": "Step 1: Facilitator Selects Character",
+          "content": "The facilitator (teacher, tutor, or peer) secretly chooses a historical figure from Wikipedia's vast database. This person will guide the learning process and can provide hints when needed.",
+          "bullet1": "🤫 Facilitator chooses character without revealing identity",
+          "bullet2": "📖 Select from politicians, scientists, artists, and more",
+          "bullet3": "🌍 Choose figures appropriate for the learning context",
+          "bullet4": "💡 Consider the player's knowledge level and interests"
+        },
+        "askQuestions": {
+          "title": "Step 2: Collaborative Questioning Process",
+          "content": "The player asks questions while thinking aloud, and the facilitator guides the process. This creates a rich learning dialogue where both participants engage actively.",
+          "bullet1": "🗣️ Player thinks aloud: 'I wonder if this person lived in...'",
+          "bullet2": "👂 Facilitator listens and can suggest question strategies",
+          "bullet3": "🤝 Both discuss the AI's responses and what they reveal",
+          "bullet4": "📝 Facilitator can help organize clues and guide reasoning"
+        },
+        "technology": {
+          "title": "AI Technology Behind the Game",
+          "content": "The game uses advanced AI language models to create authentic character interactions based on Wikipedia content and historical context.",
+          "bullet1": "🤖 Large Language Models (LLMs) for natural conversation",
+          "bullet2": "📚 Wikipedia integration for accurate historical information",
+          "bullet3": "🎭 Character embodiment through prompt engineering",
+          "bullet4": "🔄 Real-time adaptive responses based on conversation context"
+        },
+        "classroomUse": {
+          "title": "Collaborative Learning Benefits",
+          "content": "This pair-based approach maximizes learning through social interaction, guided reflection, and shared problem-solving strategies.",
+          "bullet1": "👥 Peer-to-peer learning and mentoring opportunities",
+          "bullet2": "🗣️ Develops verbal reasoning and thinking-aloud skills",
+          "bullet3": "🤝 Builds collaborative problem-solving abilities",
+          "bullet4": "💭 Facilitator can model expert questioning strategies"
+        },
+        "examples": {
+          "title": "Collaborative Implementation Examples",
+          "content": "Here are effective ways to use Mystery Character as a collaborative learning tool in different educational contexts.",
+          "bullet1": "👨‍🏫 Teacher-student pairs: Teacher guides questioning strategies",
+          "bullet2": "👫 Peer tutoring: Advanced student mentors struggling learner",
+          "bullet3": "👨‍👩‍👧‍👦 Parent-child learning: Family educational bonding activity",
+          "bullet4": "🎓 Study groups: Students take turns as facilitator and player"
+        }
+      }
+    },
+    "convinciTu": {
+      "title": "Convince YOU Tutorial",
+      "subtitle": "Master the art of persuasion and debate preparation",
+      "startApp": "Start Convince YOU Game",
+      "slides": {
+        "welcome": {
+          "title": "Welcome to Convince YOU",
+          "content": "Convince YOU is a collaborative persuasion training tool where students practice debate skills by convincing AI historical figures. Perfect for debate preparation, argument analysis, and collaborative learning with teachers or peers.",
+          "bullet1": "🎯 Practice persuasion and argumentation skills",
+          "bullet2": "👥 Collaborative learning with teacher or peer guidance",
+          "bullet3": "🧠 Prepare for real debates and discussions",
+          "bullet4": "📊 Auto-evaluation and self-reflection features"
+        },
+        "howItWorks": {
+          "title": "How the Collaborative Process Works",
+          "content": "This is designed as a pair activity where a facilitator (teacher or peer) selects challenging arguments while the student practices persuasion techniques in a safe environment.",
+          "bullet1": "👨‍🏫 Facilitator selects character and challenging argument topic",
+          "bullet2": "🎮 Student attempts to convince the AI character",
+          "bullet3": "👁️ Both observe and discuss the persuasion strategies used",
+          "bullet4": "🔄 Unlimited attempts to refine argumentation skills"
+        },
+        "debatePreparation": {
+          "title": "Perfect for Debate Preparation",
+          "content": "Use this tool as practice before real debates. Students can test their arguments, refine their persuasion techniques, and build confidence in a low-stakes environment.",
+          "bullet1": "🏋️ Practice arguments before real debates or presentations",
+          "bullet2": "💪 Build confidence in persuasion and argumentation",
+          "bullet3": "🔍 Test different persuasion strategies and approaches",
+          "bullet4": "📈 Improve through iterative practice and feedback"
+        },
+        "collaborativeLearning": {
+          "title": "Collaborative Learning Benefits",
+          "content": "When used with a facilitator, this becomes a powerful tool for guided learning, where students can receive real-time feedback and strategic guidance.",
+          "bullet1": "👥 Teacher can assess student's real knowledge depth",
+          "bullet2": "🤝 Peer learning through observation and discussion",
+          "bullet3": "💡 Facilitator can suggest alternative argument strategies",
+          "bullet4": "🎯 Immediate feedback on persuasion effectiveness"
+        },
+        "visibleThinking": {
+          "title": "Making Thinking Visible",
+          "content": "Encourage students to verbalize their thought process during persuasion attempts. This makes learning visible to both the student and facilitator, enhancing the educational value.",
+          "bullet1": "🗣️ Student explains reasoning: 'I think this approach will work because...'",
+          "bullet2": "👂 Facilitator observes argument construction in real-time",
+          "bullet3": "🔍 Identify gaps in knowledge or logic immediately",
+          "bullet4": "📝 Document successful persuasion strategies for future use"
+        },
+        "teacherEvaluation": {
+          "title": "Teacher Assessment Tool",
+          "content": "Teachers can use this to evaluate how well students truly understand topics and can apply their knowledge persuasively in challenging scenarios.",
+          "bullet1": "📊 Assess depth of student understanding beyond memorization",
+          "bullet2": "🎭 Observe how students apply knowledge in persuasive contexts",
+          "bullet3": "💬 Evaluate argumentation and critical thinking skills",
+          "bullet4": "📈 Track improvement in persuasion abilities over time"
+        },
+        "selfReflection": {
+          "title": "Auto-Evaluation and Self-Reflection",
+          "content": "The activity concludes with structured self-reflection and AI evaluation, helping students analyze their persuasion attempts and identify areas for improvement.",
+          "bullet1": "🤔 Structured reflection on persuasion strategies used",
+          "bullet2": "🤖 AI provides objective feedback on argument effectiveness",
+          "bullet3": "📝 Identify successful techniques and areas for improvement",
+          "bullet4": "🎯 Set goals for future persuasion and debate activities"
+        },
+        "examples": {
+          "title": "Implementation Examples",
+          "content": "Here are effective ways to use Convince YOU in different educational contexts, from individual practice to collaborative learning scenarios.",
+          "bullet1": "🏛️ History: Convince Marx that capitalism promotes progress",
+          "bullet2": "🔬 Science: Persuade Galileo to reconsider his astronomical theories",
+          "bullet3": "📚 Literature: Convince Shakespeare to write in modern English",
+          "bullet4": "🌍 Current events: Persuade historical figures on modern issues"
+        }
+      }
+    },
+    "wikiInterview": {
+      "title": "Wiki-Interview Tutorial",
+      "subtitle": "Master collaborative debate moderation and critical thinking through AI-powered Wikipedia character debates",
+      "startApp": "Start Wiki-Interview",
+      "slides": {
+        "welcome": {
+          "title": "Welcome to Wiki-Interview",
+          "content": "Wiki-Interview is a collaborative educational tool where students become moderators of debates between AI characters representing Wikipedia pages. This innovative approach develops moderation skills, critical thinking, and argumentative analysis through peer learning and guided reflection.",
+          "bullet1": "🎭 Moderate debates between AI-powered Wikipedia characters",
+          "bullet2": "👥 Collaborative learning with teacher or peer guidance",
+          "bullet3": "🧠 Develop critical thinking and argumentation analysis skills",
+          "bullet4": "📊 Structured reflection and peer evaluation process"
+        },
+        "moderatorRole": {
+          "title": "The Student as Debate Moderator",
+          "content": "Students take on the crucial role of debate moderator, learning to guide discussions, ask probing questions, and maintain productive dialogue between opposing AI characters. This develops leadership and critical thinking skills.",
+          "bullet1": "🎯 Guide debate flow and ensure balanced participation",
+          "bullet2": "❓ Ask strategic questions to deepen the discussion",
+          "bullet3": "⚖️ Maintain neutrality while exploring different perspectives",
+          "bullet4": "🔍 Identify key arguments and logical reasoning patterns"
+        },
+        "peerCollaboration": {
+          "title": "Peer Learning and Teacher Guidance",
+          "content": "The most effective use involves a teacher or peer collaborator who helps select stimulating debate topics and opposing characters, then observes and guides the student's moderation process through real-time feedback and reflection.",
+          "bullet1": "👨‍🏫 Teacher/peer selects engaging, contrasting characters and topics",
+          "bullet2": "👁️ Collaborative observation of moderation techniques and strategies",
+          "bullet3": "💭 Real-time guidance on questioning techniques and debate flow",
+          "bullet4": "🤝 Shared reflection on argument quality and logical reasoning"
+        },
+        "setupDebate": {
+          "title": "Setting Up Stimulating Debates",
+          "content": "The key to effective learning is selecting contrasting Wikipedia characters and controversial topics that will generate meaningful debate. Teachers and peers play a crucial role in this preparation phase.",
+          "bullet1": "⚔️ Choose opposing historical figures or contrasting concepts",
+          "bullet2": "🎯 Select topics that highlight different perspectives and values",
+          "bullet3": "📚 Consider characters from different time periods or ideologies",
+          "bullet4": "🌍 Include diverse cultural and intellectual perspectives"
+        },
+        "moderationSkills": {
+          "title": "Developing Advanced Moderation Skills",
+          "content": "Through practice, students develop sophisticated moderation techniques including strategic questioning, conflict resolution, and the ability to extract deeper insights from debates.",
+          "bullet1": "🗣️ Learn to ask follow-up questions that reveal underlying assumptions",
+          "bullet2": "🎭 Practice managing different personality types and debate styles",
+          "bullet3": "🔄 Develop skills in redirecting unproductive arguments",
+          "bullet4": "📈 Build confidence in facilitating complex discussions"
+        },
+        "criticalThinking": {
+          "title": "Critical Thinking Through Argument Analysis",
+          "content": "Students analyze the quality of arguments, identify logical fallacies, and evaluate evidence presented by AI characters. This develops sophisticated critical thinking skills applicable across disciplines.",
+          "bullet1": "🔍 Identify logical fallacies and weak reasoning in real-time",
+          "bullet2": "📊 Evaluate the strength of evidence and supporting arguments",
+          "bullet3": "⚖️ Compare and contrast different argumentative approaches",
+          "bullet4": "🧩 Synthesize complex ideas from multiple perspectives"
+        },
+        "reflection": {
+          "title": "Collaborative Reflection and Self-Assessment 2.0",
+          "content": "The activity concludes with enhanced reflection where both student and teacher/peer analyze the debate quality, moderation effectiveness, and learning outcomes. This 'Self-Assessment 2.0' promotes metacognitive growth.",
+          "bullet1": "🤔 Analyze which AI responses were most/least convincing and why",
+          "bullet2": "📝 Reflect on moderation techniques that were most effective",
+          "bullet3": "🎯 Identify missed opportunities for deeper questioning",
+          "bullet4": "🔄 Set goals for improving future moderation and critical analysis"
+        },
+        "applications": {
+          "title": "Why Use AI Debates Instead of Human Debates?",
+          "content": "AI debates complement human interaction by providing a safe practice environment for shy students, enabling remote learning, building trust between teachers and students, and serving as preparation for real human debates.",
+          "bullet1": "🛡️ Safe practice environment for shy or hesitant students",
+          "bullet2": "🌐 Enables effective remote and distance learning scenarios",
+          "bullet3": "🤝 Builds trust and confidence before engaging in human debates",
+          "bullet4": "🎓 Serves as preparation and training for real peer-to-peer debates"
+        }
+      }
+    }
+  },
+  "tutorials": {
+    "impersonaTu": {
+      "title": "ImpersonaTu Tutorial",
+      "subtitle": "Master peer learning through historical role-play and critical thinking",
+      "startApp": "Start ImpersonaTu Game",
+      "slides": {
+        "welcome": {
+          "title": "Welcome to ImpersonaTu",
+          "content": "ImpersonaTu is a collaborative role-playing tool where students embody historical figures and engage in meaningful dialogues. This app transforms traditional learning into an interactive peer learning experience that develops empathy, critical thinking, and historical understanding through guided facilitation.",
+          "bullet1": "👥 Collaborative role-playing with peer or teacher facilitation",
+          "bullet2": "🎭 Develop empathy by embodying historical perspectives",
+          "bullet3": "🧠 Enhanced critical thinking through character analysis",
+          "bullet4": "📚 Deep historical understanding through immersive dialogue"
+        },
+        "peerLearning": {
+          "title": "Peer Learning Principles in Action",
+          "content": "Peer learning occurs when students learn from and with each other through structured interaction. In ImpersonaTu, one student role-plays while a peer facilitator observes, questions, and guides the learning process, creating a powerful collaborative learning environment.",
+          "bullet1": "🤝 Peer facilitator guides character development and historical accuracy",
+          "bullet2": "👂 Active listening as the facilitator observes dialogue strategies",
+          "bullet3": "💭 Shared knowledge construction through collaborative reflection",
+          "bullet4": "🔄 Role reversal allows both students to experience different learning perspectives"
+        },
+        "thinkAloud": {
+          "title": "Think-Aloud Protocols for Deeper Learning",
+          "content": "Think-aloud protocols make learning visible by encouraging students to verbalize their thought processes. The role-playing student should articulate their character's motivations, historical context, and decision-making rationale while the facilitator listens and probes deeper.",
+          "bullet1": "🗣️ Student verbalizes: 'As Napoleon, I believe this because of my experiences in...'",
+          "bullet2": "🔍 Facilitator asks: 'What historical evidence supports that perspective?'",
+          "bullet3": "💡 Expose reasoning patterns and historical misconceptions in real-time",
+          "bullet4": "📝 Document thinking strategies for future character portrayals"
+        },
+        "criticalThinking": {
+          "title": "Developing Critical Thinking Skills",
+          "content": "ImpersonaTu challenges students to analyze multiple perspectives, evaluate historical evidence, and construct reasoned arguments from their character's viewpoint. This develops sophisticated critical thinking skills through authentic historical inquiry.",
+          "bullet1": "⚖️ Analyze conflicting historical perspectives and evidence",
+          "bullet2": "🎯 Construct logical arguments based on character's historical context",
+          "bullet3": "🔬 Question assumptions and examine bias in historical narratives",
+          "bullet4": "🧩 Synthesize complex historical information into coherent character responses"
+        },
+        "collaborativeReview": {
+          "title": "Collaborative Review and Feedback",
+          "content": "After each dialogue session, peers engage in collaborative review where they analyze the conversation, discuss historical accuracy, and provide constructive feedback. This peer review process deepens understanding for both participants.",
+          "bullet1": "📊 Peer facilitator evaluates historical accuracy and character consistency",
+          "bullet2": "🎭 Discuss which character traits were effectively portrayed",
+          "bullet3": "📚 Identify areas where historical knowledge could be strengthened",
+          "bullet4": "🌟 Celebrate successful empathetic connections with historical figures"
+        },
+        "teacherFacilitation": {
+          "title": "Teacher as Learning Facilitator",
+          "content": "When teachers facilitate ImpersonaTu sessions, they can assess student understanding, guide historical thinking, and scaffold learning. Teachers observe both the role-player and peer facilitator, providing targeted support where needed.",
+          "bullet1": "👨‍🏫 Assess depth of historical knowledge through character portrayal",
+          "bullet2": "🎯 Guide students toward more sophisticated historical thinking",
+          "bullet3": "🔧 Provide scaffolding for complex historical concepts and perspectives",
+          "bullet4": "📈 Track student growth in empathy and historical understanding"
+        },
+        "reflectionAndGrowth": {
+          "title": "Reflection and Metacognitive Growth",
+          "content": "The reflection phase encourages metacognitive awareness as students analyze their learning process, character development choices, and historical understanding. This self-awareness accelerates learning and builds transferable thinking skills.",
+          "bullet1": "🤔 Structured reflection on character development and historical accuracy",
+          "bullet2": "🎯 AI feedback provides objective analysis of historical reasoning",
+          "bullet3": "📈 Identify personal learning patterns and areas for improvement",
+          "bullet4": "🔄 Set goals for future role-playing and historical inquiry"
+        },
+        "examples": {
+          "title": "Implementation Examples",
+          "content": "Here are effective ways to use ImpersonaTu in different educational contexts, emphasizing peer learning, critical thinking, and collaborative review for maximum educational impact.",
+          "bullet1": "🏛️ History: Student embodies Lincoln while peer facilitates Civil War dialogue",
+          "bullet2": "🔬 Science: Role-play Darwin discussing evolution with peer asking probing questions",
+          "bullet3": "📚 Literature: Embody Shakespeare while peer guides discussion of artistic choices",
+          "bullet4": "🌍 Social Studies: Historical figures debate modern issues with peer facilitation"
+        }
+      }
+    },
+    "wikiInterview": {
+      "title": "Wiki-Interview Tutorial",
+      "subtitle": "Master collaborative debate moderation and critical thinking through AI-powered Wikipedia character debates",
+      "startApp": "Start Wiki-Interview",
+      "slides": {
+        "welcome": {
+          "title": "Welcome to Wiki-Interview",
+          "content": "Wiki-Interview is a collaborative educational tool where students become moderators of debates between AI characters representing Wikipedia pages. This innovative approach develops moderation skills, critical thinking, and argumentative analysis through peer learning and guided reflection.",
+          "bullet1": "🎭 Moderate debates between AI-powered Wikipedia characters",
+          "bullet2": "👥 Collaborative learning with teacher or peer guidance",
+          "bullet3": "🧠 Develop critical thinking and argumentation analysis skills",
+          "bullet4": "📊 Structured reflection and peer evaluation process"
+        },
+        "moderatorRole": {
+          "title": "The Student as Debate Moderator",
+          "content": "Students take on the crucial role of debate moderator, learning to guide discussions, ask probing questions, and maintain productive dialogue between opposing AI characters. This develops leadership and critical thinking skills.",
+          "bullet1": "🎯 Guide debate flow and ensure balanced participation",
+          "bullet2": "❓ Ask strategic questions to deepen the discussion",
+          "bullet3": "⚖️ Maintain neutrality while exploring different perspectives",
+          "bullet4": "🔍 Identify key arguments and logical reasoning patterns"
+        },
+        "peerCollaboration": {
+          "title": "Peer Learning and Teacher Guidance",
+          "content": "The most effective use involves a teacher or peer collaborator who helps select stimulating debate topics and opposing characters, then observes and guides the student's moderation process through real-time feedback and reflection.",
+          "bullet1": "👨‍🏫 Teacher/peer selects engaging, contrasting characters and topics",
+          "bullet2": "👁️ Collaborative observation of moderation techniques and strategies",
+          "bullet3": "💭 Real-time guidance on questioning techniques and debate flow",
+          "bullet4": "🤝 Shared reflection on argument quality and logical reasoning"
+        },
+        "setupDebate": {
+          "title": "Setting Up Stimulating Debates",
+          "content": "The key to effective learning is selecting contrasting Wikipedia characters and controversial topics that will generate meaningful debate. Teachers and peers play a crucial role in this preparation phase.",
+          "bullet1": "⚔️ Choose opposing historical figures or contrasting concepts",
+          "bullet2": "🎯 Select topics that highlight different perspectives and values",
+          "bullet3": "📚 Consider characters from different time periods or ideologies",
+          "bullet4": "🌍 Include diverse cultural and intellectual perspectives"
+        },
+        "moderationSkills": {
+          "title": "Developing Advanced Moderation Skills",
+          "content": "Through practice, students develop sophisticated moderation techniques including strategic questioning, conflict resolution, and the ability to extract deeper insights from debates.",
+          "bullet1": "🗣️ Learn to ask follow-up questions that reveal underlying assumptions",
+          "bullet2": "🎭 Practice managing different personality types and debate styles",
+          "bullet3": "🔄 Develop skills in redirecting unproductive arguments",
+          "bullet4": "📈 Build confidence in facilitating complex discussions"
+        },
+        "criticalThinking": {
+          "title": "Critical Thinking Through Argument Analysis",
+          "content": "Students analyze the quality of arguments, identify logical fallacies, and evaluate evidence presented by AI characters. This develops sophisticated critical thinking skills applicable across disciplines.",
+          "bullet1": "🔍 Identify logical fallacies and weak reasoning in real-time",
+          "bullet2": "📊 Evaluate the strength of evidence and supporting arguments",
+          "bullet3": "⚖️ Compare and contrast different argumentative approaches",
+          "bullet4": "🧩 Synthesize complex ideas from multiple perspectives"
+        },
+        "reflection": {
+          "title": "Collaborative Reflection and Self-Assessment 2.0",
+          "content": "The activity concludes with enhanced reflection where both student and teacher/peer analyze the debate quality, moderation effectiveness, and learning outcomes. This 'Self-Assessment 2.0' promotes metacognitive growth.",
+          "bullet1": "🤔 Analyze which AI responses were most/least convincing and why",
+          "bullet2": "📝 Reflect on moderation techniques that were most effective",
+          "bullet3": "🎯 Identify missed opportunities for deeper questioning",
+          "bullet4": "🔄 Set goals for improving future moderation and critical analysis"
+        },
+        "applications": {
+          "title": "Why Use AI Debates Instead of Human Debates?",
+          "content": "AI debates complement human interaction by providing a safe practice environment for shy students, enabling remote learning, building trust between teachers and students, and serving as preparation for real human debates.",
+          "bullet1": "🛡️ Safe practice environment for shy or hesitant students",
+          "bullet2": "🌐 Enables effective remote and distance learning scenarios",
+          "bullet3": "🤝 Builds trust and confidence before engaging in human debates",
+          "bullet4": "🎓 Serves as preparation and training for real peer-to-peer debates"
+        }
+      }
+    }
   }
 }

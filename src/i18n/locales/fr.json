@@ -16,7 +16,6 @@
     "open": "Ouvrir",
     "back": "Retour",
     "next": "Suivant",
-    "previous": "Précédent",
     "continue": "Continuer",
     "finish": "Terminer",
     "start": "Commencer",
@@ -77,7 +76,11 @@
     },
     "reflectionPlaceholder": "Écrivez votre réflexion ici...",
     "submitReflection": "Soumettre la Réflexion",
-    "reflectOnExperience": "Réfléchissez à votre expérience et à ce que vous avez appris."
+    "reflectOnExperience": "Réfléchissez sur votre expérience et ce que vous avez appris.",
+    "viewTutorial": "Voir le Tutoriel",
+    "slide": "Diapositive",
+    "progress": "Progrès",
+    "previous": "Précédent"
   },
   "navigation": {
     "home": "Accueil",
@@ -742,11 +745,572 @@
     "section5": {
       "title": "IA Démocratique et Accessible : Un Engagement Concret",
       "content": "Nous voulons qu'une éducation améliorée par l'IA soit à la portée de tous. C'est pourquoi nous nous engageons à maintenir notre technologie accessible et abordable. Notre choix d'utiliser des ressources comme Wikipédia, pour l'instant, n'est pas anodin : nous croyons au savoir partagé et à l'importance des outils universellement disponibles. Pour soutenir cette vision, nous reversons 1,5 % de nos revenus à Wikipédia, contribuant ainsi à soutenir la plus grande encyclopédie libre du monde et sa contribution inestimable à l'éducation mondiale."
+    }
+  },
+  "tutorials": {
+    "wikiInterview": {
+      "title": "Tutoriel Wiki-Interview",
+      "subtitle": "Maîtrisez la modération de débat collaboratif et la pensée critique grâce à des débats de personnages Wikipedia alimentés par l'IA",
+      "startApp": "Démarrer Wiki-Interview",
+      "slides": {
+        "welcome": {
+          "title": "Bienvenue sur Wiki-Interview",
+          "content": "Wiki-Interview est un outil éducatif collaboratif où les étudiants deviennent modérateurs de débats entre des personnages IA représentant des pages Wikipedia. Cette approche innovante développe les compétences de modération, la pensée critique et l'analyse argumentative par l'apprentissage entre pairs et la réflexion guidée.",
+          "bullet1": "🎭 Modérez des débats entre des personnages Wikipedia alimentés par l'IA",
+          "bullet2": "👥 Apprentissage collaboratif avec l'aide d'un enseignant ou d'un pair",
+          "bullet3": "🧠 Développez la pensée critique et les compétences d'analyse argumentative",
+          "bullet4": "📊 Processus structuré de réflexion et d'évaluation par les pairs"
+        },
+        "moderatorRole": {
+          "title": "L'Étudiant en tant que Modérateur de Débat",
+          "content": "Les étudiants endossent le rôle crucial de modérateur de débat, apprenant à guider les discussions, à poser des questions approfondies et à maintenir un dialogue productif entre des personnages IA opposés. Cela développe le leadership et les compétences de pensée critique.",
+          "bullet1": "🎯 Guidez le déroulement du débat et assurez une participation équilibrée",
+          "bullet2": "❓ Posez des questions stratégiques pour approfondir la discussion",
+          "bullet3": "⚖️ Maintenez la neutralité tout en explorant différentes perspectives",
+          "bullet4": "🔍 Identifiez les arguments clés et les schémas de raisonnement logique"
+        },
+        "peerCollaboration": {
+          "title": "Apprentissage par les Pairs et Accompagnement de l'Enseignant",
+          "content": "L'utilisation la plus efficace implique un enseignant ou un pair collaborateur qui aide à sélectionner des sujets de débat stimulants et des personnages opposés, puis observe et guide le processus de modération de l'étudiant par des retours et une réflexion en temps réel.",
+          "bullet1": "👨‍🏫 L'enseignant/le pair sélectionne des personnages et des sujets attrayants et contrastés",
+          "bullet2": "👁️ Observation collaborative des techniques et stratégies de modération",
+          "bullet3": "💭 Accompagnement en temps réel sur les techniques de questionnement et le déroulement du débat",
+          "bullet4": "🤝 Réflexion partagée sur la qualité des arguments et le raisonnement logique"
+        },
+        "setupDebate": {
+          "title": "Mise en Place de Débats Stimulants",
+          "content": "La clé d'un apprentissage efficace est de sélectionner des personnages Wikipedia contrastés et des sujets controversés qui généreront un débat significatif. Les enseignants et les pairs jouent un rôle crucial dans cette phase de préparation.",
+          "bullet1": "⚔️ Choisissez des figures historiques opposées ou des concepts contrastés",
+          "bullet2": "🎯 Sélectionnez des sujets qui mettent en évidence différentes perspectives et valeurs",
+          "bullet3": "📚 Envisagez des personnages de différentes époques ou idéologies",
+          "bullet4": "🌍 Incluez diverses perspectives culturelles et intellectuelles"
+        },
+        "moderationSkills": {
+          "title": "Développement de Compétences de Modération Avancées",
+          "content": "Grâce à la pratique, les étudiants développent des techniques de modération sophistiquées, notamment le questionnement stratégique, la résolution de conflits et la capacité à extraire des idées plus profondes des débats.",
+          "bullet1": "🗣️ Apprenez à poser des questions de suivi qui révèlent les hypothèses sous-jacentes",
+          "bullet2": "🎭 Entraînez-vous à gérer différents types de personnalité et styles de débat",
+          "bullet3": "🔄 Développez des compétences pour réorienter les arguments improductifs",
+          "bullet4": "📈 Renforcez votre confiance pour animer des discussions complexes"
+        },
+        "criticalThinking": {
+          "title": "Pensée Critique par l'Analyse d'Arguments",
+          "content": "Les étudiants analysent la qualité des arguments, identifient les sophismes logiques et évaluent les preuves présentées par les personnages IA. Cela développe des compétences de pensée critique sophistiquées applicables à toutes les disciplines.",
+          "bullet1": "🔍 Identifiez les sophismes logiques et les raisonnements faibles en temps réel",
+          "bullet2": "📊 Évaluez la force des preuves et des arguments à l'appui",
+          "bullet3": "⚖️ Comparez et contrastez différentes approches argumentatives",
+          "bullet4": "🧩 Synthétisez des idées complexes à partir de multiples perspectives"
+        },
+        "reflection": {
+          "title": "Réflexion Collaborative et Auto-évaluation 2.0",
+          "content": "L'activité se termine par une réflexion améliorée où l'étudiant et l'enseignant/le pair analysent la qualité du débat, l'efficacité de la modération et les résultats d'apprentissage. Cette 'Auto-évaluation 2.0' favorise la croissance métacognitive.",
+          "bullet1": "🤔 Analysez quelles réponses de l'IA ont été les plus/moins convaincantes et pourquoi",
+          "bullet2": "📝 Réfléchissez aux techniques de modération qui ont été les plus efficaces",
+          "bullet3": "🎯 Identifiez les occasions manquées de poser des questions plus approfondies",
+          "bullet4": "🔄 Fixez des objectifs pour améliorer la modération et l'analyse critique futures"
+        },
+        "applications": {
+          "title": "Pourquoi Utiliser des Débats IA plutôt que des Débats Humains ?",
+          "content": "Les débats IA complètent l'interaction humaine en offrant un environnement de pratique sûr pour les étudiants timides, en permettant l'apprentissage à distance, en renforçant la confiance entre enseignants et étudiants, et en servant de préparation aux débats humains réels.",
+          "bullet1": "🛡️ Environnement de pratique sûr pour les étudiants timides ou hésitants",
+          "bullet2": "🌐 Permet des scénarios d'apprentissage à distance et à distance efficaces",
+          "bullet3": "🤝 Renforce la confiance avant de s'engager dans des débats humains",
+          "bullet4": "🎓 Sert de préparation et d'entraînement pour les débats réels entre pairs"
+        }
+      }
     },
-    "section6": {
-      "title": "Un Avenir d'Apprentissage Collaboratif et Inclusif",
-      "content": "Notre objectif social est de construire un avenir où l'IA est un allié puissant pour les élèves et les enseignants, faisant de l'apprentissage une aventure passionnante, personnalisée et, surtout, accessible à tous."
+    "impersonaTu": {
+      "title": "Tutoriel Wiki-Interview",
+      "subtitle": "Maîtrisez la modération de débat collaboratif et la pensée critique grâce à des débats de personnages Wikipedia alimentés par l'IA",
+      "startApp": "Démarrer Wiki-Interview",
+      "slides": {
+        "welcome": {
+          "title": "Bienvenue sur Wiki-Interview",
+          "content": "Wiki-Interview est un outil éducatif collaboratif où les étudiants deviennent modérateurs de débats entre des personnages IA représentant des pages Wikipedia. Cette approche innovante développe les compétences de modération, la pensée critique et l'analyse argumentative par l'apprentissage entre pairs et la réflexion guidée.",
+          "bullet1": "🎭 Modérez des débats entre des personnages Wikipedia alimentés par l'IA",
+          "bullet2": "👥 Apprentissage collaboratif avec l'aide d'un enseignant ou d'un pair",
+          "bullet3": "🧠 Développez la pensée critique et les compétences d'analyse argumentative",
+          "bullet4": "📊 Processus structuré de réflexion et d'évaluation par les pairs"
+        },
+        "moderatorRole": {
+          "title": "L'Étudiant en tant que Modérateur de Débat",
+          "content": "Les étudiants endossent le rôle crucial de modérateur de débat, apprenant à guider les discussions, à poser des questions approfondies et à maintenir un dialogue productif entre des personnages IA opposés. Cela développe le leadership et les compétences de pensée critique.",
+          "bullet1": "🎯 Guidez le déroulement du débat et assurez une participation équilibrée",
+          "bullet2": "❓ Posez des questions stratégiques pour approfondir la discussion",
+          "bullet3": "⚖️ Maintenez la neutralité tout en explorant différentes perspectives",
+          "bullet4": "🔍 Identifiez les arguments clés et les schémas de raisonnement logique"
+        },
+        "peerCollaboration": {
+          "title": "Apprentissage par les Pairs et Accompagnement de l'Enseignant",
+          "content": "L'utilisation la plus efficace implique un enseignant ou un pair collaborateur qui aide à sélectionner des sujets de débat stimulants et des personnages opposés, puis observe et guide le processus de modération de l'étudiant par des retours et une réflexion en temps réel.",
+          "bullet1": "👨‍🏫 L'enseignant/le pair sélectionne des personnages et des sujets attrayants et contrastés",
+          "bullet2": "👁️ Observation collaborative des techniques et stratégies de modération",
+          "bullet3": "💭 Accompagnement en temps réel sur les techniques de questionnement et le déroulement du débat",
+          "bullet4": "🤝 Réflexion partagée sur la qualité des arguments et le raisonnement logique"
+        },
+        "setupDebate": {
+          "title": "Mise en Place de Débats Stimulants",
+          "content": "La clé d'un apprentissage efficace est de sélectionner des personnages Wikipedia contrastés et des sujets controversés qui généreront un débat significatif. Les enseignants et les pairs jouent un rôle crucial dans cette phase de préparation.",
+          "bullet1": "⚔️ Choisissez des figures historiques opposées ou des concepts contrastés",
+          "bullet2": "🎯 Sélectionnez des sujets qui mettent en évidence différentes perspectives et valeurs",
+          "bullet3": "📚 Envisagez des personnages de différentes époques ou idéologies",
+          "bullet4": "🌍 Incluez diverses perspectives culturelles et intellectuelles"
+        },
+        "moderationSkills": {
+          "title": "Développement de Compétences de Modération Avancées",
+          "content": "Grâce à la pratique, les étudiants développent des techniques de modération sophistiquées, notamment le questionnement stratégique, la résolution de conflits et la capacité à extraire des idées plus profondes des débats.",
+          "bullet1": "🗣️ Apprenez à poser des questions de suivi qui révèlent les hypothèses sous-jacentes",
+          "bullet2": "🎭 Entraînez-vous à gérer différents types de personnalité et styles de débat",
+          "bullet3": "🔄 Développez des compétences pour réorienter les arguments improductifs",
+          "bullet4": "📈 Renforcez votre confiance pour animer des discussions complexes"
+        },
+        "criticalThinking": {
+          "title": "Pensée Critique par l'Analyse d'Arguments",
+          "content": "Les étudiants analysent la qualité des arguments, identifient les sophismes logiques et évaluent les preuves présentées par les personnages IA. Cela développe des compétences de pensée critique sophistiquées applicables à toutes les disciplines.",
+          "bullet1": "🔍 Identifiez les sophismes logiques et les raisonnements faibles en temps réel",
+          "bullet2": "📊 Évaluez la force des preuves et des arguments à l'appui",
+          "bullet3": "⚖️ Comparez et contrastez différentes approches argumentatives",
+          "bullet4": "🧩 Synthétisez des idées complexes à partir de multiples perspectives"
+        },
+        "reflection": {
+          "title": "Réflexion Collaborative et Auto-évaluation 2.0",
+          "content": "L'activité se termine par une réflexion améliorée où l'étudiant et l'enseignant/le pair analysent la qualité du débat, l'efficacité de la modération et les résultats d'apprentissage. Cette 'Auto-évaluation 2.0' favorise la croissance métacognitive.",
+          "bullet1": "🤔 Analysez quelles réponses de l'IA ont été les plus/moins convaincantes et pourquoi",
+          "bullet2": "📝 Réfléchissez aux techniques de modération qui ont été les plus efficaces",
+          "bullet3": "🎯 Identifiez les occasions manquées de poser des questions plus approfondies",
+          "bullet4": "🔄 Fixez des objectifs pour améliorer la modération et l'analyse critique futures"
+        },
+        "applications": {
+          "title": "Pourquoi Utiliser des Débats IA plutôt que des Débats Humains ?",
+          "content": "Les débats IA complètent l'interaction humaine en offrant un environnement de pratique sûr pour les étudiants timides, en permettant l'apprentissage à distance, en renforçant la confiance entre enseignants et étudiants, et en servant de préparation aux débats humains réels.",
+          "bullet1": "🛡️ Environnement de pratique sûr pour les étudiants timides ou hésitants",
+          "bullet2": "🌐 Permet des scénarios d'apprentissage à distance et à distance efficaces",
+          "bullet3": "🤝 Renforce la confiance avant de s'engager dans des débats humains",
+          "bullet4": "🎓 Sert de préparation et d'entraînement pour les débats réels entre pairs"
+        }
+      }
     },
-    "supportButton": "Soutenez-nous"
+    "personaggioMisterioso": {
+    "wikiInterview": {
+      "title": "Tutoriel Wiki-Interview",
+      "subtitle": "Maîtrisez la modération de débat collaboratif et la pensée critique grâce à des débats de personnages Wikipedia alimentés par l'IA",
+      "startApp": "Démarrer Wiki-Interview",
+      "slides": {
+        "welcome": {
+          "title": "Bienvenue sur Wiki-Interview",
+          "content": "Wiki-Interview est un outil éducatif collaboratif où les étudiants deviennent modérateurs de débats entre des personnages IA représentant des pages Wikipedia. Cette approche innovante développe les compétences de modération, la pensée critique et l'analyse argumentative par l'apprentissage entre pairs et la réflexion guidée.",
+          "bullet1": "🎭 Modérez des débats entre des personnages Wikipedia alimentés par l'IA",
+          "bullet2": "👥 Apprentissage collaboratif avec l'aide d'un enseignant ou d'un pair",
+          "bullet3": "🧠 Développez la pensée critique et les compétences d'analyse argumentative",
+          "bullet4": "📊 Processus structuré de réflexion et d'évaluation par les pairs"
+        },
+        "moderatorRole": {
+          "title": "L'Étudiant en tant que Modérateur de Débat",
+          "content": "Les étudiants endossent le rôle crucial de modérateur de débat, apprenant à guider les discussions, à poser des questions approfondies et à maintenir un dialogue productif entre des personnages IA opposés. Cela développe le leadership et les compétences de pensée critique.",
+          "bullet1": "🎯 Guidez le déroulement du débat et assurez une participation équilibrée",
+          "bullet2": "❓ Posez des questions stratégiques pour approfondir la discussion",
+          "bullet3": "⚖️ Maintenez la neutralité tout en explorant différentes perspectives",
+          "bullet4": "🔍 Identifiez les arguments clés et les schémas de raisonnement logique"
+        },
+        "peerCollaboration": {
+          "title": "Apprentissage par les Pairs et Accompagnement de l'Enseignant",
+          "content": "L'utilisation la plus efficace implique un enseignant ou un pair collaborateur qui aide à sélectionner des sujets de débat stimulants et des personnages opposés, puis observe et guide le processus de modération de l'étudiant par des retours et une réflexion en temps réel.",
+          "bullet1": "👨‍🏫 L'enseignant/le pair sélectionne des personnages et des sujets attrayants et contrastés",
+          "bullet2": "👁️ Observation collaborative des techniques et stratégies de modération",
+          "bullet3": "💭 Accompagnement en temps réel sur les techniques de questionnement et le déroulement du débat",
+          "bullet4": "🤝 Réflexion partagée sur la qualité des arguments et le raisonnement logique"
+        },
+        "setupDebate": {
+          "title": "Mise en Place de Débats Stimulants",
+          "content": "La clé d'un apprentissage efficace est de sélectionner des personnages Wikipedia contrastés et des sujets controversés qui généreront un débat significatif. Les enseignants et les pairs jouent un rôle crucial dans cette phase de préparation.",
+          "bullet1": "⚔️ Choisissez des figures historiques opposées ou des concepts contrastés",
+          "bullet2": "🎯 Sélectionnez des sujets qui mettent en évidence différentes perspectives et valeurs",
+          "bullet3": "📚 Envisagez des personnages de différentes époques ou idéologies",
+          "bullet4": "🌍 Incluez diverses perspectives culturelles et intellectuelles"
+        },
+        "moderationSkills": {
+          "title": "Développement de Compétences de Modération Avancées",
+          "content": "Grâce à la pratique, les étudiants développent des techniques de modération sophistiquées, notamment le questionnement stratégique, la résolution de conflits et la capacité à extraire des idées plus profondes des débats.",
+          "bullet1": "🗣️ Apprenez à poser des questions de suivi qui révèlent les hypothèses sous-jacentes",
+          "bullet2": "🎭 Entraînez-vous à gérer différents types de personnalité et styles de débat",
+          "bullet3": "🔄 Développez des compétences pour réorienter les arguments improductifs",
+          "bullet4": "📈 Renforcez votre confiance pour animer des discussions complexes"
+        },
+        "criticalThinking": {
+          "title": "Pensée Critique par l'Analyse d'Arguments",
+          "content": "Les étudiants analysent la qualité des arguments, identifient les sophismes logiques et évaluent les preuves présentées par les personnages IA. Cela développe des compétences de pensée critique sophistiquées applicables à toutes les disciplines.",
+          "bullet1": "🔍 Identifiez les sophismes logiques et les raisonnements faibles en temps réel",
+          "bullet2": "📊 Évaluez la force des preuves et des arguments à l'appui",
+          "bullet3": "⚖️ Comparez et contrastez différentes approches argumentatives",
+          "bullet4": "🧩 Synthétisez des idées complexes à partir de multiples perspectives"
+        },
+        "reflection": {
+          "title": "Réflexion Collaborative et Auto-évaluation 2.0",
+          "content": "L'activité se termine par une réflexion améliorée où l'étudiant et l'enseignant/le pair analysent la qualité du débat, l'efficacité de la modération et les résultats d'apprentissage. Cette 'Auto-évaluation 2.0' favorise la croissance métacognitive.",
+          "bullet1": "🤔 Analysez quelles réponses de l'IA ont été les plus/moins convaincantes et pourquoi",
+          "bullet2": "📝 Réfléchissez aux techniques de modération qui ont été les plus efficaces",
+          "bullet3": "🎯 Identifiez les occasions manquées de poser des questions plus approfondies",
+          "bullet4": "🔄 Fixez des objectifs pour améliorer la modération et l'analyse critique futures"
+        },
+        "applications": {
+          "title": "Pourquoi Utiliser des Débats IA plutôt que des Débats Humains ?",
+          "content": "Les débats IA complètent l'interaction humaine en offrant un environnement de pratique sûr pour les étudiants timides, en permettant l'apprentissage à distance, en renforçant la confiance entre enseignants et étudiants, et en servant de préparation aux débats humains réels.",
+          "bullet1": "🛡️ Environnement de pratique sûr pour les étudiants timides ou hésitants",
+          "bullet2": "🌐 Permet des scénarios d'apprentissage à distance et à distance efficaces",
+          "bullet3": "🤝 Renforce la confiance avant de s'engager dans des débats humains",
+          "bullet4": "🎓 Sert de préparation et d'entraînement pour les débats réels entre pairs"
+        }
+      }
+    },
+    "personaggioMisterioso": {
+    "personaggioMisterioso": {
+      "title": "Tutoriel Personnage Mystérieux",
+      "subtitle": "Apprenez à utiliser le jeu de devinette du personnage mystérieux",
+      "startApp": "Démarrer le Jeu Personnage Mystérieux",
+      "slides": {
+        "welcome": {
+          "title": "Bienvenue dans Personnage Mystérieux",
+          "content": "Personnage Mystérieux est un jeu éducatif collaboratif conçu pour les paires - où une personne (enseignant, tuteur ou pair) facilite tandis que l'autre joue. Ensemble, vous développerez la pensée critique et les compétences d'interrogation en identifiant des figures historiques par des questions stratégiques.",
+          "bullet1": "👥 Expérience d'apprentissage collaboratif en paire",
+          "bullet2": "🎯 Développez ensemble des techniques d'interrogation stratégique",
+          "bullet3": "📚 Apprenez sur les figures historiques par interaction guidée",
+          "bullet4": "🧠 Améliorez la pensée critique par réflexion et discussion"
+        },
+        "howItWorks": {
+          "title": "Comment Fonctionne le Jeu Collaboratif",
+          "content": "Ceci est une activité en paire où les rôles sont clairement définis. Le facilitateur guide le processus d'apprentissage tandis que le joueur interact avec le personnage IA.",
+          "bullet1": "👨‍🏫 Le facilitateur (enseignant/tuteur/pair) sélectionne secrètement le personnage",
+          "bullet2": "🎮 Le joueur pose des questions pour deviner l'identité du personnage",
+          "bullet3": "💭 Le joueur pense à voix haute tandis que le facilitateur guide le processus",
+          "bullet4": "🤝 Les deux discutent des stratégies et réfléchissent ensemble"
+        },
+        "selectCharacter": {
+          "title": "Étape 1 : Sélectionnez votre Personnage",
+          "content": "Choisissez parmi une vaste base de données de figures historiques provenant de Wikipédia. L'IA incarnera ce personnage et répondra authentiquement à vos questions.",
+          "bullet1": "🔍 Rechercher parmi des milliers de figures historiques",
+          "bullet2": "📖 Les personnages incluent politiciens, scientifiques, artistes et plus",
+          "bullet3": "🌍 Couvre des figures de toutes cultures et périodes historiques"
+        },
+        "askQuestions": {
+          "title": "Étape 2 : Posez des Questions Stratégiques",
+          "content": "Utilisez sagement vos questions limitées ! Le personnage IA répondra en caractère, vous donnant des indices sans révéler directement son identité.",
+          "bullet1": "🤔 Demander sur la période historique, profession ou réalisations",
+          "bullet2": "🌍 S'enquérir de la localisation géographique ou nationalité",
+          "bullet3": "⏰ Questions sur les événements historiques qu'ils ont témoignés",
+          "bullet4": "🎭 Demander sur leur personnalité ou citations célèbres"
+        },
+        "technology": {
+          "title": "Technologie IA Derrière le Jeu",
+          "content": "Le jeu utilise des modèles de langage IA avancés pour créer des interactions authentiques de personnages basées sur le contenu de Wikipédia et le contexte historique.",
+          "bullet1": "🤖 Grands Modèles de Langage (LLM) pour conversation naturelle",
+          "bullet2": "📚 Intégration Wikipédia pour informations historiques précises",
+          "bullet3": "🎭 Incarnation du personnage par ingénierie de prompts",
+          "bullet4": "🔄 Réponses adaptatives en temps réel basées sur le contexte de conversation"
+        },
+        "classroomUse": {
+          "title": "Applications Éducatives",
+          "content": "Cet outil transforme les leçons d'histoire traditionnelles en expériences interactives qui engagent les étudiants et promeuvent l'apprentissage actif.",
+          "bullet1": "👥 Activités individuelles ou en équipe en classe",
+          "bullet2": "📝 Développe les compétences de recherche et d'interrogation",
+          "bullet3": "🎯 Encourage la pensée stratégique et la formation d'hypothèses",
+          "bullet4": "💭 Promeut la réflexion et la conscience métacognitive"
+        },
+        "examples": {
+          "title": "Exemples d'Implémentation Collaborative",
+          "content": "Voici des façons efficaces d'utiliser Personnage Mystérieux comme outil d'apprentissage collaboratif dans différents contextes éducatifs.",
+          "bullet1": "👨‍🏫 Paires enseignant-étudiant : L'enseignant guide les stratégies d'interrogation",
+          "bullet2": "👫 Tutorat entre pairs : Étudiant avancé fait de mentor à celui en difficulté",
+          "bullet3": "👨‍👩‍👧‍👦 Apprentissage parent-enfant : Activité éducative de lien familial",
+          "bullet4": "🎓 Groupes d'étude : Les étudiants alternent comme facilitateur et joueur"
+        }
+      }
+    },
+    "convinciTu": {
+      "title": "Tutoriel Convince YOU",
+      "subtitle": "Maîtrisez l'art de la persuasion et préparation aux débats",
+      "startApp": "Démarrer le Jeu Convince YOU",
+      "slides": {
+        "welcome": {
+          "title": "Bienvenue dans Convince YOU",
+          "content": "Convince YOU est un outil collaboratif d'entraînement à la persuasion où les étudiants pratiquent les compétences de débat en convaincant des figures historiques IA. Parfait pour la préparation aux débats, l'analyse d'arguments et l'apprentissage collaboratif avec enseignants ou pairs.",
+          "bullet1": "🎯 Pratiquez les compétences de persuasion et d'argumentation",
+          "bullet2": "👥 Apprentissage collaboratif avec guide enseignant ou pair",
+          "bullet3": "🧠 Préparation pour débats et discussions réels",
+          "bullet4": "📊 Auto-évaluation et fonctions d'auto-réflexion"
+        },
+        "howItWorks": {
+          "title": "Comment Fonctionne le Processus Collaboratif",
+          "content": "Conçu comme activité en paire où un facilitateur (enseignant ou pair) sélectionne des arguments défiants tandis que l'étudiant pratique les techniques de persuasion dans un environnement sécurisé.",
+          "bullet1": "👨‍🏫 Le facilitateur sélectionne personnage et sujet d'argument défiant",
+          "bullet2": "🎮 L'étudiant tente de convaincre le personnage IA",
+          "bullet3": "👁️ Les deux observent et discutent les stratégies de persuasion utilisées",
+          "bullet4": "🔄 Tentatives illimitées pour affiner les compétences argumentatives"
+        },
+        "debatePreparation": {
+          "title": "Parfait pour la Préparation aux Débats",
+          "content": "Utilisez cet outil comme pratique avant de vrais débats. Les étudiants peuvent tester leurs arguments, affiner les techniques de persuasion et construire la confiance dans un environnement à faible risque.",
+          "bullet1": "🏋️ Pratiquez arguments avant débats ou présentations réels",
+          "bullet2": "💪 Construisez confiance en persuasion et argumentation",
+          "bullet3": "🔍 Testez différentes stratégies et approches de persuasion",
+          "bullet4": "📈 Améliorez par pratique itérative et rétroaction"
+        },
+        "collaborativeLearning": {
+          "title": "Bénéfices de l'Apprentissage Collaboratif",
+          "content": "Quand utilisé avec un facilitateur, devient un outil puissant pour apprentissage guidé, où les étudiants peuvent recevoir rétroaction en temps réel et guidance stratégique.",
+          "bullet1": "👥 L'enseignant peut évaluer la profondeur réelle de connaissance de l'étudiant",
+          "bullet2": "🤝 Apprentissage entre pairs par observation et discussion",
+          "bullet3": "💡 Le facilitateur peut suggérer stratégies argumentatives alternatives",
+          "bullet4": "🎯 Rétroaction immédiate sur efficacité de persuasion"
+        },
+        "visibleThinking": {
+          "title": "Rendre la Pensée Visible",
+          "content": "Encouragez les étudiants à verbaliser leur processus de pensée pendant les tentatives de persuasion. Cela rend l'apprentissage visible tant pour l'étudiant que pour le facilitateur, améliorant la valeur éducative.",
+          "bullet1": "🗣️ L'étudiant explique le raisonnement : 'Je pense que cette approche fonctionnera parce que...'",
+          "bullet2": "👂 Le facilitateur observe la construction d'argument en temps réel",
+          "bullet3": "🔍 Identifie lacunes dans connaissance ou logique immédiatement",
+          "bullet4": "📝 Documente stratégies de persuasion réussies pour usage futur"
+        },
+        "teacherEvaluation": {
+          "title": "Outil d'Évaluation pour Enseignants",
+          "content": "Les enseignants peuvent l'utiliser pour évaluer à quel point les étudiants comprennent vraiment les sujets et peuvent appliquer leur connaissance de manière persuasive dans des scénarios défiants.",
+          "bullet1": "📊 Évalue profondeur de compréhension de l'étudiant au-delà de mémorisation",
+          "bullet2": "🎭 Observe comment les étudiants appliquent connaissance en contextes persuasifs",
+          "bullet3": "💬 Évalue compétences argumentatives et de pensée critique",
+          "bullet4": "📈 Suit amélioration des compétences de persuasion dans le temps"
+        },
+        "selfReflection": {
+          "title": "Auto-Évaluation et Auto-Réflexion",
+          "content": "L'activité se conclut avec auto-réflexion structurée et évaluation IA, aidant les étudiants à analyser leurs tentatives de persuasion et identifier zones d'amélioration.",
+          "bullet1": "🤔 Réflexion structurée sur stratégies de persuasion utilisées",
+          "bullet2": "🤖 L'IA fournit rétroaction objective sur efficacité d'argument",
+          "bullet3": "📝 Identifie techniques réussies et zones d'amélioration",
+          "bullet4": "🎯 Établit objectifs pour futures activités de persuasion et débat"
+        },
+        "examples": {
+          "title": "Exemples d'Implémentation",
+          "content": "Voici des façons efficaces d'utiliser Convince YOU dans différents contextes éducatifs, de la pratique individuelle aux scénarios d'apprentissage collaboratif.",
+          "bullet1": "🏛️ Histoire : Convaincre Marx que le capitalisme favorise le progrès",
+          "bullet2": "🔬 Science : Persuader Galilée de reconsidérer ses théories astronomiques",
+          "bullet3": "📚 Littérature : Convaincre Shakespeare d'écrire en anglais moderne",
+          "bullet4": "🌍 Événements actuels : Persuader figures historiques sur questions modernes"
+        }
+      }
+    },
+    "wikiInterview": {
+      "title": "Tutoriel Wiki-Interview",
+      "subtitle": "Maîtrisez la modération de débat collaboratif et la pensée critique grâce à des débats de personnages Wikipedia alimentés par l'IA",
+      "startApp": "Démarrer Wiki-Interview",
+      "slides": {
+        "welcome": {
+          "title": "Bienvenue sur Wiki-Interview",
+          "content": "Wiki-Interview est un outil éducatif collaboratif où les étudiants deviennent modérateurs de débats entre des personnages IA représentant des pages Wikipedia. Cette approche innovante développe les compétences de modération, la pensée critique et l'analyse argumentative par l'apprentissage entre pairs et la réflexion guidée.",
+          "bullet1": "🎭 Modérez des débats entre des personnages Wikipedia alimentés par l'IA",
+          "bullet2": "👥 Apprentissage collaboratif avec l'aide d'un enseignant ou d'un pair",
+          "bullet3": "🧠 Développez la pensée critique et les compétences d'analyse argumentative",
+          "bullet4": "📊 Processus structuré de réflexion et d'évaluation par les pairs"
+        },
+        "moderatorRole": {
+          "title": "L'Étudiant en tant que Modérateur de Débat",
+          "content": "Les étudiants endossent le rôle crucial de modérateur de débat, apprenant à guider les discussions, à poser des questions approfondies et à maintenir un dialogue productif entre des personnages IA opposés. Cela développe le leadership et les compétences de pensée critique.",
+          "bullet1": "🎯 Guidez le déroulement du débat et assurez une participation équilibrée",
+          "bullet2": "❓ Posez des questions stratégiques pour approfondir la discussion",
+          "bullet3": "⚖️ Maintenez la neutralité tout en explorant différentes perspectives",
+          "bullet4": "🔍 Identifiez les arguments clés et les schémas de raisonnement logique"
+        },
+        "peerCollaboration": {
+          "title": "Apprentissage par les Pairs et Accompagnement de l'Enseignant",
+          "content": "L'utilisation la plus efficace implique un enseignant ou un pair collaborateur qui aide à sélectionner des sujets de débat stimulants et des personnages opposés, puis observe et guide le processus de modération de l'étudiant par des retours et une réflexion en temps réel.",
+          "bullet1": "👨‍🏫 L'enseignant/le pair sélectionne des personnages et des sujets attrayants et contrastés",
+          "bullet2": "👁️ Observation collaborative des techniques et stratégies de modération",
+          "bullet3": "💭 Accompagnement en temps réel sur les techniques de questionnement et le déroulement du débat",
+          "bullet4": "🤝 Réflexion partagée sur la qualité des arguments et le raisonnement logique"
+        },
+        "setupDebate": {
+          "title": "Mise en Place de Débats Stimulants",
+          "content": "La clé d'un apprentissage efficace est de sélectionner des personnages Wikipedia contrastés et des sujets controversés qui généreront un débat significatif. Les enseignants et les pairs jouent un rôle crucial dans cette phase de préparation.",
+          "bullet1": "⚔️ Choisissez des figures historiques opposées ou des concepts contrastés",
+          "bullet2": "🎯 Sélectionnez des sujets qui mettent en évidence différentes perspectives et valeurs",
+          "bullet3": "📚 Envisagez des personnages de différentes époques ou idéologies",
+          "bullet4": "🌍 Incluez diverses perspectives culturelles et intellectuelles"
+        },
+        "moderationSkills": {
+          "title": "Développement de Compétences de Modération Avancées",
+          "content": "Grâce à la pratique, les étudiants développent des techniques de modération sophistiquées, notamment le questionnement stratégique, la résolution de conflits et la capacité à extraire des idées plus profondes des débats.",
+          "bullet1": "🗣️ Apprenez à poser des questions de suivi qui révèlent les hypothèses sous-jacentes",
+          "bullet2": "🎭 Entraînez-vous à gérer différents types de personnalité et styles de débat",
+          "bullet3": "🔄 Développez des compétences pour réorienter les arguments improductifs",
+          "bullet4": "📈 Renforcez votre confiance pour animer des discussions complexes"
+        },
+        "criticalThinking": {
+          "title": "Pensée Critique par l'Analyse d'Arguments",
+          "content": "Les étudiants analysent la qualité des arguments, identifient les sophismes logiques et évaluent les preuves présentées par les personnages IA. Cela développe des compétences de pensée critique sophistiquées applicables à toutes les disciplines.",
+          "bullet1": "🔍 Identifiez les sophismes logiques et les raisonnements faibles en temps réel",
+          "bullet2": "📊 Évaluez la force des preuves et des arguments à l'appui",
+          "bullet3": "⚖️ Comparez et contrastez différentes approches argumentatives",
+          "bullet4": "🧩 Synthétisez des idées complexes à partir de multiples perspectives"
+        },
+        "reflection": {
+          "title": "Réflexion Collaborative et Auto-évaluation 2.0",
+          "content": "L'activité se termine par une réflexion améliorée où l'étudiant et l'enseignant/le pair analysent la qualité du débat, l'efficacité de la modération et les résultats d'apprentissage. Cette 'Auto-évaluation 2.0' favorise la croissance métacognitive.",
+          "bullet1": "🤔 Analysez quelles réponses de l'IA ont été les plus/moins convaincantes et pourquoi",
+          "bullet2": "📝 Réfléchissez aux techniques de modération qui ont été les plus efficaces",
+          "bullet3": "🎯 Identifiez les occasions manquées de poser des questions plus approfondies",
+          "bullet4": "🔄 Fixez des objectifs pour améliorer la modération et l'analyse critique futures"
+        },
+        "applications": {
+          "title": "Pourquoi Utiliser des Débats IA plutôt que des Débats Humains ?",
+          "content": "Les débats IA complètent l'interaction humaine en offrant un environnement de pratique sûr pour les étudiants timides, en permettant l'apprentissage à distance, en renforçant la confiance entre enseignants et étudiants, et en servant de préparation aux débats humains réels.",
+          "bullet1": "🛡️ Environnement de pratique sûr pour les étudiants timides ou hésitants",
+          "bullet2": "🌐 Permet des scénarios d'apprentissage à distance et à distance efficaces",
+          "bullet3": "🤝 Renforce la confiance avant de s'engager dans des débats humains",
+          "bullet4": "🎓 Sert de préparation et d'entraînement pour les débats réels entre pairs"
+        }
+      }
+    }
+,
+    "ImpersonaTu": {
+      "title": "Tutoriel ImpersonaTu",
+      "subtitle": "Maîtrisez l'apprentissage par les pairs à travers le jeu de rôle historique et la pensée critique",
+      "startApp": "Démarrer le Jeu ImpersonaTu",
+      "slides": {
+        "welcome": {
+          "title": "Bienvenue dans ImpersonaTu",
+          "content": "ImpersonaTu est un outil collaboratif de jeu de rôle où les étudiants incarnent des figures historiques et s'engagent dans des dialogues significatifs. Cette app transforme l'apprentissage traditionnel en une expérience d'apprentissage par les pairs interactive qui développe l'empathie, la pensée critique et la compréhension historique à travers une facilitation guidée.",
+          "bullet1": "👥 Jeu de rôle collaboratif avec facilitation par pairs ou enseignant",
+          "bullet2": "🎭 Développe l'empathie en incarnant des perspectives historiques",
+          "bullet3": "🧠 Pensée critique renforcée à travers l'analyse de personnages",
+          "bullet4": "📚 Compréhension historique profonde à travers le dialogue immersif"
+        },
+        "peerLearning": {
+          "title": "Principes d'Apprentissage par les Pairs en Action",
+          "content": "L'apprentissage par les pairs se produit quand les étudiants apprennent de et avec les autres à travers une interaction structurée. Dans ImpersonaTu, un étudiant joue le rôle tandis qu'un facilitateur pair observe, questionne et guide le processus d'apprentissage, créant un puissant environnement d'apprentissage collaboratif.",
+          "bullet1": "🤝 Le facilitateur pair guide le développement du personnage et la précision historique",
+          "bullet2": "👂 Écoute active tandis que le facilitateur observe les stratégies de dialogue",
+          "bullet3": "💭 Construction partagée de connaissances à travers la réflexion collaborative",
+          "bullet4": "🔄 L'inversion des rôles permet aux deux étudiants d'expérimenter différentes perspectives d'apprentissage"
+        },
+        "thinkAloud": {
+          "title": "Protocoles Think-Aloud pour un Apprentissage Plus Profond",
+          "content": "Les protocoles think-aloud rendent l'apprentissage visible en encourageant les étudiants à verbaliser leurs processus de pensée. L'étudiant qui joue le rôle devrait articuler les motivations du personnage, le contexte historique et la logique décisionnelle tandis que le facilitateur écoute et approfondit.",
+          "bullet1": "🗣️ L'étudiant verbalise : 'En tant que Napoléon, je crois ceci à cause de mes expériences en...'",
+          "bullet2": "🔍 Le facilitateur demande : 'Quelles preuves historiques soutiennent cette perspective ?'",
+          "bullet3": "💡 Exposer les schémas de raisonnement et les idées fausses historiques en temps réel",
+          "bullet4": "📝 Documenter les stratégies de pensée pour futures interprétations de personnages"
+        },
+        "criticalThinking": {
+          "title": "Développer les Compétences de Pensée Critique",
+          "content": "ImpersonaTu défie les étudiants à analyser multiples perspectives, évaluer les preuves historiques et construire des arguments raisonnés du point de vue de leur personnage. Cela développe des compétences sophistiquées de pensée critique à travers une enquête historique authentique.",
+          "bullet1": "⚖️ Analyser les perspectives historiques et preuves conflictuelles",
+          "bullet2": "🎯 Construire des arguments logiques basés sur le contexte historique du personnage",
+          "bullet3": "🔬 Questionner les suppositions et examiner les biais dans les récits historiques",
+          "bullet4": "🧩 Synthétiser l'information historique complexe en réponses cohérentes du personnage"
+        },
+        "collaborativeReview": {
+          "title": "Révision Collaborative et Rétroaction",
+          "content": "Après chaque session de dialogue, les pairs s'engagent dans une révision collaborative où ils analysent la conversation, discutent la précision historique et fournissent une rétroaction constructive. Ce processus de révision par les pairs approfondit la compréhension pour les deux participants.",
+          "bullet1": "📊 Le facilitateur pair évalue la précision historique et la cohérence du personnage",
+          "bullet2": "🎭 Discuter quels traits du personnage ont été efficacement dépeints",
+          "bullet3": "📚 Identifier les domaines où la connaissance historique pourrait être renforcée",
+          "bullet4": "🌟 Célébrer les connexions empathiques réussies avec les figures historiques"
+        },
+        "teacherFacilitation": {
+          "title": "Enseignant comme Facilitateur d'Apprentissage",
+          "content": "Quand les enseignants facilitent les sessions ImpersonaTu, ils peuvent évaluer la compréhension des étudiants, guider la pensée historique et soutenir l'apprentissage. Les enseignants observent à la fois l'interprète et le facilitateur pair, fournissant un soutien ciblé où nécessaire.",
+          "bullet1": "👨‍🏫 Évaluer la profondeur de connaissance historique à travers l'interprétation du personnage",
+          "bullet2": "🎯 Guider les étudiants vers une pensée historique plus sophistiquée",
+          "bullet3": "🔧 Fournir un échafaudage pour concepts et perspectives historiques complexes",
+          "bullet4": "📈 Suivre la croissance de l'étudiant en empathie et compréhension historique"
+        },
+        "reflectionAndGrowth": {
+          "title": "Réflexion et Croissance Métacognitive",
+          "content": "La phase de réflexion encourage la conscience métacognitive tandis que les étudiants analysent leur processus d'apprentissage, choix de développement du personnage et compréhension historique. Cette auto-conscience accélère l'apprentissage et construit des compétences de pensée transférables.",
+          "bullet1": "🤔 Réflexion structurée sur le développement du personnage et la précision historique",
+          "bullet2": "🎯 La rétroaction IA fournit une analyse objective du raisonnement historique",
+          "bullet3": "📈 Identifier les schémas d'apprentissage personnels et domaines d'amélioration",
+          "bullet4": "🔄 Établir des objectifs pour futurs jeux de rôle et enquête historique"
+        },
+        "examples": {
+          "title": "Exemples d'Implémentation",
+          "content": "Voici des façons efficaces d'utiliser ImpersonaTu dans différents contextes éducatifs, mettant l'accent sur l'apprentissage par les pairs, la pensée critique et la révision collaborative pour un impact éducatif maximal.",
+          "bullet1": "🏛️ Histoire : Étudiant incarne Lincoln tandis que pair facilite dialogue Guerre Civile",
+          "bullet2": "🔬 Science : Interpréter Darwin discutant évolution avec pair posant questions pénétrantes",
+          "bullet3": "📚 Littérature : Incarner Shakespeare tandis que pair guide discussion sur choix artistiques",
+          "bullet4": "🌍 Études Sociales : Figures historiques débattent questions modernes avec facilitation par pairs"
+        }
+      }
+    },
+    "wikiInterview": {
+      "title": "Tutoriel Wiki-Interview",
+      "subtitle": "Maîtrisez la modération collaborative de débats et la pensée critique à travers des débats entre personnages Wikipedia alimentés par IA",
+      "startApp": "Démarrer Wiki-Interview",
+      "slides": {
+        "welcome": {
+          "title": "Bienvenue dans Wiki-Interview",
+          "content": "Wiki-Interview est un outil éducatif collaboratif où les étudiants deviennent modérateurs de débats entre personnages IA représentant des pages Wikipedia. Cette approche innovante développe les compétences de modération, la pensée critique et l'analyse argumentative à travers l'apprentissage par les pairs et la réflexion guidée.",
+          "bullet1": "🎭 Modérez des débats entre personnages Wikipedia alimentés par IA",
+          "bullet2": "👥 Apprentissage collaboratif avec guidance enseignant ou pair",
+          "bullet3": "🧠 Développez pensée critique et compétences d'analyse argumentative",
+          "bullet4": "📊 Processus structuré de réflexion et évaluation par les pairs"
+        },
+        "moderatorRole": {
+          "title": "L'Étudiant comme Modérateur de Débat",
+          "content": "Les étudiants assument le rôle crucial de modérateur de débat, apprenant à guider les discussions, poser des questions pénétrantes et maintenir un dialogue productif entre personnages IA opposés. Cela développe le leadership et les compétences de pensée critique.",
+          "bullet1": "🎯 Guide le flux du débat et assure participation équilibrée",
+          "bullet2": "❓ Pose des questions stratégiques pour approfondir la discussion",
+          "bullet3": "⚖️ Maintient la neutralité tout en explorant différentes perspectives",
+          "bullet4": "🔍 Identifie arguments clés et schémas de raisonnement logique"
+        },
+        "peerCollaboration": {
+          "title": "Apprentissage par les Pairs et Guidance Enseignant",
+          "content": "L'usage le plus efficace implique un enseignant ou collaborateur pair qui aide à sélectionner des sujets de débat stimulants et personnages opposés, puis observe et guide le processus de modération de l'étudiant à travers rétroaction en temps réel et réflexion.",
+          "bullet1": "👨‍🏫 Enseignant/pair sélectionne personnages et sujets engageants et contrastants",
+          "bullet2": "👁️ Observation collaborative des techniques et stratégies de modération",
+          "bullet3": "💭 Guidance en temps réel sur techniques d'interrogation et flux du débat",
+          "bullet4": "🤝 Réflexion partagée sur qualité des arguments et raisonnement logique"
+        },
+        "setupDebate": {
+          "title": "Configurer des Débats Stimulants",
+          "content": "La clé d'un apprentissage efficace est de sélectionner des personnages Wikipedia contrastants et sujets controversés qui généreront un débat significatif. Enseignants et pairs jouent un rôle crucial dans cette phase de préparation.",
+          "bullet1": "⚔️ Choisir figures historiques opposées ou concepts contrastants",
+          "bullet2": "🎯 Sélectionner sujets qui mettent en évidence différentes perspectives et valeurs",
+          "bullet3": "📚 Considérer personnages de différentes périodes historiques ou idéologies",
+          "bullet4": "🌍 Inclure perspectives culturelles et intellectuelles diverses"
+        },
+        "moderationSkills": {
+          "title": "Développer Compétences de Modération Avancées",
+          "content": "À travers la pratique, les étudiants développent des techniques de modération sophistiquées incluant interrogation stratégique, résolution de conflits et capacité d'extraire des insights plus profonds des débats.",
+          "bullet1": "🗣️ Apprendre à poser questions de suivi qui révèlent suppositions sous-jacentes",
+          "bullet2": "🎭 Pratiquer gestion de différents types de personnalité et styles de débat",
+          "bullet3": "🔄 Développer compétences pour rediriger arguments improductifs",
+          "bullet4": "📈 Construire confiance en facilitation de discussions complexes"
+        },
+        "criticalThinking": {
+          "title": "Pensée Critique à travers Analyse d'Arguments",
+          "content": "Les étudiants analysent la qualité des arguments, identifient fallacies logiques et évaluent preuves présentées par personnages IA. Cela développe compétences sophistiquées de pensée critique applicables dans toutes disciplines.",
+          "bullet1": "🔍 Identifier fallacies logiques et raisonnement faible en temps réel",
+          "bullet2": "📊 Évaluer force des preuves et arguments de soutien",
+          "bullet3": "⚖️ Comparer et contraster différentes approches argumentatives",
+          "bullet4": "🧩 Synthétiser idées complexes de multiples perspectives"
+        },
+        "reflection": {
+          "title": "Réflexion Collaborative et Auto-évaluation 2.0",
+          "content": "L'activité se conclut avec réflexion améliorée où étudiant et enseignant/pair analysent qualité du débat, efficacité de modération et résultats d'apprentissage. Cette 'Auto-évaluation 2.0' promeut croissance métacognitive.",
+          "bullet1": "🤔 Analyser quelles réponses IA étaient plus/moins convaincantes et pourquoi",
+          "bullet2": "📝 Réfléchir sur techniques de modération qui étaient plus efficaces",
+          "bullet3": "🎯 Identifier opportunités manquées pour interrogation plus profonde",
+          "bullet4": "🔄 Établir objectifs pour améliorer future modération et analyse critique"
+        },
+        "applications": {
+          "title": "Pourquoi Utiliser Débats IA au lieu de Débats Humains?",
+          "content": "Les débats IA complètent l'interaction humaine en fournissant environnement de pratique sécurisé pour étudiants timides, permettant apprentissage à distance, construisant confiance entre enseignants et étudiants, et servant de préparation pour vrais débats humains.",
+          "bullet1": "🛡️ Environnement de pratique sécurisé pour étudiants timides ou hésitants",
+          "bullet2": "🌐 Permet scénarios efficaces d'apprentissage à distance et remote",
+          "bullet3": "🤝 Construit confiance avant s'engager dans débats humains",
+          "bullet4": "🎓 Sert de préparation et entraînement pour vrais débats entre pairs"
+        }
+      }
+    }
+  }
+  }
   }
 }

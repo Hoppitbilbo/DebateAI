@@ -6,7 +6,7 @@ import WikiSearchSelect from "@/components/WikiSearchSelect";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, BookOpen } from "lucide-react";
 import { ConversationData, getAIGameAndReflectionEvaluation, AIScoreEvaluation } from "@/utils/evaluationUtils";
 import { Message } from "@/types/conversation"; // Using the global Message type
 import WikiInterviewReflection from "@/components/WikiInterview/WikiInterviewReflection";
@@ -219,6 +219,16 @@ const WikiInterviewPage = () => {
             <p className="mt-4 text-xl text-gray-300 max-w-2xl mx-auto">
               {t('apps.wikiInterview.description')}
             </p>
+            <div className="mt-6">
+              <Button
+                variant="outline"
+                onClick={() => window.location.href = '/apps/wiki-interview/tutorial'}
+                className="inline-flex items-center space-x-2 border-education-light text-education-light hover:bg-education-light hover:text-gray-900"
+              >
+                <BookOpen className="w-4 h-4" />
+                <span>{t('common.viewTutorial', 'View Tutorial')}</span>
+              </Button>
+            </div>
           </div>
           
           {currentPhase === "selecting" && (

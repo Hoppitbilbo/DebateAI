@@ -4,7 +4,8 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, BookOpen } from "lucide-react";
+import { Link } from "react-router-dom";
 import WikiSearchSelect from "@/components/WikiSearchSelect";
 import ImpersonaTuChat from "@/components/ImpersonaTuChat";
 import { Input } from "@/components/ui/input";
@@ -42,6 +43,14 @@ const ImpersonaTuPage = () => {
             <p className="mt-3 text-xl text-foreground">
               {t('apps.impersonaTu.page.subtitle')}
             </p>
+            <div className="mt-6">
+              <Link to="/apps/impersona-tu/tutorial">
+                <Button variant="outline" className="border-education text-education hover:bg-education hover:text-white">
+                  <BookOpen className="w-4 h-4 mr-2" />
+                  {t('common.viewTutorial')}
+                </Button>
+              </Link>
+            </div>
           </div>
           
           {!showChat ? (

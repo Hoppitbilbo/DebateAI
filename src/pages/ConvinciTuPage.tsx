@@ -2,6 +2,8 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ConvinciTuInterface from "@/components/ConvinciTuInterface";
+import { Button } from "@/components/ui/button";
+import { BookOpen } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 const ConvinciTuPage = () => {
@@ -15,9 +17,19 @@ const ConvinciTuPage = () => {
             <h1 className="text-4xl font-bold text-education-light mb-4">
               {t('apps.convinciTu.title')}
             </h1>
-            <p className="text-lg text-foreground">
+            <p className="text-lg text-foreground mb-6">
               {t('apps.convinciTu.subtitle')}
             </p>
+            <div className="mb-8">
+              <Button
+                variant="outline"
+                onClick={() => window.location.href = '/apps/convinci-tu/tutorial'}
+                className="inline-flex items-center space-x-2"
+              >
+                <BookOpen className="w-4 h-4" />
+                <span>{t('common.tutorial', 'View Tutorial')}</span>
+              </Button>
+            </div>
           </div>
           <ConvinciTuInterface />
         </div>

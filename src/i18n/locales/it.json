@@ -17,7 +17,6 @@
     "ok": "OK",
     "back": "Indietro",
     "next": "Avanti",
-    "previous": "Precedente",
     "continue": "Continua",
     "finish": "Termina",
     "start": "Inizia",
@@ -75,7 +74,11 @@
     },
     "reflectionPlaceholder": "Scrivi la tua riflessione qui...",
     "submitReflection": "Invia Riflessione",
-    "reflectOnExperience": "Rifletti sulla tua esperienza e su ciò che hai imparato."
+    "reflectOnExperience": "Rifletti sulla tua esperienza e su quello che hai imparato.",
+    "viewTutorial": "Visualizza Tutorial",
+    "slide": "Diapositiva",
+    "progress": "Progresso",
+    "previous": "Precedente"
   },
   "navigation": {
     "home": "Home",
@@ -206,7 +209,10 @@
       },
       "reflection": {
         "title": "Riflessione sul Dialogo Storico",
-        "description": "Analizza il dialogo a cui hai assistito. Considera i punti di vista, le argomentazioni e cosa ti ha colpito.",
+        "viewTutorial": "Visualizza Tutorial",
+        "slide": "Diapositiva",
+        "progress": "Progresso",
+            "description": "Analizza il dialogo a cui hai assistito. Considera i punti di vista, le argomentazioni e cosa ti ha colpito.",
         "questions": [
           "Quali sono stati i punti chiave emersi dal dialogo tra i due personaggi?",
           "Le argomentazioni presentate dai personaggi erano in linea con le loro figure storiche? Perché?",
@@ -328,7 +334,7 @@
       "name": "Personaggio Misterioso",
       "title": "Indovina il Personaggio Misterioso",
       "subtitle": "Fai domande per indovinare il personaggio storico",
-      "description": "Sfida l'IA a indovinare un personaggio storico misterioso.",
+      "description": "Sfida l'intelligenza artificiale facendo domande per indovinare il personaggio storico misterioso.",
       "setup": {
         "title": "Impostazione del Gioco",
         "characterLabel": "Personaggio Misterioso",
@@ -355,6 +361,8 @@
       "subtitle": "Interpreta un personaggio storico e dialoga con un altro",
       "description": "Mettiti nei panni di un personaggio storico e dialoga con un altro",
       "page": {
+        "title": "Impersona Tu",
+        "subtitle": "Interpreta un personaggio storico e dialoga con un altro",
         "setup": {
           "title": "Scegli i Personaggi",
           "description": "Seleziona il personaggio che l'IA interpreterà e quello che interpreterai tu",
@@ -436,7 +444,7 @@
       "privacy": "Privacy Policy",
       "terms": "Termini di Servizio"
     },
-    "copyright": "© {{year}} AI-Debate.Tech. Tutti i diritti riservati."
+    "copyright": "  AI-Debate.Tech. Tutti i diritti riservati."
   },
   "chat": {
     "placeholder": "Scrivi il tuo messaggio...",
@@ -545,20 +553,556 @@
       "german": "Deutsch"
     }
   },
-  "prompts": {
-    "student": "Studente",
-    "error": "Errore durante {{error}}: Riprova più tardi.",
-    "noRationale": "Nessuna motivazione fornita",
-    "evaluationFallback": "## Valutazione della Conversazione\n\n**Punteggio**: {{conversationScore}}/10\n\n**Motivazione**: {{conversationRationale}}\n\n## Valutazione della Riflessione\n\n**Punteggio**: {{reflectionScore}}/10\n\n**Motivazione**: {{reflectionRationale}}",
-    "overallFeedback": "## Feedback Complessivo",
-    "defaultFeedback": "La tua partecipazione mostra impegno. Continua a esercitarti per migliorare ulteriormente.",
-    "evaluationError": "Errore di valutazione",
-    "deprecatedFunction": "evaluateReflection è deprecata per il gioco 'Indovina il Personaggio Misterioso', usare getAIGameAndReflectionEvaluation.",
-    "deprecatedNoResult": "La valutazione AI (deprecata) non ha prodotto un risultato valido.",
-    "deprecatedInvalidResponse": "La valutazione AI (deprecata) non ha prodotto una risposta valida (struttura).",
-    "unknownError": "Errore sconosciuto",
-    "deprecatedError": "Errore durante la valutazione (deprecata): {{error}}",
-    "obsoleteFunction": "getAICombinedEvaluation non è stata aggiornata per i punteggi e potrebbe essere obsoleta.",
-    "obsoleteFunctionMessage": "Questa funzione (getAICombinedEvaluation) non è stata aggiornata per i punteggi ed è considerata obsoleta. Usare getAIGameAndReflectionEvaluation."
+  "tutorials": {
+    "wikiInterview": {
+      "title": "Tutorial Wiki-Interview",
+      "subtitle": "Padroneggia la moderazione collaborativa dei dibattiti e il pensiero critico attraverso dibattiti tra personaggi di Wikipedia potenziati dall'IA",
+      "startApp": "Avvia Wiki-Interview",
+      "slides": {
+        "welcome": {
+          "title": "Benvenuto in Wiki-Interview",
+          "content": "Wiki-Interview è uno strumento educativo collaborativo in cui gli studenti diventano moderatori di dibattiti tra personaggi IA che rappresentano pagine di Wikipedia. Questo approccio innovativo sviluppa competenze di moderazione, pensiero critico e analisi argomentativa attraverso l'apprendimento tra pari e la riflessione guidata.",
+          "bullet1": "",
+          "bullet2": "",
+          "bullet3": "",
+          "bullet4": ""
+        },
+        "moderatorRole": {
+          "title": "Lo Studente come Moderatore del Dibattito",
+          "content": "Gli studenti assumono il ruolo cruciale di moderatore del dibattito, imparando a guidare le discussioni, a porre domande approfondite e a mantenere un dialogo produttivo tra personaggi IA avversari. Ciò sviluppa capacità di leadership e di pensiero critico.",
+          "bullet1": "",
+          "bullet2": "",
+          "bullet3": "",
+          "bullet4": ""
+        },
+        "peerCollaboration": {
+          "title": "Apprendimento tra Pari e Guida dell'Insegnante",
+          "content": "L'uso più efficace coinvolge un insegnante o un compagno collaboratore che aiuta a selezionare argomenti di dibattito stimolanti e personaggi avversari, per poi osservare e guidare il processo di moderazione dello studente attraverso feedback e riflessioni in tempo reale.",
+          "bullet1": "",
+          "bullet2": "",
+          "bullet3": "",
+          "bullet4": ""
+        },
+        "setupDebate": {
+          "title": "Impostazione di Dibattiti Stimolanti",
+          "content": "La chiave per un apprendimento efficace è selezionare personaggi di Wikipedia contrastanti e argomenti controversi che generino un dibattito significativo. Insegnanti e compagni svolgono un ruolo cruciale in questa fase di preparazione.",
+          "bullet1": "",
+          "bullet2": "",
+          "bullet3": "",
+          "bullet4": ""
+        },
+        "moderationSkills": {
+          "title": "Sviluppo di Competenze di Moderazione Avanzate",
+          "content": "Attraverso la pratica, gli studenti sviluppano tecniche di moderazione sofisticate, tra cui il questionamento strategico, la risoluzione dei conflitti e la capacità di estrarre approfondimenti dai dibattiti.",
+          "bullet1": "",
+          "bullet2": "",
+          "bullet3": "",
+          "bullet4": ""
+        },
+        "criticalThinking": {
+          "title": "Pensiero Critico attraverso l'Analisi degli Argomenti",
+          "content": "Gli studenti analizzano la qualità degli argomenti, identificano fallacie logiche e valutano le prove presentate dai personaggi IA. Ciò sviluppa competenze di pensiero critico sofisticate applicabili a tutte le discipline.",
+          "bullet1": "",
+          "bullet2": "",
+          "bullet3": "",
+          "bullet4": ""
+        },
+        "reflection": {
+          "title": "Riflessione Collaborativa e Autovalutazione 2.0",
+          "content": "L'attività si conclude con una riflessione potenziata in cui sia lo studente che l'insegnante/compagno analizzano la qualità del dibattito, l'efficacia della moderazione e i risultati dell'apprendimento. Questa 'Autovalutazione 2.0' promuove la crescita metacognitiva.",
+          "bullet1": "",
+          "bullet2": "",
+          "bullet3": "",
+          "bullet4": ""
+        },
+        "applications": {
+          "title": "Perché Usare Dibattiti IA Invece di Dibattiti Umani?",
+          "content": "I dibattiti IA completano l'interazione umana fornendo un ambiente di pratica sicuro per gli studenti timidi, abilitando l'apprendimento a distanza, costruendo fiducia tra insegnanti e studenti e servendo come preparazione per i dibattiti umani reali.",
+          "bullet1": "",
+          "bullet2": "",
+          "bullet3": "",
+          "bullet4": ""
+        }
+      }
+    },
+    "personaggioMisterioso": {
+      "title": "Tutorial Personaggio Misterioso",
+      "subtitle": "Impara come usare il gioco di indovinare il personaggio misterioso",
+      "startApp": "Inizia il Gioco Personaggio Misterioso",
+      "slides": {
+        "welcome": {
+          "title": "Benvenuto in Personaggio Misterioso",
+          "content": "Personaggio Misterioso è un gioco educativo collaborativo progettato per coppie - dove una persona (insegnante, tutor o compagno) facilita mentre l'altra gioca. Insieme, svilupperete il pensiero critico e le abilità di interrogazione identificando figure storiche attraverso domande strategiche.",
+          "bullet1": "",
+          "bullet2": "",
+          "bullet3": "",
+          "bullet4": ""
+        },
+        "howItWorks": {
+          "title": "Come Funziona il Gioco Collaborativo",
+          "content": "Questa è un'attività di coppia dove i ruoli sono chiaramente definiti. Il facilitatore guida il processo di apprendimento mentre il giocatore interagisce con il personaggio IA.",
+          "bullet1": "",
+          "bullet2": "",
+          "bullet3": "",
+          "bullet4": ""
+        },
+        "selectCharacter": {
+          "title": "Passo 1: Il Facilitatore Seleziona il Personaggio",
+          "content": "Il facilitatore (insegnante, tutor o compagno) sceglie segretamente una figura storica dal vasto database di Wikipedia. Questa persona guiderà il processo di apprendimento e può fornire suggerimenti quando necessario.",
+          "bullet1": "",
+          "bullet2": "",
+          "bullet3": "",
+          "bullet4": ""
+        },
+        "askQuestions": {
+          "title": "Passo 2: Processo di Interrogazione Collaborativo",
+          "content": "Il giocatore fa domande pensando ad alta voce, e il facilitatore guida il processo. Questo crea un ricco dialogo di apprendimento dove entrambi i partecipanti si impegnano attivamente.",
+          "bullet1": "",
+          "bullet2": "",
+          "bullet3": "",
+          "bullet4": ""
+        },
+        "technology": {
+          "title": "Tecnologia IA Dietro il Gioco",
+          "content": "Il gioco utilizza modelli linguistici IA avanzati per creare interazioni autentiche dei personaggi basate sui contenuti di Wikipedia e sul contesto storico.",
+          "bullet1": "",
+          "bullet2": "",
+          "bullet3": "",
+          "bullet4": ""
+        },
+        "classroomUse": {
+          "title": "Benefici dell'Apprendimento Collaborativo",
+          "content": "Questo approccio basato su coppie massimizza l'apprendimento attraverso l'interazione sociale, la riflessione guidata e le strategie condivise di risoluzione dei problemi.",
+          "bullet1": "",
+          "bullet2": "",
+          "bullet3": "",
+          "bullet4": ""
+        },
+        "examples": {
+          "title": "Esempi di Implementazione Collaborativa",
+          "content": "Ecco modi efficaci per usare Personaggio Misterioso come strumento di apprendimento collaborativo in diversi contesti educativi.",
+          "bullet1": "",
+          "bullet2": "",
+          "bullet3": "",
+          "bullet4": ""
+        }
+      }
+    },
+    "convinciTu": {
+      "title": "Tutorial Convince YOU",
+      "subtitle": "Padroneggia l'arte della persuasione e preparazione al dibattito",
+      "startApp": "Inizia il Gioco Convince YOU",
+      "slides": {
+        "welcome": {
+          "title": "Benvenuto in Convince YOU",
+          "content": "Convince YOU è uno strumento collaborativo di allenamento alla persuasione dove gli studenti praticano le abilità di dibattito convincendo figure storiche IA. Perfetto per la preparazione al dibattito, l'analisi degli argomenti e l'apprendimento collaborativo con insegnanti o compagni.",
+          "bullet1": "🎯 Pratica abilità di persuasione e argomentazione",
+          "bullet2": "👥 Apprendimento collaborativo con guida di insegnante o compagno",
+          "bullet3": "🧠 Preparazione per dibattiti e discussioni reali",
+          "bullet4": "📊 Auto-valutazione e funzioni di auto-riflessione"
+        },
+        "howItWorks": {
+          "title": "Come Funziona il Processo Collaborativo",
+          "content": "È progettato come attività di coppia dove un facilitatore (insegnante o compagno) seleziona argomenti sfidanti mentre lo studente pratica tecniche di persuasione in un ambiente sicuro.",
+          "bullet1": "👨‍🏫 Il facilitatore seleziona personaggio e argomento sfidante",
+          "bullet2": "🎮 Lo studente tenta di convincere il personaggio IA",
+          "bullet3": "👁️ Entrambi osservano e discutono le strategie di persuasione usate",
+          "bullet4": "🔄 Tentativi illimitati per affinare le abilità argomentative"
+        },
+        "debatePreparation": {
+          "title": "Perfetto per la Preparazione al Dibattito",
+          "content": "Usa questo strumento come pratica prima dei dibattiti reali. Gli studenti possono testare i loro argomenti, affinare le tecniche di persuasione e costruire fiducia in un ambiente a basso rischio.",
+          "bullet1": "🏋️ Pratica argomenti prima di dibattiti o presentazioni reali",
+          "bullet2": "💪 Costruisci fiducia nella persuasione e argomentazione",
+          "bullet3": "🔍 Testa diverse strategie e approcci di persuasione",
+          "bullet4": "📈 Migliora attraverso pratica iterativa e feedback"
+        },
+        "collaborativeLearning": {
+          "title": "Benefici dell'Apprendimento Collaborativo",
+          "content": "Quando usato con un facilitatore, diventa uno strumento potente per l'apprendimento guidato, dove gli studenti possono ricevere feedback in tempo reale e guida strategica.",
+          "bullet1": "👥 L'insegnante può valutare la reale profondità di conoscenza dello studente",
+          "bullet2": "🤝 Apprendimento tra pari attraverso osservazione e discussione",
+          "bullet3": "💡 Il facilitatore può suggerire strategie argomentative alternative",
+          "bullet4": "🎯 Feedback immediato sull'efficacia della persuasione"
+        },
+        "visibleThinking": {
+          "title": "Rendere Visibile il Pensiero",
+          "content": "Incoraggia gli studenti a verbalizzare il loro processo di pensiero durante i tentativi di persuasione. Questo rende l'apprendimento visibile sia allo studente che al facilitatore, migliorando il valore educativo.",
+          "bullet1": "🗣️ Lo studente spiega il ragionamento: 'Penso che questo approccio funzionerà perché...'",
+          "bullet2": "👂 Il facilitatore osserva la costruzione dell'argomento in tempo reale",
+          "bullet3": "🔍 Identifica lacune nella conoscenza o logica immediatamente",
+          "bullet4": "📝 Documenta strategie di persuasione di successo per uso futuro"
+        },
+        "teacherEvaluation": {
+          "title": "Strumento di Valutazione per Insegnanti",
+          "content": "Gli insegnanti possono usarlo per valutare quanto bene gli studenti comprendono veramente gli argomenti e possono applicare la loro conoscenza persuasivamente in scenari sfidanti.",
+          "bullet1": "📊 Valuta la profondità di comprensione dello studente oltre la memorizzazione",
+          "bullet2": "🎭 Osserva come gli studenti applicano la conoscenza in contesti persuasivi",
+          "bullet3": "💬 Valuta abilità argomentative e di pensiero critico",
+          "bullet4": "📈 Traccia il miglioramento nelle abilità di persuasione nel tempo"
+        },
+        "selfReflection": {
+          "title": "Auto-Valutazione e Auto-Riflessione",
+          "content": "L'attività si conclude con auto-riflessione strutturata e valutazione IA, aiutando gli studenti ad analizzare i loro tentativi di persuasione e identificare aree di miglioramento.",
+          "bullet1": "🤔 Riflessione strutturata sulle strategie di persuasione usate",
+          "bullet2": "🤖 L'IA fornisce feedback obiettivo sull'efficacia dell'argomento",
+          "bullet3": "📝 Identifica tecniche di successo e aree di miglioramento",
+          "bullet4": "🎯 Stabilisci obiettivi per future attività di persuasione e dibattito"
+        },
+        "examples": {
+          "title": "Esempi di Implementazione",
+          "content": "Ecco modi efficaci per usare Convince YOU in diversi contesti educativi, dalla pratica individuale agli scenari di apprendimento collaborativo.",
+          "bullet1": "🏛️ Storia: Convincere Marx che il capitalismo promuove il progresso",
+          "bullet2": "🔬 Scienza: Persuadere Galileo a riconsiderare le sue teorie astronomiche",
+          "bullet3": "📚 Letteratura: Convincere Shakespeare a scrivere in inglese moderno",
+          "bullet4": "🌍 Attualità: Persuadere figure storiche su questioni moderne"
+        }
+      }
+    },
+    "wikiInterview": {
+      "title": "Tutorial Wiki-Interview",
+      "subtitle": "Padroneggia la moderazione collaborativa dei dibattiti e il pensiero critico attraverso dibattiti tra personaggi di Wikipedia potenziati dall'IA",
+      "startApp": "Avvia Wiki-Interview",
+      "slides": {
+        "welcome": {
+          "title": "Benvenuto in Wiki-Interview",
+          "content": "Wiki-Interview è uno strumento educativo collaborativo in cui gli studenti diventano moderatori di dibattiti tra personaggi IA che rappresentano pagine di Wikipedia. Questo approccio innovativo sviluppa competenze di moderazione, pensiero critico e analisi argomentativa attraverso l'apprendimento tra pari e la riflessione guidata.",
+          "bullet1": "🎭 Modera dibattiti tra personaggi di Wikipedia potenziati dall'IA",
+          "bullet2": "👥 Apprendimento collaborativo con la guida di un insegnante o di un compagno",
+          "bullet3": "🧠 Sviluppa il pensiero critico e le capacità di analisi argomentativa",
+          "bullet4": "📊 Processo strutturato di riflessione e valutazione tra pari"
+        },
+        "moderatorRole": {
+          "title": "Lo Studente come Moderatore del Dibattito",
+          "content": "Gli studenti assumono il ruolo cruciale di moderatore del dibattito, imparando a guidare le discussioni, a porre domande approfondite e a mantenere un dialogo produttivo tra personaggi IA avversari. Ciò sviluppa capacità di leadership e di pensiero critico.",
+          "bullet1": "🎯 Guida lo svolgimento del dibattito e assicura una partecipazione equilibrata",
+          "bullet2": "❓ Poni domande strategiche per approfondire la discussione",
+          "bullet3": "⚖️ Mantieni la neutralità esplorando diverse prospettive",
+          "bullet4": "🔍 Identifica gli argomenti chiave e i modelli di ragionamento logico"
+        },
+        "peerCollaboration": {
+          "title": "Apprendimento tra Pari e Guida dell'Insegnante",
+          "content": "L'uso più efficace coinvolge un insegnante o un compagno collaboratore che aiuta a selezionare argomenti di dibattito stimolanti e personaggi avversari, per poi osservare e guidare il processo di moderazione dello studente attraverso feedback e riflessioni in tempo reale.",
+          "bullet1": "👨‍🏫 L'insegnante/compagno seleziona personaggi e argomenti coinvolgenti e contrastanti",
+          "bullet2": "👁️ Osservazione collaborativa delle tecniche e delle strategie di moderazione",
+          "bullet3": "💭 Guida in tempo reale sulle tecniche di interrogazione e sullo svolgimento del dibattito",
+          "bullet4": "🤝 Riflessione condivisa sulla qualità degli argomenti e sul ragionamento logico"
+        },
+        "setupDebate": {
+          "title": "Impostazione di Dibattiti Stimolanti",
+          "content": "La chiave per un apprendimento efficace è selezionare personaggi di Wikipedia contrastanti e argomenti controversi che generino un dibattito significativo. Insegnanti e compagni svolgono un ruolo cruciale in questa fase di preparazione.",
+          "bullet1": "⚔️ Scegli figure storiche opposte o concetti contrastanti",
+          "bullet2": "🎯 Seleziona argomenti che mettano in luce diverse prospettive e valori",
+          "bullet3": "📚 Considera personaggi di epoche o ideologie diverse",
+          "bullet4": "🌍 Includi diverse prospettive culturali e intellettuali"
+        },
+        "moderationSkills": {
+          "title": "Sviluppo di Competenze di Moderazione Avanzate",
+          "content": "Attraverso la pratica, gli studenti sviluppano tecniche di moderazione sofisticate, tra cui il questionamento strategico, la risoluzione dei conflitti e la capacità di estrarre approfondimenti dai dibattiti.",
+          "bullet1": "🗣️ Impara a porre domande di approfondimento che rivelino le ipotesi sottostanti",
+          "bullet2": "🎭 Esercitati a gestire diversi tipi di personalità e stili di dibattito",
+          "bullet3": "🔄 Sviluppa abilità nel reindirizzare argomenti improduttivi",
+          "bullet4": "📈 Costruisci fiducia nel facilitare discussioni complesse"
+        },
+        "criticalThinking": {
+          "title": "Pensiero Critico attraverso l'Analisi degli Argomenti",
+          "content": "Gli studenti analizzano la qualità degli argomenti, identificano fallacie logiche e valutano le prove presentate dai personaggi IA. Ciò sviluppa competenze di pensiero critico sofisticate applicabili a tutte le discipline.",
+          "bullet1": "🔍 Identifica fallacie logiche e ragionamenti deboli in tempo reale",
+          "bullet2": "📊 Valuta la forza delle prove e degli argomenti a sostegno",
+          "bullet3": "⚖️ Confronta e contrapponi diversi approcci argomentativi",
+          "bullet4": "🧩 Sintetizza idee complesse da molteplici prospettive"
+        },
+        "reflection": {
+          "title": "Riflessione Collaborativa e Autovalutazione 2.0",
+          "content": "L'attività si conclude con una riflessione potenziata in cui sia lo studente che l'insegnante/compagno analizzano la qualità del dibattito, l'efficacia della moderazione e i risultati dell'apprendimento. Questa 'Autovalutazione 2.0' promuove la crescita metacognitiva.",
+          "bullet1": "🤔 Analizza quali risposte dell'IA sono state più/meno convincenti e perché",
+          "bullet2": "📝 Rifletti sulle tecniche di moderazione che sono state più efficaci",
+          "bullet3": "🎯 Identifica le opportunità mancate per domande più approfondite",
+          "bullet4": "🔄 Stabilisci obiettivi per migliorare la moderazione e l'analisi critica future"
+        },
+        "applications": {
+          "title": "Perché Usare Dibattiti IA Invece di Dibattiti Umani?",
+          "content": "I dibattiti IA completano l'interazione umana fornendo un ambiente di pratica sicuro per gli studenti timidi, abilitando l'apprendimento a distanza, costruendo fiducia tra insegnanti e studenti e servendo come preparazione per i dibattiti umani reali.",
+          "bullet1": "🛡️ Ambiente di pratica sicuro per studenti timidi o esitanti",
+          "bullet2": "🌐 Abilita scenari di apprendimento a distanza efficaci",
+          "bullet3": "🤝 Costruisce fiducia prima di impegnarsi in dibattiti umani",
+          "bullet4": "🎓 Serve come preparazione e allenamento per dibattiti reali tra pari"
+        }
+      },
+    "impersonaTu": {
+      "title": "Tutorial ImpersonaTu",
+      "subtitle": "Padroneggia l'apprendimento tra pari attraverso il gioco di ruolo storico e il pensiero critico",
+      "startApp": "Inizia Gioco ImpersonaTu",
+      "slides": {
+        "welcome": {
+          "title": "Benvenuto in ImpersonaTu",
+          "content": "ImpersonaTu è uno strumento collaborativo di gioco di ruolo dove gli studenti incarnano figure storiche e si impegnano in dialoghi significativi. Questa app trasforma l'apprendimento tradizionale in un'esperienza di apprendimento tra pari interattiva che sviluppa empatia, pensiero critico e comprensione storica attraverso facilitazione guidata.",
+          "bullet1": "👥 Gioco di ruolo collaborativo con facilitazione di pari o insegnante",
+          "bullet2": "🎭 Sviluppa empatia incarnando prospettive storiche",
+          "bullet3": "🧠 Pensiero critico potenziato attraverso analisi del personaggio",
+          "bullet4": "📚 Comprensione storica profonda attraverso dialogo immersivo"
+        },
+        "peerLearning": {
+          "title": "Principi di Apprendimento tra Pari in Azione",
+          "content": "L'apprendimento tra pari avviene quando gli studenti imparano da e con gli altri attraverso interazione strutturata. In ImpersonaTu, uno studente interpreta il ruolo mentre un facilitatore pari osserva, fa domande e guida il processo di apprendimento, creando un potente ambiente di apprendimento collaborativo.",
+          "bullet1": "🤝 Il facilitatore pari guida lo sviluppo del personaggio e l'accuratezza storica",
+          "bullet2": "👂 Ascolto attivo mentre il facilitatore osserva le strategie di dialogo",
+          "bullet3": "💭 Costruzione condivisa della conoscenza attraverso riflessione collaborativa",
+          "bullet4": "🔄 L'inversione dei ruoli permette a entrambi gli studenti di sperimentare diverse prospettive di apprendimento"
+        },
+        "thinkAloud": {
+          "title": "Protocolli Think-Aloud per Apprendimento Più Profondo",
+          "content": "I protocolli think-aloud rendono visibile l'apprendimento incoraggiando gli studenti a verbalizzare i loro processi di pensiero. Lo studente che interpreta dovrebbe articolare le motivazioni del personaggio, il contesto storico e la logica decisionale mentre il facilitatore ascolta e approfondisce.",
+          "bullet1": "🗣️ Lo studente verbalizza: 'Come Napoleone, credo questo a causa delle mie esperienze in...'",
+          "bullet2": "🔍 Il facilitatore chiede: 'Quali prove storiche supportano quella prospettiva?'",
+          "bullet3": "💡 Esporre schemi di ragionamento e misconcezioni storiche in tempo reale",
+          "bullet4": "📝 Documentare strategie di pensiero per future interpretazioni di personaggi"
+        },
+        "criticalThinking": {
+          "title": "Sviluppare Abilità di Pensiero Critico",
+          "content": "ImpersonaTu sfida gli studenti ad analizzare prospettive multiple, valutare prove storiche e costruire argomenti ragionati dal punto di vista del loro personaggio. Questo sviluppa sofisticate abilità di pensiero critico attraverso indagine storica autentica.",
+          "bullet1": "⚖️ Analizzare prospettive storiche e prove contrastanti",
+          "bullet2": "🎯 Costruire argomenti logici basati sul contesto storico del personaggio",
+          "bullet3": "🔬 Mettere in discussione assunzioni ed esaminare pregiudizi nelle narrazioni storiche",
+          "bullet4": "🧩 Sintetizzare informazioni storiche complesse in risposte coerenti del personaggio"
+        },
+        "collaborativeReview": {
+          "title": "Revisione Collaborativa e Feedback",
+          "content": "Dopo ogni sessione di dialogo, i pari si impegnano in revisione collaborativa dove analizzano la conversazione, discutono l'accuratezza storica e forniscono feedback costruttivo. Questo processo di revisione tra pari approfondisce la comprensione per entrambi i partecipanti.",
+          "bullet1": "📊 Il facilitatore pari valuta accuratezza storica e coerenza del personaggio",
+          "bullet2": "🎭 Discutere quali tratti del personaggio sono stati efficacemente ritratti",
+          "bullet3": "📚 Identificare aree dove la conoscenza storica potrebbe essere rafforzata",
+          "bullet4": "🌟 Celebrare connessioni empatiche riuscite con figure storiche"
+        },
+        "teacherFacilitation": {
+          "title": "Insegnante come Facilitatore dell'Apprendimento",
+          "content": "Quando gli insegnanti facilitano sessioni ImpersonaTu, possono valutare la comprensione degli studenti, guidare il pensiero storico e supportare l'apprendimento. Gli insegnanti osservano sia l'interprete che il facilitatore pari, fornendo supporto mirato dove necessario.",
+          "bullet1": "👨‍🏫 Valutare la profondità della conoscenza storica attraverso l'interpretazione del personaggio",
+          "bullet2": "🎯 Guidare gli studenti verso un pensiero storico più sofisticato",
+          "bullet3": "🔧 Fornire supporto per concetti e prospettive storiche complesse",
+          "bullet4": "📈 Tracciare la crescita degli studenti in empatia e comprensione storica"
+        },
+        "reflectionAndGrowth": {
+          "title": "Riflessione e Crescita Metacognitiva",
+          "content": "La fase di riflessione incoraggia la consapevolezza metacognitiva mentre gli studenti analizzano il loro processo di apprendimento, le scelte di sviluppo del personaggio e la comprensione storica. Questa auto-consapevolezza accelera l'apprendimento e costruisce abilità di pensiero trasferibili.",
+          "bullet1": "🤔 Riflessione strutturata sullo sviluppo del personaggio e accuratezza storica",
+          "bullet2": "🎯 Il feedback IA fornisce analisi obiettiva del ragionamento storico",
+          "bullet3": "📈 Identificare schemi di apprendimento personali e aree di miglioramento",
+          "bullet4": "🔄 Stabilire obiettivi per futuri giochi di ruolo e indagini storiche"
+        },
+        "examples": {
+          "title": "Esempi di Implementazione",
+          "content": "Ecco modi efficaci per usare ImpersonaTu in diversi contesti educativi, enfatizzando apprendimento tra pari, pensiero critico e revisione collaborativa per massimo impatto educativo.",
+          "bullet1": "🏛️ Storia: Studente incarna Lincoln mentre il pari facilita dialogo Guerra Civile",
+          "bullet2": "🔬 Scienza: Interpretare Darwin discutendo evoluzione con pari che fa domande penetranti",
+          "bullet3": "📚 Letteratura: Incarnare Shakespeare mentre il pari guida discussione su scelte artistiche",
+          "bullet4": "🌍 Studi Sociali: Figure storiche dibattono questioni moderne con facilitazione tra pari"
+        }
+      }
+    },
+    "wikiInterview": {
+      "title": "Tutorial Wiki-Interview",
+      "subtitle": "Padroneggia la moderazione collaborativa di dibattiti e il pensiero critico attraverso dibattiti tra personaggi Wikipedia alimentati da IA",
+      "startApp": "Inizia Wiki-Interview",
+      "slides": {
+        "welcome": {
+          "title": "Benvenuto in Wiki-Interview",
+          "content": "Wiki-Interview è uno strumento educativo collaborativo dove gli studenti diventano moderatori di dibattiti tra personaggi IA che rappresentano pagine Wikipedia. Questo approccio innovativo sviluppa abilità di moderazione, pensiero critico e analisi argomentativa attraverso apprendimento tra pari e riflessione guidata.",
+          "bullet1": "🎭 Modera dibattiti tra personaggi Wikipedia alimentati da IA",
+          "bullet2": "👥 Apprendimento collaborativo con guida di insegnante o pari",
+          "bullet3": "🧠 Sviluppa pensiero critico e abilità di analisi argomentativa",
+          "bullet4": "📊 Processo strutturato di riflessione e valutazione tra pari"
+        },
+        "moderatorRole": {
+          "title": "Lo Studente come Moderatore di Dibattito",
+          "content": "Gli studenti assumono il ruolo cruciale di moderatore di dibattito, imparando a guidare discussioni, fare domande penetranti e mantenere dialogo produttivo tra personaggi IA opposti. Questo sviluppa leadership e abilità di pensiero critico.",
+          "bullet1": "🎯 Guida il flusso del dibattito e assicura partecipazione equilibrata",
+          "bullet2": "❓ Fai domande strategiche per approfondire la discussione",
+          "bullet3": "⚖️ Mantieni neutralità mentre esplori diverse prospettive",
+          "bullet4": "🔍 Identifica argomenti chiave e schemi di ragionamento logico"
+        },
+        "peerCollaboration": {
+          "title": "Apprendimento tra Pari e Guida dell'Insegnante",
+          "content": "L'uso più efficace coinvolge un insegnante o collaboratore pari che aiuta a selezionare argomenti di dibattito stimolanti e personaggi opposti, poi osserva e guida il processo di moderazione dello studente attraverso feedback in tempo reale e riflessione.",
+          "bullet1": "👨‍🏫 Insegnante/pari seleziona personaggi e argomenti coinvolgenti e contrastanti",
+          "bullet2": "👁️ Osservazione collaborativa di tecniche e strategie di moderazione",
+          "bullet3": "💭 Guida in tempo reale su tecniche di interrogazione e flusso del dibattito",
+          "bullet4": "🤝 Riflessione condivisa sulla qualità degli argomenti e ragionamento logico"
+        },
+        "setupDebate": {
+          "title": "Impostare Dibattiti Stimolanti",
+          "content": "La chiave per un apprendimento efficace è selezionare personaggi Wikipedia contrastanti e argomenti controversi che genereranno dibattito significativo. Insegnanti e pari giocano un ruolo cruciale in questa fase di preparazione.",
+          "bullet1": "⚔️ Scegli figure storiche opposte o concetti contrastanti",
+          "bullet2": "🎯 Seleziona argomenti che evidenziano diverse prospettive e valori",
+          "bullet3": "📚 Considera personaggi da diversi periodi storici o ideologie",
+          "bullet4": "🌍 Includi prospettive culturali e intellettuali diverse"
+        },
+        "moderationSkills": {
+          "title": "Sviluppare Abilità di Moderazione Avanzate",
+          "content": "Attraverso la pratica, gli studenti sviluppano tecniche di moderazione sofisticate incluse interrogazioni strategiche, risoluzione di conflitti e la capacità di estrarre intuizioni più profonde dai dibattiti.",
+          "bullet1": "🗣️ Impara a fare domande di follow-up che rivelano assunzioni sottostanti",
+          "bullet2": "🎭 Pratica gestione di diversi tipi di personalità e stili di dibattito",
+          "bullet3": "🔄 Sviluppa abilità nel reindirizzare argomenti improduttivi",
+          "bullet4": "📈 Costruisci fiducia nel facilitare discussioni complesse"
+        },
+        "criticalThinking": {
+          "title": "Pensiero Critico attraverso Analisi degli Argomenti",
+          "content": "Gli studenti analizzano la qualità degli argomenti, identificano fallacie logiche e valutano le prove presentate dai personaggi IA. Questo sviluppa abilità di pensiero critico sofisticate applicabili in tutte le discipline.",
+          "bullet1": "🔍 Identifica fallacie logiche e ragionamenti deboli in tempo reale",
+          "bullet2": "📊 Valuta la forza delle prove e degli argomenti di supporto",
+          "bullet3": "⚖️ Confronta e contrasta diversi approcci argomentativi",
+          "bullet4": "🧩 Sintetizza idee complesse da prospettive multiple"
+        },
+        "reflection": {
+          "title": "Riflessione Collaborativa e Auto-valutazione 2.0",
+          "content": "L'attività si conclude con riflessione potenziata dove sia studente che insegnante/pari analizzano la qualità del dibattito, l'efficacia della moderazione e i risultati dell'apprendimento. Questa 'Auto-valutazione 2.0' promuove crescita metacognitiva.",
+          "bullet1": "🤔 Analizza quali risposte IA erano più/meno convincenti e perché",
+          "bullet2": "📝 Rifletti su tecniche di moderazione che erano più efficaci",
+          "bullet3": "🎯 Identifica opportunità mancate per interrogazioni più profonde",
+          "bullet4": "🔄 Stabilisci obiettivi per migliorare futura moderazione e analisi critica"
+        },
+        "applications": {
+          "title": "Perché Usare Dibattiti IA invece di Dibattiti Umani?",
+          "content": "I dibattiti IA complementano l'interazione umana fornendo un ambiente di pratica sicuro per studenti timidi, abilitando apprendimento remoto, costruendo fiducia tra insegnanti e studenti, e servendo come preparazione per veri dibattiti umani.",
+          "bullet1": "🛡️ Ambiente di pratica sicuro per studenti timidi o esitanti",
+          "bullet2": "🌐 Abilita scenari di apprendimento remoto e a distanza efficaci",
+          "bullet3": "🤝 Costruisce fiducia e confidenza prima di impegnarsi in dibattiti umani",
+          "bullet4": "🎓 Serve come preparazione e allenamento per veri dibattiti tra pari"
+        }
+      },
+      "content": "ImpersonaTu è uno strumento collaborativo di gioco di ruolo dove gli studenti incarnano figure storiche e si impegnano in dialoghi significativi. Questa app trasforma l'apprendimento tradizionale in un'esperienza di apprendimento tra pari interattiva che sviluppa empatia, pensiero critico e comprensione storica attraverso facilitazione guidata.",
+      "bullet1": "👥 Gioco di ruolo collaborativo con facilitazione di pari o insegnante",
+      "bullet2": "🎭 Sviluppa empatia incarnando prospettive storiche",
+      "bullet3": "🧠 Pensiero critico potenziato attraverso analisi del personaggio",
+      "bullet4": "📚 Comprensione storica profonda attraverso dialogo immersivo"
+    },
+    "peerLearning": {
+      "title": "Principi di Apprendimento tra Pari in Azione",
+      "content": "L'apprendimento tra pari avviene quando gli studenti imparano da e con gli altri attraverso interazione strutturata. In ImpersonaTu, uno studente interpreta il ruolo mentre un facilitatore pari osserva, fa domande e guida il processo di apprendimento, creando un potente ambiente di apprendimento collaborativo.",
+      "bullet1": "🤝 Il facilitatore pari guida lo sviluppo del personaggio e l'accuratezza storica",
+      "bullet2": "👂 Ascolto attivo mentre il facilitatore osserva le strategie di dialogo",
+      "bullet3": "💭 Costruzione condivisa della conoscenza attraverso riflessione collaborativa",
+      "bullet4": "🔄 L'inversione dei ruoli permette a entrambi gli studenti di sperimentare diverse prospettive di apprendimento"
+    },
+    "thinkAloud": {
+      "title": "Protocolli Think-Aloud per Apprendimento Più Profondo",
+      "content": "I protocolli think-aloud rendono visibile l'apprendimento incoraggiando gli studenti a verbalizzare i loro processi di pensiero. Lo studente che interpreta dovrebbe articolare le motivazioni del personaggio, il contesto storico e la logica decisionale mentre il facilitatore ascolta e approfondisce.",
+      "bullet1": "🗣️ Lo studente verbalizza: 'Come Napoleone, credo questo a causa delle mie esperienze in...'",
+      "bullet2": "🔍 Il facilitatore chiede: 'Quali prove storiche supportano quella prospettiva?'",
+      "bullet3": "💡 Esporre schemi di ragionamento e misconcezioni storiche in tempo reale",
+      "bullet4": "📝 Documentare strategie di pensiero per future interpretazioni di personaggi"
+    },
+    "criticalThinking": {
+      "title": "Sviluppare Abilità di Pensiero Critico",
+      "content": "ImpersonaTu sfida gli studenti ad analizzare prospettive multiple, valutare prove storiche e costruire argomenti ragionati dal punto di vista del loro personaggio. Questo sviluppa sofisticate abilità di pensiero critico attraverso indagine storica autentica.",
+      "bullet1": "⚖️ Analizzare prospettive storiche e prove contrastanti",
+      "bullet2": "🎯 Costruire argomenti logici basati sul contesto storico del personaggio",
+      "bullet3": "🔬 Mettere in discussione assunzioni ed esaminare pregiudizi nelle narrazioni storiche",
+      "bullet4": "🧩 Sintetizzare informazioni storiche complesse in risposte coerenti del personaggio"
+    },
+    "collaborativeReview": {
+      "title": "Revisione Collaborativa e Feedback",
+      "content": "Dopo ogni sessione di dialogo, i pari si impegnano in revisione collaborativa dove analizzano la conversazione, discutono l'accuratezza storica e forniscono feedback costruttivo. Questo processo di revisione tra pari approfondisce la comprensione per entrambi i partecipanti.",
+      "bullet1": "📊 Il facilitatore pari valuta accuratezza storica e coerenza del personaggio",
+      "bullet2": "🎭 Discutere quali tratti del personaggio sono stati efficacemente ritratti",
+      "bullet3": "📚 Identificare aree dove la conoscenza storica potrebbe essere rafforzata",
+      "bullet4": "🌟 Celebrare connessioni empatiche riuscite con figure storiche"
+    },
+    "teacherFacilitation": {
+      "title": "Insegnante come Facilitatore dell'Apprendimento",
+      "content": "Quando gli insegnanti facilitano sessioni ImpersonaTu, possono valutare la comprensione degli studenti, guidare il pensiero storico e supportare l'apprendimento. Gli insegnanti osservano sia l'interprete che il facilitatore pari, fornendo supporto mirato dove necessario.",
+      "bullet1": "👨‍🏫 Valutare la profondità della conoscenza storica attraverso l'interpretazione del personaggio",
+      "bullet2": "🎯 Guidare gli studenti verso un pensiero storico più sofisticato",
+      "bullet3": "🔧 Fornire supporto per concetti e prospettive storiche complesse",
+      "bullet4": "📈 Tracciare la crescita degli studenti in empatia e comprensione storica"
+    },
+    "reflectionAndGrowth": {
+      "title": "Riflessione e Crescita Metacognitiva",
+      "content": "La fase di riflessione incoraggia la consapevolezza metacognitiva mentre gli studenti analizzano il loro processo di apprendimento, le scelte di sviluppo del personaggio e la comprensione storica. Questa auto-consapevolezza accelera l'apprendimento e costruisce abilità di pensiero trasferibili.",
+      "bullet1": "🤔 Riflessione strutturata sullo sviluppo del personaggio e accuratezza storica",
+      "bullet2": "🎯 Il feedback IA fornisce analisi obiettiva del ragionamento storico",
+      "bullet3": "📈 Identificare schemi di apprendimento personali e aree di miglioramento",
+      "bullet4": "🔄 Stabilire obiettivi per futuri giochi di ruolo e indagini storiche"
+    },
+    "examples": {
+      "title": "Esempi di Implementazione",
+      "content": "Ecco modi efficaci per usare ImpersonaTu in diversi contesti educativi, enfatizzando apprendimento tra pari, pensiero critico e revisione collaborativa per massimo impatto educativo.",
+      "bullet1": "🏛️ Storia: Studente incarna Lincoln mentre il pari facilita dialogo Guerra Civile",
+      "bullet2": "🔬 Scienza: Interpretare Darwin discutendo evoluzione con pari che fa domande penetranti",
+      "bullet3": "📚 Letteratura: Incarnare Shakespeare mentre il pari guida discussione su scelte artistiche",
+      "bullet4": "🌍 Studi Sociali: Figure storiche dibattono questioni moderne con facilitazione tra pari"
+    }
+  }
+  },
+  "wikiInterview": {
+  "title": "Tutorial Wiki-Interview",
+  "subtitle": "Padroneggia la moderazione collaborativa di dibattiti e il pensiero critico attraverso dibattiti tra personaggi Wikipedia alimentati da IA",
+  "startApp": "Inizia Wiki-Interview",
+  "slides": {
+    "welcome": {
+      "title": "Benvenuto in Wiki-Interview",
+      "content": "Wiki-Interview è uno strumento educativo collaborativo dove gli studenti diventano moderatori di dibattiti tra personaggi IA che rappresentano pagine Wikipedia. Questo approccio innovativo sviluppa abilità di moderazione, pensiero critico e analisi argomentativa attraverso apprendimento tra pari e riflessione guidata.",
+      "bullet1": "🎭 Modera dibattiti tra personaggi Wikipedia alimentati da IA",
+      "bullet2": "👥 Apprendimento collaborativo con guida di insegnante o pari",
+      "bullet3": "🧠 Sviluppa pensiero critico e abilità di analisi argomentativa",
+      "bullet4": "📊 Processo strutturato di riflessione e valutazione tra pari"
+    },
+    "moderatorRole": {
+      "title": "Lo Studente come Moderatore di Dibattito",
+      "content": "Gli studenti assumono il ruolo cruciale di moderatore di dibattito, imparando a guidare discussioni, fare domande penetranti e mantenere dialogo produttivo tra personaggi IA opposti. Questo sviluppa leadership e abilità di pensiero critico.",
+      "bullet1": "🎯 Guida il flusso del dibattito e assicura partecipazione equilibrata",
+      "bullet2": "❓ Fai domande strategiche per approfondire la discussione",
+      "bullet3": "⚖️ Mantieni neutralità mentre esplori diverse prospettive",
+      "bullet4": "🔍 Identifica argomenti chiave e schemi di ragionamento logico"
+    },
+    "peerCollaboration": {
+      "title": "Apprendimento tra Pari e Guida dell'Insegnante",
+      "content": "L'uso più efficace coinvolge un insegnante o collaboratore pari che aiuta a selezionare argomenti di dibattito stimolanti e personaggi opposti, poi osserva e guida il processo di moderazione dello studente attraverso feedback in tempo reale e riflessione.",
+      "bullet1": "👨‍🏫 Insegnante/pari seleziona personaggi e argomenti coinvolgenti e contrastanti",
+      "bullet2": "👁️ Osservazione collaborativa di tecniche e strategie di moderazione",
+      "bullet3": "💭 Guida in tempo reale su tecniche di interrogazione e flusso del dibattito",
+      "bullet4": "🤝 Riflessione condivisa sulla qualità degli argomenti e ragionamento logico"
+    },
+    "setupDebate": {
+      "title": "Impostare Dibattiti Stimolanti",
+      "content": "La chiave per un apprendimento efficace è selezionare personaggi Wikipedia contrastanti e argomenti controversi che genereranno dibattito significativo. Insegnanti e pari giocano un ruolo cruciale in questa fase di preparazione.",
+      "bullet1": "⚔️ Scegli figure storiche opposte o concetti contrastanti",
+      "bullet2": "🎯 Seleziona argomenti che evidenziano diverse prospettive e valori",
+      "bullet3": "📚 Considera personaggi da diversi periodi storici o ideologie",
+      "bullet4": "🌍 Includi prospettive culturali e intellettuali diverse"
+    },
+    "moderationSkills": {
+      "title": "Sviluppare Abilità di Moderazione Avanzate",
+      "content": "Attraverso la pratica, gli studenti sviluppano tecniche di moderazione sofisticate incluse interrogazioni strategiche, risoluzione di conflitti e la capacità di estrarre intuizioni più profonde dai dibattiti.",
+      "bullet1": "🗣️ Impara a fare domande di follow-up che rivelano assunzioni sottostanti",
+      "bullet2": "🎭 Pratica gestione di diversi tipi di personalità e stili di dibattito",
+      "bullet3": "🔄 Sviluppa abilità nel reindirizzare argomenti improduttivi",
+      "bullet4": "📈 Costruisci fiducia nel facilitare discussioni complesse"
+    },
+    "criticalThinking": {
+      "title": "Pensiero Critico attraverso Analisi degli Argomenti",
+      "content": "Gli studenti analizzano la qualità degli argomenti, identificano fallacie logiche e valutano le prove presentate dai personaggi IA. Questo sviluppa abilità di pensiero critico sofisticate applicabili in tutte le discipline.",
+      "bullet1": "🔍 Identifica fallacie logiche e ragionamenti deboli in tempo reale",
+      "bullet2": "📊 Valuta la forza delle prove e degli argomenti di supporto",
+      "bullet3": "⚖️ Confronta e contrasta diversi approcci argomentativi",
+      "bullet4": "🧩 Sintetizza idee complesse da prospettive multiple"
+    },
+    "reflection": {
+      "title": "Riflessione Collaborativa e Auto-valutazione 2.0",
+      "content": "L'attività si conclude con riflessione potenziata dove sia studente che insegnante/pari analizzano la qualità del dibattito, l'efficacia della moderazione e i risultati dell'apprendimento. Questa 'Auto-valutazione 2.0' promuove crescita metacognitiva.",
+      "bullet1": "🤔 Analizza quali risposte IA erano più/meno convincenti e perché",
+      "bullet2": "📝 Rifletti su tecniche di moderazione che erano più efficaci",
+      "bullet3": "🎯 Identifica opportunità mancate per interrogazioni più profonde",
+      "bullet4": "🔄 Stabilisci obiettivi per migliorare futura moderazione e analisi critica"
+    },
+    "applications": {
+      "title": "Perché Usare Dibattiti IA invece di Dibattiti Umani?",
+      "content": "I dibattiti IA complementano l'interazione umana fornendo un ambiente di pratica sicuro per studenti timidi, abilitando apprendimento remoto, costruendo fiducia tra insegnanti e studenti, e servendo come preparazione per veri dibattiti umani.",
+      "bullet1": "🛡️ Ambiente di pratica sicuro per studenti timidi o esitanti",
+      "bullet2": "🌐 Abilita scenari di apprendimento remoto e a distanza efficaci",
+      "bullet3": "🤝 Costruisce fiducia e confidenza prima di impegnarsi in dibattiti umani",
+      "bullet4": "🎓 Serve come preparazione e allenamento per veri dibattiti tra pari"
+    }
+  }
   }
 }

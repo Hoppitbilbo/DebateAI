@@ -62,7 +62,11 @@
     },
     "submitReflection": "Reflexion senden",
     "aiError": "Fehler in der KI-Antwort. Bitte versuchen Sie es erneut.",
-    "backToApps": "Zurück zu den Apps"
+    "backToApps": "Zurück zu den Apps",
+    "viewTutorial": "Tutorial ansehen",
+    "slide": "Folie",
+    "progress": "Fortschritt",
+    "previous": "Zurück"
   },
   "navigation": {
     "home": "Startseite",
@@ -319,6 +323,8 @@
       "subtitle": "Führe einen Dialog mit einer historischen Figur, indem du eine andere darstellst",
       "description": "Schlüpfe in die Rolle einer historischen Figur und führe einen Dialog mit einer anderen",
       "page": {
+        "title": "Verkörpere Du",
+        "subtitle": "Führe einen Dialog mit einer historischen Figur, indem du eine andere darstellst",
         "setup": {
           "title": "Wähle die Charaktere",
           "description": "Wähle den Charakter, den die KI spielen soll, und den, den du spielen wirst",
@@ -749,5 +755,78 @@
       "content": "Unser sozialer Zweck ist es, eine Zukunft zu schaffen, in der KI ein starker Verbündeter für Schüler und Lehrer ist und das Lernen zu einem aufregenden, personalisierten und vor allem für jeden zugänglichen Abenteuer macht."
     },
     "supportButton": "Unterstützen Sie uns"
+  },
+  "tutorial": {
+    "wikiInterview": {
+      "title": "Wiki-Interview Tutorial",
+      "subtitle": "Meistern Sie kollaborative Debattenmoderation und kritisches Denken durch KI-gestützte Wikipedia-Charakterdebatten",
+      "startApp": "Wiki-Interview starten",
+      "slides": {
+        "welcome": {
+          "title": "Willkommen bei Wiki-Interview",
+          "content": "Wiki-Interview ist ein kollaboratives Bildungstool, bei dem Schüler zu Moderatoren von Debatten zwischen KI-Charakteren werden, die Wikipedia-Seiten repräsentieren. Dieser innovative Ansatz entwickelt Moderationsfähigkeiten, kritisches Denken und Argumentationsanalyse durch Peer-Learning und geführte Reflexion.",
+          "bullet1": "🎭 Moderieren Sie Debatten zwischen KI-gestützten Wikipedia-Charakteren",
+          "bullet2": "👥 Kollaboratives Lernen mit Lehrer- oder Peer-Anleitung",
+          "bullet3": "🧠 Entwickeln Sie kritisches Denken und Argumentationsanalysefähigkeiten",
+          "bullet4": "📊 Strukturierter Reflexions- und Peer-Bewertungsprozess"
+        },
+        "moderatorRole": {
+          "title": "Der Schüler als Debattenmoderator",
+          "content": "Schüler übernehmen die entscheidende Rolle des Debattenmoderators, lernen Diskussionen zu leiten, durchdringende Fragen zu stellen und produktiven Dialog zwischen gegensätzlichen KI-Charakteren aufrechtzuerhalten. Dies entwickelt Führungsqualitäten und kritische Denkfähigkeiten.",
+          "bullet1": "🎯 Leiten Sie den Debattenfluss und sorgen Sie für ausgewogene Teilnahme",
+          "bullet2": "❓ Stellen Sie strategische Fragen zur Vertiefung der Diskussion",
+          "bullet3": "⚖️ Bewahren Sie Neutralität während der Erkundung verschiedener Perspektiven",
+          "bullet4": "🔍 Identifizieren Sie Schlüsselargumente und logische Argumentationsmuster"
+        },
+        "peerCollaboration": {
+          "title": "Peer-Learning und Lehreranleitung",
+          "content": "Die effektivste Nutzung beinhaltet einen Lehrer oder Peer-Kollaborateur, der bei der Auswahl stimulierender Debattenthemen und gegensätzlicher Charaktere hilft, dann den Moderationsprozess des Schülers durch Echtzeit-Feedback und Reflexion beobachtet und leitet.",
+          "bullet1": "👨‍🏫 Lehrer/Peer wählt ansprechende, kontrastierende Charaktere und Themen aus",
+          "bullet2": "👁️ Kollaborative Beobachtung von Moderationstechniken und -strategien",
+          "bullet3": "💭 Echtzeit-Anleitung zu Fragetechniken und Debattenfluss",
+          "bullet4": "🤝 Gemeinsame Reflexion über Argumentqualität und logisches Denken"
+        },
+        "setupDebate": {
+          "title": "Stimulierende Debatten einrichten",
+          "content": "Der Schlüssel für effektives Lernen ist die Auswahl kontrastierender Wikipedia-Charaktere und kontroverser Themen, die bedeutungsvolle Debatten generieren. Lehrer und Peers spielen eine entscheidende Rolle in dieser Vorbereitungsphase.",
+          "bullet1": "⚔️ Wählen Sie gegensätzliche historische Figuren oder kontrastierende Konzepte",
+          "bullet2": "🎯 Wählen Sie Themen, die verschiedene Perspektiven und Werte hervorheben",
+          "bullet3": "📚 Berücksichtigen Sie Charaktere aus verschiedenen Zeitperioden oder Ideologien",
+          "bullet4": "🌍 Beziehen Sie vielfältige kulturelle und intellektuelle Perspektiven ein"
+        },
+        "moderationSkills": {
+          "title": "Entwicklung fortgeschrittener Moderationsfähigkeiten",
+          "content": "Durch Übung entwickeln Schüler ausgeklügelte Moderationstechniken einschließlich strategischer Befragung, Konfliktlösung und der Fähigkeit, tiefere Einsichten aus Debatten zu extrahieren.",
+          "bullet1": "🗣️ Lernen Sie Nachfragen zu stellen, die zugrundeliegende Annahmen aufdecken",
+          "bullet2": "🎭 Üben Sie den Umgang mit verschiedenen Persönlichkeitstypen und Debattenstilen",
+          "bullet3": "🔄 Entwickeln Sie Fähigkeiten zur Umleitung unproduktiver Argumente",
+          "bullet4": "📈 Bauen Sie Vertrauen in die Moderation komplexer Diskussionen auf"
+        },
+        "criticalThinking": {
+          "title": "Kritisches Denken durch Argumentanalyse",
+          "content": "Schüler analysieren die Qualität von Argumenten, identifizieren logische Fehlschlüsse und bewerten Beweise, die von KI-Charakteren präsentiert werden. Dies entwickelt ausgeklügelte kritische Denkfähigkeiten, die in allen Disziplinen anwendbar sind.",
+          "bullet1": "🔍 Identifizieren Sie logische Fehlschlüsse und schwache Argumentation in Echtzeit",
+          "bullet2": "📊 Bewerten Sie die Stärke von Beweisen und unterstützenden Argumenten",
+          "bullet3": "⚖️ Vergleichen und kontrastieren Sie verschiedene argumentative Ansätze",
+          "bullet4": "🧩 Synthetisieren Sie komplexe Ideen aus mehreren Perspektiven"
+        },
+        "reflection": {
+          "title": "Kollaborative Reflexion und Selbstbewertung 2.0",
+          "content": "Die Aktivität schließt mit verbesserter Reflexion ab, bei der sowohl Schüler als auch Lehrer/Peer die Debattenqualität, Moderationseffektivität und Lernergebnisse analysieren. Diese 'Selbstbewertung 2.0' fördert metakognitives Wachstum.",
+          "bullet1": "🤔 Analysieren Sie, welche KI-Antworten überzeugender/weniger überzeugend waren und warum",
+          "bullet2": "📝 Reflektieren Sie über Moderationstechniken, die am effektivsten waren",
+          "bullet3": "🎯 Identifizieren Sie verpasste Gelegenheiten für tiefere Befragung",
+          "bullet4": "🔄 Setzen Sie Ziele zur Verbesserung zukünftiger Moderation und kritischer Analyse"
+        },
+        "applications": {
+          "title": "Warum KI-Debatten statt menschlicher Debatten verwenden?",
+          "content": "KI-Debatten ergänzen menschliche Interaktion, indem sie eine sichere Übungsumgebung für schüchterne Schüler bieten, Fernlernen ermöglichen, Vertrauen zwischen Lehrern und Schülern aufbauen und als Vorbereitung für echte menschliche Debatten dienen.",
+          "bullet1": "🛡️ Sichere Übungsumgebung für schüchterne oder zögernde Schüler",
+          "bullet2": "🌐 Ermöglicht effektive Fernlern- und Distanzlernszenarien",
+          "bullet3": "🤝 Baut Vertrauen auf, bevor man sich auf menschliche Debatten einlässt",
+          "bullet4": "🎓 Dient als Vorbereitung und Training für echte Peer-to-Peer-Debatten"
+        }
+      }
+    }
   }
 }
