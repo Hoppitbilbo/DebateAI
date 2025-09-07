@@ -1,3 +1,9 @@
+/**
+ * @file Renders the main page for the "Doppia Intervista" (Double Interview) educational game.
+ * @remarks This page handles the initial setup phase where the user selects two characters
+ * and then transitions to the main chat interface for the interview.
+ */
+
 import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -7,15 +13,37 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
+
+/**
+ * @interface WikiSearchResult
+ * @description Represents a character selected from a Wikipedia search.
+ * @property {string} title - The name of the character.
+ * @property {string} snippet - A brief description of the character.
+ * @property {number} pageid - The unique ID of the Wikipedia page.
+ */
 interface WikiSearchResult {
   title: string;
   snippet: string;
   pageid: number;
 }
+
+/**
+ * @function DoppiaIntervistaPage
+ * @description The main page component for the "Doppia Intervista" game. It manages the state
+ * for character selection and conditionally renders either the setup UI or the chat interface.
+ * @returns {JSX.Element} The rendered Doppia Intervista page.
+ */
 const DoppiaIntervistaPage = () => {
   const { t } = useTranslation();
   const [selectedCharacters, setSelectedCharacters] = useState<WikiSearchResult[]>([]);
   const [showChat, setShowChat] = useState(false);
+
+  /**
+   * @function handleCharacterSelect
+   * @description Updates the state with the selected character for a given index.
+   * @param {number} index - The index of the character to update (0 or 1).
+   * @param {WikiSearchResult} result - The selected character data.
+   */
   const handleCharacterSelect = (index: number, result: WikiSearchResult) => {
     const newSelectedCharacters = [...selectedCharacters];
     while (newSelectedCharacters.length <= index) {
@@ -24,11 +52,18 @@ const DoppiaIntervistaPage = () => {
     newSelectedCharacters[index] = result;
     setSelectedCharacters(newSelectedCharacters);
   };
+
+  /**
+   * @function handleStartDialogue
+   * @description Transitions the view from the setup screen to the chat interface if two valid,
+   * different characters have been selected.
+   */
   const handleStartDialogue = () => {
     if (selectedCharacters.length >= 2 && selectedCharacters[0] && selectedCharacters[1] && selectedCharacters[0].title && selectedCharacters[1].title && selectedCharacters[0].title !== selectedCharacters[1].title) {
       setShowChat(true);
     }
   };
+
   return <div className="flex flex-col min-h-screen">
       <Navbar />
       

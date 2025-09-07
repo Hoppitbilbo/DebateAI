@@ -1,3 +1,10 @@
+/**
+ * @file A set of components for building pagination UI.
+ * @remarks This component provides the building blocks for creating pagination controls.
+ * It is part of the `shadcn/ui` collection and is styled with `tailwindcss`.
+ * @see https://ui.shadcn.com/docs/components/pagination
+ */
+
 import * as React from "react"
 import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react"
 

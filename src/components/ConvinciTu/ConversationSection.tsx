@@ -1,3 +1,9 @@
+/**
+ * @file Renders the main conversation interface for the "ConvinciTu" game.
+ * @remarks This component displays the chat history between the user and the selected character,
+ * handles user input, and shows loading states. It also provides an option to end the activity
+ * and proceed to the reflection phase.
+ */
 
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
@@ -8,6 +14,16 @@ import { Message } from "@/types/conversation";
 import { useTranslation } from "react-i18next";
 import MarkdownViewer from "@/components/shared/MarkdownViewer";
 
+/**
+ * @interface ConversationSectionProps
+ * @description Defines the props for the ConversationSection component.
+ * @property {{ title: string } | null} selectedCharacter - The character selected for the conversation.
+ * @property {string} persuasionTopic - The topic of the persuasion attempt.
+ * @property {Message[]} conversation - An array of messages representing the chat history.
+ * @property {boolean} isLoading - A flag indicating if the AI is currently generating a response.
+ * @property {(message: string) => void} onSendMessage - Callback function to send a user's message.
+ * @property {() => void} onEndActivity - Callback function to end the conversation and move to reflection.
+ */
 interface ConversationSectionProps {
   selectedCharacter: { title: string } | null;
   persuasionTopic: string;
@@ -17,6 +33,13 @@ interface ConversationSectionProps {
   onEndActivity: () => void;
 }
 
+/**
+ * @function ConversationSection
+ * @description The main component for the conversation part of the "ConvinciTu" game.
+ * It displays the dialogue, allows the user to send messages, and indicates when the AI is responding.
+ * @param {ConversationSectionProps} props - The props for the component.
+ * @returns {JSX.Element} The rendered conversation interface.
+ */
 const ConversationSection = ({
   selectedCharacter,
   persuasionTopic,
@@ -28,6 +51,10 @@ const ConversationSection = ({
   const { t } = useTranslation();
   const [message, setMessage] = useState("");
 
+  /**
+   * @function handleSendMessage
+   * @description Sends the user's message if it's not empty and clears the input field.
+   */
   const handleSendMessage = () => {
     if (message.trim()) {
       onSendMessage(message);

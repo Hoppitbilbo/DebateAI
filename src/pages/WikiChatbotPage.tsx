@@ -1,3 +1,9 @@
+/**
+ * @file Renders the main page for the WikiChatbot educational game.
+ * @remarks This page handles the initial setup where the user selects a Wikipedia topic.
+ * Once a topic is selected and its summary is fetched, it transitions to the main
+ * `WikiChatInterface` to begin the chat session.
+ */
 
 import { useState } from "react";
 import Navbar from "@/components/Navbar";
@@ -8,21 +14,37 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ArrowRight } from "lucide-react";
 import WikiChatInterface from "@/components/WikiChatInterface";
 import { useTranslation } from "react-i18next";
-// Removed imports for WikiChatbotReflection, WikiChatbotFeedback, ConversationData, getAIGameAndReflectionEvaluation, AIScoreEvaluation, Message
-// as their responsibilities are now encapsulated in WikiChatInterface or not needed at this level.
 
+/**
+ * @interface WikiSearchResult
+ * @description Represents a topic selected from a Wikipedia search.
+ * @property {string} title - The title of the Wikipedia article.
+ * @property {string} snippet - A brief description of the article.
+ * @property {number} pageid - The unique ID of the Wikipedia page.
+ */
 interface WikiSearchResult {
   title: string;
   snippet: string;
   pageid: number;
 }
 
+/**
+ * @function WikiChatbotPage
+ * @description The main page component for the WikiChatbot game. It manages the state for
+ * topic selection and conditionally renders either the setup UI or the chat interface.
+ * @returns {JSX.Element} The rendered WikiChatbot page.
+ */
 const WikiChatbotPage = () => {
   const { t, i18n } = useTranslation();
   const [selectedWiki, setSelectedWiki] = useState<WikiSearchResult | null>(null);
   const [wikiSummary, setWikiSummary] = useState<string>("");
-  const [activityPhase, setActivityPhase] = useState<"selecting" | "chatting">("selecting"); // Simplified activity phases
+  const [activityPhase, setActivityPhase] = useState<"selecting" | "chatting">("selecting");
 
+  /**
+   * @function getWikipediaLanguageCode
+   * @description Determines the appropriate Wikipedia language code based on the current i18n language setting.
+   * @returns {string} The two-letter language code for the Wikipedia API (e.g., 'it', 'en').
+   */
   const getWikipediaLanguageCode = () => {
     const langMap: { [key: string]: string } = {
       'it': 'it',
@@ -34,14 +56,21 @@ const WikiChatbotPage = () => {
     return langMap[i18n.language] || 'it';
   };
 
-  // Removed userReflection, aiEvaluation, isEvaluating, messages states
-
+  /**
+   * @function handleWikiSelect
+   * @description Updates the state with the selected topic and fetches its summary.
+   * @param {WikiSearchResult} result - The selected topic data.
+   */
   const handleWikiSelect = (result: WikiSearchResult) => {
     setSelectedWiki(result);
-    // When a wiki is selected, get its full summary
     fetchWikiSummary(result.title);
   };
 
+  /**
+   * @function fetchWikiSummary
+   * @description Fetches the full summary of a Wikipedia article.
+   * @param {string} title - The title of the article to fetch.
+   */
   const fetchWikiSummary = async (title: string) => {
     try {
       const wikiLang = getWikipediaLanguageCode();
@@ -59,21 +88,24 @@ const WikiChatbotPage = () => {
     }
   };
 
-  // Removed handleMessagesUpdate
-
+  /**
+   * @function handleStartChat
+   * @description Transitions the view to the chat interface if a topic has been selected and its summary loaded.
+   */
   const handleStartChat = () => {
     if (selectedWiki && wikiSummary) {
       setActivityPhase("chatting");
     }
   };
 
-  // Removed handleEndChatInPage, handleSubmitReflection, evaluateReflection
-
-  const handleStartNewChat = () => { // This function is now called by onSessionComplete from WikiChatInterface
+  /**
+   * @function handleStartNewChat
+   * @description Resets the page to the initial selection phase, ready for a new session.
+   */
+  const handleStartNewChat = () => {
     setSelectedWiki(null);
     setWikiSummary("");
     setActivityPhase("selecting");
-    // No need to reset userReflection, aiEvaluation, messages as they are not here anymore
   };
 
   return <div className="flex flex-col min-h-screen">
@@ -90,7 +122,6 @@ const WikiChatbotPage = () => {
             </p>
           </div>
           
-          {/* Conditionally render content based on activity phase */}
           {activityPhase === "selecting" && (
             <div className="max-w-2xl mx-auto">
                 <Card>
@@ -129,7 +160,6 @@ const WikiChatbotPage = () => {
                     <h2 className="text-xl font-bold">
                       {t('apps.wikiChatbot.chat.chatWithTitle', { title: selectedWiki?.title || '' })}
                     </h2>
-                    {/* You might want to keep the 'Cambia Argomento' button here or move it */}
                   </div>
                   <WikiChatInterface 
                     wikiTitle={selectedWiki.title} 
@@ -138,8 +168,6 @@ const WikiChatbotPage = () => {
                   />
                 </div>
             )}
-
-            {/* Removed reflecting, evaluating, and feedback phases rendering as they are handled by WikiChatInterface */}
         </div>
       </main>
       <Footer />

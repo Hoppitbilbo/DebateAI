@@ -1,13 +1,31 @@
+/**
+ * @file Renders the feedback screen for the "Personaggio Misterioso" (Mystery Character) game.
+ * @remarks This component displays whether the user's guess was correct, shows a detailed breakdown
+ * of their scores (for the guess, conversation quality, and reflection), and compares the user's
+ * reflection with AI-generated feedback.
+ */
 
 import ReflectionComparison from "@/components/shared/ReflectionComparison";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { RefreshCcw, CheckCircle, XCircle, MessageSquareText, Brain, UserCheck } from "lucide-react";
-import { AIScoreEvaluation } from "@/utils/evaluationUtils"; // Importa il tipo
+import { AIScoreEvaluation } from "@/utils/evaluationUtils";
 
+/**
+ * @interface PersonaggioMisteriosoFeedbackProps
+ * @description Defines the props for the PersonaggioMisteriosoFeedback component.
+ * @property {string} reflection - The user's written reflection on their thought process.
+ * @property {AIScoreEvaluation | null} evaluation - The structured evaluation from the AI, including scores and rationales.
+ * @property {boolean} isLoading - Flag indicating if the AI evaluation is being generated.
+ * @property {() => void} onStartNewGame - Callback function to start a new game.
+ * @property {boolean} correctGuess - Whether the user guessed the character correctly.
+ * @property {string} characterName - The name of the correct mystery character.
+ * @property {string} [finalGuess] - The user's final guess.
+ * @property {number | null} [nameScore] - The score awarded for the guess itself (e.g., 10 for correct, 0 for incorrect).
+ */
 interface PersonaggioMisteriosoFeedbackProps {
   reflection: string;
-  evaluation: AIScoreEvaluation | null; // Modificato per accettare l'oggetto strutturato
+  evaluation: AIScoreEvaluation | null;
   isLoading: boolean;
   onStartNewGame: () => void;
   correctGuess: boolean;
@@ -16,7 +34,16 @@ interface PersonaggioMisteriosoFeedbackProps {
   nameScore?: number | null;
 }
 
-// Helper per mostrare i punteggi
+/**
+ * @function ScoreDisplay
+ * @description A helper component to display a labeled score with an optional rationale and icon.
+ * @param {object} props - The props for the component.
+ * @param {string} props.label - The label for the score (e.g., "Qualità Conversazione").
+ * @param {number} [props.score] - The numerical score.
+ * @param {string} [props.rationale] - The AI's rationale for the score.
+ * @param {React.ReactNode} [props.icon] - An optional icon to display next to the label.
+ * @returns {JSX.Element | null} The rendered score display, or null if the score is not a number.
+ */
 const ScoreDisplay = ({ label, score, rationale, icon }: { label: string, score?: number, rationale?: string, icon?: React.ReactNode }) => {
   if (typeof score !== 'number') return null;
   return (
@@ -30,6 +57,13 @@ const ScoreDisplay = ({ label, score, rationale, icon }: { label: string, score?
   );
 };
 
+/**
+ * @function PersonaggioMisteriosoFeedback
+ * @description The main feedback component for the "Personaggio Misterioso" game. It provides a comprehensive
+ * summary of the user's performance, including scores, AI feedback, and the correct answer.
+ * @param {PersonaggioMisteriosoFeedbackProps} props - The props for the component.
+ * @returns {JSX.Element} The rendered feedback screen.
+ */
 const PersonaggioMisteriosoFeedback = ({ 
   reflection, 
   evaluation, 
@@ -46,7 +80,7 @@ const PersonaggioMisteriosoFeedback = ({
     (evaluation?.reflectionScore || 0) + 
     (nameScore || 0)
   );
-  const maxPossibleScore = 10 + 10 + 10; // Max per conversazione, riflessione, nome
+  const maxPossibleScore = 10 + 10 + 10;
 
   return (
     <Card className={`shadow-lg ${correctGuess ? 'border-green-500' : 'border-red-500'} border-2`}>
@@ -74,7 +108,6 @@ const PersonaggioMisteriosoFeedback = ({
         {isLoading && (
           <div className="text-center">
             <p>Valutazione AI in corso...</p>
-            {/* Potresti aggiungere uno spinner qui */}
           </div>
         )}
 
@@ -115,7 +148,7 @@ const PersonaggioMisteriosoFeedback = ({
           <ReflectionComparison
             userReflection={reflection}
             aiEvaluation={evaluation?.textualFeedback || (isLoading ? "Caricamento feedback AI..." : "Nessun feedback testuale ricevuto dall'IA.")}
-            isLoading={isLoading && !evaluation} // Mostra loading solo se evaluation non è ancora arrivato
+            isLoading={isLoading && !evaluation}
             onContinue={onStartNewGame} 
             continueButtonText={"Placeholder"} 
             hideContinueButton={true} 

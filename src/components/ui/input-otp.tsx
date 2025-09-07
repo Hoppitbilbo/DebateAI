@@ -1,3 +1,11 @@
+/**
+ * @file A set of components for building one-time password (OTP) inputs.
+ * @remarks This component is a wrapper around the `input-otp` library.
+ * It is styled using `tailwindcss` and is part of the `shadcn/ui` collection.
+ * @see https://github.com/guilhermerodz/input-otp
+ * @see https://ui.shadcn.com/docs/components/input-otp
+ */
+
 import * as React from "react"
 import { OTPInput, OTPInputContext } from "input-otp"
 import { Dot } from "lucide-react"

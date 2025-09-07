@@ -1,3 +1,9 @@
+/**
+ * @file Provides a consistent layout for all educational applications.
+ * @remarks This component includes a header with a title, subtitle, a back button, and an optional reset button.
+ * It wraps the main content of each application page.
+ */
+
 import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -5,6 +11,16 @@ import { ArrowLeft, RotateCcw } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
+/**
+ * @interface AppLayoutProps
+ * @description Defines the props for the AppLayout component.
+ * @property {string} title - The main title to be displayed in the header.
+ * @property {string} [subtitle] - An optional subtitle to be displayed below the title.
+ * @property {React.ReactNode} children - The main content of the page to be rendered within the layout.
+ * @property {() => void} [onReset] - An optional callback function to reset the application's state. If provided, a reset button is shown.
+ * @property {boolean} [showBackButton=true] - Whether to show the "Back to Apps" button.
+ * @property {string} [className] - Optional additional CSS classes to apply to the main layout container.
+ */
 interface AppLayoutProps {
   title: string;
   subtitle?: string;
@@ -14,6 +30,12 @@ interface AppLayoutProps {
   className?: string;
 }
 
+/**
+ * @function AppLayout
+ * @description A reusable layout component that provides a standardized header and structure for application pages.
+ * @param {AppLayoutProps} props - The props for the component.
+ * @returns {JSX.Element} The rendered application layout.
+ */
 const AppLayout: React.FC<AppLayoutProps> = ({
   title,
   subtitle,

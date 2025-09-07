@@ -1,3 +1,12 @@
+/**
+ * @file An image element with a fallback for representing a user.
+ * @remarks This component is a wrapper around the `Avatar` component from `radix-ui/react-avatar`.
+ * It is styled using `tailwindcss` and is part of the `shadcn/ui` collection.
+ * It provides an `AvatarImage` for displaying the image and an `AvatarFallback` for when the image is not available.
+ * @see https://www.radix-ui.com/primitives/docs/components/avatar
+ * @see https://ui.shadcn.com/docs/components/avatar
+ */
+
 import * as React from "react"
 import * as AvatarPrimitive from "@radix-ui/react-avatar"
 

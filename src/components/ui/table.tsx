@@ -1,7 +1,18 @@
+/**
+ * @file A set of components for displaying tabular data.
+ * @remarks This component is part of the `shadcn/ui` collection and is styled with `tailwindcss`.
+ * It provides a set of components for building accessible and responsive tables.
+ * @see https://ui.shadcn.com/docs/components/table
+ */
+
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * @description The `<table>` element.
+ * @param {React.HTMLAttributes<HTMLTableElement>} props - The props for the component.
+ */
 const Table = React.forwardRef<
   HTMLTableElement,
   React.HTMLAttributes<HTMLTableElement>
@@ -16,6 +27,10 @@ const Table = React.forwardRef<
 ))
 Table.displayName = "Table"
 
+/**
+ * @description The `<thead>` element.
+ * @param {React.HTMLAttributes<HTMLTableSectionElement>} props - The props for the component.
+ */
 const TableHeader = React.forwardRef<
   HTMLTableSectionElement,
   React.HTMLAttributes<HTMLTableSectionElement>
@@ -24,6 +39,10 @@ const TableHeader = React.forwardRef<
 ))
 TableHeader.displayName = "TableHeader"
 
+/**
+ * @description The `<tbody>` element.
+ * @param {React.HTMLAttributes<HTMLTableSectionElement>} props - The props for the component.
+ */
 const TableBody = React.forwardRef<
   HTMLTableSectionElement,
   React.HTMLAttributes<HTMLTableSectionElement>
@@ -36,6 +55,10 @@ const TableBody = React.forwardRef<
 ))
 TableBody.displayName = "TableBody"
 
+/**
+ * @description The `<tfoot>` element.
+ * @param {React.HTMLAttributes<HTMLTableSectionElement>} props - The props for the component.
+ */
 const TableFooter = React.forwardRef<
   HTMLTableSectionElement,
   React.HTMLAttributes<HTMLTableSectionElement>
@@ -51,6 +74,10 @@ const TableFooter = React.forwardRef<
 ))
 TableFooter.displayName = "TableFooter"
 
+/**
+ * @description The `<tr>` element.
+ * @param {React.HTMLAttributes<HTMLTableRowElement>} props - The props for the component.
+ */
 const TableRow = React.forwardRef<
   HTMLTableRowElement,
   React.HTMLAttributes<HTMLTableRowElement>
@@ -66,6 +93,10 @@ const TableRow = React.forwardRef<
 ))
 TableRow.displayName = "TableRow"
 
+/**
+ * @description The `<th>` element.
+ * @param {React.ThHTMLAttributes<HTMLTableCellElement>} props - The props for the component.
+ */
 const TableHead = React.forwardRef<
   HTMLTableCellElement,
   React.ThHTMLAttributes<HTMLTableCellElement>
@@ -81,6 +112,10 @@ const TableHead = React.forwardRef<
 ))
 TableHead.displayName = "TableHead"
 
+/**
+ * @description The `<td>` element.
+ * @param {React.TdHTMLAttributes<HTMLTableCellElement>} props - The props for the component.
+ */
 const TableCell = React.forwardRef<
   HTMLTableCellElement,
   React.TdHTMLAttributes<HTMLTableCellElement>
@@ -93,6 +128,10 @@ const TableCell = React.forwardRef<
 ))
 TableCell.displayName = "TableCell"
 
+/**
+ * @description The `<caption>` element.
+ * @param {React.HTMLAttributes<HTMLTableCaptionElement>} props - The props for the component.
+ */
 const TableCaption = React.forwardRef<
   HTMLTableCaptionElement,
   React.HTMLAttributes<HTMLTableCaptionElement>

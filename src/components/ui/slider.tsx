@@ -1,8 +1,20 @@
+/**
+ * @file An input where the user selects a value from within a given range.
+ * @remarks This component is a wrapper around the `Slider` component from `radix-ui/react-slider`.
+ * It is styled using `tailwindcss` and is part of the `shadcn/ui` collection.
+ * @see https://www.radix-ui.com/primitives/docs/components/slider
+ * @see https://ui.shadcn.com/docs/components/slider
+ */
+
 import * as React from "react"
 import * as SliderPrimitive from "@radix-ui/react-slider"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * @description A slider component that allows users to select a value from a range.
+ * @param {React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root>} props - The props for the component.
+ */
 const Slider = React.forwardRef<
   React.ElementRef<typeof SliderPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root>

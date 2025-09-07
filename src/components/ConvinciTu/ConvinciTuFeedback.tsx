@@ -1,3 +1,8 @@
+/**
+ * @file Renders the feedback screen for the "ConvinciTu" game.
+ * @remarks This component displays the user's reflection, the AI's evaluation, and the full conversation history.
+ * It also provides options to download the reflection or start a new chat.
+ */
 
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -9,6 +14,17 @@ import { downloadReflection } from "@/utils/downloadUtils";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 
+/**
+ * @interface ConvinciTuFeedbackProps
+ * @description Defines the props for the ConvinciTuFeedback component.
+ * @property {string} userReflection - The reflection text written by the user.
+ * @property {string | null} aiEvaluation - The AI-generated feedback on the user's performance.
+ * @property {boolean} isLoading - A flag indicating if the AI evaluation is still being generated.
+ * @property {() => void} onStartNewChat - Callback function to begin a new game session.
+ * @property {Message[]} messages - The complete conversation history.
+ * @property {string} characterName - The name of the character the user interacted with.
+ * @property {string} topic - The persuasion topic for the completed activity.
+ */
 interface ConvinciTuFeedbackProps {
   userReflection: string;
   aiEvaluation: string | null;
@@ -19,6 +35,14 @@ interface ConvinciTuFeedbackProps {
   topic: string;
 }
 
+/**
+ * @function ConvinciTuFeedback
+ * @description A component that presents the final feedback for the "ConvinciTu" activity.
+ * It includes the user's reflection, AI-generated feedback, and a collapsible view of the conversation.
+ * Users can download their activity summary or start a new session.
+ * @param {ConvinciTuFeedbackProps} props - The props for the component.
+ * @returns {JSX.Element} The rendered feedback screen.
+ */
 const ConvinciTuFeedback: React.FC<ConvinciTuFeedbackProps> = ({
   userReflection,
   aiEvaluation,
@@ -31,10 +55,20 @@ const ConvinciTuFeedback: React.FC<ConvinciTuFeedbackProps> = ({
   const { t } = useTranslation();
   const [isConversationExpanded, setIsConversationExpanded] = useState(true);
 
+  /**
+   * @function toggleConversation
+   * @description Toggles the visibility of the conversation history section.
+   */
   const toggleConversation = () => {
     setIsConversationExpanded(!isConversationExpanded);
   };
 
+  /**
+   * @function handleDownload
+   * @description Handles the download of the reflection and conversation history.
+   * It formats the data and uses a utility function to create and download a file.
+   * Displays a success or error toast notification.
+   */
   const handleDownload = () => {
     try {
       downloadReflection({

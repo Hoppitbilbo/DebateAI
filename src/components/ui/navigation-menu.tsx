@@ -1,3 +1,11 @@
+/**
+ * @file A collection of links for navigating websites.
+ * @remarks This component is a wrapper around the `NavigationMenu` component from `radix-ui/react-navigation-menu`.
+ * It is styled using `tailwindcss` and is part of the `shadcn/ui` collection.
+ * @see https://www.radix-ui.com/primitives/docs/components/navigation-menu
+ * @see https://ui.shadcn.com/docs/components/navigation-menu
+ */
+
 import * as React from "react"
 import * as NavigationMenuPrimitive from "@radix-ui/react-navigation-menu"
 import { cva } from "class-variance-authority"

@@ -1,12 +1,34 @@
+/**
+ * @file Displays rich content in a portal, triggered by a button.
+ * @remarks This component is a wrapper around the `Popover` component from `radix-ui/react-popover`.
+ * It is styled using `tailwindcss` and is part of the `shadcn/ui` collection.
+ * @see https://www.radix-ui.com/primitives/docs/components/popover
+ * @see https://ui.shadcn.com/docs/components/popover
+ */
+
 import * as React from "react"
 import * as PopoverPrimitive from "@radix-ui/react-popover"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * @description The root component for a popover.
+ * @param {React.ComponentProps<typeof PopoverPrimitive.Root>} props - The props for the component.
+ */
 const Popover = PopoverPrimitive.Root
 
+/**
+ * @description The button that triggers the popover to open.
+ * @param {React.ComponentProps<typeof PopoverPrimitive.Trigger>} props - The props for the component.
+ */
 const PopoverTrigger = PopoverPrimitive.Trigger
 
+/**
+ * @description The content that is displayed within the popover.
+ * @param {React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Content>} props - The props for the component.
+ * @param {string} [props.align="center"] - The preferred alignment of the popover content to the trigger.
+ * @param {number} [props.sideOffset=4] - The distance in pixels from the trigger to the popover content.
+ */
 const PopoverContent = React.forwardRef<
   React.ElementRef<typeof PopoverPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Content>

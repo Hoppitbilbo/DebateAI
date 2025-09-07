@@ -1,3 +1,10 @@
+/**
+ * @file Displays a callout for user attention.
+ * @remarks This component is a styled alert box, created using `class-variance-authority` for different visual styles.
+ * It is part of the `shadcn/ui` collection and is used for displaying important messages.
+ * @see https://ui.shadcn.com/docs/components/alert
+ */
+
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 

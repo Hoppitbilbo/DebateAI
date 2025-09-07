@@ -1,9 +1,18 @@
+/**
+ * @file Renders a section showcasing the key features or applications of the platform.
+ * @remarks This component displays a grid of features, each with an icon, name, and description.
+ * It uses the `useScrollReveal` hook to animate the features as they enter the viewport.
+ */
 
 import { Book, School, Users, Link, User } from "lucide-react";
-import { useState, useEffect } from "react";
 import { useScrollReveal } from "@/hooks/use-scroll-reveal";
 import { useTranslation } from "react-i18next";
 
+/**
+ * @function FeaturesSection
+ * @description A component that displays a grid of the main applications or features.
+ * @returns {JSX.Element} The rendered features section.
+ */
 const FeaturesSection = () => {
   const { t } = useTranslation();
   
@@ -40,7 +49,6 @@ const FeaturesSection = () => {
     }
   ];
 
-  // Create individual reveal elements for features
   const headerReveal = useScrollReveal({ threshold: 0.1 });
   const featureReveals = features.map(() => 
     useScrollReveal({ threshold: 0.1 })

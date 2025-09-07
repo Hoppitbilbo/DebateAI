@@ -1,3 +1,11 @@
+/**
+ * @file A two-state button that can be either on or off.
+ * @remarks This component is a wrapper around the `Toggle` component from `radix-ui/react-toggle`.
+ * It is styled using `tailwindcss` and `class-variance-authority` and is part of the `shadcn/ui` collection.
+ * @see https://www.radix-ui.com/primitives/docs/components/toggle
+ * @see https://ui.shadcn.com/docs/components/toggle
+ */
+
 import * as React from "react"
 import * as TogglePrimitive from "@radix-ui/react-toggle"
 import { cva, type VariantProps } from "class-variance-authority"
@@ -26,6 +34,10 @@ const toggleVariants = cva(
   }
 )
 
+/**
+ * @description A two-state toggle button.
+ * @param {React.ComponentPropsWithoutRef<typeof TogglePrimitive.Root> & VariantProps<typeof toggleVariants>} props - The props for the component.
+ */
 const Toggle = React.forwardRef<
   React.ElementRef<typeof TogglePrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof TogglePrimitive.Root> &

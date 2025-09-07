@@ -1,21 +1,38 @@
+/**
+ * @file Utility functions for handling the self-reflection process.
+ * @remarks This file includes functions to prepare evaluation prompts and generate AI-driven
+ * feedback on a user's self-reflection based on their performance in an activity.
+ */
 
 import { Message } from "@/types/conversation";
 import { ReflectionData } from "@/types/reflection";
-// import { generateGeminiEvaluation } from "./geminiUtils"; // No longer using direct GeminiUtils here
 import { conversationToString } from "./characterDialogueUtils";
 import { getResponse, isAiServiceAvailable } from '@/services/aiService';
 
+/**
+ * @interface SessionData
+ * @description Defines the data required for a reflection evaluation session.
+ * @property {string} characterName - The name of the character involved in the activity.
+ * @property {string} topic - The topic of the activity.
+ * @property {string} objective - The objective of the activity.
+ * @property {Message[]} messages - The conversation history.
+ * @property {string} [characterSnippet] - An optional snippet of the character's bio for context.
+ */
 export interface SessionData {
   characterName: string;
   topic: string;
   objective: string;
   messages: Message[];
-  // Add characterSnippet if available and useful for evaluation context
   characterSnippet?: string; 
 }
 
 /**
- * Prepares a detailed prompt for evaluating a student's reflection.
+ * @function prepareReflectionEvaluationPrompt
+ * @description Prepares a detailed system instruction and data prompt for evaluating a student's reflection.
+ * @param {object} params - The parameters for preparing the prompt.
+ * @param {SessionData} params.sessionData - The data from the user's session.
+ * @param {string} params.userReflection - The user's written reflection.
+ * @returns {{ systemInstruction: string, dataPrompt: string }} An object containing the system instruction and the data prompt.
  */
 export const prepareReflectionEvaluationPrompt = (
   { sessionData, userReflection }: { sessionData: SessionData; userReflection: string }
@@ -56,7 +73,11 @@ Valuta la riflessione dello studente in base a tutti questi elementi, seguendo l
 };
 
 /**
- * Generates an AI evaluation for a student's reflection using the Firebase Vertex AI model.
+ * @function generateReflectionEvaluation
+ * @description Generates an AI evaluation for a student's reflection using the AI service.
+ * @param {SessionData} sessionData - The data from the user's session.
+ * @param {string} userReflection - The user's written reflection.
+ * @returns {Promise<string>} A promise that resolves to the AI's textual evaluation.
  */
 export const generateReflectionEvaluation = async (
   sessionData: SessionData,
@@ -85,14 +106,21 @@ export const generateReflectionEvaluation = async (
 
 
 /**
- * Legacy function, might be deprecated or refactored if ConvinciTuInterface directly uses 
- * generateReflectionEvaluation via evaluationUtils.ts. 
- * For now, keeping its structure but it calls the new generateReflectionEvaluation logic.
+ * @function processReflection
+ * @description A legacy function to process a reflection, now acting as a wrapper around `generateReflectionEvaluation`.
+ * @deprecated This function may be refactored or removed in the future.
+ * @param {string} reflection - The user's reflection text.
+ * @param {Message[]} messages - The conversation history.
+ * @param {string} activityType - The type of activity.
+ * @param {string} characterName - The name of the character.
+ * @param {string} topic - The topic of the activity.
+ * @param {string} [characterSnippet] - An optional character snippet.
+ * @returns {Promise<ReflectionData>} A promise that resolves to the reflection data, including the AI evaluation.
  */
 export const processReflection = async (
   reflection: string,
   messages: Message[],
-  activityType: string, // Used to form parts of SessionData like 'objective'
+  activityType: string,
   characterName: string,
   topic: string,
   characterSnippet?: string
@@ -101,7 +129,7 @@ export const processReflection = async (
   const sessionData: SessionData = {
     characterName,
     topic,
-    objective: activityType, // Or be more specific e.g. `Convincere ${characterName} su ${topic}`
+    objective: activityType,
     messages,
     characterSnippet
   };
@@ -115,8 +143,6 @@ export const processReflection = async (
       timestamp: new Date().toISOString()
     };
   } catch (error) {
-    // Error is already handled and logged in generateReflectionEvaluation
-    // This function will return the error message as aiEvaluation
     return {
       userReflection: reflection,
       aiEvaluation: error instanceof Error ? error.message : "Errore durante l'elaborazione della riflessione.",

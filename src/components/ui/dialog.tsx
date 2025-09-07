@@ -1,3 +1,11 @@
+/**
+ * @file A window overlaid on either the primary window or another dialog window, rendering the content underneath inert.
+ * @remarks This component is a wrapper around the `Dialog` component from `radix-ui/react-dialog`.
+ * It is styled using `tailwindcss` and is part of the `shadcn/ui` collection.
+ * @see https://www.radix-ui.com/primitives/docs/components/dialog
+ * @see https://ui.shadcn.com/docs/components/dialog
+ */
+
 import * as React from "react"
 import * as DialogPrimitive from "@radix-ui/react-dialog"
 import { X } from "lucide-react"

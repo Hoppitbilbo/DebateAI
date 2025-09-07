@@ -1,3 +1,8 @@
+/**
+ * @file Renders the feedback screen for the WikiChatbot activity.
+ * @remarks This component displays the user's reflection, the AI's evaluation, and the full conversation history.
+ * It also provides options to download the reflection or start a new chat.
+ */
 
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -7,6 +12,15 @@ import { WikiChatMessage } from "./types";
 import { ChevronDown, ChevronUp, RefreshCcw, Download } from "lucide-react";
 import { saveAs } from 'file-saver';
 
+/**
+ * @interface WikiChatbotFeedbackProps
+ * @description Defines the props for the WikiChatbotFeedback component.
+ * @property {string} userReflection - The reflection text written by the user.
+ * @property {string | null} aiEvaluation - The AI-generated feedback on the user's performance.
+ * @property {boolean} isEvaluating - A flag indicating if the AI evaluation is still being generated.
+ * @property {() => void} onStartNewChat - Callback function to begin a new game session.
+ * @property {WikiChatMessage[]} messages - The complete conversation history.
+ */
 interface WikiChatbotFeedbackProps {
   userReflection: string;
   aiEvaluation: string | null;
@@ -15,6 +29,14 @@ interface WikiChatbotFeedbackProps {
   messages: WikiChatMessage[];
 }
 
+/**
+ * @function WikiChatbotFeedback
+ * @description A component that presents the final feedback for the WikiChatbot activity.
+ * It includes the user's reflection, AI-generated feedback, and a collapsible view of the conversation.
+ * Users can download their activity summary or start a new session.
+ * @param {WikiChatbotFeedbackProps} props - The props for the component.
+ * @returns {JSX.Element} The rendered feedback screen.
+ */
 const WikiChatbotFeedback: React.FC<WikiChatbotFeedbackProps> = ({
   userReflection,
   aiEvaluation,
@@ -24,10 +46,19 @@ const WikiChatbotFeedback: React.FC<WikiChatbotFeedbackProps> = ({
 }) => {
   const [isConversationExpanded, setIsConversationExpanded] = useState(true);
 
+  /**
+   * @function toggleConversation
+   * @description Toggles the visibility of the conversation history section.
+   */
   const toggleConversation = () => {
     setIsConversationExpanded(!isConversationExpanded);
   };
 
+  /**
+   * @function downloadReflection
+   * @description Handles the download of the reflection and conversation history.
+   * It formats the data and uses a utility function to create and download a file.
+   */
   const downloadReflection = () => {
     const today = new Date();
     const formattedDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;

@@ -1,3 +1,10 @@
+/**
+ * @file Defines the core design system variables and global styles for the application.
+ * @remarks This file contains CSS custom properties for colors, spacing, typography, and shadows,
+ * which are used throughout the application to maintain a consistent visual style.
+ * It also includes some global styles for layout, chat messages, and form elements.
+ */
+
 /* Design System Variables and Global Styles */
 
 :root {

@@ -1,3 +1,10 @@
+/**
+ * @file Core AI service for interacting with the Google Generative AI API.
+ * @remarks This service initializes the AI model and provides functions for starting chats,
+ * sending messages, and generating content, both in standard and streaming modes.
+ * It handles the API key configuration and provides a check for service availability.
+ */
+
 import { GoogleGenerativeAI, GenerativeModel, ChatSession, GenerateContentRequest, GenerateContentResult, Part } from "@google/generative-ai";
 
 // Get the API key from environment variables
@@ -5,7 +12,10 @@ const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 
 let genAI: GoogleGenerativeAI;
 let model: GenerativeModel;
-
+/**
+ * @description The initialized Generative AI model instance from Google.
+ * This is exported for direct use if advanced functionality is needed.
+ */
 if (apiKey && apiKey !== 'your_api_key_here') {
   try {
     genAI = new GoogleGenerativeAI(apiKey);
@@ -21,16 +31,21 @@ if (apiKey && apiKey !== 'your_api_key_here') {
 }
 
 /**
- * Checks if the AI service is available and configured.
+ * @function isAiServiceAvailable
+ * @description Checks if the AI service is properly configured and available for use.
+ * @returns {boolean} `true` if the model is initialized, `false` otherwise.
  */
 export const isAiServiceAvailable = (): boolean => {
   return !!model;
 };
 
 /**
- * Starts a new chat session with the generative model.
- * @param history - Optional chat history to initialize the session.
- * @returns A new ChatSession instance.
+ * @function startChat
+ * @description Starts a new chat session with the generative model.
+ * @param {Array<{ role: "user" | "model"; parts: Part[] }>} [history=[]] - Optional chat history to initialize the session.
+ * @param {string} [systemInstructionText] - Optional system instructions to guide the model's behavior.
+ * @returns {ChatSession} A new ChatSession instance.
+ * @throws {Error} If the AI service is not configured or the model is not initialized.
  */
 export const startChat = (
   history: { role: "user" | "model"; parts: Part[] }[] = [],
@@ -57,10 +72,11 @@ export const startChat = (
 };
 
 /**
- * Sends a message in an ongoing chat session.
- * @param chat - The ChatSession instance.
- * @param message - The message to send.
- * @returns The model's response text.
+ * @function sendMessage
+ * @description Sends a message in an ongoing chat session.
+ * @param {ChatSession} chat - The ChatSession instance.
+ * @param {string} message - The message to send.
+ * @returns {Promise<string>} The model's response text.
  */
 export const sendMessage = async (chat: ChatSession, message: string): Promise<string> => {
   if (!isAiServiceAvailable()) {
@@ -73,9 +89,11 @@ export const sendMessage = async (chat: ChatSession, message: string): Promise<s
 };
 
 /**
- * Generates content from the model based on a request.
- * @param request - The content generation request.
- * @returns The generated content result.
+ * @function generateContent
+ * @description Generates content from the model based on a request.
+ * @param {GenerateContentRequest} request - The content generation request.
+ * @returns {Promise<GenerateContentResult>} The generated content result.
+ * @throws {Error} If the AI service is not configured.
  */
 export const generateContent = async (request: GenerateContentRequest): Promise<GenerateContentResult> => {
   if (!isAiServiceAvailable()) {
@@ -85,10 +103,12 @@ export const generateContent = async (request: GenerateContentRequest): Promise<
 };
 
 /**
- * A versatile function to get a response for a given prompt, with optional system instructions.
- * @param prompt - The user prompt text.
- * @param systemInstructionText - Optional system instruction text.
- * @returns The model's response text.
+ * @function getResponse
+ * @description A versatile function to get a response for a given prompt, with optional system instructions.
+ * @param {string} prompt - The user prompt text.
+ * @param {string} [systemInstructionText] - Optional system instruction text.
+ * @returns {Promise<string>} The model's response text.
+ * @throws {Error} If an error occurs during AI service communication.
  */
 export const getResponse = async (prompt: string, systemInstructionText?: string): Promise<string> => {
   if (!isAiServiceAvailable()) {
@@ -115,9 +135,11 @@ export const getResponse = async (prompt: string, systemInstructionText?: string
 };
 
 /**
- * Generates streaming content from the model based on a request.
- * @param request - The content generation request.
- * @returns An async generator that yields text chunks.
+ * @function generateContentStream
+ * @description Generates streaming content from the model based on a request.
+ * @param {GenerateContentRequest} request - The content generation request.
+ * @returns {AsyncGenerator<string, void, unknown>} An async generator that yields text chunks.
+ * @throws {Error} If the AI service is not configured or an error occurs during streaming.
  */
 export const generateContentStream = async function* (request: GenerateContentRequest): AsyncGenerator<string, void, unknown> {
   if (!isAiServiceAvailable()) {
@@ -140,10 +162,12 @@ export const generateContentStream = async function* (request: GenerateContentRe
 };
 
 /**
- * A streaming version of getResponse that yields text chunks as they arrive.
- * @param prompt - The user prompt text.
- * @param systemInstructionText - Optional system instruction text.
- * @returns An async generator that yields text chunks.
+ * @function getResponseStream
+ * @description A streaming version of getResponse that yields text chunks as they arrive.
+ * @param {string} prompt - The user prompt text.
+ * @param {string} [systemInstructionText] - Optional system instruction text.
+ * @returns {AsyncGenerator<string, void, unknown>} An async generator that yields text chunks.
+ * @throws {Error} If an error occurs during AI service communication.
  */
 export const getResponseStream = async function* (prompt: string, systemInstructionText?: string): AsyncGenerator<string, void, unknown> {
   if (!isAiServiceAvailable()) {

@@ -1,3 +1,9 @@
+/**
+ * @file Renders the "About Us" page of the application.
+ * @remarks This page provides information about the project's mission, team, and goals.
+ * It is a static content page composed of several sections.
+ */
+
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -5,6 +11,12 @@ import { Handshake } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
+/**
+ * @function AboutPage
+ * @description The main component for the "About Us" page.
+ * It lays out the structure of the page, including the navbar, main content, and footer.
+ * @returns {JSX.Element} The rendered About Us page.
+ */
 const AboutPage = () => {
   const { t } = useTranslation();
 

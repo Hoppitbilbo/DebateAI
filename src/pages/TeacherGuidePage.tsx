@@ -1,3 +1,9 @@
+/**
+ * @file Renders the Teacher's Guide page, which is presented as a slideshow.
+ * @remarks This component manages the state for the current slide and renders the appropriate
+ * slide component based on the user's navigation.
+ */
+
 import React, { useState } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -9,21 +15,39 @@ import Slide4TeachingStyles from '@/components/TeacherGuideSlides/Slide4Teaching
 import Slide5Conclusion from '@/components/TeacherGuideSlides/Slide5Conclusion';
 import { useTranslation } from 'react-i18next';
 
-// Define the total number of slides
-const TOTAL_SLIDES = 5; // Adjust as we add more slides
+const TOTAL_SLIDES = 5;
 
+/**
+ * @function TeacherGuidePage
+ * @description The main component for the teacher's guide. It functions as a slideshow,
+ * allowing teachers to navigate through different informational slides.
+ * @returns {JSX.Element} The rendered teacher's guide page.
+ */
 const TeacherGuidePage = () => {
   const { t } = useTranslation();
   const [currentSlide, setCurrentSlide] = useState(1);
 
+  /**
+   * @function goToNextSlide
+   * @description Increments the current slide number, up to the total number of slides.
+   */
   const goToNextSlide = () => {
     setCurrentSlide((prev) => Math.min(prev + 1, TOTAL_SLIDES));
   };
 
+  /**
+   * @function goToPreviousSlide
+   * @description Decrements the current slide number, down to a minimum of 1.
+   */
   const goToPreviousSlide = () => {
     setCurrentSlide((prev) => Math.max(prev - 1, 1));
   };
 
+  /**
+   * @function renderSlide
+   * @description Renders the component for the current slide based on the `currentSlide` state.
+   * @returns {JSX.Element} The component for the current slide.
+   */
   const renderSlide = () => {
     switch (currentSlide) {
       case 1:

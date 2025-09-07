@@ -1,8 +1,20 @@
+/**
+ * @file A control that allows the user to toggle between checked and not checked.
+ * @remarks This component is a wrapper around the `Switch` component from `radix-ui/react-switch`.
+ * It is styled using `tailwindcss` and is part of the `shadcn/ui` collection.
+ * @see https://www.radix-ui.com/primitives/docs/components/switch
+ * @see https://ui.shadcn.com/docs/components/switch
+ */
+
 import * as React from "react"
 import * as SwitchPrimitives from "@radix-ui/react-switch"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * @description A switch component that allows users to toggle between two states.
+ * @param {React.ComponentPropsWithoutRef<typeof SwitchPrimitives.Root>} props - The props for the component.
+ */
 const Switch = React.forwardRef<
   React.ElementRef<typeof SwitchPrimitives.Root>,
   React.ComponentPropsWithoutRef<typeof SwitchPrimitives.Root>

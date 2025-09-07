@@ -1,15 +1,24 @@
-
 /**
- * Utility functions for generating character dialogue in the WikiInterviewChat
+ * @file Utility functions for generating character dialogue in the WikiInterviewChat.
+ * @remarks These functions build the necessary prompts and interact with the AI service
+ * to generate responses for characters in a dialogue.
  */
 
 import { Character } from "@/components/wiki-interview/types";
 import { Message } from "@/types/conversation";
-import { model } from "@/services/aiService"; // Correctly import the model from Firebase setup
+import { model } from "@/services/aiService";
 import { buildDialogueSystemInstruction, buildDialoguePrompt, getErrorMessage, getTranslatedLabel } from "@/utils/aiPromptUtils";
 
 /**
- * Generates a character response based on context using the Vertex AI model from Firebase.
+ * @function generateCharacterResponse
+ * @description Generates a character's response based on the dialogue context using the Vertex AI model.
+ * @param {Character} fromCharacter - The character who is speaking.
+ * @param {Character} toCharacter - The character being spoken to.
+ * @param {string} theme - The theme of the conversation.
+ * @param {Array<{role: string; character: string; content: string}>} recentMessages - The recent history of the conversation.
+ * @param {string} [userMessage] - An optional message from the user/moderator to incorporate into the prompt.
+ * @param {boolean} [isLoading] - A loading flag, passed for compatibility but not used directly in this function.
+ * @returns {Promise<string>} A promise that resolves to the AI-generated dialogue for the character.
  */
 export const generateCharacterResponse = async (
   fromCharacter: Character,
@@ -17,8 +26,6 @@ export const generateCharacterResponse = async (
   theme: string,
   recentMessages: Array<{role: string; character: string; content: string}>,
   userMessage?: string,
-  // isLoading is passed from WikiInterviewChat, keep in signature for compatibility
-  // but not directly used by the model call itself here.
   isLoading?: boolean 
 ): Promise<string> => {
 
@@ -36,27 +43,17 @@ export const generateCharacterResponse = async (
     userMessage
   );
 
-  // For debugging the prompt structure:
-  // console.log("System Instruction for Vertex:", systemInstruction);
-  // console.log("User Prompt for Vertex:", userPrompt);
-
   try {
     const result = await model.generateContent({
       contents: [{ role: "user", parts: [{ text: userPrompt }] }],
       systemInstruction: { 
-        role: "system", // Role for system instruction should be 'system'
+        role: "system",
         parts: [{ text: systemInstruction }] 
       },
-      // Optional: Add generationConfig if needed, e.g., maxOutputTokens, temperature
-      // generationConfig: {
-      //   maxOutputTokens: 100, 
-      //   temperature: 0.7,
-      // }
     });
     const response = await result.response;
     const aiResponseText = response.text();
     
-    // Ensure the response is not empty or just whitespace
     return aiResponseText && aiResponseText.trim() !== "" ? aiResponseText.trim() : getErrorMessage('noResponse');
   } catch (error) {
     console.error("Error generating character response from Vertex AI:", error);
@@ -66,7 +63,10 @@ export const generateCharacterResponse = async (
 };
 
 /**
- * Converts an array of chat messages to a readable string format
+ * @function conversationToString
+ * @description Converts an array of chat messages into a single, readable string format.
+ * @param {Message[]} messages - The array of message objects.
+ * @returns {string} A string representation of the conversation.
  */
 export const conversationToString = (messages: Message[]): string => {
   return messages.map(msg => {
@@ -75,5 +75,5 @@ export const conversationToString = (messages: Message[]): string => {
                    msg.characterName || "AI";
 
     return `${speaker}: ${msg.content}`;
-  }).join('');
+  }).join('\n');
 };

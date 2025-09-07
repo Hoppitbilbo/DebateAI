@@ -1,3 +1,11 @@
+/**
+ * @file Provides form components for building accessible and reusable forms.
+ * @remarks This component integrates `react-hook-form` with `radix-ui` components to create a flexible form system.
+ * It is part of the `shadcn/ui` collection and includes components like `FormField`, `FormItem`, `FormLabel`, etc.
+ * @see https://react-hook-form.com/
+ * @see https://ui.shadcn.com/docs/components/form
+ */
+
 import * as React from "react"
 import * as LabelPrimitive from "@radix-ui/react-label"
 import { Slot } from "@radix-ui/react-slot"

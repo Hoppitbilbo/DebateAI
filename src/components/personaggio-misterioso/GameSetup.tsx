@@ -1,3 +1,8 @@
+/**
+ * @file Renders the setup screen for the "Personaggio Misterioso" game.
+ * @remarks This component allows the user to select a character using the `WikiSearchSelect` component,
+ * set the game difficulty (number of questions), and start the game.
+ */
 
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
@@ -6,6 +11,14 @@ import WikiSearchSelect from "@/components/WikiSearchSelect";
 import { WikiCharacter } from "./types";
 import { useTranslation } from "react-i18next";
 
+/**
+ * @interface GameSetupProps
+ * @description Defines the props for the GameSetup component.
+ * @property {(character: WikiCharacter) => void} onCharacterSelect - Callback for when a character is selected.
+ * @property {number} difficulty - The current difficulty level (number of questions).
+ * @property {(value: number[]) => void} onDifficultyChange - Callback for when the difficulty slider changes.
+ * @property {() => void} onStartGame - Callback to start the game.
+ */
 interface GameSetupProps {
   onCharacterSelect: (character: WikiCharacter) => void;
   difficulty: number;
@@ -13,6 +26,13 @@ interface GameSetupProps {
   onStartGame: () => void;
 }
 
+/**
+ * @function GameSetup
+ * @description The component for setting up a new game of "Personaggio Misterioso".
+ * It includes character selection and difficulty adjustment.
+ * @param {GameSetupProps} props - The props for the component.
+ * @returns {JSX.Element} The rendered game setup screen.
+ */
 const GameSetup = ({
   onCharacterSelect,
   difficulty,

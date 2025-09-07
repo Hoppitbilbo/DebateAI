@@ -1,3 +1,9 @@
+/**
+ * @file A generic component for guiding users through a self-reflection process.
+ * @remarks This component provides a structured interface with a title, description, and a text area
+ * for users to write their reflections. It includes a character counter and a minimum length requirement.
+ */
+
 import React, { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,6 +12,20 @@ import { Label } from '@/components/ui/label';
 import { BookOpen, Send } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
+/**
+ * @interface ReflectionInterfaceProps
+ * @description Defines the props for the ReflectionInterface component.
+ * @property {string} [title] - Optional title for the reflection card.
+ * @property {string} [description] - Optional description or instructions for the reflection.
+ * @property {(reflection: string) => void} onSubmit - Callback function triggered when the user submits a valid reflection.
+ * @property {string} [placeholder] - Optional placeholder text for the textarea.
+ * @property {number} [minLength=50] - The minimum number of characters required for the reflection.
+ * @property {string} [characterName] - Optional name of a character, for personalizing prompts.
+ * @property {object} [gameResult] - Optional object containing the results of a game to be displayed as context.
+ * @property {boolean} [gameResult.correctGuess] - Whether the user's guess was correct.
+ * @property {string} [gameResult.finalGuess] - The user's final guess.
+ * @property {string} [className] - Optional additional CSS classes for the root element.
+ */
 interface ReflectionInterfaceProps {
   title?: string;
   description?: string;
@@ -20,6 +40,13 @@ interface ReflectionInterfaceProps {
   className?: string;
 }
 
+/**
+ * @function ReflectionInterface
+ * @description A reusable UI component that provides a form for users to write and submit their reflections.
+ * It validates the input length and provides feedback to the user.
+ * @param {ReflectionInterfaceProps} props - The props for the component.
+ * @returns {JSX.Element} The rendered reflection interface.
+ */
 const ReflectionInterface: React.FC<ReflectionInterfaceProps> = ({
   title,
   description,
@@ -33,6 +60,10 @@ const ReflectionInterface: React.FC<ReflectionInterfaceProps> = ({
   const [reflection, setReflection] = useState('');
   const { t } = useTranslation();
 
+  /**
+   * @function handleSubmit
+   * @description Validates the reflection length and calls the `onSubmit` callback if valid.
+   */
   const handleSubmit = () => {
     if (reflection.trim().length >= minLength) {
       onSubmit(reflection.trim());

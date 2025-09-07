@@ -1,3 +1,8 @@
+/**
+ * @file Renders the main page that displays all available educational applications.
+ * @remarks This page serves as a hub or dashboard, showing a grid of `AppCard` components,
+ * each representing a different interactive learning activity.
+ */
 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -5,6 +10,12 @@ import AppCard from "@/components/AppCard";
 import { Book, Search, Calendar, MessageSquare, Users, Speech, User } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
+/**
+ * @function AppsPage
+ * @description The component for the main applications dashboard page.
+ * It fetches translated content and renders a list of available apps.
+ * @returns {JSX.Element} The rendered applications page.
+ */
 const AppsPage = () => {
   const { t } = useTranslation();
   

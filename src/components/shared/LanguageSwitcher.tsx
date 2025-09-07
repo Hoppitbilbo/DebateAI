@@ -1,3 +1,9 @@
+/**
+ * @file Renders a dropdown menu for switching the application's language.
+ * @remarks This component uses `i18next` to manage language changes and displays a list of
+ * available languages in a dropdown menu.
+ */
+
 import { Globe } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import {
@@ -8,6 +14,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 
+/**
+ * @function LanguageSwitcher
+ * @description A component that provides a user interface for changing the application's language.
+ * It displays the current language and allows selection from a predefined list.
+ * @returns {JSX.Element} The rendered language switcher dropdown.
+ */
 const LanguageSwitcher = () => {
   const { i18n, t } = useTranslation();
 
@@ -19,6 +31,11 @@ const LanguageSwitcher = () => {
     { code: 'de', name: t('language.languages.german') },
   ];
 
+  /**
+   * @function changeLanguage
+   * @description Changes the application's language using i18next.
+   * @param {string} languageCode - The code of the language to switch to (e.g., 'en', 'it').
+   */
   const changeLanguage = (languageCode: string) => {
     i18n.changeLanguage(languageCode);
   };

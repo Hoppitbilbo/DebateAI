@@ -1,17 +1,37 @@
+/**
+ * @file Renders the self-reflection component for the "Personaggio Misterioso" (Mystery Character) game.
+ * @remarks This component uses the shared `SelfReflection` component to guide the user through a series of
+ * questions about their strategy, reasoning, and learning during the game.
+ */
 
 import SelfReflection from "@/components/shared/SelfReflection";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
+/**
+ * @interface PersonaggioMisteriosoReflectionProps
+ * @description Defines the props for the PersonaggioMisteriosoReflection component.
+ * @property {(reflection: string) => void} onSubmit - Callback function triggered when the user submits their reflection.
+ * @property {string} [characterName] - The name of the mystery character, used to personalize the questions.
+ * @property {object} [gameResult] - Information about the outcome of the game.
+ * @property {boolean} gameResult.correctGuess - Whether the user guessed correctly.
+ * @property {string} [gameResult.finalGuess] - The user's final guess.
+ */
 interface PersonaggioMisteriosoReflectionProps {
   onSubmit: (reflection: string) => void;
   characterName?: string;
-  gameResult?: { // Added to provide context about the guess
+  gameResult?: {
     correctGuess: boolean;
     finalGuess?: string;
   };
-  // conversation?: Message[]; // Potentially add if questions need to refer to it
 }
 
+/**
+ * @function PersonaggioMisteriosoReflection
+ * @description A component that prompts the user to reflect on their performance in the "Personaggio Misterioso" game.
+ * It provides a structured set of questions to guide the user's thoughts on their strategy and what they learned.
+ * @param {PersonaggioMisteriosoReflectionProps} props - The props for the component.
+ * @returns {JSX.Element} The rendered self-reflection interface.
+ */
 const PersonaggioMisteriosoReflection = ({ 
   onSubmit, 
   characterName = "il personaggio misterioso",

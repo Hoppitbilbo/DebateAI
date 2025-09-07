@@ -1,12 +1,27 @@
+/**
+ * @file A component to guide users through a self-reflection process with a list of questions.
+ * @remarks This component presents a set of questions to the user and provides a textarea for them
+ * to write and submit their reflection.
+ */
+
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Send } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { ChevronDown, ChevronUp, Download } from "lucide-react";
 
+/**
+ * @interface SelfReflectionProps
+ * @description Defines the props for the SelfReflection component.
+ * @property {string} [title] - The title of the reflection card.
+ * @property {string} [description] - A description or instructions for the reflection.
+ * @property {string[]} questions - An array of questions to guide the user's reflection.
+ * @property {(reflection: string) => void} onSubmit - Callback function triggered when the user submits their reflection.
+ * @property {string} [className] - Optional additional CSS classes for the root element.
+ * @property {string} [placeholder] - Optional placeholder text for the textarea.
+ * @property {number} [minLength] - The minimum required length for the reflection (not currently enforced in this component).
+ * @property {string} [submitButtonText] - Optional custom text for the submit button.
+ */
 export interface SelfReflectionProps {
   title?: string;
   description?: string;
@@ -18,19 +33,29 @@ export interface SelfReflectionProps {
   submitButtonText?: string;
 }
 
+/**
+ * @function SelfReflection
+ * @description A reusable component that provides a structured format for self-reflection,
+ * including a list of guiding questions and a text area for the user's response.
+ * @param {SelfReflectionProps} props - The props for the component.
+ * @returns {JSX.Element} The rendered self-reflection component.
+ */
 export const SelfReflection: React.FC<SelfReflectionProps> = ({
   title,
   description,
   questions = [],
   onSubmit,
   placeholder,
-  minLength = 50,
   submitButtonText,
   className = "",
 }) => {
   const { t } = useTranslation();
   const [reflection, setReflection] = useState("");
 
+  /**
+   * @function handleSubmit
+   * @description Calls the onSubmit callback with the trimmed reflection text if it's not empty.
+   */
   const handleSubmit = () => {
     if (reflection.trim()) {
       onSubmit(reflection);
@@ -39,11 +64,10 @@ export const SelfReflection: React.FC<SelfReflectionProps> = ({
 
   return (
     <Card className={`p-6 ${className}`}>
-      <CardTitle className="text-2xl font-bold text-education">{title || t('common.reflection')}</CardTitle>
+      <h2 className="text-2xl font-bold text-education">{title || t('common.reflection')}</h2>
       <p className="text-gray-600 mt-2">{description || t('common.reflectOnExperience')}</p>
       
-      {/* Reverted text color for questions back to text-education */}
-      <ul className="list-disc pl-5 mb-6 space-y-2 text-education">
+      <ul className="list-disc pl-5 mb-6 space-y-2 text-education mt-4">
         {questions.map((question, index) => (
           <li key={index} className="text-education">{question}</li>
         ))}

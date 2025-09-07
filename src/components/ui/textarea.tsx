@@ -1,3 +1,10 @@
+/**
+ * @file Displays a multi-line text input field.
+ * @remarks This component is a styled HTML `<textarea>` element.
+ * It is part of the `shadcn/ui` collection and is styled with `tailwindcss`.
+ * @see https://ui.shadcn.com/docs/components/textarea
+ */
+
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
@@ -5,6 +12,10 @@ import { cn } from "@/lib/utils"
 export interface TextareaProps
   extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {}
 
+/**
+ * @description A multi-line text input component.
+ * @param {TextareaProps} props - The props for the component, extending standard textarea attributes.
+ */
 const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
   ({ className, ...props }, ref) => {
     return (

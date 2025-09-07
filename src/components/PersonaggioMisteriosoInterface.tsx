@@ -1,3 +1,9 @@
+/**
+ * @file Manages the state and flow of the "Personaggio Misterioso" (Mystery Character) game.
+ * @remarks This component orchestrates the entire game, from setup (character selection, difficulty)
+ * to the conversation phase, final guess, reflection, and feedback. It handles all state management
+ * and interactions with AI services.
+ */
 
 import { useState, useEffect } from "react";
 import { useTranslation } from 'react-i18next'; 
@@ -8,7 +14,7 @@ import GameSetup from "./personaggio-misterioso/GameSetup";
 import GameHeader from "./personaggio-misterioso/GameHeader";
 import ChatInterface from "./personaggio-misterioso/ChatInterface";
 import FinalGuess from "./personaggio-misterioso/FinalGuess";
-import { model, startChat } from "@/services/aiService";
+import { startChat } from "@/services/aiService";
 import { getAIGameAndReflectionEvaluation, AIScoreEvaluation } from "@/utils/evaluationUtils";
 import { ConversationData } from "@/utils/evaluationUtils";
 import { Button } from "@/components/ui/button";
@@ -16,11 +22,22 @@ import AppLayout from "@/components/shared/AppLayout";
 import ReflectionInterface from "@/components/shared/ReflectionInterface";
 import FeedbackInterface from "@/components/shared/FeedbackInterface"; 
 
-// Helper for flexible name checking
+/**
+ * @function normalizeString
+ * @description Converts a string to a normalized format for comparison (lowercase, trimmed, single spaces).
+ * @param {string} str - The string to normalize.
+ * @returns {string} The normalized string.
+ */
 const normalizeString = (str: string) => {
   return str.toLowerCase().trim().replace(/\s+/g, ' ');
 };
 
+/**
+ * @function PersonaggioMisteriosoInterface
+ * @description The main component for the "Personaggio Misterioso" game. It controls the game's state,
+ * transitioning between setup, gameplay, guessing, reflection, and feedback phases.
+ * @returns {JSX.Element} The rendered game interface, which changes based on the current activity phase.
+ */
 const PersonaggioMisteriosoInterface = () => {
   const { t } = useTranslation();
   const [selectedCharacter, setSelectedCharacter] = useState<WikiCharacter | null>(null);
@@ -40,7 +57,6 @@ const PersonaggioMisteriosoInterface = () => {
   const [activityPhase, setActivityPhase] = useState<"game" | "final-guess" | "reflection" | "feedback">("game");
   const [userReflection, setUserReflection] = useState("");
   
-  // Stato per la valutazione strutturata
   const [aiStructuredEvaluation, setAiStructuredEvaluation] = useState<AIScoreEvaluation | null>(null);
   const [isEvaluating, setIsEvaluating] = useState(false);
   const [guessCorrect, setGuessCorrect] = useState(false);
@@ -50,6 +66,11 @@ const PersonaggioMisteriosoInterface = () => {
     setQuestionsLeft(difficulty);
   }, [difficulty]);
 
+  /**
+   * @function handleCharacterSelect
+   * @description Updates the state when a character is selected and resets the game state.
+   * @param {WikiCharacter} character - The character selected for the game.
+   */
   const handleCharacterSelect = (character: WikiCharacter) => {
     setSelectedCharacter(character);
     setConversation([]);
@@ -59,12 +80,16 @@ const PersonaggioMisteriosoInterface = () => {
     setFinalGuess("");
     setReasoning("");
     setUserReflection("");
-    setAiStructuredEvaluation(null); // Resetta la valutazione strutturata
+    setAiStructuredEvaluation(null);
     setGuessCorrect(false);
     setReadyForFinalGuess(false);
     setNameScore(null);
   };
 
+  /**
+   * @function handleStartGame
+   * @description Starts the game after a character and difficulty have been chosen.
+   */
   const handleStartGame = () => {
     if (!selectedCharacter) {
       toast.error(t('apps.personaggioMisterioso.setup.selectCharacterError'));
@@ -85,6 +110,10 @@ const PersonaggioMisteriosoInterface = () => {
     });
   };
 
+  /**
+   * @function handleAskQuestion
+   * @description Sends the user's question to the AI and updates the conversation state.
+   */
   const handleAskQuestion = async () => {
     if (!currentQuestion.trim() || !selectedCharacter || isAiResponding) return;
 
@@ -93,15 +122,14 @@ const PersonaggioMisteriosoInterface = () => {
       content: currentQuestion,
     };
 
-    const updatedConversation = [...conversation, userMessage];
-    setConversation(updatedConversation);
+    setConversation(prev => [...prev, userMessage]);
     setCurrentQuestion("");
     setIsAiResponding(true);
     setReadyForFinalGuess(false);
 
     try {
       const history = conversation
-        .slice(1) // Exclude the initial character greeting
+        .slice(1)
         .map(msg => ({
           role: (msg.role === 'character' ? 'model' : 'user') as 'user' | 'model',
           parts: [{ text: msg.content }],
@@ -113,7 +141,6 @@ const PersonaggioMisteriosoInterface = () => {
       });
 
       const chat = startChat(history, systemInstruction);
-
       const result = await chat.sendMessage(currentQuestion);
       const aiResponseText = result.response.text();
 
@@ -123,7 +150,6 @@ const PersonaggioMisteriosoInterface = () => {
       };
 
       setConversation(prev => [...prev, aiMessage]);
-
       const remaining = questionsLeft - 1;
       setQuestionsLeft(remaining);
 
@@ -138,13 +164,16 @@ const PersonaggioMisteriosoInterface = () => {
         role: "character",
         content: t('apps.personaggioMisterioso.game.aiErrorMessage'),
       };
-      // Add the error message to the conversation to inform the user
       setConversation(prev => [...prev, aiErrorMessage]);
     } finally {
       setIsAiResponding(false);
     }
   };
 
+  /**
+   * @function handleProceedToGuess
+   * @description Transitions the game from the questioning phase to the final guess phase.
+   */
   const handleProceedToGuess = () => {
     setShowFinalGuess(true);
     setActivityPhase("final-guess");
@@ -153,6 +182,10 @@ const PersonaggioMisteriosoInterface = () => {
     toast.success(t('apps.personaggioMisterioso.game.timeToGuess'));
   };
 
+  /**
+   * @function handleSubmitGuess
+   * @description Submits the user's final guess, checks if it's correct, and transitions to the reflection phase.
+   */
   const handleSubmitGuess = () => {
     if (!finalGuess.trim() || !selectedCharacter) return;
 
@@ -165,7 +198,7 @@ const PersonaggioMisteriosoInterface = () => {
                        normalizedFinalGuess.split(' ').some(part => normalizedCharacterName.includes(part) && part.length > 3));
 
     setGuessCorrect(isCorrect);
-    setNameScore(isCorrect ? 10 : 0); // Punteggio per il nome
+    setNameScore(isCorrect ? 10 : 0);
 
     toast(isCorrect ? t('apps.personaggioMisterioso.game.correctGuess') : t('apps.personaggioMisterioso.game.incorrectGuess'), {
       description: t('apps.personaggioMisterioso.game.reflectionPrompt')
@@ -174,12 +207,17 @@ const PersonaggioMisteriosoInterface = () => {
     setActivityPhase("reflection");
   };
 
+  /**
+   * @function handleReflectionSubmit
+   * @description Submits the user's reflection and triggers the AI evaluation process.
+   * @param {string} reflection - The user's written reflection.
+   */
   const handleReflectionSubmit = async (reflection: string) => {
     if (!selectedCharacter) return;
     setUserReflection(reflection);
     setActivityPhase("feedback");
     setIsEvaluating(true);
-    setAiStructuredEvaluation(null); // Resetta prima di una nuova valutazione
+    setAiStructuredEvaluation(null);
 
     const conversationData: ConversationData = {
       character: selectedCharacter.title,
@@ -198,7 +236,7 @@ const PersonaggioMisteriosoInterface = () => {
       console.error("Error generating evaluation:", error);
       const errorMessage = error instanceof Error ? error.message : t('common.unknownError');
       toast.error(t('apps.personaggioMisterioso.evaluation.generationError', { errorMessage }));
-      setAiStructuredEvaluation({ // Imposta un oggetto di errore
+      setAiStructuredEvaluation({
         textualFeedback: t('apps.personaggioMisterioso.evaluation.aiError', { errorMessage }),
       });
     } finally {
@@ -206,6 +244,10 @@ const PersonaggioMisteriosoInterface = () => {
     }
   };
 
+  /**
+   * @function handleNewGame
+   * @description Resets the entire game state to start a new game from scratch.
+   */
   const handleNewGame = () => {
     setSelectedCharacter(null);
     setIsGameStarted(false);
@@ -219,7 +261,7 @@ const PersonaggioMisteriosoInterface = () => {
     setShowChat(true);
     setActivityPhase("game");
     setUserReflection("");
-    setAiStructuredEvaluation(null); // Resetta anche questo
+    setAiStructuredEvaluation(null);
     setGuessCorrect(false);
     setIsAiResponding(false);
     setReadyForFinalGuess(false); 

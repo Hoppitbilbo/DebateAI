@@ -1,3 +1,10 @@
+/**
+ * @file Displays a card with header, content, and footer sections.
+ * @remarks This component is a container for content, built with `div` elements and styled with `tailwindcss`.
+ * It is part of the `shadcn/ui` collection and provides a structured way to present information.
+ * @see https://ui.shadcn.com/docs/components/card
+ */
+
 import * as React from "react"
 
 import { cn } from "@/lib/utils"

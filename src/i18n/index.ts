@@ -1,3 +1,9 @@
+/**
+ * @file Initializes and configures the i18next internationalization library.
+ * @remarks This file sets up the resources (translation files), configures language detection
+ * (localStorage, browser navigator), sets the fallback language, and integrates with React.
+ */
+
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
@@ -22,7 +28,7 @@ i18n
   .use(initReactI18next)
   .init({
     resources,
-    fallbackLng: 'it', // Default to Italian as the original language
+    fallbackLng: 'it',
     debug: false,
     interpolation: {
       escapeValue: false,

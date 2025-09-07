@@ -1,7 +1,17 @@
+/**
+ * @file Renders the footer for the application.
+ * @remarks This component displays navigation links for resources and legal information,
+ * as well as the project's branding and copyright notice.
+ */
 
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
+/**
+ * @function Footer
+ * @description The main footer component for the application.
+ * @returns {JSX.Element} The rendered footer.
+ */
 const Footer = () => {
   const { t } = useTranslation();
   return <footer className="mt-auto border-t border-border bg-[#0E3542]">
