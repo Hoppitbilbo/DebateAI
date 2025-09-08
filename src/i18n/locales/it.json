@@ -87,7 +87,105 @@
     "about": "Sostienici",
     "brand": "AI-Debate.Tech"
   },
+  "appsPage": {
+    "title": "Applicazioni IA per l'Educazione",
+    "subtitle": "Esplora la nostra collezione di strumenti IA per l'apprendimento interattivo.",
+    "appCards": {
+      "wikiInterview": {
+        "title": "Dialogo Storico IA",
+        "description": "Conversa con personaggi IA basati su contenuti Wikipedia, trasformando argomenti educativi in conversazioni interattive."
+      },
+      "doppiaIntervista": {
+        "title": "Doppia Intervista",
+        "description": "Interagisci simultaneamente con due figure storiche in conversazioni parallele, creando un dialogo educativo unico."
+      },
+      "wikiChatbot": {
+        "title": "WikiChat IA",
+        "description": "Chatta con un'intelligenza artificiale che rappresenta qualsiasi argomento di Wikipedia, perfetto per approfondimenti educativi interattivi."
+      },
+      "personaggioMisterioso": {
+        "title": "Indovina il Personaggio Misterioso",
+        "description": "Sfida l'IA facendo domande per indovinare la figura storica scelta. Hai un numero limitato di domande per scoprire l'identità misteriosa!"
+      },
+      "promptEngineer": {
+        "title": "Creatore di Prompt Didattici",
+        "description": "Aiuta insegnanti e studenti a creare prompt efficaci per l'intelligenza artificiale nelle attività educative e di apprendimento."
+      },
+      "convinciTu": {
+        "title": "ConvinciTU",
+        "description": "Sfida le tue capacità di persuasione cercando di convincere figure storiche delle tue idee."
+      },
+      "impersonaTu": {
+        "title": "ImpersonaTu",
+        "description": "Dialoga con una figura storica interpretandone un'altra. Metti alla prova le tue capacità di empatia!"
+      }
+    },
+    "badges": {
+      "new": "Nuovo",
+      "comingSoon": "Prossimamente"
+    },
+    "buttons": {
+      "launchApp": "Avvia App",
+      "comingSoon": "Prossimamente"
+    }
+  },
   "apps": {
+    "wikiInterview": {
+      "name": "Wiki Interview",
+      "title": "Dialogo Storico IA",
+      "subtitle": "Intervista figure storiche",
+      "description": "Modera un dialogo tra due personaggi storici su un tema specifico",
+      "tutorial": "Tutorial",
+      "setup": {
+        "buildDialogue": "Costruisci il Dialogo",
+        "selectDescription": "Seleziona due figure storiche per un dialogo moderato",
+        "character1": "Primo Personaggio",
+        "character2": "Secondo Personaggio",
+        "themeLabel": "Tema del Dialogo",
+        "themePlaceholder": "Inserisci il tema della discussione...",
+        "startButton": "Inizia Dialogo",
+        "loadingSummary": "Caricamento riassunto...",
+        "summaryLoaded": "Riassunto caricato con successo"
+      },
+      "chat": {
+        "systemMessage": "Dialogo tra {{char1}} e {{char2}} sul tema: {{theme}}",
+        "endDialogueButton": "Termina Dialogo",
+        "moderatorPrompt": "Come moderatore, puoi guidare la conversazione...",
+        "speakToAll": "Parla a entrambi",
+        "speakTo": "Parla a {{name}}",
+        "askBothPlaceholder": "Fai una domanda a entrambi i personaggi...",
+        "askCharacterPlaceholder": "Fai una domanda a {{character}}...",
+        "nextIntervention": "Prossimo intervento: {{character}}",
+        "dialogueTab": "Dialogo",
+        "charactersTab": "Personaggi",
+        "errorMessage": "Si è verificato un errore durante la generazione della risposta.",
+        "autoErrorMessage": "Errore nell'auto-generazione del dialogo."
+      },
+      "reflection": {
+        "title": "Riflessione sul Dialogo",
+        "description": "Rifletti sul dialogo che hai moderato e sulle prospettive emerse",
+        "questions": [
+          "Quali sono stati i punti principali emersi dal dialogo tra i due personaggi?",
+          "Come hai gestito il ruolo di moderatore durante la discussione?",
+          "Quali differenze di prospettiva hai notato tra i due personaggi?",
+          "Cosa hai imparato da questa esperienza di moderazione?"
+        ]
+      },
+      "characterStyles": {
+        "erudite": "erudito",
+        "reflective": "riflessivo"
+      },
+      "errors": {
+        "fetchError": "Errore nel recupero delle informazioni per {{title}}",
+        "noSummary": "Nessun riassunto disponibile",
+        "summaryError": "Errore nel caricamento del riassunto",
+        "insufficientData": "Dati insufficienti per la valutazione",
+        "technicalReflection": "Errore tecnico nella riflessione"
+      },
+      "status": {
+        "evaluating": "Valutazione della riflessione in corso..."
+      }
+    },
     "doppiaIntervista": {
       "name": "Doppia Intervista",
       "title": "Doppia Intervista",
@@ -137,8 +235,9 @@
     "description": "Esplora la nostra collezione di applicazioni IA progettate per trasformare l'apprendimento in un'esperienza interattiva e coinvolgente.",
     "items": {
       "wikiInterview": {
+        "title": "Dialogo Storico IA",
         "name": "Wiki Interview",
-        "description": "Simula conversazioni con figure storiche attraverso contenuti di Wikipedia, rendendo l'apprendimento interattivo e coinvolgente."
+        "description": "Modera un dialogo tra due personaggi storici su un tema specifico"
       },
       "personaggioMisterioso": {
         "name": "Personaggio Misterioso",
@@ -155,6 +254,119 @@
       "impersonaTu": {
         "name": "ImpersonaTu",
         "description": "Dialoga con una figura storica interpretandone un'altra. Metti alla prova le tue capacità di empatia!"
+      }
+    }
+  },
+  "apps": {
+    "doppiaIntervista": {
+      "name": "Doppia Intervista",
+      "title": "Doppia Intervista",
+      "subtitle": "Intervista simultanea con due figure storiche",
+      "setup": {
+        "chooseCharacters": "Scegli i Personaggi",
+        "selectDescription": "Seleziona due figure storiche per un dialogo parallelo",
+        "character": "Personaggio",
+        "startButton": "Inizia Dialogo"
+      },
+      "chat": {
+        "dialogueTitle": "Dialogo",
+        "changeCharacters": "Cambia Personaggi"
+      },
+      "description": "Confronta le risposte di due figure storiche",
+      "tutorial": "Tutorial",
+      "greeting1": "Ciao, sono {{name}}. Fai la tua domanda.",
+      "greeting2": "Ciao, sono {{name}}. Sono pronto per la tua domanda.",
+      "placeholder": "Scrivi a {{target}}...",
+      "placeholderAll": "entrambi i personaggi",
+      "placeholderSingle": "{{name}}",
+      "onlyThis": "Solo questo",
+      "backToAll": "Torna a tutti",
+      "newInterviewStarted": "Nuova intervista iniziata!",
+      "reflection": {
+        "title": "Riflessione sull'Intervista Parallela",
+        "description": "Analizza le differenze e le somiglianze nelle risposte dei due personaggi.",
+        "questions": {
+          "q1": "Quali sono state le differenze più significative nel modo in cui i due personaggi hanno risposto alle tue domande?",
+          "q2": "Quali somiglianze hai notato nelle loro risposte nonostante i loro diversi background?",
+          "q3": "Come ha influenzato il contesto storico e culturale le risposte di ciascun personaggio?",
+          "q4": "Quale personaggio è sembrato più convincente o informativo? Perché?",
+          "q5": "Come potresti applicare quello che hai imparato da questa doppia intervista?"
+        }
+      },
+      "feedback": {
+        "activityName": "Doppia Intervista",
+        "downloadSuccess": "Riflessione scaricata con successo!",
+        "downloadError": "Errore nel download della riflessione",
+        "title": "Feedback e Valutazione dell'Intervista",
+        "conversationHistory": "Cronologia della Conversazione",
+        "userLabel": "Tu",
+        "yourReflection": "La Tua Riflessione",
+        "aiFeedback": "Feedback dell'IA",
+        "downloadButton": "Scarica Riflessione",
+        "newInterviewButton": "Inizia una Nuova Intervista"
+      }
+    },
+    "personaggioMisterioso": {
+      "name": "Personaggio Misterioso",
+      "title": "Personaggio Misterioso",
+      "subtitle": "Indovina il personaggio storico",
+      "description": "Fai domande per scoprire chi è il personaggio misterioso",
+      "setup": {
+        "selectCharacterLabel": "Scegli il Personaggio da Indovinare",
+        "selectCharacterError": "Devi selezionare un personaggio per iniziare il gioco",
+        "difficultyLabel": "Difficoltà (Numero di domande): {{count}}",
+        "startButton": "Inizia Gioco"
+      },
+      "game": {
+        "initialMessage": "Ciao! Sono un personaggio misterioso. Hai {{count}} domande per indovinare chi sono. Inizia a fare le tue domande!",
+        "gameStarted": "Gioco iniziato!",
+        "gameStartedDesc": "Hai {{count}} domande per indovinare il personaggio",
+        "questionsFinished": "Domande finite! È ora di fare la tua ipotesi finale.",
+        "questionsFinishedTitle": "Domande finite!",
+        "questionsFinishedDesc": "Hai usato tutte le tue domande. È ora di indovinare chi è il personaggio misterioso.",
+        "proceedToGuess": "Procedi all'ipotesi finale",
+        "timeToGuess": "È ora di indovinare!",
+        "correctGuess": "Corretto! Hai indovinato!",
+        "incorrectGuess": "Non è corretto, ma hai fatto un buon tentativo!",
+        "reflectionPrompt": "Ora rifletti sulla tua esperienza",
+        "newGameStarted": "Nuovo gioco iniziato!",
+        "aiErrorMessage": "Scusa, ho avuto problemi a rispondere.",
+        "systemInstruction": "Sei {{characterName}}. Non rivelare mai il tuo nome o identità direttamente. Rispondi alle domande basandoti sulla tua personalità e il contesto storico fornito nel seguente frammento: \"{{snippet}}\". Fornisci indizi utili ma non renderlo troppo facile. Lo studente sta cercando di indovinare chi sei.",
+        "aiDefaultError": "Non so come rispondere a questo."
+      },
+      "evaluation": {
+        "topic": "Indovina il Personaggio Misterioso: {{characterName}}",
+        "generationError": "Errore nella generazione della valutazione: {{errorMessage}}",
+        "aiError": "Errore durante la valutazione IA: {{errorMessage}}"
+      },
+      "reflection": {
+        "title": "Riflessione sul Gioco",
+        "description": "Rifletti sulla tua esperienza nel gioco del personaggio misterioso",
+        "placeholder": "Come ha funzionato la tua strategia? Cosa hai imparato? Cosa faresti diversamente?"
+      },
+      "chat": {
+        "title": "Conversazione",
+        "empty": "La conversazione apparirà qui.",
+        "thinking": "Il personaggio sta pensando...",
+        "placeholder": "Scrivi la tua domanda...",
+        "noMoreQuestions": "Non hai più domande.",
+        "send": "Invia domanda",
+        "questionsLeft": "Domande rimaste: {{count}}"
+      },
+      "finalGuess": {
+        "title": "Fai la tua ipotesi finale!",
+        "questionLabel": "Chi pensi che sia il personaggio?",
+        "namePlaceholder": "Inserisci il nome del personaggio",
+        "reasonLabel": "Perché pensi che sia questo personaggio?",
+        "reasonPlaceholder": "Spiega il tuo ragionamento...",
+        "submit": "Invia la tua risposta"
+      },
+      "header": {
+        "title": "Gioco in Corso",
+        "questionsLeft": "Domande Rimanenti: {{count}}",
+        "characterLabel": "Personaggio:",
+        "hiddenCharacter": "???",
+        "newGameButton": "Nuovo Gioco"
       }
     }
   },
@@ -184,5 +396,141 @@
       "terms": "Termini di Servizio"
     },
     "copyright": "© {{year}} AI-Debate.Tech. Tutti i diritti riservati."
+  },
+  "teacherGuidePage": {
+    "title": "Guida Interattiva IA per Insegnanti",
+    "slideCounter": "Diapositiva {{current}} di {{total}}"
+  },
+  "teacherGuide": {
+    "slide1": {
+      "title": "Benvenuto nella Guida IA per Insegnanti!",
+      "subtitle": "Esploriamo insieme come l'IA può trasformare l'educazione, migliorare le tue strategie didattiche e preparare gli studenti al futuro.",
+      "whatYouWillLearn": {
+        "title": "Cosa Imparerai",
+        "item1": "Il ruolo cruciale dell'IA nell'educazione moderna.",
+        "item2": "Scenari pratici per integrare l'IA in classe.",
+        "item3": "Stili didattici innovativi potenziati dall'IA.",
+        "item4": "Come stimolare il pensiero critico con strumenti IA."
+      },
+      "guideObjectives": {
+        "title": "Obiettivi della Guida",
+        "item1": "Fornire una comprensione chiara dei concetti base dell'IA.",
+        "item2": "Ispirare l'adozione di nuove tecnologie educative.",
+        "item3": "Offrire spunti pratici e immediatamente applicabili.",
+        "item4": "Promuovere la riflessione sull'impatto etico dell'IA."
+      },
+      "readyToStart": "Pronto a iniziare questo viaggio innovativo? Clicca 'Avanti'!"
+    },
+    "slide2": {
+      "title": "Perché l'IA è Cruciale per gli Insegnanti Moderni?",
+      "subtitle": "L'Intelligenza Artificiale non è solo una tecnologia futuristica, ma uno strumento potente che può rivoluzionare l'insegnamento e l'apprendimento, oggi.",
+      "teachingEnhancement": {
+        "title": "Potenziamento dell'Insegnamento",
+        "description": "L'IA può automatizzare compiti ripetitivi (es. valutazione preliminare, ricerca di risorse), liberando tempo prezioso per concentrarsi sull'interazione diretta con gli studenti e sulla progettazione di lezioni più coinvolgenti."
+      },
+      "learningPersonalization": {
+        "title": "Personalizzazione dell'Apprendimento",
+        "description": "I sistemi IA possono adattare i percorsi di apprendimento alle esigenze individuali di ogni studente, offrendo esercizi mirati, feedback personalizzati e identificando aree di difficoltà o eccellenza."
+      },
+      "futureProofSkills": {
+        "title": "Sviluppo di Competenze Future",
+        "description": "Introdurre l'IA in classe aiuta gli studenti a sviluppare familiarità con le tecnologie emergenti, pensiero critico, problem-solving e competenze digitali essenziali per il mercato del lavoro di domani."
+      },
+      "newResources": {
+        "title": "Accesso a Nuove Risorse e Metodi",
+        "description": "L'IA apre le porte a una vasta gamma di strumenti educativi innovativi, simulazioni interattive, tutor virtuali e piattaforme di apprendimento adattivo, arricchendo l'esperienza educativa."
+      },
+      "conclusion": "Comprendere questi benefici è il primo passo per integrare con successo l'IA nella tua pratica didattica."
+    },
+    "slide3": {
+      "title": "Scenari Pratici con l'IA in Classe",
+      "subtitle": "Esplora attività concrete per integrare l'Intelligenza Artificiale nella tua didattica quotidiana, stimolando il pensiero critico e l'apprendimento attivo.",
+      "activity1": {
+        "title": "Attività 1: Caccia alle Allucinazioni 🕵️‍♀️",
+        "objective": "<strong>Obiettivo:</strong> Identificare le 'allucinazioni' del modello, ovvero informazioni errate o inventate che il modello presenta come fatti.",
+        "procedureTitle": "<strong>Procedura:</strong>",
+        "procedure": {
+          "item1": "Assegna agli studenti un argomento da ricercare (es. evento storico, biografia).",
+          "item2": "Chiedi loro di usare la piattaforma per generare un testo sull'argomento, interagendo con un personaggio storico (se pertinente all'app).",
+          "item3": "Gli studenti devono confrontare le risposte del modello con fonti affidabili, evidenziando discrepanze.",
+          "item4": "Discussione in classe sui risultati e sull'importanza della verifica delle fonti."
+        }
+      },
+      "activity2": {
+        "title": "Attività 2: Chatbot Educativo Interattivo 🤖",
+        "objective": "<strong>Obiettivo:</strong> Utilizzare un chatbot per ripassare argomenti, simulare dialoghi o esplorare concetti complessi in modo interattivo.",
+        "procedureTitle": "<strong>Procedura:</strong>",
+        "procedure": {
+          "item1": "Prepara o scegli un chatbot focalizzato su un tema specifico (es. Rivoluzione Francese, ciclo dell'acqua).",
+          "item2": "Gli studenti interagiscono con il chatbot ponendo domande, cercando spiegazioni o sostenendo brevi quiz proposti dal bot.",
+          "item3": "Incoraggia gli studenti a 'sfidare' il chatbot, verificando l'accuratezza delle sue risposte.",
+          "item4": "Riflessione guidata: quali sono i limiti e i punti di forza di un chatbot come strumento di apprendimento?"
+        }
+      },
+      "activity3": {
+        "title": "Attività 3: Dibattito e Prospettive Multiple 🗣️🔄",
+        "objective": "<strong>Obiettivo:</strong> Utilizzare l'IA per esplorare diversi punti di vista su un argomento controverso o per simulare un dibattito con un 'esperto' virtuale.",
+        "procedureTitle": "<strong>Procedura:</strong>",
+        "procedure": {
+          "item1": "Scegli un argomento che si presti a diverse interpretazioni (es. questioni etiche, eventi storici dibattuti).",
+          "item2": "Gli studenti possono usare un'IA per generare argomenti a favore o contro una tesi, o per impersonare figure con opinioni diverse.",
+          "item3": "Organizza un dibattito in classe basato sulle informazioni raccolte e sulle interazioni con l'IA.",
+          "item4": "Focus sulla capacità di argomentare, ascoltare e considerare prospettive diverse."
+        }
+      },
+      "activity4": {
+        "title": "Attività 4: Prompt Engineering Creativo 💡✍️",
+        "objective": "<strong>Obiettivo:</strong> Insegnare agli studenti come formulare prompt efficaci per ottenere i risultati desiderati da un modello IA, sviluppando creatività e precisione.",
+        "procedureTitle": "<strong>Procedura:</strong>",
+        "procedure": {
+          "item1": "Introduzione ai concetti base del prompt engineering: chiarezza, contesto, ruolo, formato di output.",
+          "item2": "Sfida creativa: generare una storia, una poesia, una descrizione di immagine o una soluzione a un problema usando prompt specifici.",
+          "item3": "Gli studenti sperimentano diverse formulazioni di prompt per osservare come cambia l'output dell'IA.",
+          "item4": "Condivisione dei prompt più efficaci e discussione sulle strategie utilizzate."
+        }
+      },
+      "conclusion": "Questi sono solo alcuni esempi. L'IA offre infinite possibilità per arricchire le tue lezioni!"
+    },
+    "slide4": {
+      "title": "Stili Didattici Innovativi con l'IA",
+      "subtitle": "L'IA non sostituisce l'insegnante, ma lo potenzia, aprendo la strada a metodologie didattiche più dinamiche, personalizzate e coinvolgenti.",
+      "personalizedLearning": {
+        "title": "Apprendimento Personalizzato e Adattivo",
+        "description": "Sfrutta l'IA per creare percorsi su misura: piattaforme adattive che regolano difficoltà e contenuti in base ai progressi degli studenti, tutor virtuali per supporto individuale e analisi predittive per identificare precocemente chi ha bisogno di aiuto."
+      },
+      "problemBasedLearning": {
+        "title": "Problem-Based Learning Potenziato",
+        "description": "Usa l'IA per generare scenari complessi e realistici, fornire dati e risorse per la risoluzione di problemi, o simulare le conseguenze di diverse decisioni, rendendo l'apprendimento più esperienziale."
+      },
+      "inquiryBasedLearning": {
+        "title": "Apprendimento Basato sull'Indagine e Ricerca Guidata",
+        "description": "L'IA può assistere gli studenti nella ricerca di informazioni, nell'analisi di grandi dataset o nella formulazione di ipotesi, fungendo da assistente di ricerca che stimola curiosità e autonomia."
+      },
+      "immediateFeedback": {
+        "title": "Feedback Immediato e Formativo",
+        "description": "Gli strumenti IA possono offrire feedback istantaneo su quiz, bozze di testi o esercizi di programmazione, permettendo agli studenti di correggere errori e migliorare continuamente, e a te di monitorare i progressi in tempo reale."
+      },
+      "conclusion": "Sperimentare con questi stili può rendere le tue lezioni più efficaci e preparare meglio i tuoi studenti alle sfide del futuro."
+    },
+    "slide5": {
+      "title": "Il Futuro dell'Educazione è Qui: Pronti al Decollo?",
+      "subtitle": "Hai esplorato il potenziale dell'IA per trasformare l'insegnamento. Ora è il momento di mettere in pratica questa conoscenza e continuare il tuo viaggio di innovazione.",
+      "keyPoints": {
+        "title": "Punti Chiave da Ricordare",
+        "item1": "L'IA è un <strong class=\"text-sky-300\">alleato</strong>, non un sostituto, dell'insegnante.",
+        "item2": "La <strong class=\"text-sky-300\">personalizzazione</strong> è uno dei maggiori punti di forza dell'IA.",
+        "item3": "Incoraggiare il <strong class=\"text-sky-300\">pensiero critico</strong> sull'IA è fondamentale.",
+        "item4": "Sperimentare con <strong class=\"text-sky-300\">nuovi stili didattici</strong> arricchisce l'apprendimento."
+      },
+      "nextSteps": {
+        "title": "Prossimi Passi e Risorse",
+        "item1": "Inizia in piccolo: integra un'attività IA alla volta.",
+        "item2": "Collabora con i colleghi: condividi esperienze e risorse.",
+        "item3": "Esplora le app di questa piattaforma per esempi pratici.",
+        "item4": "Continua a imparare: il campo dell'IA è in costante evoluzione.",
+        "item5": "Scopri di più su <a href=\"#\" class=\"ml-1 text-sky-400 hover:text-sky-300 underline flex items-center\" target=\"_blank\" rel=\"noopener noreferrer\">EduAI.it <ExternalLink size={16} class=\"ml-1\" /></a> (esempio)."
+      },
+      "conclusion": "Grazie per aver seguito questa guida. Buona fortuna con le tue avventure didattiche con l'IA!"
+    }
   }
 }

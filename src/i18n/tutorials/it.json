@@ -1,4 +1,11 @@
 {
+  "common": {
+    "back": "Indietro",
+    "next": "Avanti",
+    "previous": "Precedente",
+    "progress": "Progresso",
+    "slide": "Diapositiva"
+  },
   "personaggioMisterioso": {
     "title": "Tutorial Personaggio Misterioso",
     "subtitle": "Impara a usare il gioco di indovinelli sui personaggi storici",
@@ -76,7 +83,10 @@
     "slides": {
       "welcome": {
         "title": "Benvenuto in Wiki-Interview!",
-        "content": "Entra nel ruolo di moderatore collaborativo di dibattiti, facilitando discussioni tra personaggi Wikipedia alimentati dall'AI mentre sviluppi pensiero critico e capacità di moderazione."
+        "content": "Entra nel ruolo di moderatore collaborativo di dibattiti, facilitando discussioni tra personaggi Wikipedia alimentati dall'AI mentre sviluppi pensiero critico e capacità di moderazione.",
+        "bullet1": "Interagisci con personaggi storici alimentati dall'AI",
+        "bullet2": "Sviluppa capacità di pensiero critico e moderazione",
+        "bullet3": "Esplora prospettive diverse attraverso dibattiti strutturati"
       },
       "moderatorRole": {
         "title": "Ruolo di Moderazione Collaborativa",
