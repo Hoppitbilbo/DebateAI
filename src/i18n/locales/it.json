@@ -532,5 +532,13 @@
       },
       "conclusion": "Grazie per aver seguito questa guida. Buona fortuna con le tue avventure didattiche con l'IA!"
     }
+  },
+  "tutorial": {
+    "doppiaIntervista": {
+      "title": "Tutorial Doppia Intervista"
+    },
+    "personaggioMisterioso": {
+      "title": "Tutorial Personaggio Misterioso"
+    }
   }
 }

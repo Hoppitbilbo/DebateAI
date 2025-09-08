@@ -8,29 +8,59 @@
         "title": "Welcome to Mystery Character!",
         "content": "An interactive guessing game where you discover historical figures through strategic questioning."
       },
-      "howToPlay": {
-        "title": "How to Play",
-        "content": "• Choose a historical character from Wikipedia\n• Ask yes/no questions to narrow down possibilities\n• Use strategic thinking to identify the character\n• Learn fascinating historical facts along the way"
+      "welcome": {
+        "title": "Welcome to Mystery Character!",
+        "content": "An interactive guessing game where you discover historical figures through strategic questioning.",
+        "bullet1": "Interactive educational game for all ages",
+        "bullet2": "Discover famous historical characters",
+        "bullet3": "Develop critical thinking skills"
       },
-      "aiTechnology": {
-        "title": "AI Technology Behind the Game",
-        "content": "• Powered by advanced Large Language Models (LLMs)\n• Real-time Wikipedia integration for accurate information\n• Sophisticated prompt engineering for realistic character responses\n• Natural language processing for intelligent question interpretation"
+      "howItWorks": {
+        "title": "How It Works",
+        "content": "Learn the basic game mechanics and how to use strategic questions to identify characters.",
+        "bullet1": "Choose a historical character from Wikipedia",
+        "bullet2": "Ask yes/no questions to narrow down possibilities",
+        "bullet3": "Use strategic thinking to identify the character",
+        "bullet4": "Learn fascinating historical facts along the way"
       },
-      "educationalBenefits": {
-        "title": "Educational Benefits",
-        "content": "• Develops critical thinking and deductive reasoning\n• Enhances strategic questioning skills\n• Promotes historical knowledge and curiosity\n• Improves logical problem-solving abilities"
+      "selectCharacter": {
+        "title": "Character Selection",
+        "content": "Discover how to choose and configure historical characters for your game.",
+        "bullet1": "Access to thousands of historical characters",
+        "bullet2": "Filter by era, profession, or nationality",
+        "bullet3": "Detailed information from Wikipedia"
+      },
+      "askQuestions": {
+        "title": "Strategic Questioning",
+        "content": "Learn the art of asking effective questions to quickly identify the mystery character.",
+        "bullet1": "Start with broad questions to narrow the field",
+        "bullet2": "Use specific questions for precise details",
+        "bullet3": "Consider era, profession, and nationality",
+        "bullet4": "Develop logical elimination strategies"
+      },
+      "technology": {
+        "title": "AI Technology",
+        "content": "Discover the advanced technology that powers the game and enables realistic responses.",
+        "bullet1": "Powered by advanced Large Language Models (LLMs)",
+        "bullet2": "Real-time Wikipedia integration",
+        "bullet3": "Sophisticated prompt engineering",
+        "bullet4": "Natural language processing"
       },
       "classroomUse": {
-        "title": "Classroom Applications",
-        "content": "Perfect for:\n• History lessons and character studies\n• Critical thinking skill development\n• Interactive learning sessions\n• Student engagement and motivation"
+        "title": "Classroom Use",
+        "content": "Discover how to integrate the game into educational activities to maximize learning.",
+        "bullet1": "History lessons and character studies",
+        "bullet2": "Critical thinking skills development",
+        "bullet3": "Interactive learning sessions",
+        "bullet4": "Student engagement and motivation"
       },
-      "subjectExamples": {
-        "title": "Cross-Curricular Applications",
-        "content": "• History: Famous leaders, inventors, artists\n• Science: Scientists, researchers, Nobel laureates\n• Literature: Authors, poets, literary figures\n• Social Studies: Activists, politicians, cultural icons"
-      },
-      "getStarted": {
-        "title": "Ready to Begin?",
-        "content": "Start your mystery character adventure and discover the power of strategic questioning and historical exploration!"
+      "examples": {
+        "title": "Practical Examples",
+        "content": "Explore concrete examples of how to use the game in different subjects and educational contexts.",
+        "bullet1": "History: Famous leaders, inventors, artists",
+        "bullet2": "Science: Scientists, researchers, Nobel laureates",
+        "bullet3": "Literature: Authors, poets, literary figures",
+        "bullet4": "Social Studies: Activists, politicians, cultural icons"
       }
     }
   },

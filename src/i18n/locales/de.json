@@ -755,5 +755,13 @@
       "content": "Unser sozialer Zweck ist es, eine Zukunft zu schaffen, in der KI ein starker Verbündeter für Schüler und Lehrer ist und das Lernen zu einem aufregenden, personalisierten und vor allem für jeden zugänglichen Abenteuer macht."
     },
     "supportButton": "Unterstützen Sie uns"
+  },
+  "tutorial": {
+    "doppiaIntervista": {
+      "title": "Doppelinterview Tutorial"
+    },
+    "personaggioMisterioso": {
+      "title": "Mysteriöse Figur Tutorial"
+    }
   }
 }

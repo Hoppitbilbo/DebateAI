@@ -8,29 +8,59 @@
         "title": "Bienvenue dans Personnage Mystérieux !",
         "content": "Un jeu interactif de devinettes où vous découvrez des figures historiques grâce à des questions stratégiques."
       },
-      "howToPlay": {
-        "title": "Comment Jouer",
-        "content": "• Choisissez un personnage historique de Wikipédia\n• Posez des questions oui/non pour réduire les possibilités\n• Utilisez la pensée stratégique pour identifier le personnage\n• Apprenez des faits historiques fascinants en chemin"
+      "welcome": {
+        "title": "Bienvenue dans Personnage Mystérieux !",
+        "content": "Un jeu interactif de devinettes où vous découvrez des figures historiques grâce à des questions stratégiques.",
+        "bullet1": "Jeu éducatif interactif pour tous les âges",
+        "bullet2": "Découvrez des personnages historiques célèbres",
+        "bullet3": "Développez des compétences de pensée critique"
       },
-      "aiTechnology": {
-        "title": "Technologie IA Derrière le Jeu",
-        "content": "• Alimenté par des modèles de langage avancés (LLM)\n• Intégration Wikipédia en temps réel pour des informations précises\n• Ingénierie sophistiquée des prompts pour des réponses réalistes des personnages\n• Traitement du langage naturel pour l'interprétation intelligente des questions"
+      "howItWorks": {
+        "title": "Comment Ça Fonctionne",
+        "content": "Apprenez les mécaniques de base du jeu et comment utiliser des questions stratégiques pour identifier les personnages.",
+        "bullet1": "Choisissez un personnage historique de Wikipédia",
+        "bullet2": "Posez des questions oui/non pour réduire les possibilités",
+        "bullet3": "Utilisez la pensée stratégique pour identifier le personnage",
+        "bullet4": "Apprenez des faits historiques fascinants en chemin"
       },
-      "educationalBenefits": {
-        "title": "Bénéfices Éducatifs",
-        "content": "• Développe la pensée critique et le raisonnement déductif\n• Améliore les compétences de questionnement stratégique\n• Favorise la connaissance historique et la curiosité\n• Améliore les capacités de résolution logique de problèmes"
+      "selectCharacter": {
+        "title": "Sélection de Personnage",
+        "content": "Découvrez comment choisir et configurer des personnages historiques pour votre jeu.",
+        "bullet1": "Accès à des milliers de personnages historiques",
+        "bullet2": "Filtrez par époque, profession ou nationalité",
+        "bullet3": "Informations détaillées de Wikipédia"
+      },
+      "askQuestions": {
+        "title": "Questionnement Stratégique",
+        "content": "Apprenez l'art de poser des questions efficaces pour identifier rapidement le personnage mystérieux.",
+        "bullet1": "Commencez par des questions larges pour réduire le champ",
+        "bullet2": "Utilisez des questions spécifiques pour des détails précis",
+        "bullet3": "Considérez l'époque, la profession et la nationalité",
+        "bullet4": "Développez des stratégies d'élimination logique"
+      },
+      "technology": {
+        "title": "Technologie IA",
+        "content": "Découvrez la technologie avancée qui alimente le jeu et permet des réponses réalistes.",
+        "bullet1": "Alimenté par des modèles de langage avancés (LLM)",
+        "bullet2": "Intégration Wikipédia en temps réel",
+        "bullet3": "Ingénierie sophistiquée des prompts",
+        "bullet4": "Traitement du langage naturel"
       },
       "classroomUse": {
-        "title": "Applications en Classe",
-        "content": "Parfait pour :\n• Leçons d'histoire et études de personnages\n• Développement des compétences de pensée critique\n• Sessions d'apprentissage interactif\n• Engagement et motivation des étudiants"
+        "title": "Utilisation en Classe",
+        "content": "Découvrez comment intégrer le jeu dans les activités éducatives pour maximiser l'apprentissage.",
+        "bullet1": "Leçons d'histoire et études de personnages",
+        "bullet2": "Développement des compétences de pensée critique",
+        "bullet3": "Sessions d'apprentissage interactif",
+        "bullet4": "Engagement et motivation des étudiants"
       },
-      "subjectExamples": {
-        "title": "Applications Interdisciplinaires",
-        "content": "• Histoire : Leaders célèbres, inventeurs, artistes\n• Science : Scientifiques, chercheurs, prix Nobel\n• Littérature : Auteurs, poètes, figures littéraires\n• Études Sociales : Activistes, politiciens, icônes culturelles"
-      },
-      "getStarted": {
-        "title": "Prêt à Commencer ?",
-        "content": "Commencez votre aventure du personnage mystérieux et découvrez le pouvoir du questionnement stratégique et de l'exploration historique !"
+      "examples": {
+        "title": "Exemples Pratiques",
+        "content": "Explorez des exemples concrets de comment utiliser le jeu dans différentes matières et contextes éducatifs.",
+        "bullet1": "Histoire : Leaders célèbres, inventeurs, artistes",
+        "bullet2": "Science : Scientifiques, chercheurs, prix Nobel",
+        "bullet3": "Littérature : Auteurs, poètes, figures littéraires",
+        "bullet4": "Études Sociales : Activistes, politiciens, icônes culturelles"
       }
     }
   },

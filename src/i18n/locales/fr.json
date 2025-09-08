@@ -898,5 +898,13 @@
         }
       }
     }
+  },
+  "tutorial": {
+    "doppiaIntervista": {
+      "title": "Tutoriel Double Interview"
+    },
+    "personaggioMisterioso": {
+      "title": "Tutoriel Personnage Mystérieux"
+    }
   }
 }

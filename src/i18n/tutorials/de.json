@@ -8,29 +8,59 @@
         "title": "Willkommen bei Geheimnisvolle Persönlichkeit!",
         "content": "Ein interaktives Ratespiel, bei dem Sie historische Figuren durch strategische Fragen entdecken."
       },
-      "howToPlay": {
-        "title": "Wie man spielt",
-        "content": "• Wählen Sie eine historische Persönlichkeit aus Wikipedia\n• Stellen Sie Ja/Nein-Fragen, um die Möglichkeiten einzugrenzen\n• Nutzen Sie strategisches Denken, um die Persönlichkeit zu identifizieren\n• Lernen Sie faszinierende historische Fakten unterwegs"
+      "welcome": {
+        "title": "Willkommen bei Geheimnisvolle Persönlichkeit!",
+        "content": "Ein interaktives Ratespiel, bei dem Sie historische Figuren durch strategische Fragen entdecken.",
+        "bullet1": "Interaktives Lernspiel für alle Altersgruppen",
+        "bullet2": "Entdecken Sie berühmte historische Persönlichkeiten",
+        "bullet3": "Entwickeln Sie kritische Denkfähigkeiten"
       },
-      "aiTechnology": {
-        "title": "KI-Technologie hinter dem Spiel",
-        "content": "• Angetrieben von fortgeschrittenen Sprachmodellen (LLMs)\n• Echtzeit-Wikipedia-Integration für genaue Informationen\n• Ausgeklügelte Prompt-Entwicklung für realistische Charakterantworten\n• Natürliche Sprachverarbeitung für intelligente Frageninterpretation"
+      "howItWorks": {
+        "title": "Wie Es Funktioniert",
+        "content": "Lernen Sie die grundlegenden Spielmechaniken und wie Sie strategische Fragen zur Identifizierung von Charakteren verwenden.",
+        "bullet1": "Wählen Sie eine historische Persönlichkeit aus Wikipedia",
+        "bullet2": "Stellen Sie Ja/Nein-Fragen, um die Möglichkeiten einzugrenzen",
+        "bullet3": "Nutzen Sie strategisches Denken, um die Persönlichkeit zu identifizieren",
+        "bullet4": "Lernen Sie faszinierende historische Fakten unterwegs"
       },
-      "educationalBenefits": {
-        "title": "Bildungsvorteile",
-        "content": "• Entwickelt kritisches Denken und deduktives Schlussfolgern\n• Verbessert strategische Fragetechniken\n• Fördert historisches Wissen und Neugier\n• Verbessert logische Problemlösungsfähigkeiten"
+      "selectCharacter": {
+        "title": "Charakterauswahl",
+        "content": "Entdecken Sie, wie Sie historische Charaktere für Ihr Spiel auswählen und konfigurieren.",
+        "bullet1": "Zugang zu Tausenden von historischen Charakteren",
+        "bullet2": "Filtern nach Epoche, Beruf oder Nationalität",
+        "bullet3": "Detaillierte Informationen aus Wikipedia"
+      },
+      "askQuestions": {
+        "title": "Strategisches Fragen",
+        "content": "Lernen Sie die Kunst, effektive Fragen zu stellen, um die geheimnisvolle Persönlichkeit schnell zu identifizieren.",
+        "bullet1": "Beginnen Sie mit breiten Fragen, um das Feld einzugrenzen",
+        "bullet2": "Verwenden Sie spezifische Fragen für präzise Details",
+        "bullet3": "Berücksichtigen Sie Epoche, Beruf und Nationalität",
+        "bullet4": "Entwickeln Sie logische Eliminationsstrategien"
+      },
+      "technology": {
+        "title": "KI-Technologie",
+        "content": "Entdecken Sie die fortschrittliche Technologie, die das Spiel antreibt und realistische Antworten ermöglicht.",
+        "bullet1": "Angetrieben von fortgeschrittenen Sprachmodellen (LLMs)",
+        "bullet2": "Echtzeit-Wikipedia-Integration",
+        "bullet3": "Ausgeklügelte Prompt-Entwicklung",
+        "bullet4": "Natürliche Sprachverarbeitung"
       },
       "classroomUse": {
-        "title": "Klassenzimmer-Anwendungen",
-        "content": "Perfekt für:\n• Geschichtsstunden und Charakterstudien\n• Entwicklung kritischer Denkfähigkeiten\n• Interaktive Lernsitzungen\n• Schülerengagement und Motivation"
+        "title": "Klassenzimmer-Nutzung",
+        "content": "Entdecken Sie, wie Sie das Spiel in Bildungsaktivitäten integrieren, um das Lernen zu maximieren.",
+        "bullet1": "Geschichtsstunden und Charakterstudien",
+        "bullet2": "Entwicklung kritischer Denkfähigkeiten",
+        "bullet3": "Interaktive Lernsitzungen",
+        "bullet4": "Schülerengagement und Motivation"
       },
-      "subjectExamples": {
-        "title": "Fächerübergreifende Anwendungen",
-        "content": "• Geschichte: Berühmte Führer, Erfinder, Künstler\n• Wissenschaft: Wissenschaftler, Forscher, Nobelpreisträger\n• Literatur: Autoren, Dichter, literarische Figuren\n• Sozialwissenschaften: Aktivisten, Politiker, kulturelle Ikonen"
-      },
-      "getStarted": {
-        "title": "Bereit anzufangen?",
-        "content": "Beginnen Sie Ihr geheimnisvolles Persönlichkeitsabenteuer und entdecken Sie die Macht strategischer Fragen und historischer Erkundung!"
+      "examples": {
+        "title": "Praktische Beispiele",
+        "content": "Erkunden Sie konkrete Beispiele, wie Sie das Spiel in verschiedenen Fächern und Bildungskontexten verwenden können.",
+        "bullet1": "Geschichte: Berühmte Führer, Erfinder, Künstler",
+        "bullet2": "Wissenschaft: Wissenschaftler, Forscher, Nobelpreisträger",
+        "bullet3": "Literatur: Autoren, Dichter, literarische Figuren",
+        "bullet4": "Sozialwissenschaften: Aktivisten, Politiker, kulturelle Ikonen"
       }
     }
   },

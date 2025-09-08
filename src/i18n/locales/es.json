@@ -757,5 +757,13 @@
       "content": "Nuestro propósito social es construir un futuro en el que la IA sea un poderoso aliado para estudiantes y profesores, haciendo del aprendizaje una aventura emocionante, personalizada y, sobre todo, accesible para todos."
     },
     "supportButton": "Apóyanos"
+  },
+  "tutorial": {
+    "doppiaIntervista": {
+      "title": "Tutorial Doble Entrevista"
+    },
+    "personaggioMisterioso": {
+      "title": "Tutorial Personaje Misterioso"
+    }
   }
 }
