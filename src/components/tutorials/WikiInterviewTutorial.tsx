@@ -14,103 +14,103 @@ interface Slide {
 }
 
 const WikiInterviewTutorial: React.FC = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('tutorials');
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const slides: Slide[] = [
     {
       id: 'welcome',
-      titleKey: 'tutorial.wikiInterview.slides.welcome.title',
-      contentKey: 'tutorial.wikiInterview.slides.welcome.content',
+      titleKey: 'wikiInterview.slides.welcome.title',
+      contentKey: 'wikiInterview.slides.welcome.content',
       icon: <Play className="w-8 h-8 text-education" />,
       bullets: [
-        'tutorial.wikiInterview.slides.welcome.bullet1',
-        'tutorial.wikiInterview.slides.welcome.bullet2',
-        'tutorial.wikiInterview.slides.welcome.bullet3'
+        'wikiInterview.slides.welcome.bullet1',
+        'wikiInterview.slides.welcome.bullet2',
+        'wikiInterview.slides.welcome.bullet3'
       ]
     },
     {
       id: 'moderatorRole',
-      titleKey: 'tutorial.wikiInterview.slides.moderatorRole.title',
-      contentKey: 'tutorial.wikiInterview.slides.moderatorRole.content',
+      titleKey: 'wikiInterview.slides.moderatorRole.title',
+      contentKey: 'wikiInterview.slides.moderatorRole.content',
       icon: <Users className="w-8 h-8 text-education" />,
       bullets: [
-        'tutorial.wikiInterview.slides.moderatorRole.bullet1',
-        'tutorial.wikiInterview.slides.moderatorRole.bullet2',
-        'tutorial.wikiInterview.slides.moderatorRole.bullet3',
-        'tutorial.wikiInterview.slides.moderatorRole.bullet4'
+        'wikiInterview.slides.moderatorRole.bullet1',
+        'wikiInterview.slides.moderatorRole.bullet2',
+        'wikiInterview.slides.moderatorRole.bullet3',
+        'wikiInterview.slides.moderatorRole.bullet4'
       ]
     },
     {
       id: 'peerCollaboration',
-      titleKey: 'tutorial.wikiInterview.slides.peerCollaboration.title',
-      contentKey: 'tutorial.wikiInterview.slides.peerCollaboration.content',
+      titleKey: 'wikiInterview.slides.peerCollaboration.title',
+      contentKey: 'wikiInterview.slides.peerCollaboration.content',
       icon: <MessageCircle className="w-8 h-8 text-education" />,
       bullets: [
-        'tutorial.wikiInterview.slides.peerCollaboration.bullet1',
-        'tutorial.wikiInterview.slides.peerCollaboration.bullet2',
-        'tutorial.wikiInterview.slides.peerCollaboration.bullet3',
-        'tutorial.wikiInterview.slides.peerCollaboration.bullet4'
+        'wikiInterview.slides.peerCollaboration.bullet1',
+        'wikiInterview.slides.peerCollaboration.bullet2',
+        'wikiInterview.slides.peerCollaboration.bullet3',
+        'wikiInterview.slides.peerCollaboration.bullet4'
       ]
     },
     {
       id: 'setupDebate',
-      titleKey: 'tutorial.wikiInterview.slides.setupDebate.title',
-      contentKey: 'tutorial.wikiInterview.slides.setupDebate.content',
+      titleKey: 'wikiInterview.slides.setupDebate.title',
+      contentKey: 'wikiInterview.slides.setupDebate.content',
       icon: <Target className="w-8 h-8 text-education" />,
       bullets: [
-        'tutorial.wikiInterview.slides.setupDebate.bullet1',
-        'tutorial.wikiInterview.slides.setupDebate.bullet2',
-        'tutorial.wikiInterview.slides.setupDebate.bullet3',
-        'tutorial.wikiInterview.slides.setupDebate.bullet4'
+        'wikiInterview.slides.setupDebate.bullet1',
+        'wikiInterview.slides.setupDebate.bullet2',
+        'wikiInterview.slides.setupDebate.bullet3',
+        'wikiInterview.slides.setupDebate.bullet4'
       ]
     },
     {
       id: 'moderationSkills',
-      titleKey: 'tutorial.wikiInterview.slides.moderationSkills.title',
-      contentKey: 'tutorial.wikiInterview.slides.moderationSkills.content',
+      titleKey: 'wikiInterview.slides.moderationSkills.title',
+      contentKey: 'wikiInterview.slides.moderationSkills.content',
       icon: <Lightbulb className="w-8 h-8 text-education" />,
       bullets: [
-        'tutorial.wikiInterview.slides.moderationSkills.bullet1',
-        'tutorial.wikiInterview.slides.moderationSkills.bullet2',
-        'tutorial.wikiInterview.slides.moderationSkills.bullet3',
-        'tutorial.wikiInterview.slides.moderationSkills.bullet4'
+        'wikiInterview.slides.moderationSkills.bullet1',
+        'wikiInterview.slides.moderationSkills.bullet2',
+        'wikiInterview.slides.moderationSkills.bullet3',
+        'wikiInterview.slides.moderationSkills.bullet4'
       ]
     },
     {
       id: 'criticalThinking',
-      titleKey: 'tutorial.wikiInterview.slides.criticalThinking.title',
-      contentKey: 'tutorial.wikiInterview.slides.criticalThinking.content',
+      titleKey: 'wikiInterview.slides.criticalThinking.title',
+      contentKey: 'wikiInterview.slides.criticalThinking.content',
       icon: <Zap className="w-8 h-8 text-education" />,
       bullets: [
-        'tutorial.wikiInterview.slides.criticalThinking.bullet1',
-        'tutorial.wikiInterview.slides.criticalThinking.bullet2',
-        'tutorial.wikiInterview.slides.criticalThinking.bullet3',
-        'tutorial.wikiInterview.slides.criticalThinking.bullet4'
+        'wikiInterview.slides.criticalThinking.bullet1',
+        'wikiInterview.slides.criticalThinking.bullet2',
+        'wikiInterview.slides.criticalThinking.bullet3',
+        'wikiInterview.slides.criticalThinking.bullet4'
       ]
     },
     {
       id: 'reflection',
-      titleKey: 'tutorial.wikiInterview.slides.reflection.title',
-      contentKey: 'tutorial.wikiInterview.slides.reflection.content',
+      titleKey: 'wikiInterview.slides.reflection.title',
+      contentKey: 'wikiInterview.slides.reflection.content',
       icon: <CheckCircle className="w-8 h-8 text-education" />,
       bullets: [
-        'tutorial.wikiInterview.slides.reflection.bullet1',
-        'tutorial.wikiInterview.slides.reflection.bullet2',
-        'tutorial.wikiInterview.slides.reflection.bullet3',
-        'tutorial.wikiInterview.slides.reflection.bullet4'
+        'wikiInterview.slides.reflection.bullet1',
+        'wikiInterview.slides.reflection.bullet2',
+        'wikiInterview.slides.reflection.bullet3',
+        'wikiInterview.slides.reflection.bullet4'
       ]
     },
     {
       id: 'applications',
-      titleKey: 'tutorial.wikiInterview.slides.applications.title',
-      contentKey: 'tutorial.wikiInterview.slides.applications.content',
+      titleKey: 'wikiInterview.slides.applications.title',
+      contentKey: 'wikiInterview.slides.applications.content',
       icon: <BookOpen className="w-8 h-8 text-education" />,
       bullets: [
-        'tutorial.wikiInterview.slides.applications.bullet1',
-        'tutorial.wikiInterview.slides.applications.bullet2',
-        'tutorial.wikiInterview.slides.applications.bullet3',
-        'tutorial.wikiInterview.slides.applications.bullet4'
+        'wikiInterview.slides.applications.bullet1',
+        'wikiInterview.slides.applications.bullet2',
+        'wikiInterview.slides.applications.bullet3',
+        'wikiInterview.slides.applications.bullet4'
       ]
     }
   ];
@@ -134,10 +134,10 @@ const WikiInterviewTutorial: React.FC = () => {
       {/* Header */}
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold text-education-dark mb-2">
-          {t('tutorial.wikiInterview.title')}
+          {t('wikiInterview.title')}
         </h1>
         <p className="text-lg text-education-muted">
-          {t('tutorial.wikiInterview.subtitle')}
+          {t('wikiInterview.subtitle')}
         </p>
       </div>
 
@@ -222,7 +222,7 @@ const WikiInterviewTutorial: React.FC = () => {
             className="bg-education hover:bg-education-dark text-white px-8 py-3"
             onClick={() => window.location.href = '/apps/wiki-interview'}
           >
-            {t('tutorial.wikiInterview.startApp')}
+            {t('wikiInterview.startApp')}
           </Button>
         </div>
       )}

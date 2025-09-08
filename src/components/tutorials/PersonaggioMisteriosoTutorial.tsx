@@ -14,90 +14,90 @@ interface Slide {
 }
 
 const PersonaggioMisteriosoTutorial: React.FC = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('tutorials');
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const slides: Slide[] = [
     {
       id: 'welcome',
-      titleKey: 'tutorial.personaggioMisterioso.slides.welcome.title',
-      contentKey: 'tutorial.personaggioMisterioso.slides.welcome.content',
+      titleKey: 'personaggioMisterioso.slides.welcome.title',
+      contentKey: 'personaggioMisterioso.slides.welcome.content',
       icon: <Play className="w-8 h-8 text-education" />,
       bullets: [
-        'tutorial.personaggioMisterioso.slides.welcome.bullet1',
-        'tutorial.personaggioMisterioso.slides.welcome.bullet2',
-        'tutorial.personaggioMisterioso.slides.welcome.bullet3'
+        'personaggioMisterioso.slides.welcome.bullet1',
+        'personaggioMisterioso.slides.welcome.bullet2',
+        'personaggioMisterioso.slides.welcome.bullet3'
       ]
     },
     {
       id: 'howItWorks',
-      titleKey: 'tutorial.personaggioMisterioso.slides.howItWorks.title',
-      contentKey: 'tutorial.personaggioMisterioso.slides.howItWorks.content',
+      titleKey: 'personaggioMisterioso.slides.howItWorks.title',
+      contentKey: 'personaggioMisterioso.slides.howItWorks.content',
       icon: <Target className="w-8 h-8 text-education" />,
       bullets: [
-        'tutorial.personaggioMisterioso.slides.howItWorks.bullet1',
-        'tutorial.personaggioMisterioso.slides.howItWorks.bullet2',
-        'tutorial.personaggioMisterioso.slides.howItWorks.bullet3',
-        'tutorial.personaggioMisterioso.slides.howItWorks.bullet4'
+        'personaggioMisterioso.slides.howItWorks.bullet1',
+        'personaggioMisterioso.slides.howItWorks.bullet2',
+        'personaggioMisterioso.slides.howItWorks.bullet3',
+        'personaggioMisterioso.slides.howItWorks.bullet4'
       ]
     },
     {
       id: 'selectCharacter',
-      titleKey: 'tutorial.personaggioMisterioso.slides.selectCharacter.title',
-      contentKey: 'tutorial.personaggioMisterioso.slides.selectCharacter.content',
+      titleKey: 'personaggioMisterioso.slides.selectCharacter.title',
+      contentKey: 'personaggioMisterioso.slides.selectCharacter.content',
       icon: <Search className="w-8 h-8 text-education" />,
       bullets: [
-        'tutorial.personaggioMisterioso.slides.selectCharacter.bullet1',
-        'tutorial.personaggioMisterioso.slides.selectCharacter.bullet2',
-        'tutorial.personaggioMisterioso.slides.selectCharacter.bullet3'
+        'personaggioMisterioso.slides.selectCharacter.bullet1',
+        'personaggioMisterioso.slides.selectCharacter.bullet2',
+        'personaggioMisterioso.slides.selectCharacter.bullet3'
       ]
     },
     {
       id: 'askQuestions',
-      titleKey: 'tutorial.personaggioMisterioso.slides.askQuestions.title',
-      contentKey: 'tutorial.personaggioMisterioso.slides.askQuestions.content',
+      titleKey: 'personaggioMisterioso.slides.askQuestions.title',
+      contentKey: 'personaggioMisterioso.slides.askQuestions.content',
       icon: <MessageSquare className="w-8 h-8 text-education" />,
       bullets: [
-        'tutorial.personaggioMisterioso.slides.askQuestions.bullet1',
-        'tutorial.personaggioMisterioso.slides.askQuestions.bullet2',
-        'tutorial.personaggioMisterioso.slides.askQuestions.bullet3',
-        'tutorial.personaggioMisterioso.slides.askQuestions.bullet4'
+        'personaggioMisterioso.slides.askQuestions.bullet1',
+        'personaggioMisterioso.slides.askQuestions.bullet2',
+        'personaggioMisterioso.slides.askQuestions.bullet3',
+        'personaggioMisterioso.slides.askQuestions.bullet4'
       ]
     },
     {
       id: 'technology',
-      titleKey: 'tutorial.personaggioMisterioso.slides.technology.title',
-      contentKey: 'tutorial.personaggioMisterioso.slides.technology.content',
+      titleKey: 'personaggioMisterioso.slides.technology.title',
+      contentKey: 'personaggioMisterioso.slides.technology.content',
       icon: <Lightbulb className="w-8 h-8 text-education" />,
       bullets: [
-        'tutorial.personaggioMisterioso.slides.technology.bullet1',
-        'tutorial.personaggioMisterioso.slides.technology.bullet2',
-        'tutorial.personaggioMisterioso.slides.technology.bullet3',
-        'tutorial.personaggioMisterioso.slides.technology.bullet4'
+        'personaggioMisterioso.slides.technology.bullet1',
+        'personaggioMisterioso.slides.technology.bullet2',
+        'personaggioMisterioso.slides.technology.bullet3',
+        'personaggioMisterioso.slides.technology.bullet4'
       ]
     },
     {
       id: 'classroomUse',
-      titleKey: 'tutorial.personaggioMisterioso.slides.classroomUse.title',
-      contentKey: 'tutorial.personaggioMisterioso.slides.classroomUse.content',
+      titleKey: 'personaggioMisterioso.slides.classroomUse.title',
+      contentKey: 'personaggioMisterioso.slides.classroomUse.content',
       icon: <Users className="w-8 h-8 text-education" />,
       bullets: [
-        'tutorial.personaggioMisterioso.slides.classroomUse.bullet1',
-        'tutorial.personaggioMisterioso.slides.classroomUse.bullet2',
-        'tutorial.personaggioMisterioso.slides.classroomUse.bullet3',
-        'tutorial.personaggioMisterioso.slides.classroomUse.bullet4'
+        'personaggioMisterioso.slides.classroomUse.bullet1',
+        'personaggioMisterioso.slides.classroomUse.bullet2',
+        'personaggioMisterioso.slides.classroomUse.bullet3',
+        'personaggioMisterioso.slides.classroomUse.bullet4'
       ]
     },
     {
       id: 'examples',
-      titleKey: 'tutorial.personaggioMisterioso.slides.examples.title',
-      contentKey: 'tutorial.personaggioMisterioso.slides.examples.content',
+      titleKey: 'personaggioMisterioso.slides.examples.title',
+      contentKey: 'personaggioMisterioso.slides.examples.content',
       icon: <BookOpen className="w-8 h-8 text-education" />,
       bullets: [
-        'tutorial.personaggioMisterioso.slides.examples.bullet1',
-        'tutorial.personaggioMisterioso.slides.examples.bullet2',
-        'tutorial.personaggioMisterioso.slides.examples.bullet3',
-        'tutorial.personaggioMisterioso.slides.examples.bullet4'
+        'personaggioMisterioso.slides.examples.bullet1',
+        'personaggioMisterioso.slides.examples.bullet2',
+        'personaggioMisterioso.slides.examples.bullet3',
+        'personaggioMisterioso.slides.examples.bullet4'
       ]
     }
   ];
@@ -121,10 +121,10 @@ const PersonaggioMisteriosoTutorial: React.FC = () => {
       {/* Header */}
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold text-education-dark mb-2">
-          {t('tutorial.personaggioMisterioso.title')}
+          {t('personaggioMisterioso.title')}
         </h1>
         <p className="text-lg text-education-muted">
-          {t('tutorial.personaggioMisterioso.subtitle')}
+          {t('personaggioMisterioso.subtitle')}
         </p>
       </div>
 
@@ -209,7 +209,7 @@ const PersonaggioMisteriosoTutorial: React.FC = () => {
             className="bg-education hover:bg-education-dark text-white px-8 py-3"
             onClick={() => window.location.href = '/apps/personaggio-misterioso'}
           >
-            {t('tutorial.personaggioMisterioso.startApp')}
+            {t('personaggioMisterioso.startApp')}
           </Button>
         </div>
       )}

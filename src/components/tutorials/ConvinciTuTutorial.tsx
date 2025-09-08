@@ -13,104 +13,104 @@ interface Slide {
 }
 
 const ConvinciTuTutorial: React.FC = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('tutorials');
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const slides: Slide[] = [
     {
       id: 'welcome',
-      titleKey: 'tutorial.convinciTu.slides.welcome.title',
-      contentKey: 'tutorial.convinciTu.slides.welcome.content',
+      titleKey: 'convinciTu.slides.welcome.title',
+      contentKey: 'convinciTu.slides.welcome.content',
       icon: <Play className="w-8 h-8 text-education" />,
       bullets: [
-        'tutorial.convinciTu.slides.welcome.bullet1',
-        'tutorial.convinciTu.slides.welcome.bullet2',
-        'tutorial.convinciTu.slides.welcome.bullet3',
-        'tutorial.convinciTu.slides.welcome.bullet4'
+        'convinciTu.slides.welcome.bullet1',
+        'convinciTu.slides.welcome.bullet2',
+        'convinciTu.slides.welcome.bullet3',
+        'convinciTu.slides.welcome.bullet4'
       ]
     },
     {
       id: 'howItWorks',
-      titleKey: 'tutorial.convinciTu.slides.howItWorks.title',
-      contentKey: 'tutorial.convinciTu.slides.howItWorks.content',
+      titleKey: 'convinciTu.slides.howItWorks.title',
+      contentKey: 'convinciTu.slides.howItWorks.content',
       icon: <Target className="w-8 h-8 text-education" />,
       bullets: [
-        'tutorial.convinciTu.slides.howItWorks.bullet1',
-        'tutorial.convinciTu.slides.howItWorks.bullet2',
-        'tutorial.convinciTu.slides.howItWorks.bullet3',
-        'tutorial.convinciTu.slides.howItWorks.bullet4'
+        'convinciTu.slides.howItWorks.bullet1',
+        'convinciTu.slides.howItWorks.bullet2',
+        'convinciTu.slides.howItWorks.bullet3',
+        'convinciTu.slides.howItWorks.bullet4'
       ]
     },
     {
       id: 'debatePreparation',
-      titleKey: 'tutorial.convinciTu.slides.debatePreparation.title',
-      contentKey: 'tutorial.convinciTu.slides.debatePreparation.content',
+      titleKey: 'convinciTu.slides.debatePreparation.title',
+      contentKey: 'convinciTu.slides.debatePreparation.content',
       icon: <Brain className="w-8 h-8 text-education" />,
       bullets: [
-        'tutorial.convinciTu.slides.debatePreparation.bullet1',
-        'tutorial.convinciTu.slides.debatePreparation.bullet2',
-        'tutorial.convinciTu.slides.debatePreparation.bullet3',
-        'tutorial.convinciTu.slides.debatePreparation.bullet4'
+        'convinciTu.slides.debatePreparation.bullet1',
+        'convinciTu.slides.debatePreparation.bullet2',
+        'convinciTu.slides.debatePreparation.bullet3',
+        'convinciTu.slides.debatePreparation.bullet4'
       ]
     },
     {
       id: 'collaborativeLearning',
-      titleKey: 'tutorial.convinciTu.slides.collaborativeLearning.title',
-      contentKey: 'tutorial.convinciTu.slides.collaborativeLearning.content',
+      titleKey: 'convinciTu.slides.collaborativeLearning.title',
+      contentKey: 'convinciTu.slides.collaborativeLearning.content',
       icon: <Users className="w-8 h-8 text-education" />,
       bullets: [
-        'tutorial.convinciTu.slides.collaborativeLearning.bullet1',
-        'tutorial.convinciTu.slides.collaborativeLearning.bullet2',
-        'tutorial.convinciTu.slides.collaborativeLearning.bullet3',
-        'tutorial.convinciTu.slides.collaborativeLearning.bullet4'
+        'convinciTu.slides.collaborativeLearning.bullet1',
+        'convinciTu.slides.collaborativeLearning.bullet2',
+        'convinciTu.slides.collaborativeLearning.bullet3',
+        'convinciTu.slides.collaborativeLearning.bullet4'
       ]
     },
     {
       id: 'visibleThinking',
-      titleKey: 'tutorial.convinciTu.slides.visibleThinking.title',
-      contentKey: 'tutorial.convinciTu.slides.visibleThinking.content',
+      titleKey: 'convinciTu.slides.visibleThinking.title',
+      contentKey: 'convinciTu.slides.visibleThinking.content',
       icon: <Eye className="w-8 h-8 text-education" />,
       bullets: [
-        'tutorial.convinciTu.slides.visibleThinking.bullet1',
-        'tutorial.convinciTu.slides.visibleThinking.bullet2',
-        'tutorial.convinciTu.slides.visibleThinking.bullet3',
-        'tutorial.convinciTu.slides.visibleThinking.bullet4'
+        'convinciTu.slides.visibleThinking.bullet1',
+        'convinciTu.slides.visibleThinking.bullet2',
+        'convinciTu.slides.visibleThinking.bullet3',
+        'convinciTu.slides.visibleThinking.bullet4'
       ]
     },
     {
       id: 'teacherEvaluation',
-      titleKey: 'tutorial.convinciTu.slides.teacherEvaluation.title',
-      contentKey: 'tutorial.convinciTu.slides.teacherEvaluation.content',
+      titleKey: 'convinciTu.slides.teacherEvaluation.title',
+      contentKey: 'convinciTu.slides.teacherEvaluation.content',
       icon: <BookOpen className="w-8 h-8 text-education" />,
       bullets: [
-        'tutorial.convinciTu.slides.teacherEvaluation.bullet1',
-        'tutorial.convinciTu.slides.teacherEvaluation.bullet2',
-        'tutorial.convinciTu.slides.teacherEvaluation.bullet3',
-        'tutorial.convinciTu.slides.teacherEvaluation.bullet4'
+        'convinciTu.slides.teacherEvaluation.bullet1',
+        'convinciTu.slides.teacherEvaluation.bullet2',
+        'convinciTu.slides.teacherEvaluation.bullet3',
+        'convinciTu.slides.teacherEvaluation.bullet4'
       ]
     },
     {
       id: 'selfReflection',
-      titleKey: 'tutorial.convinciTu.slides.selfReflection.title',
-      contentKey: 'tutorial.convinciTu.slides.selfReflection.content',
+      titleKey: 'convinciTu.slides.selfReflection.title',
+      contentKey: 'convinciTu.slides.selfReflection.content',
       icon: <Lightbulb className="w-8 h-8 text-education" />,
       bullets: [
-        'tutorial.convinciTu.slides.selfReflection.bullet1',
-        'tutorial.convinciTu.slides.selfReflection.bullet2',
-        'tutorial.convinciTu.slides.selfReflection.bullet3',
-        'tutorial.convinciTu.slides.selfReflection.bullet4'
+        'convinciTu.slides.selfReflection.bullet1',
+        'convinciTu.slides.selfReflection.bullet2',
+        'convinciTu.slides.selfReflection.bullet3',
+        'convinciTu.slides.selfReflection.bullet4'
       ]
     },
     {
       id: 'examples',
-      titleKey: 'tutorial.convinciTu.slides.examples.title',
-      contentKey: 'tutorial.convinciTu.slides.examples.content',
+      titleKey: 'convinciTu.slides.examples.title',
+      contentKey: 'convinciTu.slides.examples.content',
       icon: <MessageSquare className="w-8 h-8 text-education" />,
       bullets: [
-        'tutorial.convinciTu.slides.examples.bullet1',
-        'tutorial.convinciTu.slides.examples.bullet2',
-        'tutorial.convinciTu.slides.examples.bullet3',
-        'tutorial.convinciTu.slides.examples.bullet4'
+        'convinciTu.slides.examples.bullet1',
+        'convinciTu.slides.examples.bullet2',
+        'convinciTu.slides.examples.bullet3',
+        'convinciTu.slides.examples.bullet4'
       ]
     }
   ];
@@ -134,10 +134,10 @@ const ConvinciTuTutorial: React.FC = () => {
       {/* Header */}
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold text-education-dark mb-2">
-          {t('tutorial.convinciTu.title')}
+          {t('convinciTu.title')}
         </h1>
         <p className="text-lg text-education-muted">
-          {t('tutorial.convinciTu.subtitle')}
+          {t('convinciTu.subtitle')}
         </p>
       </div>
 
@@ -222,7 +222,7 @@ const ConvinciTuTutorial: React.FC = () => {
             className="bg-education hover:bg-education-dark text-white px-8 py-3"
             onClick={() => window.location.href = '/apps/convinci-tu'}
           >
-            {t('tutorial.convinciTu.startApp')}
+            {t('convinciTu.startApp')}
           </Button>
         </div>
       )}

@@ -10,22 +10,19 @@ const HeroSection = () => {
   // Define available apps to randomly choose from
   const apps = useMemo(() => [{
     path: "/apps/wiki-interview",
-    name: t('apps.wikiInterview.name')
-  }, {
-    path: "/apps/wiki-chatbot",
-    name: t('apps.wikiChatbot.name')
+    name: t('features.items.wikiInterview.name')
   }, {
     path: "/apps/doppia-intervista",
-    name: t('apps.doppiaIntervista.name')
+    name: t('features.items.doppiaIntervista.name')
   }, {
     path: "/apps/convinci-tu",
-    name: t('apps.convinciTu.name')
+    name: t('features.items.convinciTu.name')
   }, {
     path: "/apps/personaggio-misterioso",
-    name: t('apps.personaggioMisterioso.name')
+    name: t('features.items.personaggioMisterioso.name')
   }, {
     path: "/apps/impersona-tu",
-    name: t('apps.impersonaTu.name')
+    name: t('features.items.impersonaTu.name')
   }], [t]);
 
   // Select a random app on component render

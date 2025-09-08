@@ -1,0 +1,217 @@
+{
+  "personaggioMisterioso": {
+    "title": "Mystery Character Tutorial",
+    "subtitle": "Learn how to use the Mystery Character guessing game",
+    "startApp": "Start Mystery Character Game",
+    "slides": {
+      "welcome": {
+        "title": "Welcome to Mystery Character!",
+        "content": "An interactive guessing game where you discover historical figures through strategic questioning."
+      },
+      "howToPlay": {
+        "title": "How to Play",
+        "content": "• Choose a historical character from Wikipedia\n• Ask yes/no questions to narrow down possibilities\n• Use strategic thinking to identify the character\n• Learn fascinating historical facts along the way"
+      },
+      "aiTechnology": {
+        "title": "AI Technology Behind the Game",
+        "content": "• Powered by advanced Large Language Models (LLMs)\n• Real-time Wikipedia integration for accurate information\n• Sophisticated prompt engineering for realistic character responses\n• Natural language processing for intelligent question interpretation"
+      },
+      "educationalBenefits": {
+        "title": "Educational Benefits",
+        "content": "• Develops critical thinking and deductive reasoning\n• Enhances strategic questioning skills\n• Promotes historical knowledge and curiosity\n• Improves logical problem-solving abilities"
+      },
+      "classroomUse": {
+        "title": "Classroom Applications",
+        "content": "Perfect for:\n• History lessons and character studies\n• Critical thinking skill development\n• Interactive learning sessions\n• Student engagement and motivation"
+      },
+      "subjectExamples": {
+        "title": "Cross-Curricular Applications",
+        "content": "• History: Famous leaders, inventors, artists\n• Science: Scientists, researchers, Nobel laureates\n• Literature: Authors, poets, literary figures\n• Social Studies: Activists, politicians, cultural icons"
+      },
+      "getStarted": {
+        "title": "Ready to Begin?",
+        "content": "Start your mystery character adventure and discover the power of strategic questioning and historical exploration!"
+      }
+    }
+  },
+  "convinciTu": {
+    "title": "Convince YOU Tutorial",
+    "subtitle": "Master the art of persuasion and debate preparation",
+    "startApp": "Start Convince YOU Game",
+    "slides": {
+      "welcome": {
+        "title": "Welcome to Convince YOU!",
+        "content": "Master the art of persuasion by engaging in debates with AI opponents on topics you care about."
+      },
+      "howItWorks": {
+        "title": "How It Works",
+        "content": "• Choose a topic you're passionate about\n• Select your position (for or against)\n• Engage in structured debate with an AI opponent\n• Develop and refine your argumentation skills"
+      },
+      "skillDevelopment": {
+        "title": "Skills You'll Develop",
+        "content": "• Logical reasoning and argument construction\n• Critical analysis of opposing viewpoints\n• Persuasive communication techniques\n• Evidence-based argumentation\n• Confidence in public speaking"
+      },
+      "debateStrategy": {
+        "title": "Effective Debate Strategies",
+        "content": "• Structure your arguments clearly\n• Use credible evidence and examples\n• Anticipate and address counterarguments\n• Maintain respectful discourse\n• Focus on logic over emotion"
+      },
+      "educationalValue": {
+        "title": "Educational Benefits",
+        "content": "• Prepares students for academic debates\n• Enhances critical thinking abilities\n• Builds confidence in expressing ideas\n• Develops research and analysis skills\n• Promotes civic engagement and discourse"
+      },
+      "realWorldApplication": {
+        "title": "Real-World Applications",
+        "content": "• Academic presentations and discussions\n• Professional negotiations and meetings\n• Civic participation and advocacy\n• Personal decision-making processes\n• Leadership and communication roles"
+      },
+      "getStarted": {
+        "title": "Ready to Convince?",
+        "content": "Begin your journey to becoming a more persuasive and confident communicator!"
+      }
+    }
+  },
+  "wikiInterview": {
+    "title": "Wiki-Interview Tutorial",
+    "subtitle": "Master collaborative debate moderation and critical thinking through AI-powered Wikipedia character debates",
+    "startApp": "Start Wiki-Interview",
+    "slides": {
+      "welcome": {
+        "title": "Welcome to Wiki-Interview!",
+        "content": "Step into the role of a collaborative debate moderator, facilitating discussions between AI-powered Wikipedia characters while developing critical thinking and moderation skills."
+      },
+      "moderatorRole": {
+        "title": "Collaborative Moderation Role",
+        "content": "Step into the role of a collaborative debate moderator, working with teachers and peers to create engaging learning experiences.",
+        "bullet1": "Work with teachers/peers to select stimulating debate topics",
+        "bullet2": "Facilitate structured discussions between contrasting AI characters",
+        "bullet3": "Guide conversations toward deeper analytical thinking",
+        "bullet4": "Practice real-time moderation and questioning techniques"
+      },
+      "peerCollaboration": {
+        "title": "Peer Learning & Teacher Guidance",
+        "content": "Collaborate with your learning community to enhance moderation skills and build confidence through shared experiences.",
+        "bullet1": "Collaborate with classmates in selecting debate scenarios",
+        "bullet2": "Receive real-time guidance from teachers during moderation",
+        "bullet3": "Learn from observing peer moderation techniques",
+        "bullet4": "Share insights and strategies with learning community"
+      },
+      "setupDebate": {
+        "title": "Strategic Debate Setup",
+        "content": "Learn to design compelling debate scenarios that promote deep thinking and meaningful dialogue between AI characters.",
+        "bullet1": "Choose contrasting Wikipedia characters with opposing viewpoints",
+        "bullet2": "Design thought-provoking questions that reveal different perspectives",
+        "bullet3": "Create scenarios that encourage deep analytical thinking",
+        "bullet4": "Balance character personalities for engaging discussions"
+      },
+      "moderationSkills": {
+        "title": "Advanced Moderation Skills",
+        "content": "Develop sophisticated facilitation techniques to guide meaningful debates and foster critical thinking.",
+        "bullet1": "Master the art of neutral facilitation",
+        "bullet2": "Learn to ask probing questions that deepen analysis",
+        "bullet3": "Practice managing different personality types and viewpoints",
+        "bullet4": "Develop timing and pacing for effective discussions"
+      },
+      "criticalThinking": {
+        "title": "Critical Thinking Through Argument Analysis",
+        "content": "Enhance your analytical skills by evaluating AI arguments and developing deeper understanding of reasoning patterns.",
+        "bullet1": "Analyze the quality and logic of AI-generated arguments",
+        "bullet2": "Identify strengths and weaknesses in reasoning patterns",
+        "bullet3": "Evaluate evidence and supporting materials",
+        "bullet4": "Recognize bias and perspective in historical accounts"
+      },
+      "reflection": {
+        "title": "Collaborative Reflection & Self-Assessment 2.0",
+        "content": "Engage in meaningful reflection to enhance your moderation skills and track your growth as a facilitator.",
+        "bullet1": "Engage in structured reflection with peers and teachers",
+        "bullet2": "Analyze moderation effectiveness and learning outcomes",
+        "bullet3": "Provide and receive constructive feedback on facilitation skills",
+        "bullet4": "Document growth in critical thinking and leadership abilities"
+      },
+      "applications": {
+        "title": "Educational Benefits Over Human Debates",
+        "content": "Discover the unique advantages of AI-powered debate moderation for learning and skill development.",
+        "bullet1": "Safe practice environment for developing confidence",
+        "bullet2": "Perfect for remote learning and hybrid classrooms",
+        "bullet3": "Consistent availability of diverse character perspectives",
+        "bullet4": "Opportunity for shy students to practice leadership skills"
+      }
+    }
+  },
+  "impersonaTu": {
+    "title": "ImpersonaTu Tutorial",
+    "subtitle": "Master peer learning through historical role-play and critical thinking",
+    "startApp": "Start ImpersonaTu Game",
+    "slides": {
+      "welcome": {
+        "title": "Welcome to ImpersonaTu!",
+        "content": "Engage in collaborative historical role-play where you embody famous figures while peers and teachers facilitate your learning journey through think-aloud protocols and critical analysis."
+      },
+      "collaborativeRolePlay": {
+        "title": "Collaborative Role-Playing with Peer/Teacher Facilitation",
+        "content": "• Work with classmates who take turns as facilitators and observers\n• Receive real-time guidance from teachers during role-play sessions\n• Experience different learning perspectives through role reversal\n• Build supportive learning community through shared experiences\n• Develop empathy and understanding through collaborative exploration"
+      },
+      "peerLearningPrinciples": {
+        "title": "Peer Learning Principles in Action",
+        "content": "• Learn from and with classmates through structured interaction\n• Share knowledge and insights in reciprocal teaching moments\n• Benefit from diverse perspectives and interpretation approaches\n• Build confidence through peer support and encouragement\n• Develop communication skills through collaborative dialogue"
+      },
+      "thinkAloudProtocols": {
+        "title": "Think-Aloud Protocols for Deeper Learning",
+        "content": "• Verbalize your thought processes as the historical character\n• Make learning visible through explicit reasoning statements\n• Example: 'As Napoleon, I believe this because...'\n• Expose reasoning patterns and potential misconceptions\n• Allow peers and teachers to provide real-time feedback and guidance"
+      },
+      "criticalThinking": {
+        "title": "Critical Thinking Skill Development",
+        "content": "• Analyze historical events from multiple character perspectives\n• Evaluate the validity of historical claims and interpretations\n• Develop skills in historical empathy and perspective-taking\n• Practice evidence-based reasoning in historical contexts\n• Build metacognitive awareness of thinking and learning processes"
+      },
+      "collaborativeReview": {
+        "title": "Collaborative Review and Feedback Processes",
+        "content": "• Engage in structured peer feedback sessions after role-play\n• Provide constructive observations about character portrayals\n• Receive insights from multiple peer perspectives\n• Participate in group reflection on historical accuracy and interpretation\n• Build skills in giving and receiving academic feedback"
+      },
+      "teacherFacilitation": {
+        "title": "Teacher Facilitation Strategies",
+        "content": "• Teachers provide scaffolding for complex historical concepts\n• Real-time guidance helps students navigate challenging perspectives\n• Structured debriefing sessions maximize learning outcomes\n• Assessment opportunities through observation of thinking processes\n• Support for students in developing historical thinking skills"
+      },
+      "reflectionGrowth": {
+        "title": "Reflection and Metacognitive Growth",
+        "content": "• Document learning journey through structured reflection activities\n• Analyze growth in historical thinking and perspective-taking abilities\n• Identify areas for continued development and learning\n• Build self-awareness of learning preferences and strategies\n• Plan future learning goals and historical exploration topics"
+      },
+      "implementationExamples": {
+        "title": "Implementation Examples Across Subjects",
+        "content": "• History: Role-play historical figures in key events and decisions\n• Literature: Embody authors or characters to understand motivations\n• Social Studies: Explore different cultural perspectives and worldviews\n• Science: Take on roles of scientists and inventors in discovery moments\n• Philosophy: Engage with great thinkers and their philosophical positions"
+      }
+    }
+  },
+  "doppiaIntervista": {
+    "title": "Double Interview Tutorial",
+    "subtitle": "Learn to compare characters and develop critical thinking",
+    "startApp": "Start Double Interview",
+    "slides": {
+      "welcome": {
+        "title": "Welcome to Double Interview!",
+        "content": "Engage two different characters in parallel conversations to explore contrasting perspectives and develop advanced comparative analysis skills."
+      },
+      "howItWorks": {
+        "title": "How It Works",
+        "content": "• Select two characters with different backgrounds or viewpoints\n• Ask the same questions to both characters simultaneously\n• Compare and contrast their responses in real-time\n• Analyze differences in perspective, reasoning, and conclusions\n• Develop nuanced understanding through comparative dialogue"
+      },
+      "comparativeAnalysis": {
+        "title": "Comparative Analysis Skills",
+        "content": "• Identify similarities and differences in character responses\n• Analyze underlying assumptions and worldviews\n• Evaluate the strength of different arguments and perspectives\n• Recognize bias and cultural influences in responses\n• Develop skills in synthesizing multiple viewpoints"
+      },
+      "criticalThinking": {
+        "title": "Critical Thinking Development",
+        "content": "• Practice evaluating multiple sources of information\n• Develop skills in perspective-taking and empathy\n• Learn to identify logical fallacies and weak arguments\n• Build ability to synthesize complex, contradictory information\n• Enhance analytical reasoning and judgment skills"
+      },
+      "educationalApplications": {
+        "title": "Educational Applications",
+        "content": "• History: Compare leaders from different eras or cultures\n• Literature: Contrast authors' styles and philosophical approaches\n• Science: Explore different scientific theories or methodologies\n• Social Studies: Examine various cultural perspectives on issues\n• Ethics: Investigate moral dilemmas from multiple viewpoints"
+      },
+      "classroomBenefits": {
+        "title": "Classroom Benefits",
+        "content": "• Promotes deeper understanding through comparison\n• Encourages critical evaluation of information sources\n• Develops tolerance for ambiguity and complexity\n• Builds skills essential for academic research and analysis\n• Prepares students for real-world decision-making scenarios"
+      },
+      "getStarted": {
+        "title": "Ready to Compare?",
+        "content": "Begin your comparative analysis journey and discover the power of multiple perspectives!"
+      }
+    }
+  }
+}

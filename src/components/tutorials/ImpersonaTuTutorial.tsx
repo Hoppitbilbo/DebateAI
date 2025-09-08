@@ -7,7 +7,7 @@ import { ChevronLeft, ChevronRight, Play, Users, Brain, MessageSquare, Eye, Book
 import { useNavigate } from 'react-router-dom';
 
 const ImpersonaTuTutorial = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('tutorials');
   const navigate = useNavigate();
   const [currentSlide, setCurrentSlide] = useState(0);
   
@@ -37,7 +37,7 @@ const ImpersonaTuTutorial = () => {
   };
 
   const renderSlideContent = () => {
-    const slideKey = `tutorials.impersonaTu.slides.${getSlideKeys()[currentSlide]}`;
+    const slideKey = `impersonaTu.slides.${getSlideKeys()[currentSlide]}`;
     
     return (
       <div className="text-center space-y-6">
@@ -87,10 +87,10 @@ const ImpersonaTuTutorial = () => {
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-education-dark mb-2">
-            {t('tutorials.impersonaTu.title')}
+            {t('impersonaTu.title')}
           </h1>
           <p className="text-xl text-gray-600">
-            {t('tutorials.impersonaTu.subtitle')}
+            {t('impersonaTu.subtitle')}
           </p>
         </div>
 
@@ -147,7 +147,7 @@ const ImpersonaTuTutorial = () => {
               className="bg-education hover:bg-education-dark text-white"
             >
               <Play className="w-4 h-4 mr-2" />
-              {t('tutorials.impersonaTu.startApp')}
+              {t('impersonaTu.startApp')}
             </Button>
           ) : (
             <Button

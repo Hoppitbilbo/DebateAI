@@ -121,6 +121,16 @@
       "bot2": "Male fin dall'inizio, mi piace, mi sembri toscano. Mio caro, purtroppo non potevo fare altrimenti. Noi artisti in quest'epoca dovevamo sottometterci ai mecenati o saremmo morti di fame. Ma non ti preoccupare, quasi nessuna delle mie armi è stata costruita. Erano solo schizzi. Un po' come quando esageri nel portfolio del curriculum"
     }
   },
+  "language": {
+    "selector": "Seleziona lingua",
+    "languages": {
+      "italian": "Italiano",
+      "english": "Inglese",
+      "spanish": "Spagnolo",
+      "french": "Francese",
+      "german": "Tedesco"
+    }
+  },
   "features": {
     "title": "Funzionalità",
     "subtitle": "Strumenti Educativi Basati sull'IA",
@@ -174,212 +184,5 @@
       "terms": "Termini di Servizio"
     },
     "copyright": "© {{year}} AI-Debate.Tech. Tutti i diritti riservati."
-  },
-  "tutorial": {
-    "convinciTu": {
-      "title": "Tutorial ConvinciTu",
-      "subtitle": "Padroneggia l'arte della persuasione e la preparazione al dibattito",
-      "startApp": "Inizia ConvinciTu",
-      "slides": {
-        "welcome": {
-          "title": "Benvenuto in ConvinciTu",
-          "content": "ConvinciTu è uno strumento collaborativo di allenamento alla persuasione dove gli studenti praticano le abilità di dibattito convincendo figure storiche IA. Perfetto per la preparazione ai dibattiti, l'analisi argomentativa e l'apprendimento collaborativo con insegnanti o compagni.",
-          "bullet1": "🎯 Pratica le abilità di persuasione e argomentazione",
-          "bullet2": "👥 Apprendimento collaborativo con guida dell'insegnante o del compagno",
-          "bullet3": "🧠 Preparazione per dibattiti e discussioni reali",
-          "bullet4": "📊 Funzioni di auto-valutazione e auto-riflessione"
-        },
-        "howItWorks": {
-          "title": "Come Funziona il Processo Collaborativo",
-          "content": "È progettato come attività di coppia dove un facilitatore (insegnante o compagno) seleziona argomenti impegnativi mentre lo studente pratica tecniche di persuasione in un ambiente sicuro.",
-          "bullet1": "👨‍🏫 Il facilitatore seleziona il personaggio e l'argomento di dibattito impegnativo",
-          "bullet2": "🎮 Lo studente tenta di convincere il personaggio IA",
-          "bullet3": "👁️ Entrambi osservano e discutono le strategie di persuasione utilizzate",
-          "bullet4": "🔄 Tentativi illimitati per affinare le abilità argomentative"
-        },
-        "debatePreparation": {
-          "title": "Perfetto per la Preparazione ai Dibattiti",
-          "content": "Usa questo strumento come pratica prima dei dibattiti reali. Gli studenti possono testare i loro argomenti, affinare le tecniche di persuasione e costruire fiducia in un ambiente a basso rischio.",
-          "bullet1": "🏋️ Pratica gli argomenti prima di dibattiti o presentazioni reali",
-          "bullet2": "💪 Costruisci fiducia nella persuasione e nell'argomentazione",
-          "bullet3": "🔍 Testa diverse strategie e approcci di persuasione",
-          "bullet4": "📈 Migliora attraverso pratica iterativa e feedback"
-        },
-        "collaborativeLearning": {
-          "title": "Benefici dell'Apprendimento Collaborativo",
-          "content": "Quando usato con un facilitatore, diventa uno strumento potente per l'apprendimento guidato, dove gli studenti possono ricevere feedback in tempo reale e guida strategica.",
-          "bullet1": "👥 L'insegnante può valutare la profondità reale della conoscenza dello studente",
-          "bullet2": "🤝 Apprendimento tra pari attraverso osservazione e discussione",
-          "bullet3": "💡 Il facilitatore può suggerire strategie argomentative alternative",
-          "bullet4": "🎯 Feedback immediato sull'efficacia della persuasione"
-        },
-        "visibleThinking": {
-          "title": "Rendere Visibile il Pensiero",
-          "content": "Incoraggia gli studenti a verbalizzare il loro processo di pensiero durante i tentativi di persuasione. Questo rende l'apprendimento visibile sia allo studente che al facilitatore, aumentando il valore educativo.",
-          "bullet1": "🗣️ Lo studente spiega il ragionamento: 'Penso che questo approccio funzionerà perché...'",
-          "bullet2": "👂 Il facilitatore osserva la costruzione dell'argomento in tempo reale",
-          "bullet3": "🔍 Identifica lacune nella conoscenza o nella logica immediatamente",
-          "bullet4": "📝 Documenta strategie di persuasione di successo per uso futuro"
-        },
-        "teacherEvaluation": {
-          "title": "Strumento di Valutazione per Insegnanti",
-          "content": "Gli insegnanti possono usarlo per valutare quanto bene gli studenti comprendono davvero gli argomenti e possono applicare la loro conoscenza in modo persuasivo in scenari impegnativi.",
-          "bullet1": "📊 Valuta la profondità della comprensione dello studente oltre la memorizzazione",
-          "bullet2": "🎭 Osserva come gli studenti applicano la conoscenza in contesti persuasivi",
-          "bullet3": "💬 Valuta le abilità argomentative e di pensiero critico",
-          "bullet4": "📈 Traccia il miglioramento nelle abilità di persuasione nel tempo"
-        },
-        "selfReflection": {
-          "title": "Auto-Valutazione e Auto-Riflessione",
-          "content": "L'attività si conclude con auto-riflessione strutturata e valutazione IA, aiutando gli studenti ad analizzare i loro tentativi di persuasione e identificare aree di miglioramento.",
-          "bullet1": "🤔 Riflessione strutturata sulle strategie di persuasione utilizzate",
-          "bullet2": "🤖 L'IA fornisce feedback oggettivo sull'efficacia degli argomenti",
-          "bullet3": "📝 Identifica tecniche di successo e aree di miglioramento",
-          "bullet4": "🎯 Stabilisci obiettivi per future attività di persuasione e dibattito"
-        },
-        "examples": {
-          "title": "Esempi di Implementazione",
-          "content": "Ecco modi efficaci per usare ConvinciTu in diversi contesti educativi, dalla pratica individuale agli scenari di apprendimento collaborativo.",
-          "bullet1": "🏛️ Storia: Convincere Marx che il capitalismo promuove il progresso",
-          "bullet2": "🔬 Scienza: Persuadere Galileo a riconsiderare le sue teorie astronomiche",
-          "bullet3": "📚 Letteratura: Convincere Shakespeare a scrivere in inglese moderno",
-          "bullet4": "🌍 Attualità: Persuadere figure storiche su questioni moderne"
-        }
-      }
-    },
-    "personaggioMisterioso": {
-      "title": "Tutorial Personaggio Misterioso",
-      "subtitle": "Impara a usare il gioco di indovinelli del Personaggio Misterioso",
-      "startApp": "Inizia Personaggio Misterioso",
-      "slides": {
-        "welcome": {
-          "title": "Benvenuto in Personaggio Misterioso",
-          "content": "Personaggio Misterioso è un gioco educativo collaborativo progettato per coppie - dove una persona (insegnante, tutor o compagno) facilita mentre l'altra gioca. Insieme, svilupperete pensiero critico e abilità di interrogazione identificando figure storiche attraverso domande strategiche.",
-          "bullet1": "👥 Esperienza di apprendimento collaborativo basata su coppie",
-          "bullet2": "🎯 Sviluppare insieme tecniche di interrogazione strategica",
-          "bullet3": "📚 Imparare figure storiche attraverso interazione guidata",
-          "bullet4": "🧠 Migliorare il pensiero critico attraverso riflessione e discussione"
-        },
-        "howItWorks": {
-          "title": "Come Funziona il Gioco Collaborativo",
-          "content": "Questa è un'attività di coppia dove i ruoli sono chiaramente definiti. Il facilitatore guida il processo di apprendimento mentre il giocatore interagisce con il personaggio IA.",
-          "bullet1": "👨‍🏫 Il facilitatore (insegnante/tutor/compagno) seleziona segretamente il personaggio",
-          "bullet2": "🎮 Il giocatore fa domande per indovinare l'identità del personaggio",
-          "bullet3": "💭 Il giocatore pensa ad alta voce mentre il facilitatore guida il processo",
-          "bullet4": "🤝 Entrambi discutono strategie e riflettono insieme"
-        },
-        "selectCharacter": {
-          "title": "Passo 1: Il Facilitatore Seleziona il Personaggio",
-          "content": "Il facilitatore (insegnante, tutor o compagno) sceglie segretamente una figura storica dal vasto database di Wikipedia. Questa persona guiderà il processo di apprendimento e può fornire suggerimenti quando necessario.",
-          "bullet1": "🤫 Il facilitatore sceglie il personaggio senza rivelare l'identità",
-          "bullet2": "📖 Seleziona tra politici, scienziati, artisti e altro",
-          "bullet3": "🌍 Scegli figure appropriate per il contesto di apprendimento",
-          "bullet4": "💡 Considera il livello di conoscenza e gli interessi del giocatore"
-        },
-        "askQuestions": {
-          "title": "Passo 2: Processo di Interrogazione Collaborativo",
-          "content": "Il giocatore fa domande pensando ad alta voce, e il facilitatore guida il processo. Questo crea un ricco dialogo di apprendimento dove entrambi i partecipanti si impegnano attivamente.",
-          "bullet1": "🗣️ Il giocatore pensa ad alta voce: 'Mi chiedo se questa persona vivesse in...'",
-          "bullet2": "👂 Il facilitatore ascolta e può suggerire strategie di domande",
-          "bullet3": "🤝 Entrambi discutono le risposte dell'IA e cosa rivelano",
-          "bullet4": "📝 Il facilitatore può aiutare a organizzare indizi e guidare il ragionamento"
-        },
-        "technology": {
-          "title": "Tecnologia IA Dietro il Gioco",
-          "content": "Il gioco usa modelli linguistici IA avanzati per creare interazioni autentiche del personaggio basate su contenuti di Wikipedia e contesto storico.",
-          "bullet1": "🤖 Modelli Linguistici di Grandi Dimensioni (LLM) per conversazione naturale",
-          "bullet2": "📚 Integrazione Wikipedia per informazioni storiche accurate",
-          "bullet3": "🎭 Incarnazione del personaggio attraverso ingegneria dei prompt",
-          "bullet4": "🔄 Risposte adattive in tempo reale basate sul contesto della conversazione"
-        },
-        "classroomUse": {
-          "title": "Benefici dell'Apprendimento Collaborativo",
-          "content": "Questo approccio basato su coppie massimizza l'apprendimento attraverso interazione sociale, riflessione guidata e strategie condivise di risoluzione dei problemi.",
-          "bullet1": "👥 Opportunità di apprendimento e mentoring tra pari",
-          "bullet2": "🗣️ Sviluppa ragionamento verbale e abilità di pensiero ad alta voce",
-          "bullet3": "🤝 Costruisce abilità collaborative di risoluzione dei problemi",
-          "bullet4": "💭 Il facilitatore può modellare strategie esperte di interrogazione"
-        },
-        "examples": {
-          "title": "Esempi di Implementazione Collaborativa",
-          "content": "Ecco modi efficaci per usare Personaggio Misterioso come strumento di apprendimento collaborativo in diversi contesti educativi.",
-          "bullet1": "👨‍🏫 Coppie insegnante-studente: L'insegnante guida le strategie di interrogazione",
-          "bullet2": "👫 Tutoraggio tra pari: Studente avanzato mentora studente in difficoltà",
-          "bullet3": "👨‍👩‍👧‍👦 Apprendimento genitore-figlio: Attività educativa di legame familiare",
-          "bullet4": "🎓 Gruppi di studio: Gli studenti si alternano come facilitatore e giocatore"
-        }
-      }
-    },
-    "doppiaIntervista": {
-      "title": "Tutorial Doppia Intervista",
-      "subtitle": "Impara a confrontare personaggi e sviluppare il pensiero critico",
-      "startApp": "Inizia Doppia Intervista",
-      "slides": {
-        "welcome": {
-          "title": "Benvenuto nella Doppia Intervista",
-          "content": "La Doppia Intervista ti permette di confrontare due personaggi storici diversi attraverso domande strategiche. Questo strumento è perfetto per vedere le differenze di prospettiva e sviluppare capacità di analisi critica.",
-          "bullet1": "💬 Intervista simultaneamente due personaggi storici",
-          "bullet2": "🔍 Confronta le loro risposte e prospettive diverse",
-          "bullet3": "🤝 Collabora con un compagno per l'analisi critica",
-          "bullet4": "🧠 Sviluppa pensiero critico attraverso il confronto"
-        },
-        "characterComparison": {
-          "title": "Confronto tra Personaggi",
-          "content": "Il vero valore della Doppia Intervista sta nel confrontare le risposte di due personaggi diversi alla stessa domanda. Questo ti permette di vedere come prospettive, epoche e contesti diversi influenzano le opinioni e le decisioni.",
-          "bullet1": "⚖️ Confronta risposte alla stessa domanda da prospettive diverse",
-          "bullet2": "🕰️ Osserva come epoche diverse influenzano le opinioni",
-          "bullet3": "🌍 Analizza l'impatto del contesto culturale e sociale",
-          "bullet4": "💡 Identifica somiglianze e differenze inaspettate"
-        },
-        "strategicQuestioning": {
-          "title": "Domande Strategiche",
-          "content": "Per ottenere il massimo dal confronto, è importante formulare domande strategiche che rivelino le differenze fondamentali tra i personaggi. Scegli personaggi con prospettive contrastanti per massimizzare l'apprendimento.",
-          "bullet1": "🎯 Scegli personaggi con prospettive contrastanti",
-          "bullet2": "❓ Formula domande che rivelino differenze fondamentali",
-          "bullet3": "🔄 Poni la stessa domanda a entrambi i personaggi",
-          "bullet4": "📊 Confronta sistematicamente le loro risposte"
-        },
-        "collaborativeAnalysis": {
-          "title": "Analisi Collaborativa",
-          "content": "Dopo aver raccolto le risposte, lavora con un compagno per analizzare criticamente le risposte dell'IA. Insieme potete identificare quali risposte sembrano più verosimili e quali potrebbero essere problematiche o imprecise.",
-          "bullet1": "👥 Collabora con un compagno nell'analisi delle risposte",
-          "bullet2": "🔍 Esaminate insieme la verosimiglianza delle risposte",
-          "bullet3": "⚠️ Identificate possibili imprecisioni o problemi",
-          "bullet4": "💬 Discutete le vostre osservazioni e conclusioni"
-        },
-        "criticalThinking": {
-          "title": "Sviluppo del Pensiero Critico",
-          "content": "L'analisi collaborativa delle risposte dell'IA sviluppa importanti competenze di pensiero critico. Imparerai a valutare la credibilità delle informazioni, identificare bias e distinguere tra fatti e interpretazioni.",
-          "bullet1": "🧐 Valuta la credibilità e accuratezza delle informazioni",
-          "bullet2": "🎭 Identifica possibili bias nei personaggi storici",
-          "bullet3": "📚 Distingui tra fatti storici e interpretazioni",
-          "bullet4": "🤔 Sviluppa scetticismo costruttivo verso le fonti"
-        },
-        "selfEvaluation": {
-          "title": "Autovalutazione Migliorata",
-          "content": "Il confronto tra personaggi diversi rende l'autovalutazione più ricca e significativa. Puoi riflettere non solo su cosa hai imparato, ma anche su come prospettive diverse hanno arricchito la tua comprensione del tema.",
-          "bullet1": "🪞 Rifletti su come il confronto ha arricchito la tua comprensione",
-          "bullet2": "📈 Valuta il tuo progresso nell'analisi critica",
-          "bullet3": "🎯 Identifica aree per migliorare le tue domande",
-          "bullet4": "💭 Considera come applicare queste competenze in altri contesti"
-        },
-        "reflection": {
-          "title": "Riflessione e Autoriflessione",
-          "content": "Il confronto e l'autoriflessione sono elementi fondamentali dell'apprendimento profondo. Attraverso la Doppia Intervista, sviluppi la capacità di vedere i problemi da multiple prospettive e di riflettere criticamente sul processo di apprendimento stesso.",
-          "bullet1": "🔄 Il confronto sviluppa la capacità di vedere multiple prospettive",
-          "bullet2": "🧠 L'autoriflessione approfondisce la comprensione personale",
-          "bullet3": "⚡ La combinazione accelera l'apprendimento significativo",
-          "bullet4": "🌟 Sviluppa metacognizione e consapevolezza del proprio apprendimento"
-        },
-        "examples": {
-          "title": "Esempi di Applicazione",
-          "content": "La Doppia Intervista può essere utilizzata in diverse materie per esplorare prospettive contrastanti e sviluppare comprensione critica di eventi, teorie e fenomeni complessi.",
-          "bullet1": "📜 Storia: Confronta leader di epoche o ideologie diverse",
-          "bullet2": "🔬 Scienze: Intervista scienziati con teorie contrastanti",
-          "bullet3": "📖 Letteratura: Esplora personaggi con visioni del mondo opposte",
-          "bullet4": "🏛️ Filosofia: Confronta filosofi con approcci diversi allo stesso problema"
-        }
-      }
-    }
   }
 }

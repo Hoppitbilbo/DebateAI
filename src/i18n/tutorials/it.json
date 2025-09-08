@@ -1,0 +1,217 @@
+{
+  "personaggioMisterioso": {
+    "title": "Tutorial Personaggio Misterioso",
+    "subtitle": "Impara a usare il gioco di indovinelli sui personaggi storici",
+    "startApp": "Inizia Personaggio Misterioso",
+    "slides": {
+      "welcome": {
+        "title": "Benvenuto in Personaggio Misterioso!",
+        "content": "Un gioco interattivo di indovinelli dove scopri figure storiche attraverso domande strategiche."
+      },
+      "howToPlay": {
+        "title": "Come Giocare",
+        "content": "• Scegli un personaggio storico da Wikipedia\n• Fai domande sì/no per restringere le possibilità\n• Usa il pensiero strategico per identificare il personaggio\n• Impara fatti storici affascinanti lungo il percorso"
+      },
+      "aiTechnology": {
+        "title": "Tecnologia AI Dietro il Gioco",
+        "content": "• Alimentato da modelli linguistici avanzati (LLM)\n• Integrazione Wikipedia in tempo reale per informazioni accurate\n• Ingegneria sofisticata dei prompt per risposte realistiche dei personaggi\n• Elaborazione del linguaggio naturale per interpretazione intelligente delle domande"
+      },
+      "educationalBenefits": {
+        "title": "Benefici Educativi",
+        "content": "• Sviluppa il pensiero critico e il ragionamento deduttivo\n• Migliora le capacità di fare domande strategiche\n• Promuove la conoscenza storica e la curiosità\n• Migliora le capacità di risoluzione logica dei problemi"
+      },
+      "classroomUse": {
+        "title": "Applicazioni in Classe",
+        "content": "Perfetto per:\n• Lezioni di storia e studi sui personaggi\n• Sviluppo delle capacità di pensiero critico\n• Sessioni di apprendimento interattivo\n• Coinvolgimento e motivazione degli studenti"
+      },
+      "subjectExamples": {
+        "title": "Applicazioni Interdisciplinari",
+        "content": "• Storia: Leader famosi, inventori, artisti\n• Scienza: Scienziati, ricercatori, premi Nobel\n• Letteratura: Autori, poeti, figure letterarie\n• Studi Sociali: Attivisti, politici, icone culturali"
+      },
+      "getStarted": {
+        "title": "Pronto a Iniziare?",
+        "content": "Inizia la tua avventura del personaggio misterioso e scopri il potere delle domande strategiche e dell'esplorazione storica!"
+      }
+    }
+  },
+  "convinciTu": {
+    "title": "Tutorial ConvinciTu",
+    "subtitle": "Padroneggia l'arte della persuasione e la preparazione al dibattito",
+    "startApp": "Inizia ConvinciTu",
+    "slides": {
+      "welcome": {
+        "title": "Benvenuto in ConvinciTu!",
+        "content": "Padroneggia l'arte della persuasione impegnandoti in dibattiti con avversari AI su argomenti che ti stanno a cuore."
+      },
+      "howItWorks": {
+        "title": "Come Funziona",
+        "content": "• Scegli un argomento che ti appassiona\n• Seleziona la tua posizione (a favore o contro)\n• Impegnati in un dibattito strutturato con un avversario AI\n• Sviluppa e affina le tue capacità di argomentazione"
+      },
+      "skillDevelopment": {
+        "title": "Competenze che Svilupperai",
+        "content": "• Ragionamento logico e costruzione di argomenti\n• Analisi critica di punti di vista opposti\n• Tecniche di comunicazione persuasiva\n• Argomentazione basata su prove\n• Fiducia nel parlare in pubblico"
+      },
+      "debateStrategy": {
+        "title": "Strategie di Dibattito Efficaci",
+        "content": "• Struttura chiaramente i tuoi argomenti\n• Usa prove ed esempi credibili\n• Anticipa e affronta i controargomenti\n• Mantieni un discorso rispettoso\n• Concentrati sulla logica piuttosto che sull'emozione"
+      },
+      "educationalValue": {
+        "title": "Benefici Educativi",
+        "content": "• Prepara gli studenti ai dibattiti accademici\n• Migliora le capacità di pensiero critico\n• Costruisce fiducia nell'esprimere idee\n• Sviluppa capacità di ricerca e analisi\n• Promuove l'impegno civico e il discorso"
+      },
+      "realWorldApplication": {
+        "title": "Applicazioni nel Mondo Reale",
+        "content": "• Presentazioni e discussioni accademiche\n• Negoziazioni e riunioni professionali\n• Partecipazione civica e advocacy\n• Processi decisionali personali\n• Ruoli di leadership e comunicazione"
+      },
+      "getStarted": {
+        "title": "Pronto a Convincere?",
+        "content": "Inizia il tuo viaggio per diventare un comunicatore più persuasivo e sicuro!"
+      }
+    }
+  },
+  "wikiInterview": {
+    "title": "Tutorial Wiki-Interview",
+    "subtitle": "Padroneggia la moderazione collaborativa dei dibattiti e il pensiero critico attraverso dibattiti tra personaggi Wikipedia alimentati dall'AI",
+    "startApp": "Inizia Wiki-Interview",
+    "slides": {
+      "welcome": {
+        "title": "Benvenuto in Wiki-Interview!",
+        "content": "Entra nel ruolo di moderatore collaborativo di dibattiti, facilitando discussioni tra personaggi Wikipedia alimentati dall'AI mentre sviluppi pensiero critico e capacità di moderazione."
+      },
+      "moderatorRole": {
+        "title": "Ruolo di Moderazione Collaborativa",
+        "content": "Entra nel ruolo di moderatore collaborativo di dibattiti, lavorando con insegnanti e pari per creare esperienze di apprendimento coinvolgenti.",
+        "bullet1": "Lavora con insegnanti/pari per selezionare argomenti di dibattito stimolanti",
+        "bullet2": "Facilita discussioni strutturate tra personaggi AI contrastanti",
+        "bullet3": "Guida le conversazioni verso un pensiero analitico più profondo",
+        "bullet4": "Pratica tecniche di moderazione e interrogazione in tempo reale"
+      },
+      "peerCollaboration": {
+        "title": "Apprendimento tra Pari e Guida dell'Insegnante",
+        "content": "Collabora con la tua comunità di apprendimento per migliorare le capacità di moderazione e costruire fiducia attraverso esperienze condivise.",
+        "bullet1": "Collabora con i compagni di classe nella selezione di scenari di dibattito",
+        "bullet2": "Ricevi guida in tempo reale dagli insegnanti durante la moderazione",
+        "bullet3": "Impara osservando le tecniche di moderazione dei pari",
+        "bullet4": "Condividi intuizioni e strategie con la comunità di apprendimento"
+      },
+      "setupDebate": {
+        "title": "Configurazione Strategica del Dibattito",
+        "content": "Impara a progettare scenari di dibattito avvincenti che promuovono il pensiero profondo e il dialogo significativo tra personaggi AI.",
+        "bullet1": "Scegli personaggi Wikipedia contrastanti con punti di vista opposti",
+        "bullet2": "Progetta domande stimolanti che rivelano diverse prospettive",
+        "bullet3": "Crea scenari che incoraggiano il pensiero analitico profondo",
+        "bullet4": "Bilancia le personalità dei personaggi per discussioni coinvolgenti"
+      },
+      "moderationSkills": {
+        "title": "Capacità di Moderazione Avanzate",
+        "content": "Sviluppa tecniche di facilitazione sofisticate per guidare dibattiti significativi e favorire il pensiero critico.",
+        "bullet1": "Padroneggia l'arte della facilitazione neutrale",
+        "bullet2": "Impara a fare domande penetranti che approfondiscono l'analisi",
+        "bullet3": "Pratica la gestione di diversi tipi di personalità e punti di vista",
+        "bullet4": "Sviluppa tempismo e ritmo per discussioni efficaci"
+      },
+      "criticalThinking": {
+        "title": "Pensiero Critico Attraverso l'Analisi degli Argomenti",
+        "content": "Migliora le tue capacità analitiche valutando gli argomenti AI e sviluppando una comprensione più profonda dei modelli di ragionamento.",
+        "bullet1": "Analizza la qualità e la logica degli argomenti generati dall'AI",
+        "bullet2": "Identifica punti di forza e debolezze nei modelli di ragionamento",
+        "bullet3": "Valuta prove e materiali di supporto",
+        "bullet4": "Riconosci bias e prospettiva nei resoconti storici"
+      },
+      "reflection": {
+        "title": "Riflessione Collaborativa e Auto-valutazione 2.0",
+        "content": "Impegnati in una riflessione significativa per migliorare le tue capacità di moderazione e tracciare la tua crescita come facilitatore.",
+        "bullet1": "Impegnati in riflessione strutturata con pari e insegnanti",
+        "bullet2": "Analizza l'efficacia della moderazione e i risultati dell'apprendimento",
+        "bullet3": "Fornisci e ricevi feedback costruttivo sulle capacità di facilitazione",
+        "bullet4": "Documenta la crescita nel pensiero critico e nelle capacità di leadership"
+      },
+      "applications": {
+        "title": "Vantaggi Educativi Rispetto ai Dibattiti Umani",
+        "content": "Scopri i vantaggi unici della moderazione di dibattiti alimentata dall'AI per l'apprendimento e lo sviluppo delle competenze.",
+        "bullet1": "Ambiente di pratica sicuro per sviluppare fiducia",
+        "bullet2": "Perfetto per l'apprendimento a distanza e le aule ibride",
+        "bullet3": "Disponibilità costante di diverse prospettive dei personaggi",
+        "bullet4": "Opportunità per studenti timidi di praticare capacità di leadership"
+      }
+    }
+  },
+  "impersonaTu": {
+    "title": "Tutorial ImpersonaTu",
+    "subtitle": "Padroneggia l'apprendimento tra pari attraverso il gioco di ruolo storico e il pensiero critico",
+    "startApp": "Inizia ImpersonaTu",
+    "slides": {
+      "welcome": {
+        "title": "Benvenuto in ImpersonaTu!",
+        "content": "Impegnati nel gioco di ruolo storico collaborativo dove incarni figure famose mentre pari e insegnanti facilitano il tuo percorso di apprendimento attraverso protocolli think-aloud e analisi critica."
+      },
+      "collaborativeRolePlay": {
+        "title": "Gioco di Ruolo Collaborativo con Facilitazione di Pari/Insegnante",
+        "content": "• Lavora con compagni di classe che si alternano come facilitatori e osservatori\n• Ricevi guida in tempo reale dagli insegnanti durante le sessioni di gioco di ruolo\n• Sperimenta diverse prospettive di apprendimento attraverso l'inversione di ruolo\n• Costruisci una comunità di apprendimento solidale attraverso esperienze condivise\n• Sviluppa empatia e comprensione attraverso l'esplorazione collaborativa"
+      },
+      "peerLearningPrinciples": {
+        "title": "Principi di Apprendimento tra Pari in Azione",
+        "content": "• Impara da e con i compagni di classe attraverso l'interazione strutturata\n• Condividi conoscenze e intuizioni in momenti di insegnamento reciproco\n• Beneficia di diverse prospettive e approcci interpretativi\n• Costruisci fiducia attraverso il supporto e l'incoraggiamento dei pari\n• Sviluppa capacità comunicative attraverso il dialogo collaborativo"
+      },
+      "thinkAloudProtocols": {
+        "title": "Protocolli Think-Aloud per un Apprendimento Più Profondo",
+        "content": "• Verbalizza i tuoi processi di pensiero come personaggio storico\n• Rendi visibile l'apprendimento attraverso dichiarazioni di ragionamento esplicite\n• Esempio: 'Come Napoleone, credo questo perché...'\n• Esponi modelli di ragionamento e potenziali misconcezioni\n• Permetti a pari e insegnanti di fornire feedback e guida in tempo reale"
+      },
+      "criticalThinking": {
+        "title": "Sviluppo delle Capacità di Pensiero Critico",
+        "content": "• Analizza eventi storici da multiple prospettive dei personaggi\n• Valuta la validità di affermazioni e interpretazioni storiche\n• Sviluppa capacità nell'empatia storica e nella presa di prospettiva\n• Pratica il ragionamento basato su prove in contesti storici\n• Costruisci consapevolezza metacognitiva dei processi di pensiero e apprendimento"
+      },
+      "collaborativeReview": {
+        "title": "Processi di Revisione e Feedback Collaborativi",
+        "content": "• Impegnati in sessioni di feedback strutturato tra pari dopo il gioco di ruolo\n• Fornisci osservazioni costruttive sui ritratti dei personaggi\n• Ricevi intuizioni da multiple prospettive dei pari\n• Partecipa alla riflessione di gruppo sull'accuratezza storica e l'interpretazione\n• Costruisci capacità nel dare e ricevere feedback accademico"
+      },
+      "teacherFacilitation": {
+        "title": "Strategie di Facilitazione dell'Insegnante",
+        "content": "• Gli insegnanti forniscono scaffolding per concetti storici complessi\n• La guida in tempo reale aiuta gli studenti a navigare prospettive difficili\n• Sessioni di debriefing strutturate massimizzano i risultati dell'apprendimento\n• Opportunità di valutazione attraverso l'osservazione dei processi di pensiero\n• Supporto per gli studenti nello sviluppo di capacità di pensiero storico"
+      },
+      "reflectionGrowth": {
+        "title": "Riflessione e Crescita Metacognitiva",
+        "content": "• Documenta il percorso di apprendimento attraverso attività di riflessione strutturate\n• Analizza la crescita nel pensiero storico e nelle capacità di presa di prospettiva\n• Identifica aree per lo sviluppo continuo e l'apprendimento\n• Costruisci auto-consapevolezza delle preferenze e strategie di apprendimento\n• Pianifica futuri obiettivi di apprendimento e argomenti di esplorazione storica"
+      },
+      "implementationExamples": {
+        "title": "Esempi di Implementazione Attraverso le Materie",
+        "content": "• Storia: Gioca il ruolo di figure storiche in eventi e decisioni chiave\n• Letteratura: Incarna autori o personaggi per comprendere le motivazioni\n• Studi Sociali: Esplora diverse prospettive culturali e visioni del mondo\n• Scienza: Assumi i ruoli di scienziati e inventori nei momenti di scoperta\n• Filosofia: Impegnati con grandi pensatori e le loro posizioni filosofiche"
+      }
+    }
+  },
+  "doppiaIntervista": {
+    "title": "Tutorial Doppia Intervista",
+    "subtitle": "Impara a confrontare personaggi e sviluppare il pensiero critico",
+    "startApp": "Inizia Doppia Intervista",
+    "slides": {
+      "welcome": {
+        "title": "Benvenuto in Doppia Intervista!",
+        "content": "Coinvolgi due personaggi diversi in conversazioni parallele per esplorare prospettive contrastanti e sviluppare capacità avanzate di analisi comparativa."
+      },
+      "howItWorks": {
+        "title": "Come Funziona",
+        "content": "• Seleziona due personaggi con background o punti di vista diversi\n• Fai le stesse domande a entrambi i personaggi simultaneamente\n• Confronta e contrasta le loro risposte in tempo reale\n• Analizza le differenze in prospettiva, ragionamento e conclusioni\n• Sviluppa comprensione sfumata attraverso il dialogo comparativo"
+      },
+      "comparativeAnalysis": {
+        "title": "Capacità di Analisi Comparativa",
+        "content": "• Identifica somiglianze e differenze nelle risposte dei personaggi\n• Analizza assunzioni sottostanti e visioni del mondo\n• Valuta la forza di diversi argomenti e prospettive\n• Riconosci bias e influenze culturali nelle risposte\n• Sviluppa capacità nel sintetizzare punti di vista multipli"
+      },
+      "criticalThinking": {
+        "title": "Sviluppo del Pensiero Critico",
+        "content": "• Pratica la valutazione di fonti multiple di informazione\n• Sviluppa capacità nella presa di prospettiva e nell'empatia\n• Impara a identificare fallacie logiche e argomenti deboli\n• Costruisci capacità di sintetizzare informazioni complesse e contraddittorie\n• Migliora il ragionamento analitico e le capacità di giudizio"
+      },
+      "educationalApplications": {
+        "title": "Applicazioni Educative",
+        "content": "• Storia: Confronta leader di diverse ere o culture\n• Letteratura: Contrasta stili e approcci filosofici degli autori\n• Scienza: Esplora diverse teorie scientifiche o metodologie\n• Studi Sociali: Esamina varie prospettive culturali sui problemi\n• Etica: Investiga dilemmi morali da punti di vista multipli"
+      },
+      "classroomBenefits": {
+        "title": "Benefici in Classe",
+        "content": "• Promuove comprensione più profonda attraverso il confronto\n• Incoraggia la valutazione critica delle fonti di informazione\n• Sviluppa tolleranza per l'ambiguità e la complessità\n• Costruisce capacità essenziali per la ricerca e l'analisi accademica\n• Prepara gli studenti per scenari decisionali del mondo reale"
+      },
+      "getStarted": {
+        "title": "Pronto a Confrontare?",
+        "content": "Inizia il tuo viaggio di analisi comparativa e scopri il potere delle prospettive multiple!"
+      }
+    }
+  }
+}

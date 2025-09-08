@@ -1,0 +1,217 @@
+{
+  "personaggioMisterioso": {
+    "title": "Geheimnisvolle Persönlichkeit Tutorial",
+    "subtitle": "Lernen Sie das Ratespiel für historische Persönlichkeiten zu verwenden",
+    "startApp": "Geheimnisvolle Persönlichkeit starten",
+    "slides": {
+      "welcome": {
+        "title": "Willkommen bei Geheimnisvolle Persönlichkeit!",
+        "content": "Ein interaktives Ratespiel, bei dem Sie historische Figuren durch strategische Fragen entdecken."
+      },
+      "howToPlay": {
+        "title": "Wie man spielt",
+        "content": "• Wählen Sie eine historische Persönlichkeit aus Wikipedia\n• Stellen Sie Ja/Nein-Fragen, um die Möglichkeiten einzugrenzen\n• Nutzen Sie strategisches Denken, um die Persönlichkeit zu identifizieren\n• Lernen Sie faszinierende historische Fakten unterwegs"
+      },
+      "aiTechnology": {
+        "title": "KI-Technologie hinter dem Spiel",
+        "content": "• Angetrieben von fortgeschrittenen Sprachmodellen (LLMs)\n• Echtzeit-Wikipedia-Integration für genaue Informationen\n• Ausgeklügelte Prompt-Entwicklung für realistische Charakterantworten\n• Natürliche Sprachverarbeitung für intelligente Frageninterpretation"
+      },
+      "educationalBenefits": {
+        "title": "Bildungsvorteile",
+        "content": "• Entwickelt kritisches Denken und deduktives Schlussfolgern\n• Verbessert strategische Fragetechniken\n• Fördert historisches Wissen und Neugier\n• Verbessert logische Problemlösungsfähigkeiten"
+      },
+      "classroomUse": {
+        "title": "Klassenzimmer-Anwendungen",
+        "content": "Perfekt für:\n• Geschichtsstunden und Charakterstudien\n• Entwicklung kritischer Denkfähigkeiten\n• Interaktive Lernsitzungen\n• Schülerengagement und Motivation"
+      },
+      "subjectExamples": {
+        "title": "Fächerübergreifende Anwendungen",
+        "content": "• Geschichte: Berühmte Führer, Erfinder, Künstler\n• Wissenschaft: Wissenschaftler, Forscher, Nobelpreisträger\n• Literatur: Autoren, Dichter, literarische Figuren\n• Sozialwissenschaften: Aktivisten, Politiker, kulturelle Ikonen"
+      },
+      "getStarted": {
+        "title": "Bereit anzufangen?",
+        "content": "Beginnen Sie Ihr geheimnisvolles Persönlichkeitsabenteuer und entdecken Sie die Macht strategischer Fragen und historischer Erkundung!"
+      }
+    }
+  },
+  "convinciTu": {
+    "title": "ÜberzeugeDich Tutorial",
+    "subtitle": "Meistern Sie die Kunst der Überzeugung und Debattenvorbereitung",
+    "startApp": "ÜberzeugeDich starten",
+    "slides": {
+      "welcome": {
+        "title": "Willkommen bei ÜberzeugeDich!",
+        "content": "Meistern Sie die Kunst der Überzeugung, indem Sie sich in Debatten mit KI-Gegnern zu Themen engagieren, die Ihnen wichtig sind."
+      },
+      "howItWorks": {
+        "title": "Wie es funktioniert",
+        "content": "• Wählen Sie ein Thema, das Sie leidenschaftlich interessiert\n• Wählen Sie Ihre Position (dafür oder dagegen)\n• Führen Sie eine strukturierte Debatte mit einem KI-Gegner\n• Entwickeln und verfeinern Sie Ihre Argumentationsfähigkeiten"
+      },
+      "skillDevelopment": {
+        "title": "Fähigkeiten, die Sie entwickeln werden",
+        "content": "• Logisches Denken und Argumentaufbau\n• Kritische Analyse gegensätzlicher Standpunkte\n• Überzeugende Kommunikationstechniken\n• Evidenzbasierte Argumentation\n• Selbstvertrauen beim öffentlichen Sprechen"
+      },
+      "debateStrategy": {
+        "title": "Effektive Debattenstrategien",
+        "content": "• Strukturieren Sie Ihre Argumente klar\n• Verwenden Sie glaubwürdige Beweise und Beispiele\n• Antizipieren und adressieren Sie Gegenargumente\n• Führen Sie respektvolle Diskurse\n• Konzentrieren Sie sich auf Logik statt Emotion"
+      },
+      "educationalValue": {
+        "title": "Bildungsvorteile",
+        "content": "• Bereitet Schüler auf akademische Debatten vor\n• Verbessert kritische Denkfähigkeiten\n• Baut Selbstvertrauen beim Ausdrücken von Ideen auf\n• Entwickelt Forschungs- und Analysefähigkeiten\n• Fördert bürgerliches Engagement und Diskurs"
+      },
+      "realWorldApplication": {
+        "title": "Anwendungen in der realen Welt",
+        "content": "• Akademische Präsentationen und Diskussionen\n• Berufliche Verhandlungen und Meetings\n• Bürgerliche Teilnahme und Interessenvertretung\n• Persönliche Entscheidungsprozesse\n• Führungs- und Kommunikationsrollen"
+      },
+      "getStarted": {
+        "title": "Bereit zu überzeugen?",
+        "content": "Beginnen Sie Ihre Reise, um ein überzeugenderer und selbstbewussterer Kommunikator zu werden!"
+      }
+    }
+  },
+  "wikiInterview": {
+    "title": "Wiki-Interview Tutorial",
+    "subtitle": "Meistern Sie kollaborative Debattenmoderation und kritisches Denken durch KI-gestützte Wikipedia-Charakterdebatten",
+    "startApp": "Wiki-Interview starten",
+    "slides": {
+      "welcome": {
+        "title": "Willkommen bei Wiki-Interview!",
+        "content": "Übernehmen Sie die Rolle eines kollaborativen Debattenmoderators und erleichtern Sie Diskussionen zwischen KI-gestützten Wikipedia-Charakteren, während Sie kritisches Denken und Moderationsfähigkeiten entwickeln."
+      },
+      "moderatorRole": {
+        "title": "Kollaborative Moderationsrolle",
+        "content": "Übernehmen Sie die Rolle eines kollaborativen Debattenmoderators und arbeiten Sie mit Lehrern und Gleichaltrigen zusammen, um ansprechende Lernerfahrungen zu schaffen.",
+        "bullet1": "Arbeiten Sie mit Lehrern/Gleichaltrigen zusammen, um anregende Debattenthemen auszuwählen",
+        "bullet2": "Erleichtern Sie strukturierte Diskussionen zwischen kontrastierenden KI-Charakteren",
+        "bullet3": "Führen Sie Gespräche zu tieferem analytischem Denken",
+        "bullet4": "Üben Sie Echtzeit-Moderations- und Fragetechniken"
+      },
+      "peerCollaboration": {
+        "title": "Peer-Learning und Lehrerführung",
+        "content": "Arbeiten Sie mit Ihrer Lerngemeinschaft zusammen, um Moderationsfähigkeiten zu verbessern und Vertrauen durch gemeinsame Erfahrungen aufzubauen.",
+        "bullet1": "Kollaborieren Sie mit Klassenkameraden bei der Auswahl von Debattenszenarien",
+        "bullet2": "Erhalten Sie Echtzeit-Führung von Lehrern während der Moderation",
+        "bullet3": "Lernen Sie durch Beobachtung von Peer-Moderationstechniken",
+        "bullet4": "Teilen Sie Einsichten und Strategien mit der Lerngemeinschaft"
+      },
+      "setupDebate": {
+        "title": "Strategische Debatteneinrichtung",
+        "content": "Lernen Sie, fesselnde Debattenszenarien zu entwerfen, die tiefes Denken und bedeutungsvolle Dialoge zwischen KI-Charakteren fördern.",
+        "bullet1": "Wählen Sie kontrastierende Wikipedia-Charaktere mit gegensätzlichen Standpunkten",
+        "bullet2": "Entwerfen Sie zum Nachdenken anregende Fragen, die verschiedene Perspektiven aufzeigen",
+        "bullet3": "Erstellen Sie Szenarien, die tiefes analytisches Denken fördern",
+        "bullet4": "Balancieren Sie Charakterpersönlichkeiten für ansprechende Diskussionen"
+      },
+      "moderationSkills": {
+        "title": "Fortgeschrittene Moderationsfähigkeiten",
+        "content": "Entwickeln Sie ausgeklügelte Erleichterungstechniken, um bedeutungsvolle Debatten zu führen und kritisches Denken zu fördern.",
+        "bullet1": "Meistern Sie die Kunst der neutralen Erleichterung",
+        "bullet2": "Lernen Sie, durchdringende Fragen zu stellen, die die Analyse vertiefen",
+        "bullet3": "Üben Sie das Management verschiedener Persönlichkeitstypen und Standpunkte",
+        "bullet4": "Entwickeln Sie Timing und Tempo für effektive Diskussionen"
+      },
+      "criticalThinking": {
+        "title": "Kritisches Denken durch Argumentanalyse",
+        "content": "Verbessern Sie Ihre analytischen Fähigkeiten, indem Sie KI-Argumente bewerten und ein tieferes Verständnis für Denkmuster entwickeln.",
+        "bullet1": "Analysieren Sie die Qualität und Logik KI-generierter Argumente",
+        "bullet2": "Identifizieren Sie Stärken und Schwächen in Denkmustern",
+        "bullet3": "Bewerten Sie Beweise und unterstützende Materialien",
+        "bullet4": "Erkennen Sie Voreingenommenheit und Perspektive in historischen Berichten"
+      },
+      "reflection": {
+        "title": "Kollaborative Reflexion und Selbstbewertung 2.0",
+        "content": "Engagieren Sie sich in bedeutungsvoller Reflexion, um Ihre Moderationsfähigkeiten zu verbessern und Ihr Wachstum als Erleichterer zu verfolgen.",
+        "bullet1": "Engagieren Sie sich in strukturierter Reflexion mit Gleichaltrigen und Lehrern",
+        "bullet2": "Analysieren Sie Moderationseffektivität und Lernergebnisse",
+        "bullet3": "Geben und erhalten Sie konstruktives Feedback zu Erleichterungsfähigkeiten",
+        "bullet4": "Dokumentieren Sie Wachstum in kritischem Denken und Führungsfähigkeiten"
+      },
+      "applications": {
+        "title": "Bildungsvorteile gegenüber menschlichen Debatten",
+        "content": "Entdecken Sie die einzigartigen Vorteile KI-gestützter Debattenmoderation für Lernen und Kompetenzentwicklung.",
+        "bullet1": "Sichere Übungsumgebung zur Vertrauensbildung",
+        "bullet2": "Perfekt für Fernlernen und hybride Klassenzimmer",
+        "bullet3": "Konstante Verfügbarkeit verschiedener Charakterperspektiven",
+        "bullet4": "Gelegenheit für schüchterne Schüler, Führungskompetenzen zu üben"
+      }
+    }
+  },
+  "impersonaTu": {
+    "title": "VerkörpereDich Tutorial",
+    "subtitle": "Meistern Sie Peer-Learning durch historisches Rollenspiel und kritisches Denken",
+    "startApp": "VerkörpereDich starten",
+    "slides": {
+      "welcome": {
+        "title": "Willkommen bei VerkörpereDich!",
+        "content": "Engagieren Sie sich in kollaborativem historischem Rollenspiel, wo Sie berühmte Figuren verkörpern, während Gleichaltrige und Lehrer Ihre Lernreise durch Think-Aloud-Protokolle und kritische Analyse erleichtern."
+      },
+      "collaborativeRolePlay": {
+        "title": "Kollaboratives Rollenspiel mit Peer-/Lehrererleichterung",
+        "content": "• Arbeiten Sie mit Klassenkameraden, die sich als Erleichterer und Beobachter abwechseln\n• Erhalten Sie Echtzeit-Führung von Lehrern während Rollenspiel-Sitzungen\n• Erleben Sie verschiedene Lernperspektiven durch Rollentausch\n• Bauen Sie unterstützende Lerngemeinschaft durch geteilte Erfahrungen auf\n• Entwickeln Sie Empathie und Verständnis durch kollaborative Erkundung"
+      },
+      "peerLearningPrinciples": {
+        "title": "Peer-Learning-Prinzipien in Aktion",
+        "content": "• Lernen Sie von und mit Klassenkameraden durch strukturierte Interaktion\n• Teilen Sie Wissen und Einsichten in reziproken Lehrmomenten\n• Profitieren Sie von verschiedenen Perspektiven und Interpretationsansätzen\n• Bauen Sie Vertrauen durch Peer-Unterstützung und Ermutigung auf\n• Entwickeln Sie Kommunikationsfähigkeiten durch kollaborativen Dialog"
+      },
+      "thinkAloudProtocols": {
+        "title": "Think-Aloud-Protokolle für tieferes Lernen",
+        "content": "• Verbalisieren Sie Ihre Denkprozesse als historischer Charakter\n• Machen Sie Lernen durch explizite Begründungsaussagen sichtbar\n• Beispiel: 'Als Napoleon glaube ich das, weil...'\n• Legen Sie Denkmuster und potenzielle Missverständnisse offen\n• Ermöglichen Sie Gleichaltrigen und Lehrern, Echtzeit-Feedback und Führung zu geben"
+      },
+      "criticalThinking": {
+        "title": "Entwicklung kritischer Denkfähigkeiten",
+        "content": "• Analysieren Sie historische Ereignisse aus mehreren Charakterperspektiven\n• Bewerten Sie die Gültigkeit historischer Behauptungen und Interpretationen\n• Entwickeln Sie Fähigkeiten in historischer Empathie und Perspektivenübernahme\n• Üben Sie evidenzbasiertes Denken in historischen Kontexten\n• Bauen Sie metakognitive Bewusstheit für Denk- und Lernprozesse auf"
+      },
+      "collaborativeReview": {
+        "title": "Kollaborative Überprüfungs- und Feedback-Prozesse",
+        "content": "• Engagieren Sie sich in strukturierten Peer-Feedback-Sitzungen nach dem Rollenspiel\n• Geben Sie konstruktive Beobachtungen zu Charakterdarstellungen\n• Erhalten Sie Einsichten aus mehreren Peer-Perspektiven\n• Nehmen Sie an Gruppenreflexion über historische Genauigkeit und Interpretation teil\n• Bauen Sie Fähigkeiten im Geben und Erhalten akademischen Feedbacks auf"
+      },
+      "teacherFacilitation": {
+        "title": "Lehrererleichterungsstrategien",
+        "content": "• Lehrer bieten Gerüst für komplexe historische Konzepte\n• Echtzeit-Führung hilft Schülern, herausfordernde Perspektiven zu navigieren\n• Strukturierte Nachbesprechungssitzungen maximieren Lernergebnisse\n• Bewertungsmöglichkeiten durch Beobachtung von Denkprozessen\n• Unterstützung für Schüler bei der Entwicklung historischer Denkfähigkeiten"
+      },
+      "reflectionGrowth": {
+        "title": "Reflexion und metakognitives Wachstum",
+        "content": "• Dokumentieren Sie die Lernreise durch strukturierte Reflexionsaktivitäten\n• Analysieren Sie Wachstum in historischem Denken und Perspektivenübernahmefähigkeiten\n• Identifizieren Sie Bereiche für kontinuierliche Entwicklung und Lernen\n• Bauen Sie Selbstbewusstsein für Lernpräferenzen und -strategien auf\n• Planen Sie zukünftige Lernziele und historische Erkundungsthemen"
+      },
+      "implementationExamples": {
+        "title": "Implementierungsbeispiele über Fächer hinweg",
+        "content": "• Geschichte: Spielen Sie historische Figuren in Schlüsselereignissen und Entscheidungen\n• Literatur: Verkörpern Sie Autoren oder Charaktere, um Motivationen zu verstehen\n• Sozialwissenschaften: Erkunden Sie verschiedene kulturelle Perspektiven und Weltanschauungen\n• Wissenschaft: Übernehmen Sie Rollen von Wissenschaftlern und Erfindern in Entdeckungsmomenten\n• Philosophie: Engagieren Sie sich mit großen Denkern und ihren philosophischen Positionen"
+      }
+    }
+  },
+  "doppiaIntervista": {
+    "title": "Doppelinterview Tutorial",
+    "subtitle": "Lernen Sie Charaktere zu vergleichen und kritisches Denken zu entwickeln",
+    "startApp": "Doppelinterview starten",
+    "slides": {
+      "welcome": {
+        "title": "Willkommen beim Doppelinterview!",
+        "content": "Führen Sie zwei verschiedene Charaktere in parallelen Gesprächen, um kontrastierende Perspektiven zu erkunden und fortgeschrittene vergleichende Analysefähigkeiten zu entwickeln."
+      },
+      "howItWorks": {
+        "title": "Wie es funktioniert",
+        "content": "• Wählen Sie zwei Charaktere mit unterschiedlichen Hintergründen oder Standpunkten\n• Stellen Sie dieselben Fragen beiden Charakteren gleichzeitig\n• Vergleichen und kontrastieren Sie ihre Antworten in Echtzeit\n• Analysieren Sie Unterschiede in Perspektive, Argumentation und Schlussfolgerungen\n• Entwickeln Sie nuanciertes Verständnis durch vergleichenden Dialog"
+      },
+      "comparativeAnalysis": {
+        "title": "Vergleichende Analysefähigkeiten",
+        "content": "• Identifizieren Sie Ähnlichkeiten und Unterschiede in Charakterantworten\n• Analysieren Sie zugrundeliegende Annahmen und Weltanschauungen\n• Bewerten Sie die Stärke verschiedener Argumente und Perspektiven\n• Erkennen Sie Voreingenommenheit und kulturelle Einflüsse in Antworten\n• Entwickeln Sie Fähigkeiten im Synthetisieren mehrerer Standpunkte"
+      },
+      "criticalThinking": {
+        "title": "Entwicklung kritischen Denkens",
+        "content": "• Üben Sie die Bewertung mehrerer Informationsquellen\n• Entwickeln Sie Fähigkeiten in Perspektivenübernahme und Empathie\n• Lernen Sie, logische Trugschlüsse und schwache Argumente zu identifizieren\n• Bauen Sie die Fähigkeit auf, komplexe, widersprüchliche Informationen zu synthetisieren\n• Verbessern Sie analytisches Denken und Urteilsfähigkeiten"
+      },
+      "educationalApplications": {
+        "title": "Bildungsanwendungen",
+        "content": "• Geschichte: Vergleichen Sie Führer aus verschiedenen Epochen oder Kulturen\n• Literatur: Kontrastieren Sie Autorenstile und philosophische Ansätze\n• Wissenschaft: Erkunden Sie verschiedene wissenschaftliche Theorien oder Methodologien\n• Sozialwissenschaften: Untersuchen Sie verschiedene kulturelle Perspektiven zu Themen\n• Ethik: Erforschen Sie moralische Dilemmata aus mehreren Blickwinkeln"
+      },
+      "classroomBenefits": {
+        "title": "Klassenzimmervorteile",
+        "content": "• Fördert tieferes Verständnis durch Vergleich\n• Ermutigt kritische Bewertung von Informationsquellen\n• Entwickelt Toleranz für Mehrdeutigkeit und Komplexität\n• Baut wesentliche Fähigkeiten für akademische Forschung und Analyse auf\n• Bereitet Schüler auf reale Entscheidungsszenarien vor"
+      },
+      "getStarted": {
+        "title": "Bereit zu vergleichen?",
+        "content": "Beginnen Sie Ihre vergleichende Analysereise und entdecken Sie die Macht mehrerer Perspektiven!"
+      }
+    }
+  }
+}

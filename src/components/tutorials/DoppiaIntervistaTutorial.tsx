@@ -13,104 +13,104 @@ interface Slide {
 }
 
 const DoppiaIntervistaTutorial: React.FC = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('tutorials');
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const slides: Slide[] = [
     {
       id: 'welcome',
-      titleKey: 'tutorial.doppiaIntervista.slides.welcome.title',
-      contentKey: 'tutorial.doppiaIntervista.slides.welcome.content',
+      titleKey: 'doppiaIntervista.slides.welcome.title',
+      contentKey: 'doppiaIntervista.slides.welcome.content',
       icon: <Play className="w-8 h-8 text-education" />,
       bullets: [
-        'tutorial.doppiaIntervista.slides.welcome.bullet1',
-        'tutorial.doppiaIntervista.slides.welcome.bullet2',
-        'tutorial.doppiaIntervista.slides.welcome.bullet3',
-        'tutorial.doppiaIntervista.slides.welcome.bullet4'
+        'doppiaIntervista.slides.welcome.bullet1',
+        'doppiaIntervista.slides.welcome.bullet2',
+        'doppiaIntervista.slides.welcome.bullet3',
+        'doppiaIntervista.slides.welcome.bullet4'
       ]
     },
     {
       id: 'characterComparison',
-      titleKey: 'tutorial.doppiaIntervista.slides.characterComparison.title',
-      contentKey: 'tutorial.doppiaIntervista.slides.characterComparison.content',
+      titleKey: 'doppiaIntervista.slides.characterComparison.title',
+      contentKey: 'doppiaIntervista.slides.characterComparison.content',
       icon: <MessageCircle className="w-8 h-8 text-education" />,
       bullets: [
-        'tutorial.doppiaIntervista.slides.characterComparison.bullet1',
-        'tutorial.doppiaIntervista.slides.characterComparison.bullet2',
-        'tutorial.doppiaIntervista.slides.characterComparison.bullet3',
-        'tutorial.doppiaIntervista.slides.characterComparison.bullet4'
+        'doppiaIntervista.slides.characterComparison.bullet1',
+        'doppiaIntervista.slides.characterComparison.bullet2',
+        'doppiaIntervista.slides.characterComparison.bullet3',
+        'doppiaIntervista.slides.characterComparison.bullet4'
       ]
     },
     {
       id: 'strategicQuestioning',
-      titleKey: 'tutorial.doppiaIntervista.slides.strategicQuestioning.title',
-      contentKey: 'tutorial.doppiaIntervista.slides.strategicQuestioning.content',
+      titleKey: 'doppiaIntervista.slides.strategicQuestioning.title',
+      contentKey: 'doppiaIntervista.slides.strategicQuestioning.content',
       icon: <Target className="w-8 h-8 text-education" />,
       bullets: [
-        'tutorial.doppiaIntervista.slides.strategicQuestioning.bullet1',
-        'tutorial.doppiaIntervista.slides.strategicQuestioning.bullet2',
-        'tutorial.doppiaIntervista.slides.strategicQuestioning.bullet3',
-        'tutorial.doppiaIntervista.slides.strategicQuestioning.bullet4'
+        'doppiaIntervista.slides.strategicQuestioning.bullet1',
+        'doppiaIntervista.slides.strategicQuestioning.bullet2',
+        'doppiaIntervista.slides.strategicQuestioning.bullet3',
+        'doppiaIntervista.slides.strategicQuestioning.bullet4'
       ]
     },
     {
       id: 'collaborativeAnalysis',
-      titleKey: 'tutorial.doppiaIntervista.slides.collaborativeAnalysis.title',
-      contentKey: 'tutorial.doppiaIntervista.slides.collaborativeAnalysis.content',
+      titleKey: 'doppiaIntervista.slides.collaborativeAnalysis.title',
+      contentKey: 'doppiaIntervista.slides.collaborativeAnalysis.content',
       icon: <Users className="w-8 h-8 text-education" />,
       bullets: [
-        'tutorial.doppiaIntervista.slides.collaborativeAnalysis.bullet1',
-        'tutorial.doppiaIntervista.slides.collaborativeAnalysis.bullet2',
-        'tutorial.doppiaIntervista.slides.collaborativeAnalysis.bullet3',
-        'tutorial.doppiaIntervista.slides.collaborativeAnalysis.bullet4'
+        'doppiaIntervista.slides.collaborativeAnalysis.bullet1',
+        'doppiaIntervista.slides.collaborativeAnalysis.bullet2',
+        'doppiaIntervista.slides.collaborativeAnalysis.bullet3',
+        'doppiaIntervista.slides.collaborativeAnalysis.bullet4'
       ]
     },
     {
       id: 'criticalThinking',
-      titleKey: 'tutorial.doppiaIntervista.slides.criticalThinking.title',
-      contentKey: 'tutorial.doppiaIntervista.slides.criticalThinking.content',
+      titleKey: 'doppiaIntervista.slides.criticalThinking.title',
+      contentKey: 'doppiaIntervista.slides.criticalThinking.content',
       icon: <Brain className="w-8 h-8 text-education" />,
       bullets: [
-        'tutorial.doppiaIntervista.slides.criticalThinking.bullet1',
-        'tutorial.doppiaIntervista.slides.criticalThinking.bullet2',
-        'tutorial.doppiaIntervista.slides.criticalThinking.bullet3',
-        'tutorial.doppiaIntervista.slides.criticalThinking.bullet4'
+        'doppiaIntervista.slides.criticalThinking.bullet1',
+        'doppiaIntervista.slides.criticalThinking.bullet2',
+        'doppiaIntervista.slides.criticalThinking.bullet3',
+        'doppiaIntervista.slides.criticalThinking.bullet4'
       ]
     },
     {
       id: 'selfEvaluation',
-      titleKey: 'tutorial.doppiaIntervista.slides.selfEvaluation.title',
-      contentKey: 'tutorial.doppiaIntervista.slides.selfEvaluation.content',
+      titleKey: 'doppiaIntervista.slides.selfEvaluation.title',
+      contentKey: 'doppiaIntervista.slides.selfEvaluation.content',
       icon: <Eye className="w-8 h-8 text-education" />,
       bullets: [
-        'tutorial.doppiaIntervista.slides.selfEvaluation.bullet1',
-        'tutorial.doppiaIntervista.slides.selfEvaluation.bullet2',
-        'tutorial.doppiaIntervista.slides.selfEvaluation.bullet3',
-        'tutorial.doppiaIntervista.slides.selfEvaluation.bullet4'
+        'doppiaIntervista.slides.selfEvaluation.bullet1',
+        'doppiaIntervista.slides.selfEvaluation.bullet2',
+        'doppiaIntervista.slides.selfEvaluation.bullet3',
+        'doppiaIntervista.slides.selfEvaluation.bullet4'
       ]
     },
     {
       id: 'reflection',
-      titleKey: 'tutorial.doppiaIntervista.slides.reflection.title',
-      contentKey: 'tutorial.doppiaIntervista.slides.reflection.content',
+      titleKey: 'doppiaIntervista.slides.reflection.title',
+      contentKey: 'doppiaIntervista.slides.reflection.content',
       icon: <Lightbulb className="w-8 h-8 text-education" />,
       bullets: [
-        'tutorial.doppiaIntervista.slides.reflection.bullet1',
-        'tutorial.doppiaIntervista.slides.reflection.bullet2',
-        'tutorial.doppiaIntervista.slides.reflection.bullet3',
-        'tutorial.doppiaIntervista.slides.reflection.bullet4'
+        'doppiaIntervista.slides.reflection.bullet1',
+        'doppiaIntervista.slides.reflection.bullet2',
+        'doppiaIntervista.slides.reflection.bullet3',
+        'doppiaIntervista.slides.reflection.bullet4'
       ]
     },
     {
       id: 'examples',
-      titleKey: 'tutorial.doppiaIntervista.slides.examples.title',
-      contentKey: 'tutorial.doppiaIntervista.slides.examples.content',
+      titleKey: 'doppiaIntervista.slides.examples.title',
+      contentKey: 'doppiaIntervista.slides.examples.content',
       icon: <BookOpen className="w-8 h-8 text-education" />,
       bullets: [
-        'tutorial.doppiaIntervista.slides.examples.bullet1',
-        'tutorial.doppiaIntervista.slides.examples.bullet2',
-        'tutorial.doppiaIntervista.slides.examples.bullet3',
-        'tutorial.doppiaIntervista.slides.examples.bullet4'
+        'doppiaIntervista.slides.examples.bullet1',
+        'doppiaIntervista.slides.examples.bullet2',
+        'doppiaIntervista.slides.examples.bullet3',
+        'doppiaIntervista.slides.examples.bullet4'
       ]
     }
   ];
@@ -134,10 +134,10 @@ const DoppiaIntervistaTutorial: React.FC = () => {
       {/* Header */}
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold text-education-dark mb-2">
-          {t('tutorial.doppiaIntervista.title')}
+          {t('doppiaIntervista.title')}
         </h1>
         <p className="text-lg text-education-muted">
-          {t('tutorial.doppiaIntervista.subtitle')}
+          {t('doppiaIntervista.subtitle')}
         </p>
       </div>
 
@@ -222,7 +222,7 @@ const DoppiaIntervistaTutorial: React.FC = () => {
             className="bg-education hover:bg-education-dark text-white px-8 py-3"
             onClick={() => window.location.href = '/apps/doppia-intervista'}
           >
-            {t('tutorial.doppiaIntervista.startApp')}
+            {t('doppiaIntervista.startApp')}
           </Button>
         </div>
       )}
