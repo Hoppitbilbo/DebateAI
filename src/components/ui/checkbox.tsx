@@ -1,3 +1,11 @@
+/**
+ * @file A control that allows the user to toggle between checked and not checked.
+ * @remarks This component is a wrapper around the `Checkbox` component from `radix-ui/react-checkbox`.
+ * It is styled using `tailwindcss` and is part of the `shadcn/ui` collection.
+ * @see https://www.radix-ui.com/primitives/docs/components/checkbox
+ * @see https://ui.shadcn.com/docs/components/checkbox
+ */
+
 import * as React from "react"
 import * as CheckboxPrimitive from "@radix-ui/react-checkbox"
 import { Check } from "lucide-react"

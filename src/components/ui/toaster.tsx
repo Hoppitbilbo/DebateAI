@@ -1,3 +1,10 @@
+/**
+ * @file A component that renders toasts from the `useToast` hook.
+ * @remarks This component is part of the `shadcn/ui` collection and works in tandem with the `useToast` hook
+ * to display toast notifications.
+ * @see https://ui.shadcn.com/docs/components/toast
+ */
+
 import { useToast } from "@/hooks/use-toast"
 import {
   Toast,
@@ -8,6 +15,10 @@ import {
   ToastViewport,
 } from "@/components/ui/toast"
 
+/**
+ * @description A component that renders all the toasts in the application.
+ * It should be placed at the root of the application.
+ */
 export function Toaster() {
   const { toasts } = useToast()
 

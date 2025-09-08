@@ -1,3 +1,10 @@
+/**
+ * @file Manages the state and flow of the "ConvinciTu" educational game.
+ * @remarks This component orchestrates the different phases of the game: character selection,
+ * conversation, reflection, and feedback. It handles state for the selected character,
+ * persuasion topic, conversation history, and AI interactions.
+ */
+
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { toast } from "@/components/ui/sonner";
@@ -10,12 +17,26 @@ import AppLayout from "@/components/shared/AppLayout";
 import ReflectionInterface from "@/components/shared/ReflectionInterface";
 import FeedbackInterface from "@/components/shared/FeedbackInterface";
 
+/**
+ * @interface WikiCharacter
+ * @description Represents a character fetched from Wikipedia.
+ * @property {string} title - The name of the character.
+ * @property {string} snippet - A brief description of the character.
+ * @property {number} pageid - The unique identifier for the Wikipedia page.
+ */
 interface WikiCharacter {
   title: string;
   snippet: string;
   pageid: number;
 }
 
+/**
+ * @function ConvinciTuInterface
+ * @description The main component for the "ConvinciTu" game. It controls the game's state,
+ * transitioning between character selection, conversation, reflection, and feedback phases.
+ * It manages all user interactions and AI service calls.
+ * @returns {JSX.Element} The rendered game interface, which changes based on the current activity phase.
+ */
 const ConvinciTuInterface = () => {
   const { t } = useTranslation();
   const [selectedCharacter, setSelectedCharacter] = useState<WikiCharacter | null>(null);
@@ -27,11 +48,21 @@ const ConvinciTuInterface = () => {
   const [isEvaluating, setIsEvaluating] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  /**
+   * @function handleCharacterSelect
+   * @description Updates the state when a character is selected and resets the conversation.
+   * @param {WikiCharacter} character - The character selected by the user.
+   */
   const handleCharacterSelect = (character: WikiCharacter) => {
     setSelectedCharacter(character);
     setConversation([]);
   };
 
+  /**
+   * @function handleSendMessage
+   * @description Sends a user's message, adds it to the conversation, and fetches the AI's response.
+   * @param {string} message - The message content from the user.
+   */
   const handleSendMessage = async (message: string) => {
     const userMessage: Message = {
       role: "user",
@@ -41,8 +72,6 @@ const ConvinciTuInterface = () => {
     
     setIsLoading(true);
     try {
-      // Ensure selectedCharacter and its snippet are passed correctly if generateAIResponse expects it
-      // The updated generateAIResponse in aiResponseService.ts now expects { title: string; snippet: string; }
       if (selectedCharacter) {
         const aiResponse = await generateAIResponse(
           selectedCharacter,
@@ -66,10 +95,19 @@ const ConvinciTuInterface = () => {
     }
   };
 
+  /**
+   * @function handleEndActivity
+   * @description Transitions the game from the chatting phase to the reflection phase.
+   */
   const handleEndActivity = () => {
     setActivityPhase("reflection");
   };
 
+  /**
+   * @function handleReflectionSubmit
+   * @description Submits the user's reflection, transitions to the feedback phase, and requests an AI evaluation.
+   * @param {string} reflection - The user's written reflection.
+   */
   const handleReflectionSubmit = async (reflection: string) => {
     setUserReflection(reflection);
     setActivityPhase("feedback");
@@ -100,6 +138,10 @@ const ConvinciTuInterface = () => {
     }
   };
   
+  /**
+   * @function handleStartNewChat
+   * @description Resets the entire game state to allow the user to start a new session.
+   */
   const handleStartNewChat = () => {
     setSelectedCharacter(null);
     setPersuasionTopic("");

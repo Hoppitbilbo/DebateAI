@@ -1,3 +1,11 @@
+/**
+ * @file A drawer component that slides in from the bottom of the screen.
+ * @remarks This component is built on top of `vaul`, a drawer component for React.
+ * It is part of the `shadcn/ui` collection and is optimized for mobile experiences.
+ * @see https://vaul.emilkowal.ski/
+ * @see https://ui.shadcn.com/docs/components/drawer
+ */
+
 import * as React from "react"
 import { Drawer as DrawerPrimitive } from "vaul"
 

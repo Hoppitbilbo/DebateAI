@@ -1,3 +1,9 @@
+/**
+ * @file Renders the main page for the "Impersona Tu" (Impersonate) educational game.
+ * @remarks This page handles the setup phase where the user selects a character for the AI to play,
+ * a character for themselves to play, and a topic for conversation. It then transitions to the main
+ * chat interface.
+ */
 
 import { useState } from "react";
 import Navbar from "@/components/Navbar";
@@ -10,12 +16,26 @@ import ImpersonaTuChat from "@/components/ImpersonaTuChat";
 import { Input } from "@/components/ui/input";
 import { useTranslation } from "react-i18next";
 
+/**
+ * @interface WikiSearchResult
+ * @description Represents a character selected from a Wikipedia search.
+ * @property {string} title - The name of the character.
+ * @property {string} snippet - A brief description of the character.
+ * @property {number} pageid - The unique ID of the Wikipedia page.
+ */
 interface WikiSearchResult {
   title: string;
   snippet: string;
   pageid: number;
 }
 
+/**
+ * @function ImpersonaTuPage
+ * @description The main page component for the "Impersona Tu" game. It manages the state for
+ * character selection and the conversation topic, and conditionally renders either the setup
+ * UI or the chat interface.
+ * @returns {JSX.Element} The rendered Impersona Tu page.
+ */
 const ImpersonaTuPage = () => {
   const { t } = useTranslation();
   const [aiCharacter, setAiCharacter] = useState<WikiSearchResult | null>(null);
@@ -23,6 +43,11 @@ const ImpersonaTuPage = () => {
   const [topic, setTopic] = useState("");
   const [showChat, setShowChat] = useState(false);
 
+  /**
+   * @function handleStartChat
+   * @description Transitions the view from the setup screen to the chat interface if all
+   * required fields (AI character, user character, topic) are filled.
+   */
   const handleStartChat = () => {
     if (aiCharacter && userCharacter && topic) {
       setShowChat(true);

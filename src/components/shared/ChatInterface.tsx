@@ -1,4 +1,11 @@
-import React, { useState, useRef, useEffect } from 'react';
+/**
+ * @file Provides a generic, reusable chat interface component.
+ * @remarks This component is used across various educational activities to provide a consistent
+ * chat experience. It handles message display, user input, loading states, and an optional
+ * "end activity" button.
+ */
+
+import React, { useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
@@ -8,6 +15,22 @@ import { useTranslation } from 'react-i18next';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
+/**
+ * @interface ChatInterfaceProps
+ * @description Defines the props for the ChatInterface component.
+ * @property {Message[]} messages - An array of message objects to be displayed.
+ * @property {string} input - The current value of the text input field.
+ * @property {(value: string) => void} onInputChange - Callback function to handle changes to the input field.
+ * @property {() => void} onSendMessage - Callback function to handle sending a message.
+ * @property {() => void} [onEndActivity] - Optional callback to end the chat and proceed to the next phase.
+ * @property {boolean} [isLoading=false] - Flag to indicate if a response is being loaded.
+ * @property {string} [placeholder] - Optional placeholder text for the input field.
+ * @property {string} [userCharacterName] - Optional name to display for the user's messages.
+ * @property {string} [aiCharacterName] - Optional name to display for the AI's messages.
+ * @property {boolean} [showEndButton=true] - Whether to show the "End and Reflect" button.
+ * @property {number} [minMessagesForEnd=4] - The minimum number of user messages required to enable the end button.
+ * @property {string} [className] - Optional additional CSS classes for the component's root element.
+ */
 interface ChatInterfaceProps {
   messages: Message[];
   input: string;
@@ -23,6 +46,13 @@ interface ChatInterfaceProps {
   className?: string;
 }
 
+/**
+ * @function ChatInterface
+ * @description A reusable chat UI component that provides a message display area, a text input with a send button,
+ * and an optional button to conclude the activity.
+ * @param {ChatInterfaceProps} props - The props for the component.
+ * @returns {JSX.Element} The rendered chat interface.
+ */
 const ChatInterface: React.FC<ChatInterfaceProps> = ({
   messages,
   input,
@@ -40,6 +70,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   const { t } = useTranslation();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  /**
+   * @function scrollToBottom
+   * @description Automatically scrolls the message area to the bottom to show the latest message.
+   */
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -48,6 +82,11 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     scrollToBottom();
   }, [messages]);
 
+  /**
+   * @function handleKeyPress
+   * @description Handles the key press event on the input to send a message on "Enter".
+   * @param {React.KeyboardEvent} e - The keyboard event.
+   */
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey && !isLoading) {
       e.preventDefault();

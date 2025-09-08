@@ -1,9 +1,21 @@
+/**
+ * @file A set of checkable buttons—known as radio buttons—where no more than one of the buttons can be checked at a time.
+ * @remarks This component is a wrapper around the `RadioGroup` component from `radix-ui/react-radio-group`.
+ * It is styled using `tailwindcss` and is part of the `shadcn/ui` collection.
+ * @see https://www.radix-ui.com/primitives/docs/components/radio-group
+ * @see https://ui.shadcn.com/docs/components/radio-group
+ */
+
 import * as React from "react"
 import * as RadioGroupPrimitive from "@radix-ui/react-radio-group"
 import { Circle } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * @description A container for a set of radio buttons.
+ * @param {React.ComponentPropsWithoutRef<typeof RadioGroupPrimitive.Root>} props - The props for the component.
+ */
 const RadioGroup = React.forwardRef<
   React.ElementRef<typeof RadioGroupPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof RadioGroupPrimitive.Root>
@@ -18,6 +30,10 @@ const RadioGroup = React.forwardRef<
 })
 RadioGroup.displayName = RadioGroupPrimitive.Root.displayName
 
+/**
+ * @description An individual radio button.
+ * @param {React.ComponentPropsWithoutRef<typeof RadioGroupPrimitive.Item>} props - The props for the component.
+ */
 const RadioGroupItem = React.forwardRef<
   React.ElementRef<typeof RadioGroupPrimitive.Item>,
   React.ComponentPropsWithoutRef<typeof RadioGroupPrimitive.Item>

@@ -1,3 +1,11 @@
+/**
+ * @file For sighted users to preview content available behind a link.
+ * @remarks This component is a wrapper around the `HoverCard` component from `radix-ui/react-hover-card`.
+ * It is styled using `tailwindcss` and is part of the `shadcn/ui` collection.
+ * @see https://www.radix-ui.com/primitives/docs/components/hover-card
+ * @see https://ui.shadcn.com/docs/components/hover-card
+ */
+
 import * as React from "react"
 import * as HoverCardPrimitive from "@radix-ui/react-hover-card"
 

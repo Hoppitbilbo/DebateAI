@@ -1,6 +1,21 @@
+/**
+ * @file Utility functions for generating and downloading activity summaries as Markdown files.
+ * @remarks These functions handle the conversion of conversation and reflection data into a
+ * formatted Markdown string and trigger a file download in the browser.
+ */
 
 import { Message } from "@/types/conversation";
 
+/**
+ * @interface DownloadReflectionData
+ * @description Defines the data structure required to generate a reflection summary file.
+ * @property {string} activityType - The name of the activity (e.g., "ConvinciTu").
+ * @property {string} [characterName] - The name of the character(s) involved.
+ * @property {string} [topic] - The topic of the activity.
+ * @property {Message[]} conversation - The full conversation history.
+ * @property {string} userReflection - The user's written reflection.
+ * @property {string} [aiEvaluation] - The AI-generated evaluation.
+ */
 interface DownloadReflectionData {
   activityType: string;
   characterName?: string;
@@ -11,11 +26,13 @@ interface DownloadReflectionData {
 }
 
 /**
- * Converts an array of chat messages to a markdown formatted string
+ * @function conversationToMarkdown
+ * @description Converts an array of chat messages into a Markdown formatted string.
+ * @param {Message[]} conversation - The array of message objects.
+ * @returns {string} A string representing the conversation in Markdown format.
  */
 const conversationToMarkdown = (conversation: Message[]): string => {
   return conversation.map(msg => {
-    // Determine the speaker name based on role
     let speaker = 'AI';
     if (msg.role === 'user') {
       speaker = 'Studente';
@@ -30,7 +47,10 @@ const conversationToMarkdown = (conversation: Message[]): string => {
 };
 
 /**
- * Generates markdown content for a reflection session
+ * @function generateReflectionMarkdown
+ * @description Generates a complete Markdown string for a reflection session.
+ * @param {DownloadReflectionData} data - The data for the reflection session.
+ * @returns {string} The formatted Markdown content.
  */
 export const generateReflectionMarkdown = (data: DownloadReflectionData): string => {
   const { activityType, characterName, topic, conversation, userReflection, aiEvaluation } = data;
@@ -60,28 +80,29 @@ export const generateReflectionMarkdown = (data: DownloadReflectionData): string
 };
 
 /**
- * Downloads content as a markdown file
+ * @function downloadMarkdown
+ * @description Triggers a browser download for the given content as a Markdown file.
+ * @param {string} content - The string content to be downloaded.
+ * @param {string} [filename="riflessione"] - The base name for the downloaded file.
  */
 export const downloadMarkdown = (content: string, filename: string = "riflessione"): void => {
-  // Create a blob from the markdown content
   const blob = new Blob([content], { type: "text/markdown;charset=utf-8" });
   
-  // Create a temporary link element
   const link = document.createElement("a");
   link.href = URL.createObjectURL(blob);
   link.download = `${filename}-${new Date().toISOString().split('T')[0]}.md`;
   
-  // Append link to body, click it, and remove it
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
   
-  // Release the object URL
   URL.revokeObjectURL(link.href);
 };
 
 /**
- * Combines generation and download of reflection markdown
+ * @function downloadReflection
+ * @description A high-level function that combines Markdown generation and downloading for a reflection session.
+ * @param {DownloadReflectionData} data - The data for the reflection session.
  */
 export const downloadReflection = (data: DownloadReflectionData): void => {
   const markdown = generateReflectionMarkdown(data);

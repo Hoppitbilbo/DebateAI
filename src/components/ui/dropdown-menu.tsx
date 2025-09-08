@@ -1,3 +1,11 @@
+/**
+ * @file Displays a menu to the user — such as a list of links or actions — when they click a trigger.
+ * @remarks This component is a wrapper around the `DropdownMenu` component from `radix-ui/react-dropdown-menu`.
+ * It is styled using `tailwindcss` and is part of the `shadcn/ui` collection.
+ * @see https://www.radix-ui.com/primitives/docs/components/dropdown-menu
+ * @see https://ui.shadcn.com/docs/components/dropdown-menu
+ */
+
 import * as React from "react"
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu"
 import { Check, ChevronRight, Circle } from "lucide-react"

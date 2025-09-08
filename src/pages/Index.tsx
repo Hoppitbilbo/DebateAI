@@ -1,3 +1,9 @@
+/**
+ * @file Renders the main landing page (homepage) of the application.
+ * @remarks This page is composed of several sections: a hero section, a features section,
+ * a call-to-action for the teacher's guide, and a section about the project's social purpose.
+ * It uses the `useScrollReveal` hook to animate sections as they enter the viewport.
+ */
 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -9,10 +15,15 @@ import { School, Users } from "lucide-react";
 import { useScrollReveal } from "@/hooks/use-scroll-reveal";
 import { useTranslation } from "react-i18next";
 
+/**
+ * @function Index
+ * @description The main component for the application's homepage.
+ * It assembles the different sections of the landing page and applies scroll-reveal animations.
+ * @returns {JSX.Element} The rendered homepage.
+ */
 const Index = () => {
   const { t } = useTranslation();
   
-  // Create scroll reveal hooks for each section
   const heroReveal = useScrollReveal();
   const featuresReveal = useScrollReveal({ threshold: 0.15 });
   const teacherGuideReveal = useScrollReveal({ threshold: 0.15 });
@@ -33,7 +44,6 @@ const Index = () => {
           <FeaturesSection />
         </section>
         
-        {/* Teacher's Guide Section */}
         <div ref={teacherGuideReveal.ref as React.RefObject<HTMLDivElement>}
           className={`bg-white dark:bg-gray-900 py-12 reveal-from-left ${teacherGuideReveal.isVisible ? 'revealed' : ''}`}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -58,7 +68,6 @@ const Index = () => {
           </div>
         </div>
 
-        {/* Social Purpose Section */}
         <div ref={socialPurposeReveal.ref as React.RefObject<HTMLDivElement>}
           className={`bg-education-light dark:bg-gray-800 py-12 reveal-from-right ${socialPurposeReveal.isVisible ? 'revealed' : ''}`}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

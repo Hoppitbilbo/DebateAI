@@ -1,8 +1,21 @@
+/**
+ * @file Utility functions for evaluating user performance in educational activities using AI.
+ * @remarks This file contains functions for parsing AI responses, building evaluation prompts,
+ * and generating structured feedback, including scores and rationales.
+ */
 
 import { Message } from "@/types/conversation";
-import { model, generateContentStream } from "@/services/aiService"; // Import the model instance and streaming
+import { model, generateContentStream } from "@/services/aiService";
 import { getTranslatedSystemInstruction, getTranslatedPrompt } from "./aiPromptUtils";
 
+/**
+ * @interface ConversationData
+ * @description Defines the data structure representing a completed conversation for evaluation.
+ * @property {string} character - The name(s) of the character(s) involved.
+ * @property {string} topic - The topic of the conversation.
+ * @property {Message[]} messages - The full conversation history.
+ * @property {string} [characterSnippet] - An optional snippet of the character's biography for context.
+ */
 export interface ConversationData {
   character: string;
   topic: string;
@@ -10,6 +23,15 @@ export interface ConversationData {
   characterSnippet?: string;
 }
 
+/**
+ * @interface AIScoreEvaluation
+ * @description Defines the structure for a detailed AI evaluation, including scores and feedback.
+ * @property {string} textualFeedback - The main textual feedback from the AI.
+ * @property {number} [conversationScore] - An optional score for the conversation quality.
+ * @property {string} [conversationRationale] - An optional rationale for the conversation score.
+ * @property {number} [reflectionScore] - An optional score for the user's reflection.
+ * @property {string} [reflectionRationale] - An optional rationale for the reflection score.
+ */
 export interface AIScoreEvaluation {
   textualFeedback: string;
   conversationScore?: number;
@@ -18,6 +40,12 @@ export interface AIScoreEvaluation {
   reflectionRationale?: string;
 }
 
+/**
+ * @function parseAIScoreResponse
+ * @description Parses a raw text response from the AI to extract structured data like scores and rationales.
+ * @param {string} responseText - The raw text response from the AI.
+ * @returns {AIScoreEvaluation} A structured evaluation object.
+ */
 const parseAIScoreResponse = (responseText: string): AIScoreEvaluation => {
   const evaluation: AIScoreEvaluation = { textualFeedback: responseText };
 
@@ -44,7 +72,6 @@ const parseAIScoreResponse = (responseText: string): AIScoreEvaluation => {
     /MOTIVAZIONE_RIFLESSIONE:\s*([\s\S]*?)(?:PUNTEGGIO_CONVERSAZIONE:|MOTIVAZIONE_CONVERSAZIONE:|$)/
   );
   
-  // Clean the textual feedback by removing score and rationale sections
   let cleanedText = responseText;
   const patternsToRemove = [
     /PUNTEGGIO_CONVERSAZIONE:\s*\d+\s*/gi,
@@ -59,22 +86,17 @@ const parseAIScoreResponse = (responseText: string): AIScoreEvaluation => {
 
   evaluation.textualFeedback = cleanedText.replace(/\n+/g, '\n').trim();
 
-
-  // If rationales were inadvertently included in textualFeedback due to overlapping regex from above, remove known prefixes.
   if (evaluation.textualFeedback.startsWith("PUNTEGGIO_RIFLESSIONE:")) {
-      evaluation.textualFeedback = ""; // Or handle more gracefully
+      evaluation.textualFeedback = "";
   }
    if (evaluation.textualFeedback.startsWith("MOTIVAZIONE_RIFLESSIONE:")) {
       evaluation.textualFeedback = evaluation.textualFeedback.substring("MOTIVAZIONE_RIFLESSIONE:".length).trim();
   }
 
-
-  // Final check to ensure no score/rationale text remains if it was the only content
   if (evaluation.textualFeedback.match(/^(PUNTEGGIO_|MOTIVAZIONE_)(CONVERSAZIONE|RIFLESSIONE):/i)) {
-    evaluation.textualFeedback = ""; // Or a default message like "No additional feedback provided."
+    evaluation.textualFeedback = "";
   }
 
-  // If textual feedback is just a number (e.g., a stray score), blank it to trigger fallback display
   if (/^\d+$/.test(evaluation.textualFeedback)) {
     evaluation.textualFeedback = ""; 
   }
@@ -82,6 +104,12 @@ const parseAIScoreResponse = (responseText: string): AIScoreEvaluation => {
   return evaluation;
 };
 
+/**
+ * @function buildSystemInstruction
+ * @description Builds the system instruction for an evaluation request.
+ * @param {ConversationData} conversationData - The data from the conversation.
+ * @returns {string} The system instruction string.
+ */
 const buildSystemInstruction = (conversationData: ConversationData): string => {
   return getTranslatedSystemInstruction('evaluation', {
     character: conversationData.character,
@@ -90,6 +118,13 @@ const buildSystemInstruction = (conversationData: ConversationData): string => {
   });
 };
 
+/**
+ * @function getAIGameAndReflectionEvaluationStream
+ * @description Generates a streaming evaluation of a game and reflection.
+ * @param {ConversationData} conversationData - The data from the conversation.
+ * @param {string} userReflection - The user's written reflection.
+ * @returns {AsyncGenerator<{ partial: string; complete?: AIScoreEvaluation }, void, unknown>} An async generator that yields partial text and the final complete evaluation.
+ */
 export const getAIGameAndReflectionEvaluationStream = async function* (
   conversationData: ConversationData,
   userReflection: string
@@ -108,28 +143,19 @@ export const getAIGameAndReflectionEvaluationStream = async function* (
       conversationText,
       userReflection
     });
-
-    console.log("System Instruction:", systemInstruction);
-    console.log("Data Prompt:", dataPrompt);
     
     let accumulatedText = "";
     
     for await (const chunk of generateContentStream({
       contents: [{ role: "user", parts: [{ text: dataPrompt }] }],
       systemInstruction: { role: "system", parts: [{ text: systemInstruction }] },
-      generationConfig: {
-        // temperature: 0.5,
-        // maxOutputTokens: 800,
-      },
     })) {
       accumulatedText += chunk;
       yield { partial: accumulatedText };
     }
     
-    // Parse the final result
     const evaluationOutput = parseAIScoreResponse(accumulatedText);
     
-    // Ensure textualFeedback is always present and formatted
     if (!evaluationOutput.textualFeedback || typeof evaluationOutput.textualFeedback !== 'string' || evaluationOutput.textualFeedback.trim() === '') {
       const conversationScore = evaluationOutput.conversationScore || 'N/A';
       const reflectionScore = evaluationOutput.reflectionScore || 'N/A';
@@ -163,6 +189,13 @@ export const getAIGameAndReflectionEvaluationStream = async function* (
   }
 };
 
+/**
+ * @function getAIGameAndReflectionEvaluation
+ * @description Generates a non-streaming evaluation of a game and reflection.
+ * @param {ConversationData} conversationData - The data from the conversation.
+ * @param {string} userReflection - The user's written reflection.
+ * @returns {Promise<AIScoreEvaluation>} A promise that resolves to the complete, structured AI evaluation.
+ */
 export const getAIGameAndReflectionEvaluation = async (
   conversationData: ConversationData,
   userReflection: string
@@ -173,7 +206,7 @@ export const getAIGameAndReflectionEvaluation = async (
         const speaker = msg.role === "user" ? getTranslatedPrompt('studentLabel', {}) : conversationData.character;
         return `${speaker}: ${msg.content}`;
       })
-      .join("\n\n"); // Doppio newline per separazione chiara
+      .join("\n\n");
     
     const systemInstruction = buildSystemInstruction(conversationData);
     
@@ -181,20 +214,12 @@ export const getAIGameAndReflectionEvaluation = async (
       conversationText,
       userReflection
     });
-
-    console.log("System Instruction:", systemInstruction);
-    console.log("Data Prompt:", dataPrompt);
     
     const result = await model.generateContent({
       contents: [{ role: "user", parts: [{ text: dataPrompt }] }],
       systemInstruction: { role: "system", parts: [{ text: systemInstruction }] },
-      generationConfig: {
-        // temperature: 0.5,
-        // maxOutputTokens: 800,
-      },
     });
     
-    // ⚠️ Se .text() è asincrona, sostituire con: const rawResponse = await result.response.text();
     let evaluationOutput: AIScoreEvaluation;
 
     if (result.response && typeof result.response.text === 'function') {
@@ -214,14 +239,12 @@ export const getAIGameAndReflectionEvaluation = async (
       };
     }
     
-    // Ensure textualFeedback is always present and formatted, using the parsed evaluationOutput
     if (!evaluationOutput.textualFeedback || typeof evaluationOutput.textualFeedback !== 'string' || evaluationOutput.textualFeedback.trim() === '') {
       const conversationScore = evaluationOutput.conversationScore || 'N/A';
       const reflectionScore = evaluationOutput.reflectionScore || 'N/A';
       const conversationRationale = evaluationOutput.conversationRationale || getTranslatedPrompt('noRationale', {});
       const reflectionRationale = evaluationOutput.reflectionRationale || getTranslatedPrompt('noRationale', {});
       
-      // Ensure the fallback is Markdown
       const fallbackMarkdown = getTranslatedPrompt('evaluationFallback', {
         conversationScore: conversationScore.toString(),
         reflectionScore: reflectionScore.toString(),
@@ -229,9 +252,7 @@ export const getAIGameAndReflectionEvaluation = async (
         reflectionRationale
       });
       
-      // Append the original textual feedback from AI if it exists (even if it was just whitespace before trim), 
-      // or a default message if it was truly empty.
-      const aiProvidedTextualFeedback = evaluationOutput.textualFeedback.trim(); // Use the already trimmed version
+      const aiProvidedTextualFeedback = evaluationOutput.textualFeedback.trim();
       
       evaluationOutput.textualFeedback = fallbackMarkdown + 
         (aiProvidedTextualFeedback ? `\n${getTranslatedPrompt('overallFeedback', {})}\n\n${aiProvidedTextualFeedback}` : `\n${getTranslatedPrompt('overallFeedback', {})}\n\n${getTranslatedPrompt('defaultFeedback', {})}`);
@@ -250,6 +271,15 @@ export const getAIGameAndReflectionEvaluation = async (
   }
 };
 
+/**
+ * @function evaluateReflection
+ * @description A deprecated function to evaluate a user's reflection.
+ * @deprecated Use `getAIGameAndReflectionEvaluation` instead.
+ * @param {ConversationData} conversationData - The data from the conversation.
+ * @param {string} userReflection - The user's written reflection.
+ * @param {string} [characterSnippet] - An optional character snippet.
+ * @returns {Promise<string>} The raw text of the AI's evaluation.
+ */
 export const evaluateReflection = async (
   conversationData: ConversationData,
   userReflection: string,
@@ -287,7 +317,6 @@ export const evaluateReflection = async (
       },
     });
 
-    // ⚠️ Se .text() è asincrona, sostituire con: const evaluation = await result.response.text();
     if (result.response && typeof result.response.text === 'function') {
       const evaluation = result.response.text();
       if (typeof evaluation === 'string' && evaluation.trim() !== "") {
@@ -304,6 +333,12 @@ export const evaluateReflection = async (
   }
 };
 
+/**
+ * @function getAICombinedEvaluation
+ * @description An obsolete function for evaluation.
+ * @deprecated This function is no longer in use.
+ * @returns {Promise<string>} A message indicating the function is obsolete.
+ */
 export const getAICombinedEvaluation = async (
   conversationData: ConversationData,
   userReflection: string

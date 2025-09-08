@@ -1,7 +1,19 @@
+/**
+ * @file Renders the concluding slide for the teacher's guide.
+ * @remarks This component summarizes the key takeaways from the guide and suggests next steps
+ * for teachers to begin implementing the AI-powered activities in their classrooms.
+ */
+
 import React from 'react';
 import { Rocket, CheckCircle, ExternalLink, Lightbulb } from 'lucide-react';
 import { useTranslation, Trans } from 'react-i18next';
 
+/**
+ * @function Slide5Conclusion
+ * @description The final slide of the teacher's guide, which provides a summary and encourages
+ * teachers to start exploring the platform's features.
+ * @returns {JSX.Element} The rendered conclusion slide.
+ */
 const Slide5Conclusion = () => {
   const { t } = useTranslation();
 
@@ -39,7 +51,6 @@ const Slide5Conclusion = () => {
             <li>{t('teacherGuide.slide5.nextSteps.item2')}</li>
             <li>{t('teacherGuide.slide5.nextSteps.item3')}</li>
             <li>{t('teacherGuide.slide5.nextSteps.item4')}</li>
-            {/* Consider adding a real link if available */}
             <li className="flex items-center">
               <Trans i18nKey="teacherGuide.slide5.nextSteps.item5" components={{ a: <a href="#" className="ml-1 text-sky-400 hover:text-sky-300 underline flex items-center" target="_blank" rel="noopener noreferrer" />, ExternalLink: <ExternalLink size={16} className="ml-1" /> }} />
             </li>

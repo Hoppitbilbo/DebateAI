@@ -1,3 +1,8 @@
+/**
+ * @file Manages the state and flow of the "WikiChat" educational game.
+ * @remarks This component orchestrates the different phases of the game: chatting with the AI
+ * embodiment of a Wikipedia page, user reflection, and AI-driven feedback.
+ */
 
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
@@ -10,23 +15,28 @@ import ChatInterface from "./shared/ChatInterface";
 import ReflectionInterface from "./shared/ReflectionInterface";
 import FeedbackInterface from "./shared/FeedbackInterface";
 import { useTranslation } from "react-i18next";
+import { startChat, isAiServiceAvailable } from "@/services/aiService";
 
+/**
+ * @interface WikiChatInterfaceProps
+ * @description Defines the props for the WikiChatInterface component.
+ * @property {string} wikiTitle - The title of the Wikipedia page for the chat.
+ * @property {string} wikiSummary - The summary of the Wikipedia page to be used as context.
+ * @property {() => void} [onSessionComplete] - Optional callback triggered when a new session is started.
+ */
 interface WikiChatInterfaceProps {
   wikiTitle: string;
   wikiSummary: string;
   onSessionComplete?: () => void;
 }
 
-// Define an interface for session data that matches expected structure
-interface SessionData {
-  characterName: string;
-  messages: Message[];
-  topic?: string;
-}
-
-import { startChat, isAiServiceAvailable } from "@/services/aiService";
-
-
+/**
+ * @function WikiChatInterface
+ * @description The main component for the "WikiChat" game. It controls the game's state,
+ * transitioning between chatting, reflection, and feedback phases.
+ * @param {WikiChatInterfaceProps} props - The props for the component.
+ * @returns {JSX.Element} The rendered game interface.
+ */
 const WikiChatInterface = ({ wikiTitle, wikiSummary, onSessionComplete }: WikiChatInterfaceProps) => {
   const { t } = useTranslation();
   const [messages, setMessages] = useState<WikiChatMessage[]>([]);
@@ -34,13 +44,11 @@ const WikiChatInterface = ({ wikiTitle, wikiSummary, onSessionComplete }: WikiCh
   const [isLoading, setIsLoading] = useState(false);
   const [chat, setChat] = useState<ChatSession | null>(null);
   
-  // States for reflection phase
   const [activityPhase, setActivityPhase] = useState<ActivityPhase>("chatting");
   const [userReflection, setUserReflection] = useState("");
   const [aiEvaluation, setAiEvaluation] = useState<string | null>(null);
   const [isEvaluating, setIsEvaluating] = useState(false);
 
-  // Initialize chat with system prompt
   useEffect(() => {
     const systemPrompt = `${t('apps.wikiChat.systemPrompt', {
       defaultValue: 'You are the living embodiment of the Wikipedia page provided below. Answer from a first-person perspective, using information from the text. Be the character. Do not break character. Do not say you are an AI.',
@@ -59,14 +67,8 @@ ${wikiSummary}`;
     try {
       const initialChat = startChat(
         [
-          {
-            role: "user" as const,
-            parts: [{ text: systemPrompt }],
-          },
-          {
-            role: "model" as const,
-            parts: [{ text: "Okay, I am ready to act as the Wikipedia page for " + wikiTitle + "." }],
-          }
+          { role: "user", parts: [{ text: systemPrompt }] },
+          { role: "model", parts: [{ text: "Okay, I am ready to act as the Wikipedia page for " + wikiTitle + "." }] }
         ],
         systemPrompt
       );
@@ -84,6 +86,11 @@ ${wikiSummary}`;
     }
   }, [wikiTitle, wikiSummary, t]);
 
+  /**
+   * @function handleSendMessage
+   * @description Sends the user's message to the AI and updates the chat history.
+   * @param {string} message - The message to send.
+   */
   const handleSendMessage = async (message: string) => {
     if (!message.trim() || !chat) return;
     
@@ -105,35 +112,35 @@ ${wikiSummary}`;
     }
   };
 
+  /**
+   * @function handleEndChat
+   * @description Transitions the activity to the reflection phase.
+   */
   const handleEndChat = () => {
     setActivityPhase("reflection");
   };
 
+  /**
+   * @function handleReflectionSubmit
+   * @description Submits the user's reflection and triggers the AI evaluation process.
+   * @param {string} reflection - The user's written reflection.
+   */
   const handleReflectionSubmit = async (reflection: string) => {
     setUserReflection(reflection);
     setActivityPhase("feedback");
     setIsEvaluating(true);
 
     try {
-      // Prepare data for evaluation
       const conversationData: ConversationData = {
         character: wikiTitle,
-        topic: wikiTitle, // Or a more specific topic if available
+        topic: wikiTitle,
         messages: messages.map(msg => ({
             role: msg.role,
             content: msg.content,
         })),
       };
 
-      // Call the AI evaluation function
       const evaluationResult = await getAIGameAndReflectionEvaluation(conversationData, reflection);
-      
-      // Assicuriamoci che il feedback testuale sia correttamente estratto
-      console.log("Evaluation result:", evaluationResult);
-      
-      // Update state with the evaluation result.
-      // getAIGameAndReflectionEvaluation now ensures evaluationResult.textualFeedback is always a
-      // complete Markdown string (either AI's text or a fallback with scores/rationales).
       setAiEvaluation(evaluationResult.textualFeedback);
       
     } catch (error) {
@@ -145,6 +152,10 @@ ${wikiSummary}`;
     }
   };
   
+  /**
+   * @function handleStartNewChat
+   * @description Resets the component state to start a new chat session.
+   */
   const handleStartNewChat = () => {
     if (!isAiServiceAvailable()) {
       console.error("AI Service is not available. Please check your API key configuration.");
@@ -158,14 +169,8 @@ ${wikiSummary}`;
     try {
       const newChat = startChat(
         [
-          {
-            role: "user" as const,
-            parts: [{ text: systemPrompt }],
-          },
-          {
-            role: "model" as const,
-            parts: [{ text: "Okay, I am ready to act as the Wikipedia page for " + wikiTitle + "." }],
-          }
+          { role: "user", parts: [{ text: systemPrompt }] },
+          { role: "model", parts: [{ text: "Okay, I am ready to act as the Wikipedia page for " + wikiTitle + "." }] }
         ],
         systemPrompt
       );

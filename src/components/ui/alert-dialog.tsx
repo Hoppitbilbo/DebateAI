@@ -1,3 +1,12 @@
+/**
+ * @file A modal dialog that interrupts the user with important content and expects a response.
+ * @remarks This component is a wrapper around the `AlertDialog` component from `radix-ui/react-alert-dialog`.
+ * It is styled using `tailwindcss` and is part of the `shadcn/ui` collection.
+ * It is used to confirm actions, such as deleting a file or submitting a form.
+ * @see https://www.radix-ui.com/primitives/docs/components/alert-dialog
+ * @see https://ui.shadcn.com/docs/components/alert-dialog
+ */
+
 import * as React from "react"
 import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog"
 

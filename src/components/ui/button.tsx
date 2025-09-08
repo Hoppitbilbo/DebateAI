@@ -1,3 +1,9 @@
+/**
+ * @file Displays a button or a link.
+ * @remarks This component is a versatile button created using `class-variance-authority` to support different visual styles and sizes.
+ * It is part of the `shadcn/ui` collection and can be rendered as a button or a link using the `asChild` prop.
+ * @see https://ui.shadcn.com/docs/components/button
+ */
 
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"

@@ -1,7 +1,19 @@
+/**
+ * @file Renders a slide for the teacher's guide on how the platform supports various teaching styles.
+ * @remarks This component explains how the AI-powered activities can be integrated into different
+ * pedagogical approaches like personalized learning, problem-based learning, and inquiry-based learning.
+ */
+
 import React from 'react';
-import { Zap, Users, Puzzle, FlaskConical, MessageSquareHeart } from 'lucide-react'; // Added MessageSquareHeart
+import { Zap, Users, Puzzle, FlaskConical, MessageSquareHeart } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
+/**
+ * @function Slide4TeachingStyles
+ * @description A slide component that illustrates how the platform's features align with and
+ * support modern teaching methodologies.
+ * @returns {JSX.Element} The rendered teaching styles slide.
+ */
 const Slide4TeachingStyles = () => {
   const { t } = useTranslation();
 

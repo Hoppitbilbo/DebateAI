@@ -1,3 +1,10 @@
+/**
+ * @file A custom React hook and function for managing toast notifications.
+ * @remarks This system is a custom implementation for creating and managing toasts,
+ * inspired by libraries like `react-hot-toast`. It uses a reducer pattern to manage state.
+ * This is the legacy toast system, with the newer implementation using `sonner`.
+ */
+
 import * as React from "react"
 
 import type {
@@ -24,6 +31,11 @@ const actionTypes = {
 
 let count = 0
 
+/**
+ * @function genId
+ * @description Generates a unique ID for a toast.
+ * @returns {string} A unique string ID.
+ */
 function genId() {
   count = (count + 1) % Number.MAX_SAFE_INTEGER
   return count.toString()
@@ -71,6 +83,13 @@ const addToRemoveQueue = (toastId: string) => {
   toastTimeouts.set(toastId, timeout)
 }
 
+/**
+ * @function reducer
+ * @description The reducer function for managing toast state.
+ * @param {State} state - The current state.
+ * @param {Action} action - The dispatched action.
+ * @returns {State} The new state.
+ */
 export const reducer = (state: State, action: Action): State => {
   switch (action.type) {
     case "ADD_TOAST":
@@ -90,8 +109,6 @@ export const reducer = (state: State, action: Action): State => {
     case "DISMISS_TOAST": {
       const { toastId } = action
 
-      // ! Side effects ! - This could be extracted into a dismissToast() action,
-      // but I'll keep it here for simplicity
       if (toastId) {
         addToRemoveQueue(toastId)
       } else {
@@ -130,6 +147,11 @@ const listeners: Array<(state: State) => void> = []
 
 let memoryState: State = { toasts: [] }
 
+/**
+ * @function dispatch
+ * @description Dispatches an action to the toast reducer and notifies listeners.
+ * @param {Action} action - The action to dispatch.
+ */
 function dispatch(action: Action) {
   memoryState = reducer(memoryState, action)
   listeners.forEach((listener) => {
@@ -139,6 +161,12 @@ function dispatch(action: Action) {
 
 type Toast = Omit<ToasterToast, "id">
 
+/**
+ * @function toast
+ * @description A function to create and display a toast notification.
+ * @param {Toast} props - The properties of the toast to display.
+ * @returns {{ id: string, dismiss: () => void, update: (props: ToasterToast) => void }} An object with functions to control the toast.
+ */
 function toast({ ...props }: Toast) {
   const id = genId()
 
@@ -168,6 +196,11 @@ function toast({ ...props }: Toast) {
   }
 }
 
+/**
+ * @function useToast
+ * @description A custom hook to access the toast state and dispatcher functions.
+ * @returns {{ toasts: ToasterToast[], toast: (props: Toast) => { id: string, dismiss: () => void, update: (props: ToasterToast) => void }, dismiss: (toastId?: string) => void }} The toast state and functions.
+ */
 function useToast() {
   const [state, setState] = React.useState<State>(memoryState)
 

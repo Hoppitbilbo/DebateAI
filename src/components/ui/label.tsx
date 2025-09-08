@@ -1,3 +1,11 @@
+/**
+ * @file Renders an accessible label for form elements.
+ * @remarks This component is a wrapper around the `Label` component from `radix-ui/react-label`.
+ * It is styled using `tailwindcss` and is part of the `shadcn/ui` collection.
+ * @see https://www.radix-ui.com/primitives/docs/components/label
+ * @see https://ui.shadcn.com/docs/components/label
+ */
+
 import * as React from "react"
 import * as LabelPrimitive from "@radix-ui/react-label"
 import { cva, type VariantProps } from "class-variance-authority"

@@ -1,7 +1,19 @@
+/**
+ * @file Renders a slide for the teacher's guide explaining the benefits of using AI in education.
+ * @remarks This component highlights key advantages such as teaching enhancement, learning personalization,
+ * development of future-proof skills, and access to new educational resources.
+ */
+
 import React from 'react';
 import { Brain, TrendingUp, Users, Sparkles, Lightbulb } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
+/**
+ * @function Slide2WhyAI
+ * @description A slide component that explains the rationale and benefits of integrating AI
+ * into the educational process.
+ * @returns {JSX.Element} The rendered "Why AI?" slide.
+ */
 const Slide2WhyAI = () => {
   const { t } = useTranslation();
 
@@ -48,7 +60,7 @@ const Slide2WhyAI = () => {
 
         <div className="bg-slate-700 p-5 rounded-lg shadow-lg hover:scale-105 transition-transform duration-300">
           <div className="flex items-center mb-3">
-            <Lightbulb className="h-7 w-7 text-purple-400 mr-3" /> {/* Re-using Lightbulb, consider a different icon if available */}
+            <Lightbulb className="h-7 w-7 text-purple-400 mr-3" />
             <h3 className="text-xl font-semibold text-purple-300">{t('teacherGuide.slide2.newResources.title')}</h3>
           </div>
           <p className="text-slate-300">

@@ -1,5 +1,15 @@
+/**
+ * @file A collection of utility functions for building and translating AI prompts.
+ * @remarks These functions help in constructing dynamic, multilingual prompts for various
+ * AI-driven activities by fetching templates from i18next and interpolating parameters.
+ */
+
 import i18n from '@/i18n';
 
+/**
+ * @interface PromptTranslationParams
+ * @description Defines a flexible object for holding parameters to be interpolated into prompt strings.
+ */
 export interface PromptTranslationParams {
   [key: string]: string | undefined;
   name?: string;
@@ -14,6 +24,13 @@ export interface PromptTranslationParams {
   topic?: string;
 }
 
+/**
+ * @function getTranslatedSystemInstruction
+ * @description Fetches a translated system instruction string from the i18next resources.
+ * @param {'character' | 'dialogue' | 'evaluation' | 'convinciTu'} type - The type of system instruction to fetch.
+ * @param {PromptTranslationParams} [params={}] - The parameters to interpolate into the string.
+ * @returns {string} The translated and formatted system instruction.
+ */
 export const getTranslatedSystemInstruction = (
   type: 'character' | 'dialogue' | 'evaluation' | 'convinciTu',
   params: PromptTranslationParams = {}
@@ -22,6 +39,13 @@ export const getTranslatedSystemInstruction = (
   return i18n.t(key, params);
 };
 
+/**
+ * @function buildConvinciTuSystemInstruction
+ * @description A specific builder for the "Convinci Tu" system instruction.
+ * @param {string} characterName - The name of the character for the AI to impersonate.
+ * @param {string} prompt - The persuasion topic.
+ * @returns {string} The complete system instruction.
+ */
 export const buildConvinciTuSystemInstruction = (
   characterName: string,
   prompt: string
@@ -32,6 +56,13 @@ export const buildConvinciTuSystemInstruction = (
   });
 };
 
+/**
+ * @function getTranslatedPrompt
+ * @description Fetches a generic translated prompt string from the i18next resources.
+ * @param {string} promptKey - The key for the prompt template.
+ * @param {PromptTranslationParams} [params={}] - The parameters to interpolate into the string.
+ * @returns {string} The translated and formatted prompt.
+ */
 export const getTranslatedPrompt = (
   promptKey: string,
   params: PromptTranslationParams = {}
@@ -40,10 +71,23 @@ export const getTranslatedPrompt = (
   return i18n.t(key, params);
 };
 
+/**
+ * @function getTranslatedLabel
+ * @description Fetches a translated label for different roles in a conversation.
+ * @param {'user' | 'student' | 'system' | 'moderator'} labelType - The type of label to fetch.
+ * @returns {string} The translated label.
+ */
 export const getTranslatedLabel = (labelType: 'user' | 'student' | 'system' | 'moderator'): string => {
   return i18n.t(`ai.prompts.${labelType}Label`);
 };
 
+/**
+ * @function buildCharacterSystemInstruction
+ * @description Builds the system instruction for a simple character impersonation.
+ * @param {string} characterName - The name of the character.
+ * @param {string} characterBio - The biography of the character.
+ * @returns {string} The complete system instruction.
+ */
 export const buildCharacterSystemInstruction = (
   characterName: string,
   characterBio: string
@@ -54,6 +98,14 @@ export const buildCharacterSystemInstruction = (
   });
 };
 
+/**
+ * @function buildDialogueSystemInstruction
+ * @description Builds the system instruction for a character in a dialogue.
+ * @param {string} characterName - The name of the character.
+ * @param {string} characterBio - The biography of the character.
+ * @param {string} dialogueStyle - The speaking style of the character.
+ * @returns {string} The complete system instruction.
+ */
 export const buildDialogueSystemInstruction = (
   characterName: string,
   characterBio: string,
@@ -66,6 +118,16 @@ export const buildDialogueSystemInstruction = (
   });
 };
 
+/**
+ * @function buildDialoguePrompt
+ * @description Constructs a detailed prompt for a character's turn in a dialogue, including context, history, and user input.
+ * @param {string} characterName - The name of the character who is about to speak.
+ * @param {string} targetCharacter - The name of the character being addressed.
+ * @param {string} theme - The theme of the discussion.
+ * @param {Array<{role: string; character: string; content: string}>} recentMessages - The recent conversation history.
+ * @param {string} [userMessage] - An optional message from the user/moderator to respond to.
+ * @returns {string} The fully constructed prompt.
+ */
 export const buildDialoguePrompt = (
   characterName: string,
   targetCharacter: string,
@@ -98,6 +160,13 @@ export const buildDialoguePrompt = (
   return prompt;
 };
 
+/**
+ * @function getErrorMessage
+ * @description Constructs a localized error message.
+ * @param {'noResponse' | 'apologeticError'} type - The type of error message to generate.
+ * @param {string} [error] - Optional error details to include in the message.
+ * @returns {string} The formatted error message.
+ */
 export const getErrorMessage = (type: 'noResponse' | 'apologeticError', error?: string): string => {
   if (type === 'noResponse') {
     return getTranslatedPrompt('noResponseMoment');
@@ -110,6 +179,14 @@ export const getErrorMessage = (type: 'noResponse' | 'apologeticError', error?: 
   }
 };
 
+/**
+ * @function buildEvaluationSystemInstruction
+ * @description Constructs a comprehensive system instruction for the AI to evaluate a user's performance and reflection.
+ * @param {string} character - The name of the character(s) in the activity.
+ * @param {string} topic - The topic of the activity.
+ * @param {string} [characterSnippet] - An optional snippet of the character's biography.
+ * @returns {string} The complete, multi-part system instruction for evaluation.
+ */
 export const buildEvaluationSystemInstruction = (
   character: string,
   topic: string,

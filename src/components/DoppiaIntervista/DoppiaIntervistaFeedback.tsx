@@ -1,14 +1,32 @@
+/**
+ * @file Renders the feedback screen for the "Doppia Intervista" (Double Interview) game.
+ * @remarks This component displays the user's reflection, the AI's evaluation of their performance,
+ * and the complete conversation history. It also allows the user to download the activity summary
+ * or start a new interview.
+ */
 
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ReflectionDisplayCard from "@/components/shared/ReflectionDisplayCard";
-import { Message as EvaluationMessage } from "@/types/conversation"; // Use the aliased Message type
+import { Message as EvaluationMessage } from "@/types/conversation";
 import { ChevronDown, ChevronUp, RefreshCcw, Download } from "lucide-react";
 import { downloadReflection } from "@/utils/downloadUtils";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 
+/**
+ * @interface DoppiaIntervistaFeedbackProps
+ * @description Defines the props for the DoppiaIntervistaFeedback component.
+ * @property {string} userReflection - The reflection text submitted by the user.
+ * @property {string | null} aiEvaluation - The AI-generated feedback on the user's interview.
+ * @property {boolean} isLoading - Flag indicating if the AI evaluation is being generated.
+ * @property {() => void} onStartNewChat - Callback function to initiate a new interview session.
+ * @property {EvaluationMessage[]} messages - The history of the conversation.
+ * @property {string} character1Name - The name of the first character in the interview.
+ * @property {string} character2Name - The name of the second character in the interview.
+ * @property {string} topic - The topic of the interview.
+ */
 interface DoppiaIntervistaFeedbackProps {
   userReflection: string;
   aiEvaluation: string | null;
@@ -16,10 +34,17 @@ interface DoppiaIntervistaFeedbackProps {
   onStartNewChat: () => void;
   messages: EvaluationMessage[];
   character1Name: string;
-  character2Name: string;
+  character2Name:string;
   topic: string;
 }
 
+/**
+ * @function DoppiaIntervistaFeedback
+ * @description A component that presents the final feedback for the "Doppia Intervista" activity.
+ * It shows the user's reflection, AI feedback, and a collapsible conversation history.
+ * @param {DoppiaIntervistaFeedbackProps} props - The props for the component.
+ * @returns {JSX.Element} The rendered feedback screen.
+ */
 const DoppiaIntervistaFeedback: React.FC<DoppiaIntervistaFeedbackProps> = ({
   userReflection,
   aiEvaluation,
@@ -33,18 +58,26 @@ const DoppiaIntervistaFeedback: React.FC<DoppiaIntervistaFeedbackProps> = ({
   const { t } = useTranslation();
   const [isConversationExpanded, setIsConversationExpanded] = useState(true);
 
+  /**
+   * @function toggleConversation
+   * @description Toggles the visibility of the conversation history section.
+   */
   const toggleConversation = () => {
     setIsConversationExpanded(!isConversationExpanded);
   };
 
+  /**
+   * @function handleDownload
+   * @description Handles the download of the activity summary, including the conversation and reflections.
+   * Displays a toast notification on success or failure.
+   */
   const handleDownload = () => {
     try {
       downloadReflection({
         activityType: t('apps.doppiaIntervista.feedback.activityName'),
-        // For characterName, we can concatenate or choose a primary. Let's concatenate for now.
         characterName: `${character1Name} & ${character2Name}`, 
         topic,
-        conversation: messages, // These are already EvaluationMessage[]
+        conversation: messages,
         userReflection,
         aiEvaluation: aiEvaluation || undefined,
       });

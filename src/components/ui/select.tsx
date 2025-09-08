@@ -1,15 +1,36 @@
+/**
+ * @file Displays a list of options for the user to pick from—triggered by a button.
+ * @remarks This component is a wrapper around the `Select` component from `radix-ui/react-select`.
+ * It is styled using `tailwindcss` and is part of the `shadcn/ui` collection.
+ * @see https://www.radix-ui.com/primitives/docs/components/select
+ * @see https://ui.shadcn.com/docs/components/select
+ */
+
 import * as React from "react"
 import * as SelectPrimitive from "@radix-ui/react-select"
 import { Check, ChevronDown, ChevronUp } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * @description The root component for a select menu.
+ */
 const Select = SelectPrimitive.Root
 
+/**
+ * @description A group of `SelectItem` components.
+ */
 const SelectGroup = SelectPrimitive.Group
 
+/**
+ * @description The component that displays the selected value.
+ */
 const SelectValue = SelectPrimitive.Value
 
+/**
+ * @description The button that opens the select menu.
+ * @param {React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger>} props - The props for the component.
+ */
 const SelectTrigger = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Trigger>,
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger>
@@ -30,6 +51,10 @@ const SelectTrigger = React.forwardRef<
 ))
 SelectTrigger.displayName = SelectPrimitive.Trigger.displayName
 
+/**
+ * @description The button for scrolling up the select menu content.
+ * @param {React.ComponentPropsWithoutRef<typeof SelectPrimitive.ScrollUpButton>} props - The props for the component.
+ */
 const SelectScrollUpButton = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.ScrollUpButton>,
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.ScrollUpButton>
@@ -47,6 +72,10 @@ const SelectScrollUpButton = React.forwardRef<
 ))
 SelectScrollUpButton.displayName = SelectPrimitive.ScrollUpButton.displayName
 
+/**
+ * @description The button for scrolling down the select menu content.
+ * @param {React.ComponentPropsWithoutRef<typeof SelectPrimitive.ScrollDownButton>} props - The props for the component.
+ */
 const SelectScrollDownButton = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.ScrollDownButton>,
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.ScrollDownButton>
@@ -65,6 +94,11 @@ const SelectScrollDownButton = React.forwardRef<
 SelectScrollDownButton.displayName =
   SelectPrimitive.ScrollDownButton.displayName
 
+/**
+ * @description The content of the select menu.
+ * @param {React.ComponentPropsWithoutRef<typeof SelectPrimitive.Content>} props - The props for the component.
+ * @param {"popper" | "item-aligned"} [props.position="popper"] - The positioning mode of the content.
+ */
 const SelectContent = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.Content>
@@ -97,6 +131,10 @@ const SelectContent = React.forwardRef<
 ))
 SelectContent.displayName = SelectPrimitive.Content.displayName
 
+/**
+ * @description A label for a group of select items.
+ * @param {React.ComponentPropsWithoutRef<typeof SelectPrimitive.Label>} props - The props for the component.
+ */
 const SelectLabel = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Label>,
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.Label>
@@ -109,6 +147,10 @@ const SelectLabel = React.forwardRef<
 ))
 SelectLabel.displayName = SelectPrimitive.Label.displayName
 
+/**
+ * @description An item in the select menu.
+ * @param {React.ComponentPropsWithoutRef<typeof SelectPrimitive.Item>} props - The props for the component.
+ */
 const SelectItem = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Item>,
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.Item>
@@ -132,6 +174,10 @@ const SelectItem = React.forwardRef<
 ))
 SelectItem.displayName = SelectPrimitive.Item.displayName
 
+/**
+ * @description A separator between select items.
+ * @param {React.ComponentPropsWithoutRef<typeof SelectPrimitive.Separator>} props - The props for the component.
+ */
 const SelectSeparator = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Separator>,
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.Separator>

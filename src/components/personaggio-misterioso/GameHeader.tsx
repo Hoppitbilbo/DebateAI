@@ -1,8 +1,22 @@
+/**
+ * @file Renders the header for the "Personaggio Misterioso" game.
+ * @remarks This component displays the game title, the number of questions remaining,
+ * and controls for revealing the character's name and starting a new game.
+ */
 
 import { Button } from "@/components/ui/button";
 import { EyeOff, ListOrdered, RefreshCw } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
+/**
+ * @interface GameHeaderProps
+ * @description Defines the props for the GameHeader component.
+ * @property {number} questionsLeft - The number of questions the user has remaining.
+ * @property {boolean} hideCharacter - Whether the character's name is currently hidden.
+ * @property {() => void} onToggleHideCharacter - Callback to toggle the visibility of the character's name.
+ * @property {string} characterName - The name of the mystery character.
+ * @property {() => void} onNewGame - Callback to start a new game.
+ */
 interface GameHeaderProps {
   questionsLeft: number;
   hideCharacter: boolean;
@@ -11,6 +25,12 @@ interface GameHeaderProps {
   onNewGame: () => void;
 }
 
+/**
+ * @function GameHeader
+ * @description The header component for the "Personaggio Misterioso" game, displaying key game state information and actions.
+ * @param {GameHeaderProps} props - The props for the component.
+ * @returns {JSX.Element} The rendered game header.
+ */
 const GameHeader = ({
   questionsLeft,
   hideCharacter,

@@ -1,3 +1,12 @@
+/**
+ * @file Provides chart components for data visualization.
+ * @remarks This component is a wrapper around the `recharts` library, providing a set of components
+ * for building charts with a consistent style. It is part of the `shadcn/ui` collection.
+ * It includes a `ChartContainer` to set up the chart context and `ChartTooltip` and `ChartLegend` for common chart elements.
+ * @see https://recharts.org/
+ * @see https://ui.shadcn.com/docs/components/chart
+ */
+
 import * as React from "react"
 import * as RechartsPrimitive from "recharts"
 

@@ -1,3 +1,10 @@
+/**
+ * @file Displays a breadcrumb navigation menu.
+ * @remarks This component provides a set of links to show the user's location within the app.
+ * It is part of the `shadcn/ui` collection and is built using composition of several sub-components.
+ * @see https://ui.shadcn.com/docs/components/breadcrumb
+ */
+
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { ChevronRight, MoreHorizontal } from "lucide-react"

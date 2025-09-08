@@ -1,10 +1,22 @@
+/**
+ * @file A demonstration component for a basic chat interface with the Vertex AI service.
+ * @remarks This component initializes a chat session, displays a hardcoded initial history,
+ * and allows the user to send messages and receive responses from the AI. It serves as a
+ * basic example of using the `aiService`.
+ */
+
 import React, { useState, useEffect } from 'react';
 import { startChat, sendMessage } from '@/services/aiService';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import type { ChatSession } from '@google/generative-ai'; // Import ChatSession type
+import type { ChatSession } from '@google/generative-ai';
 
+/**
+ * @function VertexAIChat
+ * @description A simple chat component to demonstrate the core functionality of the AI service.
+ * @returns {JSX.Element} The rendered chat component.
+ */
 const VertexAIChat: React.FC = () => {
   const [chat, setChat] = useState<ChatSession | null>(null);
   const [message, setMessage] = useState('');
@@ -12,16 +24,19 @@ const VertexAIChat: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    // Initialize chat when component mounts
     const newChat = startChat();
     setChat(newChat);
-    // Set initial history based on the example provided for the chat service
     setChatHistory([
       { role: 'user', text: 'Hello, I have 2 dogs in my house.' },
       { role: 'model', text: 'Great to meet you. What would you like to know?' },
     ]);
   }, []);
 
+  /**
+   * @function handleSendMessage
+   * @description Sends the user's message to the AI service and updates the chat history
+   * with both the user's message and the AI's response.
+   */
   const handleSendMessage = async () => {
     if (chat && message.trim() !== '') {
       setIsLoading(true);

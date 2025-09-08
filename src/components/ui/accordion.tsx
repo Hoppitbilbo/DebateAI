@@ -1,3 +1,11 @@
+/**
+ * @file Provides a vertically stacking set of interactive headings that each reveal a section of content.
+ * @remarks This component is a wrapper around the `Accordion` component from `radix-ui/react-accordion`.
+ * It is styled using `tailwindcss` and is part of the `shadcn/ui` collection.
+ * @see https://www.radix-ui.com/primitives/docs/components/accordion
+ * @see https://ui.shadcn.com/docs/components/accordion
+ */
+
 import * as React from "react"
 import * as AccordionPrimitive from "@radix-ui/react-accordion"
 import { ChevronDown } from "lucide-react"

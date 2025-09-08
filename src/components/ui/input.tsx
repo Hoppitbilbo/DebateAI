@@ -1,3 +1,10 @@
+/**
+ * @file Displays a form input field.
+ * @remarks This component is a styled HTML `input` element.
+ * It is part of the `shadcn/ui` collection and is styled with `tailwindcss`.
+ * @see https://ui.shadcn.com/docs/components/input
+ */
+
 import * as React from "react"
 
 import { cn } from "@/lib/utils"

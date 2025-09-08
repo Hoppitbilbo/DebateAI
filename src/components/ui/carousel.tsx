@@ -1,3 +1,11 @@
+/**
+ * @file A carousel component for displaying items in a scrollable container.
+ * @remarks This component is built on top of `embla-carousel-react` and provides a flexible and accessible carousel.
+ * It is part of the `shadcn/ui` collection and includes sub-components for content, items, and navigation.
+ * @see https://www.embla-carousel.com/
+ * @see https://ui.shadcn.com/docs/components/carousel
+ */
+
 import * as React from "react"
 import useEmblaCarousel, {
   type UseEmblaCarouselType,

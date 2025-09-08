@@ -1,9 +1,20 @@
+/**
+ * @file Renders the main page for the "Convinci Tu" (You Convince) educational game.
+ * @remarks This page serves as the entry point for the Convinci Tu activity, embedding the main
+ * `ConvinciTuInterface` component within the standard page layout.
+ */
 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ConvinciTuInterface from "@/components/ConvinciTuInterface";
 import { useTranslation } from "react-i18next";
 
+/**
+ * @function ConvinciTuPage
+ * @description The main page component for the "Convinci Tu" game.
+ * It sets up the page layout and renders the core game interface.
+ * @returns {JSX.Element} The rendered Convinci Tu page.
+ */
 const ConvinciTuPage = () => {
   const { t } = useTranslation();
   return (

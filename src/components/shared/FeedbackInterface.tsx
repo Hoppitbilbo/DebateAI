@@ -1,14 +1,36 @@
+/**
+ * @file A generic component for displaying feedback after an educational activity.
+ * @remarks This component is designed to be reusable across different activities. It displays
+ * a summary of the activity, the user's reflection, AI-generated evaluation, and the
+ * full conversation history.
+ */
+
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { RotateCcw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { CheckCircle, XCircle, MessageSquare, User, Bot } from 'lucide-react';
 import { Message } from '@/types/conversation';
 import MarkdownViewer from './MarkdownViewer';
 
+/**
+ * @interface FeedbackInterfaceProps
+ * @description Defines the props for the FeedbackInterface component.
+ * @property {string} userReflection - The user's written reflection.
+ * @property {string | null} aiEvaluation - The AI-generated feedback.
+ * @property {boolean} [isLoading=false] - Flag to indicate if the AI evaluation is being generated.
+ * @property {() => void} onStartNewChat - Callback function to start a new activity.
+ * @property {Message[]} [messages=[]] - Optional array of conversation messages.
+ * @property {string} [characterName] - Optional name of the character involved.
+ * @property {string} [topic] - Optional topic of the activity.
+ * @property {object} [gameResult] - Optional object with results for game-like activities.
+ * @property {boolean} [gameResult.correctGuess] - Whether the user's guess was correct.
+ * @property {string} [gameResult.finalGuess] - The user's final guess.
+ * @property {number} [gameResult.score] - The user's score.
+ * @property {string} [className] - Optional additional CSS classes for the root element.
+ */
 interface FeedbackInterfaceProps {
   userReflection: string;
   aiEvaluation: string | null;
@@ -25,6 +47,13 @@ interface FeedbackInterfaceProps {
   className?: string;
 }
 
+/**
+ * @function FeedbackInterface
+ * @description A reusable component that provides a standardized feedback screen for various activities.
+ * It shows a summary, user reflection, AI evaluation, and conversation history.
+ * @param {FeedbackInterfaceProps} props - The props for the component.
+ * @returns {JSX.Element} The rendered feedback interface.
+ */
 const FeedbackInterface: React.FC<FeedbackInterfaceProps> = ({
   userReflection,
   aiEvaluation,

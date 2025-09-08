@@ -1,3 +1,10 @@
+/**
+ * @file Displays a badge or a tag.
+ * @remarks This component is created using `class-variance-authority` to provide different visual styles (variants).
+ * It is part of the `shadcn/ui` collection and is typically used for highlighting small pieces of information.
+ * @see https://ui.shadcn.com/docs/components/badge
+ */
+
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 

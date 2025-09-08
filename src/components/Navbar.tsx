@@ -1,3 +1,8 @@
+/**
+ * @file Renders the main navigation bar for the application.
+ * @remarks This component includes the site logo, navigation links for desktop, and a collapsible
+ * mobile menu with a language switcher.
+ */
 
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
@@ -6,6 +11,12 @@ import { Menu } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "@/components/shared/LanguageSwitcher";
 
+/**
+ * @function Navbar
+ * @description The main navigation bar component for the application. It provides responsive
+ * navigation, including a hamburger menu for mobile devices.
+ * @returns {JSX.Element} The rendered navigation bar.
+ */
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -15,6 +26,10 @@ const Navbar = () => {
     setIsLoaded(true);
   }, []);
 
+  /**
+   * @function toggleMobileMenu
+   * @description Toggles the visibility of the mobile navigation menu.
+   */
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };

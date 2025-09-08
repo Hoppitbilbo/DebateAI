@@ -1,3 +1,10 @@
+/**
+ * @file Main CSS entry point for the application.
+ * @remarks This file imports the design system, includes Tailwind CSS base, components, and utilities,
+ * and defines global styles, CSS variables for theming (light and dark modes), and keyframe animations
+ * for page transitions and other UI effects.
+ */
+
 @import './styles/design-system.css';
 
 @tailwind base;

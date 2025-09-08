@@ -1,3 +1,8 @@
+/**
+ * @file The root component of the application.
+ * @remarks This component sets up all the top-level providers (React Query, Tooltip, Animation, Router)
+ * and defines the application's routes.
+ */
 
 import React from "react";
 import { Toaster } from "@/components/ui/toaster";
@@ -19,8 +24,16 @@ import PersonaggioMisteriosoPage from "./pages/PersonaggioMisteriosoPage";
 import TeacherGuidePage from "./pages/TeacherGuidePage";
 import ImpersonaTuPage from "./pages/ImpersonaTuPage";
 
+/**
+ * @description The query client for `react-query`.
+ */
 const queryClient = new QueryClient();
 
+/**
+ * @function App
+ * @description The main application component that wraps all pages and providers.
+ * @returns {JSX.Element} The rendered application.
+ */
 const App = () => (
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>

@@ -1,3 +1,9 @@
+/**
+ * @file Renders the main page for the "WikiInterview" educational game.
+ * @remarks This page manages the entire lifecycle of the WikiInterview activity,
+ * including character selection, theme definition, the chat phase, reflection, and feedback.
+ */
+
 import { useState, useEffect, useCallback } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -8,56 +14,79 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowRight } from "lucide-react";
 import { ConversationData, getAIGameAndReflectionEvaluation, AIScoreEvaluation } from "@/utils/evaluationUtils";
-import { Message } from "@/types/conversation"; // Using the global Message type
+import { Message } from "@/types/conversation";
 import WikiInterviewReflection from "@/components/WikiInterview/WikiInterviewReflection";
 import WikiInterviewFeedback from "@/components/WikiInterview/WikiInterviewFeedback";
-// Import local Message type from wiki-interview for the handler
 import { Message as WikiInterviewMessage } from "@/components/wiki-interview/types";
 import { useTranslation } from "react-i18next";
 
+/**
+ * @interface WikiSearchResult
+ * @description Represents a character selected from a Wikipedia search.
+ * @property {string} title - The name of the character.
+ * @property {string} snippet - A brief description of the character.
+ * @property {number} pageid - The unique ID of the Wikipedia page.
+ */
 interface WikiSearchResult {
   title: string;
   snippet: string;
   pageid: number;
 }
 
-//This interface is used within WikiInterviewPage and passed to WikiInterviewChat
+/**
+ * @interface CharacterDetail
+ * @description Extends WikiSearchResult with additional details needed for the interview.
+ * @property {string} name - The character's name.
+ * @property {string} wikiTitle - The original Wikipedia title.
+ * @property {string} bio - The fetched summary/biography for the character.
+ * @property {string} dialogueStyle - A descriptor for the character's speaking style.
+ * @property {string} [summary] - Optional full summary if different from the bio.
+ */
 export interface CharacterDetail extends WikiSearchResult {
-    name: string; // Already in WikiSearchResult as title, but explicit for clarity
-    wikiTitle: string; // Same as title, for consistency with other components
-    bio: string; // This will be the fetched summary
-    dialogueStyle: string; // Example: "formal", "analytical"
-    summary?: string; // Optional: full summary if different from bio snippet used initially
+    name: string;
+    wikiTitle: string;
+    bio: string;
+    dialogueStyle: string;
+    summary?: string;
 }
 
+/**
+ * @function WikiInterviewPage
+ * @description The main page component for the "WikiInterview" game. It orchestrates the setup,
+ * chat, reflection, and feedback phases of the activity.
+ * @returns {JSX.Element} The rendered WikiInterview page.
+ */
 const WikiInterviewPage = () => {
   const { t, i18n } = useTranslation();
-  const [selectedCharacters, setSelectedCharacters] = useState<WikiSearchResult[]>([]);
+  const [selectedCharacters, setSelectedCharacters] = useState<(WikiSearchResult | null)[]>([]);
   const [theme, setTheme] = useState("");
-  const [characterSummaries, setCharacterSummaries] = useState<{ [key: string]: string }>({});
+  const [characterSummaries, setCharacterSummaries] = useState<{ [key: number]: string | null }>({});
   const [currentPhase, setCurrentPhase] = useState<"selecting" | "chatting" | "reflecting" | "feedback">("selecting");
   const [messages, setMessages] = useState<Message[]>([]);
   const [userReflection, setUserReflection] = useState("");
   const [aiEvaluation, setAiEvaluation] = useState<AIScoreEvaluation | null>(null);
+  const [isEvaluating, setIsEvaluating] = useState(false);
 
+  /**
+   * @function getWikipediaLanguageCode
+   * @description Determines the language code for Wikipedia API calls based on the current app language.
+   * @returns {string} The language code (e.g., 'en', 'it').
+   */
   const getWikipediaLanguageCode = () => {
     const langMap: { [key: string]: string } = {
-      'it': 'it',
-      'en': 'en', 
-      'es': 'es',
-      'fr': 'fr',
-      'de': 'de'
+      'it': 'it', 'en': 'en', 'es': 'es', 'fr': 'fr', 'de': 'de'
     };
     return langMap[i18n.language] || 'it';
   };
-  const [isEvaluating, setIsEvaluating] = useState(false);
 
+  /**
+   * @function fetchWikiSummary
+   * @description Fetches the introductory summary of a Wikipedia article for a given character.
+   * @param {string} title - The title of the Wikipedia article.
+   * @param {number} index - The index (0 or 1) of the character being fetched.
+   */
   const fetchWikiSummary = async (title: string, index: number) => {
-    setCharacterSummaries(prevSummaries => {
-      const newSummaries = { ...prevSummaries };
-      newSummaries[index] = null; // Indicate loading
-      return newSummaries;
-    });
+    setCharacterSummaries(prev => ({ ...prev, [index]: null })); // Set to null to indicate loading
     try {
       const wikiLang = getWikipediaLanguageCode();
       const endpoint = `https://${wikiLang}.wikipedia.org/w/api.php?action=query&prop=extracts&exintro&explaintext&titles=${encodeURIComponent(title)}&format=json&origin=*&redirects=1`;
@@ -67,21 +96,19 @@ const WikiInterviewPage = () => {
       const pages = data.query.pages;
       const pageId = Object.keys(pages)[0];
       const extract = pages[pageId].extract || t('apps.wikiInterview.errors.noSummary');
-      setCharacterSummaries(prevSummaries => {
-        const newSummaries = { ...prevSummaries };
-        newSummaries[index] = extract;
-        return newSummaries;
-      });
+      setCharacterSummaries(prev => ({ ...prev, [index]: extract }));
     } catch (error) {
       console.error("Errore fetchWikiSummary:", error);
-      setCharacterSummaries(prevSummaries => {
-        const newSummaries = { ...prevSummaries };
-        newSummaries[index] = t('apps.wikiInterview.errors.summaryError');
-        return newSummaries;
-      });
+      setCharacterSummaries(prev => ({ ...prev, [index]: t('apps.wikiInterview.errors.summaryError') }));
     }
   };
 
+  /**
+   * @function handleCharacterSelect
+   * @description Updates the selected character and triggers fetching their summary.
+   * @param {number} index - The index of the character being selected.
+   * @param {WikiSearchResult | null} result - The selected character data, or null if cleared.
+   */
   const handleCharacterSelect = (index: number, result: WikiSearchResult | null) => {
     const newSelectedCharacters = [...selectedCharacters];
     newSelectedCharacters[index] = result;
@@ -90,14 +117,18 @@ const WikiInterviewPage = () => {
     if (result && result.title) {
       fetchWikiSummary(result.title, index); 
     } else {
-      setCharacterSummaries(prevSummaries => {
-        const newSummaries = { ...prevSummaries };
+      setCharacterSummaries(prev => {
+        const newSummaries = { ...prev };
         delete newSummaries[index];
         return newSummaries;
       });
     }
   };
   
+  /**
+   * @function handleStartDialogue
+   * @description Validates the setup and transitions the page to the "chatting" phase.
+   */
   const handleStartDialogue = () => {
     const errorMessage = t('apps.wikiInterview.errors.summaryError');
     if (selectedCharacters[0] && selectedCharacters[1] && characterSummaries[0] && characterSummaries[1] && theme.trim() && characterSummaries[0] !== errorMessage && characterSummaries[1] !== errorMessage) {
@@ -106,39 +137,39 @@ const WikiInterviewPage = () => {
     }
   };
 
+  /**
+   * @function handleMessagesUpdate
+   * @description A callback to update the page's message state from the child chat component.
+   * @param {WikiInterviewMessage[]} updatedMessagesFromChat - The updated message list from the chat component.
+   */
   const handleMessagesUpdate = useCallback((updatedMessagesFromChat: WikiInterviewMessage[]) => {
-    // Map messages from WikiInterviewChat's local type to the global Message type
-    const mappedMessages: Message[] = updatedMessagesFromChat.map(msg => {
-      let role: "user" | "assistant" | "system" | "character" = "assistant"; // Default for character messages
-      if (msg.role === "user") role = "user";
-      else if (msg.role === "system") role = "system";
-      // For 'character1' and 'character2', we map to 'assistant' and use characterName
-      return {
-        role: role,
-        content: msg.content,
-        characterName: (msg.role === "character1" || msg.role === "character2") ? msg.character : undefined,
-        // id and timestamp can be added if needed by global Message type
-      };
-    });
+    const mappedMessages: Message[] = updatedMessagesFromChat.map(msg => ({
+      role: msg.role === "user" ? "user" : "assistant",
+      content: msg.content,
+      characterName: (msg.role === "character1" || msg.role === "character2") ? msg.character : undefined,
+    }));
     setMessages(mappedMessages);
   }, []);
 
+  /**
+   * @function handleEndChatInPage
+   * @description A callback to transition the page from "chatting" to "reflecting".
+   */
   const handleEndChatInPage = useCallback(() => {
     setCurrentPhase("reflecting");
   }, []);
 
+  /**
+   * @function evaluateCurrentReflection
+   * @description Sends the conversation and reflection data to the server for AI evaluation.
+   * @param {string} reflection - The user's written reflection.
+   */
   const evaluateCurrentReflection = useCallback(async (reflection: string) => {
     if (!selectedCharacters[0] || !selectedCharacters[1] || !theme || messages.length === 0) {
-      setAiEvaluation({
-        textualFeedback: t('apps.wikiInterview.errors.insufficientData', {
-          defaultValue:
-            'Dati insufficienti per la valutazione (personaggi, tema o messaggi mancanti).',
-        }),
-      } as AIScoreEvaluation);
+      setAiEvaluation({ textualFeedback: t('apps.wikiInterview.errors.insufficientData') } as AIScoreEvaluation);
       setCurrentPhase("feedback");
       return;
     }
-
     setIsEvaluating(true);
     setAiEvaluation(null);
     try {
@@ -151,26 +182,29 @@ const WikiInterviewPage = () => {
       setAiEvaluation(evaluationResult);
     } catch (error) {
       console.error("Errore durante la valutazione:", error);
-      setAiEvaluation({
-        textualFeedback: t('apps.wikiInterview.errors.technicalReflection', {
-          defaultValue:
-            'Si è verificato un errore tecnico durante la valutazione della riflessione.',
-        }),
-      } as AIScoreEvaluation);
+      setAiEvaluation({ textualFeedback: t('apps.wikiInterview.errors.technicalReflection') } as AIScoreEvaluation);
     } finally {
       setIsEvaluating(false);
       setCurrentPhase("feedback");
     }
   }, [selectedCharacters, theme, messages, t]);
 
+  /**
+   * @function handleSubmitReflection
+   * @description Sets the user's reflection and triggers the evaluation process.
+   * @param {string} reflection - The user's submitted reflection text.
+   */
   const handleSubmitReflection = useCallback(async (reflection: string) => {
     setUserReflection(reflection);
-    setCurrentPhase("reflecting");
     await evaluateCurrentReflection(reflection);
   }, [evaluateCurrentReflection]);
 
+  /**
+   * @function handleStartNewDialogue
+   * @description Resets all state to begin a new interview session from the setup screen.
+   */
   const handleStartNewDialogue = () => {
-    setSelectedCharacters([null, null]);
+    setSelectedCharacters([]);
     setCharacterSummaries({});
     setTheme("");
     setCurrentPhase("selecting");
@@ -179,34 +213,28 @@ const WikiInterviewPage = () => {
     setMessages([]);
   };
 
+  /**
+   * @function getChatCharactersDetails
+   * @description A helper to format the selected character data into the structure required by the `WikiInterviewChat` component.
+   * @returns {[CharacterDetail, CharacterDetail] | null} An array of two character details, or null if setup is incomplete.
+   */
   const getChatCharactersDetails = (): [CharacterDetail, CharacterDetail] | null => {
-    if (selectedCharacters[0] && selectedCharacters[1] && characterSummaries[0] && characterSummaries[1]) {
-      // Ensure summaries are not error messages or null before proceeding
-      const errorMessage = t('apps.wikiInterview.errors.summaryError');
-      if (characterSummaries[0] === errorMessage || characterSummaries[1] === errorMessage || characterSummaries[0] === null || characterSummaries[1] === null) {
-        return null;
-      }
+    const char1 = selectedCharacters[0];
+    const char2 = selectedCharacters[1];
+    const summary1 = characterSummaries[0];
+    const summary2 = characterSummaries[1];
+    const errorMessage = t('apps.wikiInterview.errors.summaryError');
+
+    if (char1 && char2 && summary1 && summary2 && summary1 !== errorMessage && summary2 !== errorMessage) {
       return [
-        {
-          ...selectedCharacters[0],
-          name: selectedCharacters[0].title,
-          wikiTitle: selectedCharacters[0].title,
-          bio: characterSummaries[0],
-          dialogueStyle: t('apps.wikiInterview.characterStyles.erudite')
-        },
-        {
-          ...selectedCharacters[1],
-          name: selectedCharacters[1].title,
-          wikiTitle: selectedCharacters[1].title,
-          bio: characterSummaries[1],
-          dialogueStyle: t('apps.wikiInterview.characterStyles.reflective')
-        },
+        { ...char1, name: char1.title, wikiTitle: char1.title, bio: summary1, dialogueStyle: t('apps.wikiInterview.characterStyles.erudite') },
+        { ...char2, name: char2.title, wikiTitle: char2.title, bio: summary2, dialogueStyle: t('apps.wikiInterview.characterStyles.reflective') },
       ];
     }
     return null;
   };
 
-  const isLoadingSummaries = Object.values(characterSummaries).some(summary => summary === null) && selectedCharacters.length > 0;
+  const isLoadingSummaries = Object.values(characterSummaries).some(summary => summary === null);
 
   return <div className="flex flex-col min-h-screen bg-gray-900 text-white">
       <Navbar />
@@ -288,24 +316,13 @@ const WikiInterviewPage = () => {
             <WikiInterviewReflection onSubmit={handleSubmitReflection} />
           )}
 
-          {currentPhase === "reflecting" && isEvaluating && (
-            <div className="max-w-2xl mx-auto text-center py-10">
-              <p className="text-2xl text-gray-300">
-                {t('apps.wikiInterview.status.evaluating', {
-                  defaultValue: 'Valutazione della riflessione in corso...',
-                })}
-              </p>
-              {/* Consider adding a visual loader/spinner */}
-            </div>
-          )}
-
           {currentPhase === "feedback" && (
             <WikiInterviewFeedback
               userReflection={userReflection} 
               aiEvaluation={aiEvaluation?.textualFeedback || ""} 
               isLoading={isEvaluating}
               onStartNewChat={handleStartNewDialogue}
-              messages={messages} // These are now global Message[]
+              messages={messages}
               character1Name={selectedCharacters[0]?.title || t('common.na', { defaultValue: 'N/A' })}
               character2Name={selectedCharacters[1]?.title || t('common.na', { defaultValue: 'N/A' })}
               topic={theme}

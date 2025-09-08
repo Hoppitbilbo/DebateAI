@@ -1,3 +1,8 @@
+/**
+ * @file Renders the input section for the WikiInterview chat.
+ * @remarks This component includes controls for selecting which character to address,
+ * an input field for the user's message, and buttons to send a message or continue the dialogue.
+ */
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -6,6 +11,17 @@ import { ArrowRight, MessageCircle, Send } from "lucide-react";
 import { Character } from "./types";
 import { useTranslation } from "react-i18next";
 
+/**
+ * @interface ChatInputProps
+ * @description Defines the props for the ChatInput component.
+ * @property {[Character, Character]} characters - The two characters in the interview.
+ * @property {string} selectedCharacter - The name of the character currently being addressed ("all" for both).
+ * @property {(name: string) => void} setSelectedCharacter - Callback to set the character to be addressed.
+ * @property {"character1" | "character2"} nextSpeaker - Indicates which character is scheduled to speak next.
+ * @property {(message: string) => void} onSendMessage - Callback to send a message from the user.
+ * @property {() => void} onContinueDialogue - Callback to prompt the next character to speak without user input.
+ * @property {boolean} isLoading - Flag indicating if an AI response is being generated.
+ */
 interface ChatInputProps {
   characters: [Character, Character];
   selectedCharacter: string;
@@ -16,6 +32,12 @@ interface ChatInputProps {
   isLoading: boolean;
 }
 
+/**
+ * @function ChatInput
+ * @description A component that provides the user with controls for interacting with the interview chat.
+ * @param {ChatInputProps} props - The props for the component.
+ * @returns {JSX.Element} The rendered chat input section.
+ */
 const ChatInput = ({ 
   characters, 
   selectedCharacter, 
@@ -28,6 +50,10 @@ const ChatInput = ({
   const { t } = useTranslation();
   const [userInput, setUserInput] = useState("");
 
+  /**
+   * @function handleSend
+   * @description Trims the user input and calls the onSendMessage callback.
+   */
   const handleSend = () => {
     if (!userInput.trim() || isLoading) return;
     onSendMessage(userInput.trim());

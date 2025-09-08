@@ -1,13 +1,24 @@
+/**
+ * @file Renders the hero section for the application's homepage.
+ * @remarks This component displays the main headline, a description of the project,
+ * and call-to-action buttons. It also features a dynamic "random app" button
+ * and a decorative chat bubble animation.
+ */
 
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useMemo, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+/**
+ * @function HeroSection
+ * @description The main hero section component for the homepage. It includes the primary
+ * marketing copy and navigation buttons to engage the user.
+ * @returns {JSX.Element} The rendered hero section.
+ */
 const HeroSection = () => {
   const { t } = useTranslation();
   
-  // Define available apps to randomly choose from
   const apps = useMemo(() => [{
     path: "/apps/wiki-interview",
     name: t('apps.wikiInterview.name')
@@ -28,13 +39,11 @@ const HeroSection = () => {
     name: t('apps.impersonaTu.name')
   }], [t]);
 
-  // Select a random app on component render
   const randomApp = useMemo(() => {
     const randomIndex = Math.floor(Math.random() * apps.length);
     return apps[randomIndex];
   }, [apps]);
 
-  // Add staggered reveal animations
   const [isLoaded, setIsLoaded] = useState(false);
   useEffect(() => {
     setIsLoaded(true);

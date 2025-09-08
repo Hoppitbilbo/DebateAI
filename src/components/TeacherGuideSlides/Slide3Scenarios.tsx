@@ -1,8 +1,20 @@
+/**
+ * @file Renders a slide for the teacher's guide detailing the available educational scenarios.
+ * @remarks This component uses an accordion to present each activity, explaining its objective
+ * and the procedure for students to follow.
+ */
+
 import React from 'react';
-import { Search, Bot, Users, SchoolIcon, Lightbulb, TestTube2 } from 'lucide-react'; // Added TestTube2
+import { Search, Bot, Users, Lightbulb, TestTube2 } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { useTranslation, Trans } from 'react-i18next';
 
+/**
+ * @function Slide3Scenarios
+ * @description A slide component that outlines the various educational activities and scenarios available
+ * in the application. It provides a structured overview of each activity's goals and steps.
+ * @returns {JSX.Element} The rendered scenarios slide.
+ */
 const Slide3Scenarios = () => {
   const { t } = useTranslation();
 
@@ -95,7 +107,7 @@ const Slide3Scenarios = () => {
         <AccordionItem value="activity-4" className="bg-slate-700/50 rounded-lg shadow-md">
           <AccordionTrigger className="text-xl font-semibold text-fuchsia-300 hover:text-fuchsia-200 p-4">
             <div className="flex items-center gap-3">
-              <Lightbulb className="h-6 w-6" /> {/* Changed from SchoolIcon to Lightbulb for consistency */}
+              <Lightbulb className="h-6 w-6" />
               {t('teacherGuide.slide3.activity4.title')}
             </div>
           </AccordionTrigger>

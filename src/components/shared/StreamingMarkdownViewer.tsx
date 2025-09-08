@@ -1,15 +1,35 @@
+/**
+ * @file A component for rendering Markdown content with a streaming, typewriter-like effect.
+ * @remarks This component extends the `MarkdownViewer` by displaying the content character by character
+ * to simulate a streaming response from an AI.
+ */
+
 import React, { useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
+/**
+ * @interface StreamingMarkdownViewerProps
+ * @description Defines the props for the StreamingMarkdownViewer component.
+ * @property {string} content - The full Markdown content to be streamed.
+ * @property {boolean} [isStreaming=false] - If true, the content is displayed with a typewriter effect. If false, it's displayed instantly.
+ * @property {string} [className] - Optional additional CSS classes for the root container.
+ */
 interface StreamingMarkdownViewerProps {
   content: string;
   isStreaming?: boolean;
   className?: string;
 }
 
+/**
+ * @function StreamingMarkdownViewer
+ * @description A component that renders Markdown content with an optional streaming effect,
+ * simulating a real-time response.
+ * @param {StreamingMarkdownViewerProps} props - The props for the component.
+ * @returns {JSX.Element} The rendered streaming Markdown viewer.
+ */
 const StreamingMarkdownViewer: React.FC<StreamingMarkdownViewerProps> = ({ 
   content, 
   isStreaming = false, 
@@ -28,7 +48,7 @@ const StreamingMarkdownViewer: React.FC<StreamingMarkdownViewerProps> = ({
       const timer = setTimeout(() => {
         setDisplayContent(content.slice(0, currentIndex + 1));
         setCurrentIndex(currentIndex + 1);
-      }, 20); // Adjust speed as needed
+      }, 20);
 
       return () => clearTimeout(timer);
     }
@@ -63,7 +83,6 @@ const StreamingMarkdownViewer: React.FC<StreamingMarkdownViewerProps> = ({
               </code>
             );
           },
-          // Add styling for other markdown elements
           h1: ({ node, ...props }) => <h1 className="text-2xl font-bold mt-6 mb-4 text-gray-900" {...props} />,
           h2: ({ node, ...props }) => <h2 className="text-xl font-bold mt-5 mb-3 text-gray-800" {...props} />,
           h3: ({ node, ...props }) => <h3 className="text-lg font-bold mt-4 mb-2 text-gray-800" {...props} />,

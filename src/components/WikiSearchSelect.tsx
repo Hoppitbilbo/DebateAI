@@ -1,3 +1,9 @@
+/**
+ * @file Provides a component for searching and selecting a character from Wikipedia.
+ * @remarks This component features a debounced search input that queries the Wikipedia API
+ * and displays the results in a popover. It is used across various educational activities
+ * to allow users to choose a historical figure to interact with.
+ */
 
 import { useState, useEffect } from "react";
 import { Search, Loader2 } from "lucide-react";
@@ -18,16 +24,35 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 
+/**
+ * @interface WikiSearchResult
+ * @description Represents a single search result from the Wikipedia API.
+ * @property {string} title - The title of the Wikipedia article.
+ * @property {string} snippet - A short summary of the article.
+ * @property {number} pageid - The unique ID of the Wikipedia page.
+ */
 interface WikiSearchResult {
   title: string;
   snippet: string;
   pageid: number;
 }
 
+/**
+ * @interface WikiSearchSelectProps
+ * @description Defines the props for the WikiSearchSelect component.
+ * @property {(result: WikiSearchResult) => void} onSelect - Callback function that is triggered when a user selects a character from the search results.
+ */
 interface WikiSearchSelectProps {
   onSelect: (result: WikiSearchResult) => void;
 }
 
+/**
+ * @function WikiSearchSelect
+ * @description A reusable component that allows users to search Wikipedia for a character
+ * and select one from the results. It handles API calls, loading states, and debouncing.
+ * @param {WikiSearchSelectProps} props - The props for the component.
+ * @returns {JSX.Element} The rendered Wikipedia search and select component.
+ */
 const WikiSearchSelect = ({ onSelect }: WikiSearchSelectProps) => {
   const { t, i18n } = useTranslation();
   const [open, setOpen] = useState(false);
@@ -36,6 +61,11 @@ const WikiSearchSelect = ({ onSelect }: WikiSearchSelectProps) => {
   const [searchResults, setSearchResults] = useState<WikiSearchResult[]>([]);
   const [loading, setLoading] = useState(false);
 
+  /**
+   * @function getWikipediaLanguageCode
+   * @description Determines the appropriate Wikipedia language code based on the current i18n language setting.
+   * @returns {string} The two-letter language code for the Wikipedia API (e.g., 'it', 'en').
+   */
   const getWikipediaLanguageCode = () => {
     const langMap: { [key: string]: string } = {
       'it': 'it',
@@ -57,6 +87,11 @@ const WikiSearchSelect = ({ onSelect }: WikiSearchSelectProps) => {
     return () => clearTimeout(debounceTimer);
   }, [inputValue]);
 
+  /**
+   * @function handleSearch
+   * @description Fetches search results from the Wikipedia API based on the user's search term.
+   * @param {string} searchTerm - The term to search for.
+   */
   const handleSearch = async (searchTerm: string) => {
     if (!searchTerm) {
       setSearchResults([]);
@@ -77,7 +112,7 @@ const WikiSearchSelect = ({ onSelect }: WikiSearchSelectProps) => {
       
       const results: WikiSearchResult[] = data.query.search.map((item: any) => ({
         title: item.title,
-        snippet: item.snippet.replace(/<\/?[^>]+(>|$)/g, ""), // Rimuove i tag HTML
+        snippet: item.snippet.replace(/<\/?[^>]+(>|$)/g, ""),
         pageid: item.pageid,
       }));
       

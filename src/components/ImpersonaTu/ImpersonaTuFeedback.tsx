@@ -1,3 +1,9 @@
+/**
+ * @file Renders the feedback screen for the "ImpersonaTu" (Impersonate) game.
+ * @remarks This component displays the user's reflection, the AI's evaluation of their impersonation,
+ * and the full conversation history. It also provides options to download the activity summary
+ * or start a new impersonation session.
+ */
 
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -9,6 +15,18 @@ import { downloadReflection } from "@/utils/downloadUtils";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 
+/**
+ * @interface ImpersonaTuFeedbackProps
+ * @description Defines the props for the ImpersonaTuFeedback component.
+ * @property {string} userReflection - The reflection text submitted by the user.
+ * @property {string | null} aiEvaluation - The AI-generated feedback on the user's impersonation.
+ * @property {boolean} isLoading - Flag indicating if the AI evaluation is being generated.
+ * @property {() => void} onStartNewChat - Callback function to begin a new game session.
+ * @property {Message[]} messages - The complete conversation history.
+ * @property {string} userCharacterName - The name of the character the user was impersonating.
+ * @property {string} aiCharacterName - The name of the character the AI was impersonating.
+ * @property {string} topic - The topic or scenario of the conversation.
+ */
 interface ImpersonaTuFeedbackProps {
   userReflection: string;
   aiEvaluation: string | null;
@@ -20,6 +38,13 @@ interface ImpersonaTuFeedbackProps {
   topic: string;
 }
 
+/**
+ * @function ImpersonaTuFeedback
+ * @description A component that presents the final feedback for the "ImpersonaTu" activity.
+ * It includes the user's reflection, AI-generated feedback, and a collapsible view of the conversation.
+ * @param {ImpersonaTuFeedbackProps} props - The props for the component.
+ * @returns {JSX.Element} The rendered feedback screen.
+ */
 const ImpersonaTuFeedback: React.FC<ImpersonaTuFeedbackProps> = ({
   userReflection,
   aiEvaluation,
@@ -33,10 +58,19 @@ const ImpersonaTuFeedback: React.FC<ImpersonaTuFeedbackProps> = ({
   const { t } = useTranslation();
   const [isConversationExpanded, setIsConversationExpanded] = useState(true);
 
+  /**
+   * @function toggleConversation
+   * @description Toggles the visibility of the conversation history section.
+   */
   const toggleConversation = () => {
     setIsConversationExpanded(!isConversationExpanded);
   };
 
+  /**
+   * @function handleDownload
+   * @description Handles the download of the activity summary, including conversation, reflection, and feedback.
+   * Displays a toast notification on success or failure.
+   */
   const handleDownload = () => {
     try {
       downloadReflection({

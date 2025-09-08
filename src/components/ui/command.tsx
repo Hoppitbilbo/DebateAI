@@ -1,3 +1,11 @@
+/**
+ * @file A command menu and palette that can be used as a search input or a command-line interface.
+ * @remarks This component is a wrapper around `cmdk`, a command menu component for React.
+ * It is part of the `shadcn/ui` collection and provides a set of components for building command palettes.
+ * @see https://cmdk.paco.me/
+ * @see https://ui.shadcn.com/docs/components/command
+ */
+
 import * as React from "react"
 import { type DialogProps } from "@radix-ui/react-dialog"
 import { Command as CommandPrimitive } from "cmdk"

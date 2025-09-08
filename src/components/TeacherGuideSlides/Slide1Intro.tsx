@@ -1,7 +1,19 @@
+/**
+ * @file Renders the introductory slide for the teacher's guide.
+ * @remarks This component serves as the landing page for the guide, outlining what teachers will learn
+ * and the main objectives of the educational platform.
+ */
+
 import React from 'react';
 import { Zap, BookOpen, Lightbulb } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
+/**
+ * @function Slide1Intro
+ * @description The introductory slide component for the teacher's guide.
+ * It presents the title, subtitle, and key learning points and objectives of the guide.
+ * @returns {JSX.Element} The rendered introductory slide.
+ */
 const Slide1Intro = () => {
   const { t } = useTranslation();
 

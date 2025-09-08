@@ -1,3 +1,12 @@
+/**
+ * @file A succinct message that is displayed temporarily.
+ * @remarks This component is a wrapper around the `Toast` component from `radix-ui/react-toast`.
+ * It is styled using `tailwindcss` and `class-variance-authority` to provide different visual styles.
+ * It is part of the `shadcn/ui` collection.
+ * @see https://www.radix-ui.com/primitives/docs/components/toast
+ * @see https://ui.shadcn.com/docs/components/toast
+ */
+
 import * as React from "react"
 import * as ToastPrimitives from "@radix-ui/react-toast"
 import { cva, type VariantProps } from "class-variance-authority"
@@ -7,6 +16,10 @@ import { cn } from "@/lib/utils"
 
 const ToastProvider = ToastPrimitives.Provider
 
+/**
+ * @description The viewport for the toasts.
+ * @param {React.ComponentPropsWithoutRef<typeof ToastPrimitives.Viewport>} props - The props for the component.
+ */
 const ToastViewport = React.forwardRef<
   React.ElementRef<typeof ToastPrimitives.Viewport>,
   React.ComponentPropsWithoutRef<typeof ToastPrimitives.Viewport>
@@ -38,6 +51,11 @@ const toastVariants = cva(
   }
 )
 
+/**
+ * @description The main toast component.
+ * @param {React.ComponentPropsWithoutRef<typeof ToastPrimitives.Root> & VariantProps<typeof toastVariants>} props - The props for the component.
+ * @param {"default" | "destructive"} [props.variant] - The visual style of the toast.
+ */
 const Toast = React.forwardRef<
   React.ElementRef<typeof ToastPrimitives.Root>,
   React.ComponentPropsWithoutRef<typeof ToastPrimitives.Root> &
@@ -53,6 +71,10 @@ const Toast = React.forwardRef<
 })
 Toast.displayName = ToastPrimitives.Root.displayName
 
+/**
+ * @description An action button for the toast.
+ * @param {React.ComponentPropsWithoutRef<typeof ToastPrimitives.Action>} props - The props for the component.
+ */
 const ToastAction = React.forwardRef<
   React.ElementRef<typeof ToastPrimitives.Action>,
   React.ComponentPropsWithoutRef<typeof ToastPrimitives.Action>
@@ -68,6 +90,10 @@ const ToastAction = React.forwardRef<
 ))
 ToastAction.displayName = ToastPrimitives.Action.displayName
 
+/**
+ * @description The close button for the toast.
+ * @param {React.ComponentPropsWithoutRef<typeof ToastPrimitives.Close>} props - The props for the component.
+ */
 const ToastClose = React.forwardRef<
   React.ElementRef<typeof ToastPrimitives.Close>,
   React.ComponentPropsWithoutRef<typeof ToastPrimitives.Close>
@@ -86,6 +112,10 @@ const ToastClose = React.forwardRef<
 ))
 ToastClose.displayName = ToastPrimitives.Close.displayName
 
+/**
+ * @description The title of the toast.
+ * @param {React.ComponentPropsWithoutRef<typeof ToastPrimitives.Title>} props - The props for the component.
+ */
 const ToastTitle = React.forwardRef<
   React.ElementRef<typeof ToastPrimitives.Title>,
   React.ComponentPropsWithoutRef<typeof ToastPrimitives.Title>
@@ -98,6 +128,10 @@ const ToastTitle = React.forwardRef<
 ))
 ToastTitle.displayName = ToastPrimitives.Title.displayName
 
+/**
+ * @description The description of the toast.
+ * @param {React.ComponentPropsWithoutRef<typeof ToastPrimitives.Description>} props - The props for the component.
+ */
 const ToastDescription = React.forwardRef<
   React.ElementRef<typeof ToastPrimitives.Description>,
   React.ComponentPropsWithoutRef<typeof ToastPrimitives.Description>

@@ -1,3 +1,9 @@
+/**
+ * @file Renders the feedback screen for the "WikiInterview" activity.
+ * @remarks This component displays the user's reflection, the AI's evaluation of the interview,
+ * and the full conversation history. It provides options to download the summary or start a new interview.
+ */
+
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,9 +14,21 @@ import { downloadReflection } from "@/utils/downloadUtils";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 
+/**
+ * @interface WikiInterviewFeedbackProps
+ * @description Defines the props for the WikiInterviewFeedback component.
+ * @property {string | null} userReflection - The reflection text submitted by the user. Can be null if not provided.
+ * @property {string | null} aiEvaluation - The AI-generated feedback on the interview.
+ * @property {boolean} isLoading - Flag indicating if the AI evaluation is being generated.
+ * @property {() => void} onStartNewChat - Callback function to initiate a new interview session.
+ * @property {Message[]} messages - The complete history of the conversation.
+ * @property {string} character1Name - The name of the first character in the interview.
+ * @property {string} character2Name - The name of the second character in the interview.
+ * @property {string} topic - The topic of the interview.
+ */
 interface WikiInterviewFeedbackProps {
-  userReflection: string | null; // Changed from reflection
-  aiEvaluation: string | null;   // Changed from evaluation
+  userReflection: string | null;
+  aiEvaluation: string | null;
   isLoading: boolean;
   onStartNewChat: () => void;
   messages: Message[];
@@ -19,6 +37,13 @@ interface WikiInterviewFeedbackProps {
   topic: string;
 }
 
+/**
+ * @function WikiInterviewFeedback
+ * @description A component that presents the final feedback for the "WikiInterview" activity.
+ * It shows the user's reflection, AI-generated feedback, and a collapsible conversation history.
+ * @param {WikiInterviewFeedbackProps} props - The props for the component.
+ * @returns {JSX.Element} The rendered feedback screen.
+ */
 const WikiInterviewFeedback: React.FC<WikiInterviewFeedbackProps> = ({
   userReflection,
   aiEvaluation,
@@ -32,10 +57,19 @@ const WikiInterviewFeedback: React.FC<WikiInterviewFeedbackProps> = ({
   const { t } = useTranslation();
   const [isConversationExpanded, setIsConversationExpanded] = useState(true);
 
+  /**
+   * @function toggleConversation
+   * @description Toggles the visibility of the conversation history section.
+   */
   const toggleConversation = () => {
     setIsConversationExpanded(!isConversationExpanded);
   };
 
+  /**
+   * @function handleDownload
+   * @description Handles the download of the activity summary, including the conversation and reflections.
+   * Displays a toast notification on success or failure.
+   */
   const handleDownload = () => {
     try {
       downloadReflection({
@@ -91,13 +125,13 @@ const WikiInterviewFeedback: React.FC<WikiInterviewFeedbackProps> = ({
             title={t('feedback.yourReflection')}
             content={userReflection || t('common.reflection.empty', { defaultValue: "No reflection provided." })}
             contentClassName="prose dark:prose-invert max-w-none whitespace-pre-wrap text-gray-200 bg-gray-700/50 p-4 rounded-md"
-            isLoading={isLoading && !aiEvaluation} // Show loading only if AI eval is also loading
+            isLoading={isLoading && !aiEvaluation}
           />
           <ReflectionDisplayCard
             title={t('common.aiFeedback.title')}
             content={aiEvaluation}
             isLoading={isLoading}
-            renderAsHtml={true} // Assuming AI eval is markdown
+            renderAsHtml={true}
             contentClassName="prose dark:prose-invert max-w-none whitespace-pre-wrap text-white bg-gray-700/50 p-4 rounded-md [&_*]:text-white [&_h1]:text-white [&_h2]:text-white [&_h3]:text-white [&_h4]:text-white [&_h5]:text-white [&_h6]:text-white [&_p]:text-white [&_li]:text-white [&_strong]:text-white [&_em]:text-white"
           />
         </div>

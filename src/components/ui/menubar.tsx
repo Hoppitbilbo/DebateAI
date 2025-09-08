@@ -1,3 +1,12 @@
+/**
+ * @file A visually persistent menu bar that is horizontally displayed.
+ * @remarks This component is a wrapper around the `Menubar` component from `radix-ui/react-menubar`.
+ * It is styled using `tailwindcss` and is part of the `shadcn/ui` collection.
+ * It is commonly used for application-level menus.
+ * @see https://www.radix-ui.com/primitives/docs/components/menubar
+ * @see https://ui.shadcn.com/docs/components/menubar
+ */
+
 import * as React from "react"
 import * as MenubarPrimitive from "@radix-ui/react-menubar"
 import { Check, ChevronRight, Circle } from "lucide-react"

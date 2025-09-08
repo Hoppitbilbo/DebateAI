@@ -1,3 +1,11 @@
+/**
+ * @file A date picker component that allows users to select a date or a range of dates.
+ * @remarks This component is a styled wrapper around the `react-day-picker` library.
+ * It is part of the `shadcn/ui` collection and is customized with `tailwindcss` for a consistent look and feel.
+ * @see https://react-day-picker.js.org/
+ * @see https://ui.shadcn.com/docs/components/calendar
+ */
+
 import * as React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { DayPicker } from "react-day-picker";

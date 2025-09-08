@@ -1,3 +1,11 @@
+/**
+ * @file Displays a menu to the user — such as a set of actions or functions — triggered by a right-click.
+ * @remarks This component is a wrapper around the `ContextMenu` component from `radix-ui/react-context-menu`.
+ * It is styled using `tailwindcss` and is part of the `shadcn/ui` collection.
+ * @see https://www.radix-ui.com/primitives/docs/components/context-menu
+ * @see https://ui.shadcn.com/docs/components/context-menu
+ */
+
 import * as React from "react"
 import * as ContextMenuPrimitive from "@radix-ui/react-context-menu"
 import { Check, ChevronRight, Circle } from "lucide-react"

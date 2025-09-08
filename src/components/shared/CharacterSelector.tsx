@@ -1,3 +1,10 @@
+/**
+ * @file A generic component for searching and selecting a character.
+ * @remarks This component provides a UI for searching for characters using a provided search function
+ * and displaying the results for selection. It is designed to be reusable across different
+ * educational activities that require character selection.
+ */
+
 import React, { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,12 +14,30 @@ import { Badge } from '@/components/ui/badge';
 import { Search, User, Sparkles, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
+/**
+ * @interface Character
+ * @description Represents a character that can be selected.
+ * @property {string} title - The name of the character.
+ * @property {string} snippet - A brief description or bio of the character.
+ * @property {number} [pageid] - An optional unique identifier, often from an API like Wikipedia.
+ */
 interface Character {
   title: string;
   snippet: string;
   pageid?: number;
 }
 
+/**
+ * @interface CharacterSelectorProps
+ * @description Defines the props for the CharacterSelector component.
+ * @property {Character | null} selectedCharacter - The currently selected character, or null if none is selected.
+ * @property {(character: Character) => void} onCharacterSelect - Callback function triggered when a character is selected.
+ * @property {(query: string) => Promise<Character[]>} searchFunction - An async function that takes a search query and returns a promise resolving to an array of characters.
+ * @property {string} [title] - Optional title for the component.
+ * @property {string} [description] - Optional description to be displayed below the title.
+ * @property {string} [placeholder] - Optional placeholder text for the search input.
+ * @property {string} [className] - Optional additional CSS classes for the component's root element.
+ */
 interface CharacterSelectorProps {
   selectedCharacter: Character | null;
   onCharacterSelect: (character: Character) => void;
@@ -23,6 +48,13 @@ interface CharacterSelectorProps {
   className?: string;
 }
 
+/**
+ * @function CharacterSelector
+ * @description A reusable UI component for searching and selecting a character. It abstracts
+ * the logic for handling search input, displaying loading states, and showing results.
+ * @param {CharacterSelectorProps} props - The props for the component.
+ * @returns {JSX.Element} The rendered character selector component.
+ */
 const CharacterSelector: React.FC<CharacterSelectorProps> = ({
   selectedCharacter,
   onCharacterSelect,
@@ -36,6 +68,11 @@ const CharacterSelector: React.FC<CharacterSelectorProps> = ({
   const [searchResults, setSearchResults] = useState<Character[]>([]);
   const [isSearching, setIsSearching] = useState(false);
 
+  /**
+   * @function handleSearch
+   * @description Initiates the character search using the provided `searchFunction`.
+   * It handles loading states and displays toasts for feedback.
+   */
   const handleSearch = async () => {
     if (!searchQuery.trim()) {
       toast.warning('Inserisci un termine di ricerca');
@@ -59,6 +96,11 @@ const CharacterSelector: React.FC<CharacterSelectorProps> = ({
     }
   };
 
+  /**
+   * @function handleKeyPress
+   * @description Handles the key press event on the search input to trigger search on "Enter".
+   * @param {React.KeyboardEvent} e - The keyboard event.
+   */
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !isSearching) {
       handleSearch();

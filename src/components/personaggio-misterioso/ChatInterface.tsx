@@ -1,3 +1,8 @@
+/**
+ * @file Renders the main chat interface for the "Personaggio Misterioso" game.
+ * @remarks This component handles the display of the conversation, user input for questions,
+ * and visual feedback for loading states and remaining questions.
+ */
 
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -6,6 +11,18 @@ import ReactMarkdown from 'react-markdown';
 import { Message } from "./types";
 import { useTranslation } from "react-i18next";
 
+/**
+ * @interface ChatInterfaceProps
+ * @description Defines the props for the ChatInterface component.
+ * @property {string} currentQuestion - The current text in the question input field.
+ * @property {(value: string) => void} onQuestionChange - Callback for when the question input changes.
+ * @property {() => void} onAskQuestion - Callback to submit the current question.
+ * @property {number} questionsLeft - The number of questions the user has remaining.
+ * @property {Message[]} conversation - The array of messages in the conversation history.
+ * @property {boolean} showChat - Whether the chat history is currently visible.
+ * @property {() => void} onToggleChat - Callback to toggle the visibility of the chat history.
+ * @property {boolean} [isResponding] - Optional flag to indicate if the AI is currently generating a response.
+ */
 interface ChatInterfaceProps {
   currentQuestion: string;
   onQuestionChange: (value: string) => void;
@@ -14,9 +31,16 @@ interface ChatInterfaceProps {
   conversation: Message[];
   showChat: boolean;
   onToggleChat: () => void;
-  isResponding?: boolean; // Added isResponding prop
+  isResponding?: boolean;
 }
 
+/**
+ * @function ChatInterface
+ * @description The user interface for the conversation part of the "Personaggio Misterioso" game.
+ * It includes the conversation display, a textarea for user questions, and a send button.
+ * @param {ChatInterfaceProps} props - The props for the component.
+ * @returns {JSX.Element} The rendered chat interface.
+ */
 const ChatInterface = ({
   currentQuestion,
   onQuestionChange,
@@ -95,7 +119,7 @@ const ChatInterface = ({
         </div>
         <Button 
           className="bg-education hover:bg-education-dark shrink-0"
-          size="lg" // Made button slightly larger for better touch target
+          size="lg"
           onClick={onAskQuestion}
           disabled={questionsLeft === 0 || !currentQuestion.trim() || isResponding}
         >

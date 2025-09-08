@@ -1,10 +1,17 @@
+/**
+ * @file Manages the entire "Doppia Intervista" (Double Interview) game flow.
+ * @remarks This component orchestrates the simultaneous chat with two AI characters,
+ * handles user input, manages game state (chatting, reflection, feedback), and
+ * coordinates with AI services for responses and evaluations.
+ */
+
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
-import { model, startChat } from "@/services/aiService";
+import { startChat } from "@/services/aiService";
 import { getAIGameAndReflectionEvaluation, ConversationData } from "@/utils/evaluationUtils";
 import { Message as EvaluationMessage } from "@/types/conversation";
 import AppLayout from "@/components/shared/AppLayout";
@@ -13,21 +20,47 @@ import ReflectionInterface from "@/components/shared/ReflectionInterface";
 import FeedbackInterface from "@/components/shared/FeedbackInterface";
 import { ChatSession } from "@google/generative-ai";
 
+/**
+ * @interface Character
+ * @description Defines the structure for an AI character in the interview.
+ * @property {string} name - The character's name.
+ * @property {string} snippet - A biographical snippet used as context for the AI.
+ */
 interface Character {
   name: string;
-  snippet: string; // This will be used as the bio/context for the AI
+  snippet: string;
 }
 
-interface Message { // This is the local Message type for DoppiaIntervista display
-  character: string; // "Tu" (User), or character.name
+/**
+ * @interface Message
+ * @description Represents a message in one of the individual chat displays.
+ * @property {string} character - The name of the message sender (e.g., "Tu" for user, or the character's name).
+ * @property {string} content - The text content of the message.
+ */
+interface Message {
+  character: string;
   content: string;
 }
 
+/**
+ * @interface DoppiaIntervistaChatProps
+ * @description Defines the props for the DoppiaIntervistaChat component.
+ * @property {Character} character1 - The first character for the interview.
+ * @property {Character} character2 - The second character for the interview.
+ */
 interface DoppiaIntervistaChatProps {
   character1: Character;
   character2: Character;
 }
 
+/**
+ * @function DoppiaIntervistaChat
+ * @description The main component for the "Doppia Intervista" game. It renders two parallel chat windows,
+ * manages the conversation state with each character, and controls the transitions between chatting,
+ * reflection, and feedback phases.
+ * @param {DoppiaIntervistaChatProps} props - The props for the component.
+ * @returns {JSX.Element} The rendered game interface.
+ */
 const DoppiaIntervistaChat = ({ character1, character2 }: DoppiaIntervistaChatProps) => {
   const { t } = useTranslation();
   
@@ -54,6 +87,14 @@ const DoppiaIntervistaChat = ({ character1, character2 }: DoppiaIntervistaChatPr
   const [aiEvaluation, setAiEvaluation] = useState<string | null>(null);
   const [isEvaluating, setIsEvaluating] = useState(false);
 
+  /**
+   * @function getAIResponse
+   * @description Fetches a response from a single AI character based on the user's input and chat history.
+   * @param {Character} char - The character to get a response from.
+   * @param {string} userInput - The user's latest message.
+   * @param {Message[]} chatHistory - The conversation history with this specific character.
+   * @returns {Promise<string>} A promise that resolves to the AI's response text.
+   */
   const getAIResponse = async (
     char: Character, 
     userInput: string, 
@@ -70,7 +111,6 @@ const DoppiaIntervistaChat = ({ character1, character2 }: DoppiaIntervistaChatPr
         if (msg.character === t('chat.you')) {
           await chat.sendMessage(msg.content);
         } else if (msg.character === char.name) {
-          // This is a message from the assistant, so we need to make sure the history is correct
           const result = await chat.sendMessage(userInput);
           const response = await result.response;
           const aiText = response.text();
@@ -90,6 +130,10 @@ const DoppiaIntervistaChat = ({ character1, character2 }: DoppiaIntervistaChatPr
     }
   };
 
+  /**
+   * @function handleSend
+   * @description Sends the user's input to the selected character(s) and updates the chat states.
+   */
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
 
@@ -123,30 +167,36 @@ const DoppiaIntervistaChat = ({ character1, character2 }: DoppiaIntervistaChatPr
     setIsLoading(false);
   };
   
+  /**
+   * @function handleEndActivity
+   * @description Transitions the game to the reflection phase.
+   */
   const handleEndActivity = () => {
     setActivityPhase("reflection");
   };
 
+  /**
+   * @function handleReflectionSubmit
+   * @description Submits the user's reflection and triggers the AI evaluation process.
+   * @param {string} reflection - The user's written reflection.
+   */
   const handleReflectionSubmit = async (reflection: string) => {
     setUserReflection(reflection);
     setActivityPhase("feedback");
     setIsEvaluating(true);
     setAiEvaluation(null);
 
-    // Construct combined messages for evaluation and feedback display
     const combinedMessagesForEvaluation: EvaluationMessage[] = [];
-    const processedUserMessages = new Set<string>(); // To handle cases where user asks same question multiple times if needed
+    const processedUserMessages = new Set<string>();
 
     messages1.forEach((msg1, index) => {
       if (msg1.character === "Tu") {
         const userContent = msg1.content;
-        // Add user message once
-        if (!processedUserMessages.has(userContent + index)) { // Add index to ensure uniqueness if same question is asked
+        if (!processedUserMessages.has(userContent + index)) {
           combinedMessagesForEvaluation.push({ role: "user", content: userContent });
           processedUserMessages.add(userContent + index);
         }
 
-        // Find corresponding response from character1
         const char1Response = messages1[index + 1];
         if (char1Response && char1Response.character === character1.name) {
           combinedMessagesForEvaluation.push({
@@ -156,10 +206,8 @@ const DoppiaIntervistaChat = ({ character1, character2 }: DoppiaIntervistaChatPr
           });
         }
 
-        // Find corresponding response from character2
-        // This requires finding the same user message in messages2's timeline
         const userMessageIndexInM2 = messages2.findIndex(
-          (m2, m2Idx) => m2.character === "Tu" && m2.content === userContent && m2Idx >= index // Search from a similar point
+          (m2, m2Idx) => m2.character === "Tu" && m2.content === userContent && m2Idx >= index
         );
 
         if (userMessageIndexInM2 !== -1) {
@@ -178,7 +226,7 @@ const DoppiaIntervistaChat = ({ character1, character2 }: DoppiaIntervistaChatPr
     try {
       const conversationData: ConversationData = {
         character: `${character1.name} & ${character2.name}`,
-        topic: "Doppia Intervista", // Or a more specific topic
+        topic: "Doppia Intervista",
         messages: combinedMessagesForEvaluation,
       };
 
@@ -197,42 +245,44 @@ const DoppiaIntervistaChat = ({ character1, character2 }: DoppiaIntervistaChatPr
     }
   };
   
-  // Helper to get combined messages for feedback display
+  /**
+   * @function getCombinedMessagesForDisplay
+   * @description Combines messages from both characters into a single chronological feed for display in the feedback screen.
+   * @returns {EvaluationMessage[]} An array of combined messages.
+   */
   const getCombinedMessagesForDisplay = (): EvaluationMessage[] => {
     const combined: EvaluationMessage[] = [];
     let i = 0, j = 0;
     while (i < messages1.length || j < messages2.length) {
-      // Prioritize user messages from messages1 as the primary timeline
       if (i < messages1.length && messages1[i].character === "Tu") {
         combined.push({ role: "user", content: messages1[i].content });
-        // Add char1's response if it exists
         if (i + 1 < messages1.length && messages1[i+1].character === character1.name) {
           combined.push({ role: "assistant", content: messages1[i+1].content, characterName: character1.name });
         }
-        // Try to find corresponding char2 response
         const userMsgContent = messages1[i].content;
         const m2UserIdx = messages2.findIndex(m => m.character === "Tu" && m.content === userMsgContent);
         if (m2UserIdx !== -1 && m2UserIdx + 1 < messages2.length && messages2[m2UserIdx+1].character === character2.name) {
            combined.push({ role: "assistant", content: messages2[m2UserIdx+1].content, characterName: character2.name });
         }
-        i += 2; // Move past user and assistant message in m1
-        // Advance j in messages2 past this user interaction
+        i += 2;
         if(m2UserIdx !== -1) j = m2UserIdx + 2;
-      } else if (i < messages1.length) { // char1 message without a preceding user message (e.g. initial)
+      } else if (i < messages1.length) {
          combined.push({ role: "assistant", content: messages1[i].content, characterName: character1.name });
          i++;
-      } else if (j < messages2.length && messages2[j].character !== "Tu") { // char2 message without a preceding user message
+      } else if (j < messages2.length && messages2[j].character !== "Tu") {
          combined.push({ role: "assistant", content: messages2[j].content, characterName: character2.name });
          j++;
-      } else { // Safety break for infinite loops, though logic should prevent this
+      } else {
           break;
       }
     }
-     // Filter out initial system messages if they are not desired in the final display
     return combined.filter(msg => !(msg.role === "assistant" && (msg.content.startsWith("Ciao, sono ") || msg.content.startsWith("Benvenuto! Sono"))));
   };
 
-
+  /**
+   * @function handleStartNewChat
+   * @description Resets the game state to start a new interview.
+   */
   const handleStartNewChat = () => {
     setMessages1([
       {
