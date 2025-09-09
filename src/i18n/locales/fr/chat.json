@@ -1,0 +1,9 @@
+{
+  "placeholder": "Écrivez votre message...",
+  "endActivity": "Terminer l'Activité",
+  "startNewChat": "Nouvelle Conversation",
+  "technicalProblem": "J'ai rencontré un problème technique.",
+  "noResponse": "Je n'ai pas de réponse pour le moment.",
+  "errorResponse": "Désolé, j'ai rencontré une erreur en répondant en tant que {{character}}.",
+  "you": "Vous"
+}

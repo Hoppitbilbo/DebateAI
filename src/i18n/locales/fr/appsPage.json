@@ -1,0 +1,42 @@
+{
+  "title": "Applications d'Intelligence Artificielle pour l'Éducation",
+  "subtitle": "Explorez notre collection d'outils d'IA pour l'apprentissage interactif.",
+  "badges": {
+    "new": "Nouveau",
+    "comingSoon": "Bientôt"
+  },
+  "buttons": {
+    "launchApp": "Lancer l'Application",
+    "comingSoon": "Bientôt"
+  },
+  "appCards": {
+    "wikiInterview": {
+      "title": "Dialogue Historique IA",
+      "description": "Conversez avec des personnages IA basés sur le contenu de Wikipédia, transformant les sujets éducatifs en conversations interactives."
+    },
+    "doppiaIntervista": {
+      "title": "Double Interview",
+      "description": "Interagissez simultanément avec deux figures historiques dans des conversations parallèles, créant un dialogue éducatif unique."
+    },
+    "wikiChatbot": {
+      "title": "WikiChat IA",
+      "description": "Chattez avec une intelligence artificielle qui représente n'importe quel sujet de Wikipédia, parfait pour des approfondissements éducatifs interactifs."
+    },
+    "personaggioMisterioso": {
+      "title": "Devinez le Personnage Mystérieux",
+      "description": "Défiez l'IA en posant des questions pour deviner la figure historique choisie. Vous avez un nombre limité de questions pour découvrir l'identité mystérieuse !"
+    },
+    "promptEngineer": {
+      "title": "Créateur de Prompts pour l'Enseignement",
+      "description": "Aide les enseignants et les étudiants à créer des prompts efficaces pour l'intelligence artificielle dans les activités éducatives et d'apprentissage."
+    },
+    "convinciTu": {
+      "title": "Convainquez VOUS",
+      "description": "Défiez vos compétences de persuasion en essayant de convaincre des figures historiques de vos idées."
+    },
+    "impersonaTu": {
+      "title": "Incarnez Vous",
+      "description": "Dialoguez avec une figure historique en en interprétant une autre. Testez vos compétences d'empathie !"
+    }
+  }
+}

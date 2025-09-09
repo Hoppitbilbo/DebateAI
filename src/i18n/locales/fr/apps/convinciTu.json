@@ -1,0 +1,53 @@
+{
+  "name": "Convaincs-moi",
+  "title": "Convaincs-moi",
+  "subtitle": "Essayez de convaincre un personnage historique sur un sujet spécifique",
+  "description": "Essayez de convaincre des figures historiques de vos idées",
+  "newChatSuccess": "Nouveau chat commencé !",
+  "errors": {
+    "responseGeneration": "Erreur lors de la génération de la réponse.",
+    "evaluationGeneration": "Erreur lors de la génération de l'évaluation."
+  },
+  "characterSelection": {
+    "label": "Choisissez un personnage",
+    "placeholder": "Rechercher un personnage historique..."
+  },
+  "topic": {
+    "label": "De quoi voulez-vous convaincre {{characterName}} ?",
+    "placeholder": "ex: que la pizza à l'ananas est une excellente idée"
+  },
+  "startButton": "Commencer le Chat",
+  "chat": {
+    "title": "Conversation",
+    "placeholder": "Écrivez votre argument persuasif...",
+    "endButton": "Terminer le Chat et Réfléchir",
+    "currentPromptLabel": "Prompt Actuel :",
+    "promptValue": "Convainquez {{characterName}} que {{topic}}",
+    "emptyConversation": "La conversation apparaîtra ici",
+    "userLabel": "Vous",
+    "endActivityButton": "Terminer l'Activité"
+  },
+  "reflection": {
+    "title": "Réflexion sur la Persuasion",
+    "description": "Réfléchissez à votre tentative de persuader le personnage.",
+    "placeholder": "Quelles stratégies avez-vous utilisées ? Qu'est-ce qui a fonctionné et qu'est-ce qui n'a pas fonctionné ?",
+    "questions": {
+      "success": "Avez-vous réussi à convaincre la figure historique?",
+      "strategies": "Quelles stratégies avez-vous utilisées qui ont été efficaces?",
+      "difficulties": "Quelles ont été les principales difficultés que vous avez rencontrées?",
+      "differently": "Que feriez-vous différemment la prochaine fois?",
+      "convinced": "Pensez-vous avoir réussi à les convaincre? Comment?"
+    }
+  },
+  "feedback": {
+    "title": "Retour",
+    "subtitle": "Voici un résumé de votre conversation et l'évaluation de l'IA.",
+    "conversationHistory": "Historique de Conversation",
+    "yourReflection": "Votre Réflexion",
+    "aiFeedback": "Retour de l'IA",
+    "downloadReflection": "Télécharger la Réflexion",
+    "startNewChat": "Commencer un Nouveau Chat",
+    "downloadSuccess": "Réflexion téléchargée avec succès!",
+    "downloadError": "Erreur lors du téléchargement de la réflexion"
+  }
+}
