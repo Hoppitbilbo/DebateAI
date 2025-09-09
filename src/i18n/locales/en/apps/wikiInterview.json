@@ -1,0 +1,50 @@
+{
+  "name": "Wiki Interview",
+  "title": "Historical AI Dialogue",
+  "subtitle": "Interview historical figures",
+  "description": "Create and analyze deep conversations between two historical figures based on their Wikipedia profiles.",
+  "errors": {
+    "fetchError": "Error retrieving data from Wikipedia for {{title}}",
+    "noSummary": "No summary found.",
+    "summaryError": "Could not retrieve summary for this character."
+  },
+  "setup": {
+    "buildDialogue": "Build the Dialogue",
+    "selectDescription": "Select two historical figures from Wikipedia and define a theme for their discussion.",
+    "character1": "First Character",
+    "character2": "Second Character",
+    "themeLabel": "Conversation Theme",
+    "themePlaceholder": "Example: The impact of printing on society",
+    "startButton": "Start Dialogue",
+    "loadingSummary": "Loading summary from Wikipedia...",
+    "summaryLoaded": "Summary loaded."
+  },
+  "chat": {
+    "systemMessage": "Start the dialogue between {{char1}} and {{char2}} on the topic: {{theme}}. Moderator, you can guide the conversation or let the characters interact freely.",
+    "errorMessage": "An error occurred while generating the response.",
+    "autoErrorMessage": "An error occurred while generating the automatic response.",
+    "dialogueTab": "Dialogue",
+    "charactersTab": "Character Profiles",
+    "endDialogueButton": "End Dialogue and Reflect",
+    "speakToAll": "Speak to all",
+    "speakTo": "Speak to {{name}}",
+    "askBothPlaceholder": "Ask a question to both...",
+    "askCharacterPlaceholder": "Ask a question to {{character}}...",
+    "nextIntervention": "Next Intervention by {{character}}"
+  },
+  "characterStyles": {
+    "erudite": "erudite",
+    "reflective": "reflective"
+  },
+  "reflection": {
+    "title": "Reflection on the Historical Dialogue",
+    "description": "Analyze the dialogue you witnessed. Consider the viewpoints, arguments, and what struck you.",
+    "questions": [
+      "What were the key points that emerged from the dialogue between the two characters?",
+      "Were the arguments presented by the characters in line with their historical figures? Why?",
+      "Which character offered the most surprising or enlightening perspective on the topic?",
+      "How did this dialogue enrich or change your understanding of the discussed topic?",
+      "If you could ask one of the characters a question, what would it be and to whom would you ask it?"
+    ]
+  }
+}

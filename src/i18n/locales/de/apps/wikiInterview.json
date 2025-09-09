@@ -1,0 +1,21 @@
+{
+  "name": "Doppelinterview",
+  "title": "Wiki Interview",
+  "subtitle": "Interviewen Sie historische Figuren",
+  "description": "Stellen Sie Fragen an historische Figuren und entdecken Sie ihre Geschichte",
+  "characterStyles": {
+    "erudite": "gelehrt",
+    "reflective": "nachdenklich"
+  },
+  "reflection": {
+    "title": "Reflexion über den historischen Dialog",
+    "description": "Analysiere den Dialog, den du miterlebt hast. Berücksichtige die Standpunkte, Argumente und was dich beeindruckt hat.",
+    "questions": [
+      "Was waren die wichtigsten Punkte, die aus dem Dialog zwischen den beiden Charakteren hervorgingen?",
+      "Waren die von den Charakteren vorgebrachten Argumente im Einklang mit ihren historischen Figuren? Warum?",
+      "Welcher Charakter bot die überraschendste oder aufschlussreichste Perspektive zum Thema?",
+      "Wie hat dieser Dialog dein Verständnis des diskutierten Themas bereichert oder verändert?",
+      "Wenn du einem der Charaktere eine Frage stellen könntest, was wäre sie und an wen würdest du sie richten?"
+    ]
+  }
+}

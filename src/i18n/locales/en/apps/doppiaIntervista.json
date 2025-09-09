@@ -1,0 +1,47 @@
+{
+  "name": "Double Interview",
+  "title": "Double Interview",
+  "subtitle": "Simultaneous interview with two historical figures",
+  "setup": {
+    "chooseCharacters": "Choose Characters",
+    "selectDescription": "Select two historical figures for a parallel dialogue",
+    "character": "Character",
+    "startButton": "Start Dialogue"
+  },
+  "chat": {
+    "dialogueTitle": "Dialogue",
+    "changeCharacters": "Change Characters"
+  },
+  "description": "Compare the responses of two historical figures",
+  "greeting1": "Hello, I'm {{name}}. Ask your question.",
+  "greeting2": "Hello, I'm {{name}}. I'm ready for your question.",
+  "placeholder": "Write to {{target}}...",
+  "placeholderAll": "both characters",
+  "placeholderSingle": "{{name}}",
+  "onlyThis": "Only this one",
+  "backToAll": "Back to all",
+  "newInterviewStarted": "New interview started!",
+  "reflection": {
+    "title": "Reflection on the Parallel Interview",
+    "description": "Analyze the differences and similarities in the responses of the two characters.",
+    "questions": {
+      "q1": "What were the most significant differences in the way the two characters answered your questions?",
+      "q2": "What similarities did you notice in their responses despite their different backgrounds?",
+      "q3": "How did the historical and cultural context influence each character's responses?",
+      "q4": "Which character seemed more convincing or informative? Why?",
+      "q5": "How could you apply what you learned from this double interview?"
+    }
+  },
+  "feedback": {
+    "activityName": "Double Interview",
+    "downloadSuccess": "Reflection downloaded successfully!",
+    "downloadError": "Error downloading reflection",
+    "title": "Interview Feedback and Evaluation",
+    "conversationHistory": "Conversation History",
+    "userLabel": "You",
+    "yourReflection": "Your Reflection",
+    "aiFeedback": "AI Feedback",
+    "downloadButton": "Download Reflection",
+    "newInterviewButton": "Start a New Interview"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "placeholder": "Schreiben Sie Ihre Nachricht...",
+  "endActivity": "Aktivität beenden",
+  "startNewChat": "Neues Gespräch",
+  "technicalProblem": "Ich bin auf ein technisches Problem gestoßen.",
+  "noResponse": "Ich habe im Moment keine Antwort.",
+  "errorResponse": "Entschuldigung, ich bin auf einen Fehler gestoßen beim Antworten als {{character}}.",
+  "you": "Sie"
+}

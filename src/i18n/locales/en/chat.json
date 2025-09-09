@@ -1,0 +1,8 @@
+{
+  "placeholder": "Write your message...",
+  "doppiaIntervistaDescription": "Reflect on your experience interviewing two historical figures simultaneously.",
+  "doppiaIntervistaPlaceholder": "How was it to manage the interview with {{char1}} and {{char2}} simultaneously? What differences did you notice in their responses? What did you learn from the direct comparison?",
+  "impersonaTuTitle": "Reflection on ImpersonaTu",
+  "impersonaTuDescription": "Reflect on your experience interpreting the historical character.",
+  "impersonaTuPlaceholder": "How was it to interpret {{userCharacterName}}? Which aspects of the character did you find most interesting or difficult to represent? What did you learn from the conversation with {{aiCharacterName}}?"
+}

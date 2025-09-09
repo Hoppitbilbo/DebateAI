@@ -1,0 +1,13 @@
+{
+  "teacherGuide": {
+    "title": "Teacher's Guide",
+    "description": "Discover how to use our applications to create innovative and engaging learning experiences.",
+    "button": "View Guide"
+  },
+  "socialPurpose": {
+    "title": "Our Social Purpose",
+    "description": "We transform homework into interactive and engaging learning experiences, making education more accessible and fun through the use of AI.",
+    "exploreButton": "Explore Applications",
+    "learnMoreButton": "Learn More"
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "name": "Verkörpere Du",
+  "title": "Verkörpere Du",
+  "subtitle": "Führe einen Dialog mit einer historischen Figur, indem du eine andere darstellst",
+  "description": "Schlüpfe in die Rolle einer historischen Figur und führe einen Dialog mit einer anderen",
+  "page": {
+    "setup": {
+      "title": "Wähle die Charaktere",
+      "description": "Wähle den Charakter, den die KI spielen soll, und den, den du spielen wirst",
+      "aiCharacterLabel": "KI-Charakter",
+      "yourCharacterLabel": "Dein Charakter",
+      "topicLabel": "Gesprächsthema",
+      "topicPlaceholder": "z.B. Überzeuge mich von der Bedeutung der Demokratie...",
+      "startConversationButton": "Gespräch starten"
+    },
+    "chat": {
+      "title": "VerkörpereDu",
+      "subtitle": "Verkörpere eine historische Figur und diskutiere mit einer anderen",
+      "placeholder": "Schreibe als {{characterName}}...",
+      "greeting": "Heil! Ich bin {{aiCharacterName}}. Es ist mir eine Freude, mit dir, {{userCharacterName}}, über \"{{topic}}\" zu diskutieren. Was geht dir zu diesem Thema durch den Kopf?",
+      "initError": "KI-Chat konnte nicht initialisiert werden. Bitte überprüfe die Konfiguration und versuche es erneut.",
+      "sessionError": "Chat-Sitzung nicht initialisiert.",
+      "sendError": "Fehler bei der Kommunikation mit der KI. Bitte versuche es erneut.",
+      "minMessagesWarning": "Du musst mindestens zwei Nachrichten in der Rolle deines Charakters senden, bevor du abschließen kannst.",
+      "newChatStarted": "Neuer Chat gestartet!",
+      "evaluating": "Bewertung läuft...",
+      "evaluatingDescription": "Die KI analysiert das Gespräch und deine Reflexion.",
+      "changeCharacters": "Charaktere ändern"
+    },
+    "reflection": {
+      "title": "Reflexion über die Verkörperung",
+      "description": "Reflektiere über deine Erfahrung bei der Darstellung von {{characterName}}.",
+      "placeholder": "Wie war es, {{userCharacterName}} darzustellen? Welche Aspekte der Figur fandest du am interessantesten oder schwierigsten darzustellen? Was hast du aus dem Gespräch mit {{aiCharacterName}} gelernt?",
+      "questions": {
+        "performance": "Wie gut denkst du, hast du {{characterName}} dargestellt?",
+        "easiest": "Welche Aspekte der Figur waren am einfachsten zu verkörpern?",
+        "understanding": "Wie hat diese Verkörperungserfahrung dein Verständnis der Figur verändert?",
+        "selfLearning": "Was hast du über dich selbst durch diese Rollenspiel-Aktivität gelernt?"
+      }
+    },
+    "feedback": {
+      "title": "Feedback und Bewertung",
+      "conversationHistory": "Gesprächsverlauf",
+      "yourReflection": "Deine Reflexion",
+      "aiFeedback": "KI-Feedback",
+      "downloadReflection": "Reflexion herunterladen",
+      "newImpersonation": "Neue Verkörperung",
+      "downloadSuccess": "Reflexion erfolgreich heruntergeladen!",
+      "downloadError": "Fehler beim Herunterladen der Reflexion"
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "title": "Funktionen",
+  "subtitle": "KI-basierte Bildungstools",
+  "description": "Entdecken Sie unsere Sammlung von KI-Anwendungen, die darauf ausgelegt sind, das Lernen in eine interaktive und ansprechende Erfahrung zu verwandeln.",
+  "items": {
+    "wikiInterview": {
+      "name": "Wiki-Interview",
+      "description": "Simuliert Gespräche mit historischen Charakteren durch Wikipedia-Inhalte und macht das Lernen interaktiv und ansprechend."
+    },
+    "personaggioMisterioso": {
+      "name": "Mysteriöse Figur",
+      "description": "Spielen Sie das Erraten historischer und literarischer Charaktere durch Fragen und Antworten mit der KI."
+    },
+    "doppiaIntervista": {
+      "name": "Doppelinterview",
+      "description": "Moderieren Sie einen Dialog zwischen zwei historischen Charakteren zu einem bestimmten Thema und erkunden Sie verschiedene Perspektiven."
+    },
+    "convinciTu": {
+      "name": "Überzeuge Du",
+      "description": "Fordern Sie Ihre Überzeugungsfähigkeiten heraus, indem Sie versuchen, historische Charaktere dazu zu bringen, ihre Meinung zu kontroversen Themen zu ändern."
+    },
+    "impersonaTu": {
+      "name": "Verkörpere Du",
+      "description": "Führen Sie ein Gespräch mit einem historischen Charakter, während Sie einen anderen interpretieren. Testen Sie Ihre Verkörperungsfähigkeiten!"
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "name": "Wiki Chatbot",
+  "title": "WikiChat AI",
+  "subtitle": "Mit historischen Figuren chatten",
+  "description": "Unterhalten Sie sich frei mit historischen Figuren",
+  "setup": {
+    "chooseWikiTopic": "Wikipedia-Thema wählen",
+    "selectDescription": "Wählen Sie eine Wikipedia-Seite, um ein Gespräch zu beginnen",
+    "loadingSummary": "Zusammenfassung von Wikipedia wird geladen...",
+    "summaryLoaded": "Zusammenfassung geladen."
+  },
+  "chat": {
+    "systemMessage": "Beginnen Sie den Dialog zwischen {{char1}} und {{char2}} zum Thema: {{theme}}. Moderator, Sie können das Gespräch leiten oder die Charaktere frei interagieren lassen.",
+    "errorMessage": "Ein Fehler ist beim Generieren der Antwort aufgetreten.",
+    "autoErrorMessage": "Ein Fehler ist beim Generieren der automatischen Antwort aufgetreten.",
+    "dialogueTab": "Dialog",
+    "charactersTab": "Charakterprofile",
+    "endDialogueButton": "Dialog beenden und reflektieren",
+    "speakToAll": "Mit allen sprechen",
+    "speakTo": "Mit {{name}} sprechen",
+    "askBothPlaceholder": "Stellen Sie beiden eine Frage...",
+    "askCharacterPlaceholder": "Stellen Sie {{character}} eine Frage...",
+    "nextIntervention": "Nächste Intervention von {{character}}",
+    "topicPlaceholder": "z.B. Überzeugen Sie mich von der Bedeutung der Demokratie...",
+    "startConversationButton": "Gespräch starten"
+  },
+  "errors": {
+    "fetchError": "Fehler beim Abrufen von Daten von Wikipedia",
+    "summaryError": "Informationen zu dieser Seite konnten nicht abgerufen werden."
+  }
+}

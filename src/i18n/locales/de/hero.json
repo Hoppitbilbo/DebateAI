@@ -1,0 +1,11 @@
+{
+  "title": "Interaktives Lernen mit",
+  "subtitle": "KI-gestützten Gesprächen",
+  "description": "Stellen Sie sich den Großen der Vergangenheit, tauchen Sie in ihre Zeit ein und probieren Sie eine neue Art aus, Hausaufgaben zu machen",
+  "tryApps": "Probieren Sie unsere Apps",
+  "sampleChat": {
+    "bot1": "Nun gut, junger Mann, wer sind Sie? Man sagte mir, Sie müssen mich für die Schule interviewen. Kommen Sie, verschwenden wir keine Zeit!",
+    "user": "Leonardo DaVinci, schien es Ihnen normal, Waffen für Leute zu erschaffen, die nur mehr Macht wollten?",
+    "bot2": "Böse von Anfang an, das gefällt mir, Sie scheinen mir toskanisch zu sein. Mein Lieber, leider konnte ich nicht anders. Wir Künstler mussten uns in dieser Zeit den Mäzenen unterwerfen, sonst wären wir verhungert. Aber keine Sorge, fast keine meiner Waffen wurde gebaut. Es waren nur Skizzen. Ein bisschen wie wenn Sie im Lebenslauf-Portfolio übertreiben"
+  }
+}

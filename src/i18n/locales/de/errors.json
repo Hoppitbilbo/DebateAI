@@ -1,0 +1,8 @@
+{
+  "aiEvaluationError": "Fehler beim Generieren der KI-Bewertung.",
+  "evaluationError": "Ein Fehler ist bei der Generierung der KI-Bewertung aufgetreten: {{error}}",
+  "unknownError": "Unbekannter Fehler",
+  "evaluationFailed": "Ein Fehler ist während der Bewertung aufgetreten. Bitte versuchen Sie es später erneut.",
+  "invalidResponse": "KI-Bewertungsfehler: Ungültige Antwort vom Modell.",
+  "invalidStructure": "KI-Bewertungsfehler: Ungültige Antwortstruktur vom Modell."
+}

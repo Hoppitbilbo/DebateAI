@@ -1,0 +1,14 @@
+{
+  "description": "KI-Bildungstools zur Erstellung effektiver Bildungsszenarien",
+  "resources": {
+    "title": "Ressourcen",
+    "allApps": "Alle Apps",
+    "aboutUs": "Über Uns"
+  },
+  "legal": {
+    "title": "Rechtliches",
+    "privacy": "Datenschutzrichtlinie",
+    "terms": "Nutzungsbedingungen"
+  },
+  "copyright": "© {{year}} AI-Debate.Tech. Alle Rechte vorbehalten."
+}
