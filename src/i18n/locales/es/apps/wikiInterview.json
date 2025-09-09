@@ -1,0 +1,50 @@
+{
+  "name": "Entrevista Wiki",
+  "title": "Diálogo Histórico IA",
+  "subtitle": "Entrevista figuras históricas",
+  "description": "Crea y analiza conversaciones profundas entre dos figuras históricas basadas en sus perfiles de Wikipedia.",
+  "errors": {
+    "fetchError": "Error al recuperar datos de Wikipedia para {{title}}",
+    "noSummary": "No se encontró resumen.",
+    "summaryError": "No se pudo recuperar el resumen para este personaje."
+  },
+  "characterStyles": {
+    "erudite": "erudito",
+    "reflective": "reflexivo"
+  },
+  "reflection": {
+    "title": "Reflexión sobre el Diálogo Histórico",
+    "description": "Analiza el diálogo que presenciaste. Considera los puntos de vista, los argumentos y lo que te llamó la atención.",
+    "questions": [
+      "¿Cuáles fueron los puntos clave que surgieron del diálogo entre los dos personajes?",
+      "¿Los argumentos presentados por los personajes estaban en línea con sus figuras históricas? ¿Por qué?",
+      "¿Qué personaje ofreció la perspectiva más sorprendente o esclarecedora sobre el tema?",
+      "¿Cómo enriqueció o modificó este diálogo tu comprensión del tema discutido?",
+      "Si pudieras hacerle una pregunta a uno de los personajes, ¿cuál sería y a quién se la harías?"
+    ]
+  },
+  "setup": {
+    "buildDialogue": "Construir el Diálogo",
+    "selectDescription": "Selecciona dos figuras históricas de Wikipedia y define un tema para su discusión.",
+    "character1": "Primer Personaje",
+    "character2": "Segundo Personaje",
+    "themeLabel": "Tema de Conversación",
+    "themePlaceholder": "Ejemplo: El impacto de la imprenta en la sociedad",
+    "startButton": "Iniciar Diálogo",
+    "loadingSummary": "Cargando resumen de Wikipedia...",
+    "summaryLoaded": "Resumen cargado."
+  },
+  "chat": {
+    "systemMessage": "Inicia el diálogo entre {{char1}} y {{char2}} sobre el tema: {{theme}}. Moderador, puedes guiar la conversación o dejar que los personajes interactúen libremente.",
+    "errorMessage": "Se produjo un error al generar la respuesta.",
+    "autoErrorMessage": "Se produjo un error al generar la respuesta automática.",
+    "dialogueTab": "Diálogo",
+    "charactersTab": "Perfiles de Personajes",
+    "endDialogueButton": "Finalizar Diálogo y Reflexionar",
+    "speakToAll": "Hablar con todos",
+    "speakTo": "Hablar con {{name}}",
+    "askBothPlaceholder": "Haz una pregunta a ambos...",
+    "askCharacterPlaceholder": "Haz una pregunta a {{character}}...",
+    "nextIntervention": "Próxima Intervención de {{character}}"
+  }
+}

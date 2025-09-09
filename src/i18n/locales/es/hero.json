@@ -1,0 +1,11 @@
+{
+  "title": "Aprendizaje Interactivo con",
+  "subtitle": "Conversaciones Potenciadas por IA",
+  "description": "Enfréntate a los grandes del pasado, sumérgete en su tiempo y prueba una nueva forma de hacer los deberes",
+  "tryApps": "Prueba nuestras apps",
+  "sampleChat": {
+    "bot1": "Muy bien jovencito, ¿quién eres? Me dijeron que me tienes que hacer una entrevista por la escuela. ¡Vamos, no perdamos tiempo!",
+    "user": "Leonardo DaVinci, ¿te parecía normal crear armas para gente que solo quería más poder?",
+    "bot2": "Malo desde el principio, me gusta, me pareces toscano. Querido mío, desafortunadamente no podía hacer otra cosa. Nosotros los artistas en esta época teníamos que someternos a los mecenatos o habríamos muerto de hambre. Pero tranquilo, casi ninguna de mis armas fue construida. Eran solo bocetos. Un poco como cuando exageras en el portafolio del currículum"
+  }
+}

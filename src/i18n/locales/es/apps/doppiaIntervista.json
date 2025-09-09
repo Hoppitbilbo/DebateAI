@@ -1,0 +1,47 @@
+{
+  "name": "Entrevista Doble",
+  "title": "Entrevista Doble",
+  "subtitle": "Entrevista simultánea con dos figuras históricas",
+  "setup": {
+    "chooseCharacters": "Elegir Personajes",
+    "selectDescription": "Selecciona dos figuras históricas para un diálogo paralelo",
+    "character": "Personaje",
+    "startButton": "Iniciar Diálogo"
+  },
+  "chat": {
+    "dialogueTitle": "Diálogo",
+    "changeCharacters": "Cambiar Personajes"
+  },
+  "description": "Compara las respuestas de dos figuras históricas",
+  "greeting1": "Hola, soy {{name}}. Haz tu pregunta.",
+  "greeting2": "Hola, soy {{name}}. Estoy listo para tu pregunta.",
+  "placeholder": "Escribe a {{target}}...",
+  "placeholderAll": "ambos personajes",
+  "placeholderSingle": "{{name}}",
+  "onlyThis": "Solo este",
+  "backToAll": "Volver a todos",
+  "newInterviewStarted": "¡Nueva entrevista iniciada!",
+  "reflection": {
+    "title": "Reflexión sobre la Entrevista Paralela",
+    "description": "Analiza las diferencias y similitudes en las respuestas de los dos personajes.",
+    "questions": {
+      "q1": "¿Cuáles fueron las diferencias más significativas en la forma en que los dos personajes respondieron a tus preguntas?",
+      "q2": "¿Qué similitudes notaste en sus respuestas a pesar de sus diferentes orígenes?",
+      "q3": "¿Cómo influyó el contexto histórico y cultural en las respuestas de cada personaje?",
+      "q4": "¿Qué personaje te pareció más convincente o informativo? ¿Por qué?",
+      "q5": "¿Cómo podrías aplicar lo que aprendiste de esta doble entrevista?"
+    }
+  },
+  "feedback": {
+    "activityName": "Entrevista Doble",
+    "downloadSuccess": "¡Reflexión descargada con éxito!",
+    "downloadError": "Error al descargar la reflexión",
+    "title": "Retroalimentación y Evaluación de la Entrevista",
+    "conversationHistory": "Historial de Conversación",
+    "userLabel": "Tú",
+    "yourReflection": "Tu Reflexión",
+    "aiFeedback": "Retroalimentación de IA",
+    "downloadButton": "Descargar Reflexión",
+    "newInterviewButton": "Comenzar una Nueva Entrevista"
+  }
+}

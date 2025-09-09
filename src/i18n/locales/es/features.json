@@ -1,0 +1,27 @@
+{
+  "title": "Características",
+  "subtitle": "Herramientas Educativas Basadas en IA",
+  "description": "Explora nuestra colección de aplicaciones de IA diseñadas para transformar el aprendizaje en una experiencia interactiva y atractiva.",
+  "items": {
+    "wikiInterview": {
+      "name": "Entrevista Wiki",
+      "description": "Simula conversaciones con personajes históricos a través de contenidos de Wikipedia, haciendo el aprendizaje interactivo y atractivo."
+    },
+    "personaggioMisterioso": {
+      "name": "Personaje Misterioso",
+      "description": "Juega a adivinar personajes históricos y literarios a través de preguntas y respuestas con la IA."
+    },
+    "doppiaIntervista": {
+      "name": "Doble Entrevista",
+      "description": "Modera un diálogo entre dos personajes históricos sobre un tema específico, explorando diferentes perspectivas."
+    },
+    "convinciTu": {
+      "name": "Convence Tú",
+      "description": "Desafía tus habilidades de persuasión tratando de hacer cambiar de opinión a personajes históricos sobre temas controvertidos."
+    },
+    "impersonaTu": {
+      "name": "Personifica Tú",
+      "description": "Dialoga con un personaje histórico interpretando a otro. ¡Pon a prueba tus habilidades de interpretación!"
+    }
+  }
+}

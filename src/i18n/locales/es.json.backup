@@ -63,7 +63,10 @@
     },
     "reflectionPlaceholder": "Escribe tu reflexión aquí...",
     "submitReflection": "Enviar Reflexión",
-    "reflectOnExperience": "Reflexiona sobre tu experiencia y lo que has aprendido."
+    "reflectOnExperience": "Reflexiona sobre tu experiencia y lo que has aprendido.",
+    "viewTutorial": "Ver Tutorial",
+    "slide": "Diapositiva",
+    "progress": "Progreso"
   },
   "navigation": {
     "home": "Inicio",

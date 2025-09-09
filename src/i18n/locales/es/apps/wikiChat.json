@@ -1,0 +1,12 @@
+{
+  "title": "Chat con {{title}}",
+  "subtitle": "Conversa con una página de Wikipedia que cobra vida",
+  "placeholder": "Haz una pregunta a {{title}}...",
+  "systemPrompt": "Eres la encarnación viviente de la página de Wikipedia que se proporciona a continuación. Responde desde una perspectiva en primera persona, utilizando la información del texto. Sé el personaje. No salgas del personaje. No digas que eres una IA.",
+  "welcome": "¡Bienvenido! Soy {{title}}. ¿Qué te gustaría saber?",
+  "reflection": {
+    "title": "Reflexión sobre el Chat de Wikipedia",
+    "description": "Reflexiona sobre lo que aprendiste durante la conversación.",
+    "placeholder": "¿Qué descubriste? ¿Qué te sorprendió? ¿Qué dudas te quedan?"
+  }
+}

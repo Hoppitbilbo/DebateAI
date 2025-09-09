@@ -1,0 +1,63 @@
+{
+  "name": "Personaje Misterioso",
+  "title": "Personaje Misterioso",
+  "subtitle": "Adivina la figura histórica",
+  "description": "Haz preguntas para descubrir quién es el personaje misterioso",
+  "setup": {
+    "selectCharacterLabel": "Elige el Personaje a Adivinar",
+    "selectCharacterError": "Debes seleccionar un personaje para comenzar el juego",
+    "difficultyLabel": "Dificultad (Número de preguntas): {{count}}",
+    "startButton": "Comenzar Juego"
+  },
+  "game": {
+    "initialMessage": "¡Hola! Soy un personaje misterioso. Tienes {{count}} preguntas para adivinar quién soy. ¡Comienza a hacer tus preguntas!",
+    "gameStarted": "¡Juego iniciado!",
+    "gameStartedDesc": "Tienes {{count}} preguntas para adivinar el personaje",
+    "questionsFinished": "¡Preguntas terminadas! Es hora de hacer tu suposición final.",
+    "questionsFinishedTitle": "¡Preguntas terminadas!",
+    "questionsFinishedDesc": "Has usado todas tus preguntas. Es hora de adivinar quién es el personaje misterioso.",
+    "proceedToGuess": "Proceder a la suposición final",
+    "timeToGuess": "¡Es hora de adivinar!",
+    "correctGuess": "¡Correcto! ¡Lo adivinaste!",
+    "incorrectGuess": "No es correcto, ¡pero hiciste un buen intento!",
+    "reflectionPrompt": "Ahora reflexiona sobre tu experiencia",
+    "newGameStarted": "¡Nuevo juego iniciado!",
+    "aiErrorMessage": "Lo siento, tuve problemas para responder.",
+    "systemInstruction": "Eres {{characterName}}. Nunca reveles tu nombre o identidad directamente. Responde a las preguntas basándote en tu persona y en el contexto histórico proporcionado en el siguiente fragmento: \"{{snippet}}\". Proporciona pistas útiles pero no lo hagas demasiado fácil. El estudiante está tratando de adivinar quién eres.",
+    "aiDefaultError": "No sé cómo responder a eso."
+  },
+  "evaluation": {
+    "topic": "Adivina el Personaje Misterioso: {{characterName}}",
+    "generationError": "Error al generar la evaluación: {{errorMessage}}",
+    "aiError": "Error durante la evaluación de la IA: {{errorMessage}}"
+  },
+  "reflection": {
+    "title": "Reflexión del Juego",
+    "description": "Reflexiona sobre tu experiencia en el juego del personaje misterioso",
+    "placeholder": "¿Cómo funcionó tu estrategia? ¿Qué aprendiste? ¿Qué harías diferente?"
+  },
+  "chat": {
+    "title": "Conversación",
+    "empty": "La conversación aparecerá aquí.",
+    "thinking": "El personaje está pensando...",
+    "placeholder": "Escribe tu pregunta...",
+    "noMoreQuestions": "No tienes más preguntas.",
+    "send": "Enviar pregunta",
+    "questionsLeft": "Preguntas restantes: {{count}}"
+  },
+  "finalGuess": {
+    "title": "¡Haz tu intento final!",
+    "questionLabel": "¿Quién crees que es el personaje?",
+    "namePlaceholder": "Ingresa el nombre del personaje",
+    "reasonLabel": "¿Por qué crees que es este personaje?",
+    "reasonPlaceholder": "Explica tu razonamiento...",
+    "submit": "Enviar tu respuesta"
+  },
+  "header": {
+    "title": "Juego en Progreso",
+    "questionsLeft": "Preguntas Restantes: {{count}}",
+    "characterLabel": "Personaje:",
+    "hiddenCharacter": "???",
+    "newGameButton": "Nuevo Juego"
+  }
+}

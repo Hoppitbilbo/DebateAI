@@ -1,0 +1,42 @@
+{
+  "title": "Aplicaciones de IA para la Educación",
+  "subtitle": "Explora nuestra colección de herramientas de IA para el aprendizaje interactivo.",
+  "appCards": {
+    "wikiInterview": {
+      "title": "Diálogo Histórico con IA",
+      "description": "Conversa con personajes de IA basados en contenido de Wikipedia, transformando temas educativos en conversaciones interactivas."
+    },
+    "doppiaIntervista": {
+      "title": "Entrevista Doble",
+      "description": "Interactúa simultáneamente con dos figuras históricas en conversaciones paralelas, creando un diálogo educativo único."
+    },
+    "wikiChatbot": {
+      "title": "WikiChat IA",
+      "description": "Chatea con una inteligencia artificial que representa cualquier tema de Wikipedia, perfecto para conocimientos educativos interactivos."
+    },
+    "personaggioMisterioso": {
+      "title": "Adivina el Personaje Misterioso",
+      "description": "Desafía a la IA haciendo preguntas para adivinar la figura histórica elegida. ¡Tienes un número limitado de preguntas para descubrir la identidad misteriosa!"
+    },
+    "promptEngineer": {
+      "title": "Creador de Prompts para la Enseñanza",
+      "description": "Ayuda a profesores y estudiantes a crear prompts efectivos para la inteligencia artificial en actividades educativas y de aprendizaje."
+    },
+    "convinciTu": {
+      "title": "Convence TÚ",
+      "description": "Desafía tus habilidades de persuasión tratando de convencer a figuras históricas de tus ideas."
+    },
+    "impersonaTu": {
+      "title": "Personifica Tú",
+      "description": "Dialoga con una figura histórica interpretando a otra. ¡Pon a prueba tus habilidades de empatía!"
+    }
+  },
+  "badges": {
+    "new": "Nuevo",
+    "comingSoon": "Próximamente"
+  },
+  "buttons": {
+    "launchApp": "Lanzar Aplicación",
+    "comingSoon": "Próximamente"
+  }
+}

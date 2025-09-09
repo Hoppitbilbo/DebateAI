@@ -5,7 +5,7 @@ import DoppiaIntervistaChat from "@/components/DoppiaIntervistaChat";
 import WikiSearchSelect from "@/components/WikiSearchSelect";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, BookOpen } from "lucide-react";
 import { useTranslation } from "react-i18next";
 interface WikiSearchResult {
   title: string;
@@ -41,6 +41,16 @@ const DoppiaIntervistaPage = () => {
             <p className="mt-3 text-xl text-gray-500 dark:text-gray-400">
               {t('apps.doppiaIntervista.description')}
             </p>
+            <div className="mt-6">
+              <Button
+                variant="outline"
+                onClick={() => window.location.href = '/apps/doppia-intervista/tutorial'}
+                className="border-education text-education hover:bg-education hover:text-white"
+              >
+                <BookOpen className="w-4 h-4 mr-2" />
+                {t('apps.doppiaIntervista.tutorial')}
+              </Button>
+            </div>
           </div>
           
           {!showChat ? <div className="max-w-2xl mx-auto">
