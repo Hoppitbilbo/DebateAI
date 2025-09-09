@@ -6,6 +6,7 @@ import DoppiaIntervistaTutorial from '@/components/tutorials/DoppiaIntervistaTut
 
 const DoppiaIntervistaTutorialPage: React.FC = () => {
   const { t } = useTranslation();
+  const { t: tTutorial } = useTranslation('tutorial');
 
   const handleBackToApps = () => {
     window.location.href = '/';
@@ -28,7 +29,7 @@ const DoppiaIntervistaTutorialPage: React.FC = () => {
             
             <div className="text-center">
               <h1 className="text-xl font-semibold text-gray-900">
-                {t('tutorial.doppiaIntervista.title')}
+                {tTutorial('doppiaIntervista.title')}
               </h1>
             </div>
             

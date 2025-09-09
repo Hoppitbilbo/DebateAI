@@ -766,13 +766,5 @@
       "content": "Our social purpose is to build a future where AI is a powerful ally for students and teachers, making learning an exciting, personalized, and, above all, accessible adventure for everyone."
     },
     "supportButton": "Support Us"
-  },
-  "tutorial": {
-    "doppiaIntervista": {
-      "title": "Double Interview Tutorial"
-    },
-    "personaggioMisterioso": {
-      "title": "Mystery Character Tutorial"
-    }
   }
 }

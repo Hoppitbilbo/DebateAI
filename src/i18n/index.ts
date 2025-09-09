@@ -4,7 +4,7 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 
 // Import main translation files
 import en from './locales/en.json';
-import es from './locales/es.json';
+import esModular from './locales/es/index.js';
 import fr from './locales/fr.json';
 import de from './locales/de.json';
 import it from './locales/it.json';
@@ -19,23 +19,23 @@ import itTutorials from './tutorials/it.json';
 const resources = {
   en: { 
     translation: en,
-    tutorials: enTutorials
+    tutorial: enTutorials
   },
   es: { 
-    translation: es,
-    tutorials: esTutorials
+    translation: esModular,
+    tutorial: esTutorials
   },
   fr: { 
     translation: fr,
-    tutorials: frTutorials
+    tutorial: frTutorials
   },
   de: { 
     translation: de,
-    tutorials: deTutorials
+    tutorial: deTutorials
   },
   it: { 
     translation: it,
-    tutorials: itTutorials
+    tutorial: itTutorials
   },
 };
 
@@ -44,7 +44,10 @@ i18n
   .use(initReactI18next)
   .init({
     resources,
-    fallbackLng: 'it', // Default to Italian as the original language
+    lng: 'it', // Force Italian as the default language
+    fallbackLng: 'it',
+    defaultNS: 'translation',
+    ns: ['translation', 'tutorial'],
     debug: false,
     interpolation: {
       escapeValue: false,

@@ -7,7 +7,7 @@ import { ChevronLeft, ChevronRight, Play, Users, Brain, MessageSquare, Eye, Book
 import { useNavigate } from 'react-router-dom';
 
 const ImpersonaTuTutorial = () => {
-  const { t } = useTranslation('tutorials');
+  const { t } = useTranslation('tutorial');
   const navigate = useNavigate();
   const [currentSlide, setCurrentSlide] = useState(0);
   

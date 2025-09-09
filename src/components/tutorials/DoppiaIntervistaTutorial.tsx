@@ -13,7 +13,7 @@ interface Slide {
 }
 
 const DoppiaIntervistaTutorial: React.FC = () => {
-  const { t } = useTranslation('tutorials');
+  const { t } = useTranslation('tutorial');
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const slides: Slide[] = [

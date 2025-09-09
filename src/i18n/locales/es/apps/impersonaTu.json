@@ -1,0 +1,60 @@
+{
+  "name": "Personifica Tú",
+  "title": "Personifica Tú",
+  "subtitle": "Dialoga con una figura histórica interpretando a otra",
+  "description": "Pon a prueba tus habilidades de empatía dialogando con un personaje histórico mientras interpretas a otro",
+  "reflection": {
+    "title": "Reflexión sobre la Personificación",
+    "description": "Reflexiona sobre tu experiencia interpretando al {{characterName}}.",
+    "questions": {
+      "performance": "¿Qué tan bien crees que interpretaste a {{characterName}}?",
+      "easiest": "¿Qué aspectos del personaje fueron más fáciles de personificar?",
+      "challenges": "¿Qué desafíos encontraste al ponerte en los zapatos de esta figura histórica?",
+      "understanding": "¿Cómo cambió esta experiencia de personificación tu comprensión del personaje?",
+      "selfLearning": "¿Qué aprendiste sobre ti mismo a través de esta actividad de interpretación?"
+    },
+    "defaultCharacterName": "el personaje",
+    "placeholder": "¿Cómo fue interpretar a {{userCharacterName}}? ¿Qué aspectos del personaje encontraste más interesantes o difíciles de representar? ¿Qué aprendiste de la conversación con {{aiCharacterName}}?"
+  },
+  "feedback": {
+    "title": "Retroalimentación y Evaluación",
+    "conversationHistory": "Historial de Conversación",
+    "yourReflection": "Tu Reflexión",
+    "aiFeedback": "Retroalimentación de IA",
+    "downloadReflection": "Descargar Reflexión",
+    "newImpersonation": "Nueva Personificación",
+    "downloadSuccess": "¡Reflexión descargada exitosamente!",
+    "downloadError": "Error al descargar la reflexión"
+  },
+  "chat": {
+    "title": "ImpersonaTu",
+    "subtitle": "Personifica a una figura histórica y discute con otra",
+    "aiCharacter": "Personaje IA",
+    "yourCharacter": "Tu Personaje",
+    "topic": "Tema:",
+    "placeholder": "Escribe como {{characterName}}...",
+    "greeting": "¡Saludos! Soy {{aiCharacterName}}. Es un placer discutir \"{{topic}}\" contigo, {{userCharacterName}}. ¿Qué te viene a la mente sobre este tema?",
+    "initError": "No se pudo inicializar el chat de IA. Verifica la configuración e inténtalo de nuevo.",
+    "sessionError": "Sesión de chat no inicializada.",
+    "sendError": "Error al comunicarse con la IA. Inténtalo de nuevo.",
+    "minMessagesWarning": "Debes enviar al menos dos mensajes en el rol de tu personaje antes de poder concluir.",
+    "newChatStarted": "¡Nuevo chat iniciado!",
+    "evaluating": "Evaluación en progreso...",
+    "evaluatingDescription": "La IA está analizando la conversación y tu reflexión.",
+    "conversationTitle": "Conversación entre {{user}} y {{ai}}",
+    "changeCharacters": "Cambiar Personajes"
+  },
+  "page": {
+    "title": "Personifica Tú",
+    "subtitle": "Dialoga con una figura histórica interpretando a otra",
+    "setup": {
+      "title": "Elige los Personajes",
+      "description": "Selecciona el personaje que interpretará la IA y el que interpretarás tú",
+      "aiCharacterLabel": "Personaje IA",
+      "yourCharacterLabel": "Tu Personaje",
+      "topicLabel": "Tema de Conversación",
+      "topicPlaceholder": "ej., Convénceme de la importancia de la democracia...",
+      "startConversationButton": "Iniciar Conversación"
+    }
+  }
+}

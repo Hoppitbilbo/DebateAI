@@ -303,6 +303,59 @@
         "newInterviewButton": "Inizia una Nuova Intervista"
       }
     },
+    "convinciTu": {
+      "name": "ConvinciTu",
+      "title": "ConvinciTu",
+      "subtitle": "Prova a convincere una figura storica su un argomento specifico",
+      "description": "Prova a convincere figure storiche delle tue idee",
+      "newChatSuccess": "Nuova chat iniziata!",
+      "errors": {
+        "responseGeneration": "Errore nella generazione della risposta.",
+        "evaluationGeneration": "Errore nella generazione della valutazione."
+      },
+      "reflection": {
+        "title": "Riflessione sulla Persuasione",
+        "description": "Rifletti sul tuo tentativo di persuadere il personaggio.",
+        "placeholder": "Quali strategie hai usato? Cosa ha funzionato e cosa no?",
+        "questions": {
+          "success": "Sei riuscito a convincere la figura storica?",
+          "strategies": "Quali strategie hai usato che sono state efficaci?",
+          "difficulties": "Quali sono state le principali difficoltà che hai incontrato?",
+          "differently": "Cosa faresti diversamente la prossima volta?",
+          "convinced": "Pensi di essere riuscito a convincerli? Come?"
+        }
+      },
+      "feedback": {
+        "title": "Feedback",
+        "subtitle": "Ecco un riassunto della tua conversazione e la valutazione dell'IA.",
+        "conversationHistory": "Cronologia della Conversazione",
+        "yourReflection": "La Tua Riflessione",
+        "aiFeedback": "Feedback dell'IA",
+        "downloadReflection": "Scarica Riflessione",
+        "startNewChat": "Inizia una Nuova Chat",
+        "downloadSuccess": "Riflessione scaricata con successo!",
+        "downloadError": "Errore nel download della riflessione"
+      },
+      "characterSelection": {
+        "label": "Seleziona un personaggio storico",
+        "placeholder": "Cerca un personaggio storico..."
+      },
+      "topic": {
+        "label": "Cosa vuoi provare a convincere {{characterName}} a fare o non fare?",
+        "placeholder": "Esempio: Convincere Leonardo da Vinci a non costruire macchine da guerra"
+      },
+      "startButton": "Inizia Chat",
+      "chat": {
+        "title": "Conversazione",
+        "placeholder": "Scrivi il tuo argomento persuasivo...",
+        "endButton": "Termina chat e rifletti",
+        "currentPromptLabel": "Prompt corrente:",
+        "promptValue": "Convincere {{characterName}} che {{topic}}",
+        "emptyConversation": "La conversazione apparirà qui",
+        "userLabel": "Tu",
+        "endActivityButton": "Termina attività"
+      }
+    },
     "personaggioMisterioso": {
       "name": "Personaggio Misterioso",
       "title": "Personaggio Misterioso",
@@ -533,14 +586,6 @@
         "item5": "Scopri di più su <a href=\"#\" class=\"ml-1 text-sky-400 hover:text-sky-300 underline flex items-center\" target=\"_blank\" rel=\"noopener noreferrer\">EduAI.it <ExternalLink size={16} class=\"ml-1\" /></a> (esempio)."
       },
       "conclusion": "Grazie per aver seguito questa guida. Buona fortuna con le tue avventure didattiche con l'IA!"
-    }
-  },
-  "tutorial": {
-    "doppiaIntervista": {
-      "title": "Tutorial Doppia Intervista"
-    },
-    "personaggioMisterioso": {
-      "title": "Tutorial Personaggio Misterioso"
     }
   }
 }

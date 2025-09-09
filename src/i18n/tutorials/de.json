@@ -75,27 +75,59 @@
       },
       "howItWorks": {
         "title": "Wie es funktioniert",
-        "content": "• Wählen Sie ein Thema, das Sie leidenschaftlich interessiert\n• Wählen Sie Ihre Position (dafür oder dagegen)\n• Führen Sie eine strukturierte Debatte mit einem KI-Gegner\n• Entwickeln und verfeinern Sie Ihre Argumentationsfähigkeiten"
+        "content": "Lernen Sie den schrittweisen Prozess für strukturierte und bedeutungsvolle Debatten mit KI-Gegnern.",
+        "bullet1": "Wählen Sie ein Thema, das Sie leidenschaftlich interessiert",
+        "bullet2": "Wählen Sie Ihre Position (dafür oder dagegen)",
+        "bullet3": "Führen Sie eine strukturierte Debatte mit einem KI-Gegner",
+        "bullet4": "Entwickeln und verfeinern Sie Ihre Argumentationsfähigkeiten"
       },
-      "skillDevelopment": {
-        "title": "Fähigkeiten, die Sie entwickeln werden",
-        "content": "• Logisches Denken und Argumentaufbau\n• Kritische Analyse gegensätzlicher Standpunkte\n• Überzeugende Kommunikationstechniken\n• Evidenzbasierte Argumentation\n• Selbstvertrauen beim öffentlichen Sprechen"
+      "debatePreparation": {
+        "title": "Debattenvorbereitung",
+        "content": "Lernen Sie wesentliche Strategien zur Vorbereitung überzeugender Argumente und zur Antizipation von Gegenargumenten.",
+        "bullet1": "Gründliche Recherche zum Thema",
+        "bullet2": "Strukturierung logischer und kohärenter Argumente",
+        "bullet3": "Antizipation und Vorbereitung von Gegenargumenten",
+        "bullet4": "Sammlung glaubwürdiger Beweise und Beispiele"
       },
-      "debateStrategy": {
-        "title": "Effektive Debattenstrategien",
-        "content": "• Strukturieren Sie Ihre Argumente klar\n• Verwenden Sie glaubwürdige Beweise und Beispiele\n• Antizipieren und adressieren Sie Gegenargumente\n• Führen Sie respektvolle Diskurse\n• Konzentrieren Sie sich auf Logik statt Emotion"
+      "collaborativeLearning": {
+        "title": "Kollaboratives Lernen",
+        "content": "Entdecken Sie, wie Peer-Learning und Lehrerführung Ihre Debattierfähigkeiten verbessern.",
+        "bullet1": "Zusammenarbeit mit Klassenkameraden bei der Vorbereitung",
+        "bullet2": "Konstruktives Feedback von Peers und Lehrern erhalten",
+        "bullet3": "Effektive Strategien und Techniken teilen",
+        "bullet4": "Durch Beobachtung von Peer-Debattiertechniken lernen"
       },
-      "educationalValue": {
-        "title": "Bildungsvorteile",
-        "content": "• Bereitet Schüler auf akademische Debatten vor\n• Verbessert kritische Denkfähigkeiten\n• Baut Selbstvertrauen beim Ausdrücken von Ideen auf\n• Entwickelt Forschungs- und Analysefähigkeiten\n• Fördert bürgerliches Engagement und Diskurs"
+      "visibleThinking": {
+        "title": "Sichtbares Denken",
+        "content": "Entwickeln Sie die Fähigkeit, Ihre Denkprozesse während der Debatte klar zu artikulieren.",
+        "bullet1": "Verbalisierung Ihrer Denkprozesse",
+        "bullet2": "Erklärung der Begründung hinter jedem Argument",
+        "bullet3": "Transparente Darstellung Ihrer Debattierstrategien",
+        "bullet4": "Ermöglichung von Echtzeit-Feedback zum Denken"
       },
-      "realWorldApplication": {
-        "title": "Anwendungen in der realen Welt",
-        "content": "• Akademische Präsentationen und Diskussionen\n• Berufliche Verhandlungen und Meetings\n• Bürgerliche Teilnahme und Interessenvertretung\n• Persönliche Entscheidungsprozesse\n• Führungs- und Kommunikationsrollen"
+      "teacherEvaluation": {
+        "title": "Lehrerbewertung",
+        "content": "Verstehen Sie, wie Lehrer Ihre Debattierfähigkeiten bewerten und Feedback für Verbesserungen geben können.",
+        "bullet1": "Strukturierte Bewertungskriterien für Debattierleistung",
+        "bullet2": "Echtzeit-Feedback zu Argumentationsqualität",
+        "bullet3": "Bewertung kritischer Denkfähigkeiten",
+        "bullet4": "Verfolgung des Fortschritts in Überzeugungstechniken"
       },
-      "getStarted": {
-        "title": "Bereit zu überzeugen?",
-        "content": "Beginnen Sie Ihre Reise, um ein überzeugenderer und selbstbewussterer Kommunikator zu werden!"
+      "selfReflection": {
+        "title": "Selbstreflexion",
+        "content": "Lernen Sie, Ihre Debattierleistung zu reflektieren und Bereiche für kontinuierliche Verbesserung zu identifizieren.",
+        "bullet1": "Analyse Ihrer Argumentationsstärken und -schwächen",
+        "bullet2": "Reflexion über Lernfortschritt und Wachstum",
+        "bullet3": "Identifizierung von Bereichen für weitere Entwicklung",
+        "bullet4": "Zielsetzung für zukünftige Debattierherausforderungen"
+      },
+      "examples": {
+        "title": "Praktische Beispiele",
+        "content": "Erkunden Sie konkrete Beispiele für die Nutzung von Debattierfertigkeiten in verschiedenen Kontexten und Fächern.",
+        "bullet1": "Akademische Debatten und Präsentationen",
+        "bullet2": "Gesellschaftliche Themen und aktuelle Ereignisse",
+        "bullet3": "Ethische Dilemmata und moralische Fragen",
+        "bullet4": "Wissenschaftliche Kontroversen und Theorien"
       }
     }
   },
@@ -177,35 +209,67 @@
       },
       "collaborativeRolePlay": {
         "title": "Kollaboratives Rollenspiel mit Peer-/Lehrererleichterung",
-        "content": "• Arbeiten Sie mit Klassenkameraden, die sich als Erleichterer und Beobachter abwechseln\n• Erhalten Sie Echtzeit-Führung von Lehrern während Rollenspiel-Sitzungen\n• Erleben Sie verschiedene Lernperspektiven durch Rollentausch\n• Bauen Sie unterstützende Lerngemeinschaft durch geteilte Erfahrungen auf\n• Entwickeln Sie Empathie und Verständnis durch kollaborative Erkundung"
+        "content": "Arbeiten Sie mit Klassenkameraden zusammen, die sich als Erleichterer und Beobachter abwechseln, während Sie Echtzeit-Führung von Lehrern erhalten.",
+        "bullet1": "Arbeiten Sie mit Klassenkameraden, die sich als Erleichterer und Beobachter abwechseln",
+        "bullet2": "Erhalten Sie Echtzeit-Führung von Lehrern während Rollenspiel-Sitzungen",
+        "bullet3": "Erleben Sie verschiedene Lernperspektiven durch Rollentausch",
+        "bullet4": "Bauen Sie unterstützende Lerngemeinschaft durch geteilte Erfahrungen auf"
       },
       "peerLearningPrinciples": {
         "title": "Peer-Learning-Prinzipien in Aktion",
-        "content": "• Lernen Sie von und mit Klassenkameraden durch strukturierte Interaktion\n• Teilen Sie Wissen und Einsichten in reziproken Lehrmomenten\n• Profitieren Sie von verschiedenen Perspektiven und Interpretationsansätzen\n• Bauen Sie Vertrauen durch Peer-Unterstützung und Ermutigung auf\n• Entwickeln Sie Kommunikationsfähigkeiten durch kollaborativen Dialog"
+        "content": "Lernen Sie von und mit Klassenkameraden durch strukturierte Interaktion und reziproke Lehrmomente.",
+        "bullet1": "Lernen Sie von und mit Klassenkameraden durch strukturierte Interaktion",
+        "bullet2": "Teilen Sie Wissen und Einsichten in reziproken Lehrmomenten",
+        "bullet3": "Profitieren Sie von verschiedenen Perspektiven und Interpretationsansätzen",
+        "bullet4": "Bauen Sie Vertrauen durch Peer-Unterstützung und Ermutigung auf"
       },
       "thinkAloudProtocols": {
         "title": "Think-Aloud-Protokolle für tieferes Lernen",
-        "content": "• Verbalisieren Sie Ihre Denkprozesse als historischer Charakter\n• Machen Sie Lernen durch explizite Begründungsaussagen sichtbar\n• Beispiel: 'Als Napoleon glaube ich das, weil...'\n• Legen Sie Denkmuster und potenzielle Missverständnisse offen\n• Ermöglichen Sie Gleichaltrigen und Lehrern, Echtzeit-Feedback und Führung zu geben"
+        "content": "Verbalisieren Sie Ihre Denkprozesse als historischer Charakter und machen Sie Lernen durch explizite Begründungsaussagen sichtbar.",
+        "bullet1": "Verbalisieren Sie Ihre Denkprozesse als historischer Charakter",
+        "bullet2": "Machen Sie Lernen durch explizite Begründungsaussagen sichtbar",
+        "bullet3": "Beispiel: 'Als Napoleon glaube ich das, weil...'",
+        "bullet4": "Ermöglichen Sie Gleichaltrigen und Lehrern, Echtzeit-Feedback zu geben"
       },
       "criticalThinking": {
         "title": "Entwicklung kritischer Denkfähigkeiten",
-        "content": "• Analysieren Sie historische Ereignisse aus mehreren Charakterperspektiven\n• Bewerten Sie die Gültigkeit historischer Behauptungen und Interpretationen\n• Entwickeln Sie Fähigkeiten in historischer Empathie und Perspektivenübernahme\n• Üben Sie evidenzbasiertes Denken in historischen Kontexten\n• Bauen Sie metakognitive Bewusstheit für Denk- und Lernprozesse auf"
+        "content": "Analysieren Sie historische Ereignisse aus mehreren Charakterperspektiven und entwickeln Sie evidenzbasiertes Denken.",
+        "bullet1": "Analysieren Sie historische Ereignisse aus mehreren Charakterperspektiven",
+        "bullet2": "Bewerten Sie die Gültigkeit historischer Behauptungen und Interpretationen",
+        "bullet3": "Entwickeln Sie Fähigkeiten in historischer Empathie und Perspektivenübernahme",
+        "bullet4": "Bauen Sie metakognitive Bewusstheit für Denk- und Lernprozesse auf"
       },
       "collaborativeReview": {
         "title": "Kollaborative Überprüfungs- und Feedback-Prozesse",
-        "content": "• Engagieren Sie sich in strukturierten Peer-Feedback-Sitzungen nach dem Rollenspiel\n• Geben Sie konstruktive Beobachtungen zu Charakterdarstellungen\n• Erhalten Sie Einsichten aus mehreren Peer-Perspektiven\n• Nehmen Sie an Gruppenreflexion über historische Genauigkeit und Interpretation teil\n• Bauen Sie Fähigkeiten im Geben und Erhalten akademischen Feedbacks auf"
+        "content": "Engagieren Sie sich in strukturierten Peer-Feedback-Sitzungen nach dem Rollenspiel und bauen Sie Fähigkeiten im akademischen Feedback auf.",
+        "bullet1": "Engagieren Sie sich in strukturierten Peer-Feedback-Sitzungen nach dem Rollenspiel",
+        "bullet2": "Geben Sie konstruktive Beobachtungen zu Charakterdarstellungen",
+        "bullet3": "Erhalten Sie Einsichten aus mehreren Peer-Perspektiven",
+        "bullet4": "Bauen Sie Fähigkeiten im Geben und Erhalten akademischen Feedbacks auf"
       },
       "teacherFacilitation": {
         "title": "Lehrererleichterungsstrategien",
-        "content": "• Lehrer bieten Gerüst für komplexe historische Konzepte\n• Echtzeit-Führung hilft Schülern, herausfordernde Perspektiven zu navigieren\n• Strukturierte Nachbesprechungssitzungen maximieren Lernergebnisse\n• Bewertungsmöglichkeiten durch Beobachtung von Denkprozessen\n• Unterstützung für Schüler bei der Entwicklung historischer Denkfähigkeiten"
-      },
-      "reflectionGrowth": {
+        "content": "Lehrer bieten Gerüst für komplexe historische Konzepte und helfen Schülern durch Echtzeit-Führung.",
+        "bullet1": "Lehrer bieten Gerüst für komplexe historische Konzepte",
+        "bullet2": "Echtzeit-Führung hilft Schülern, herausfordernde Perspektiven zu navigieren",
+        "bullet3": "Strukturierte Nachbesprechungssitzungen maximieren Lernergebnisse",
+        "bullet4": "Unterstützung für Schüler bei der Entwicklung historischer Denkfähigkeiten"
+       },
+       "reflectionGrowth": {
         "title": "Reflexion und metakognitives Wachstum",
-        "content": "• Dokumentieren Sie die Lernreise durch strukturierte Reflexionsaktivitäten\n• Analysieren Sie Wachstum in historischem Denken und Perspektivenübernahmefähigkeiten\n• Identifizieren Sie Bereiche für kontinuierliche Entwicklung und Lernen\n• Bauen Sie Selbstbewusstsein für Lernpräferenzen und -strategien auf\n• Planen Sie zukünftige Lernziele und historische Erkundungsthemen"
+        "content": "Dokumentieren Sie die Lernreise durch strukturierte Reflexionsaktivitäten und analysieren Sie Ihr Wachstum.",
+        "bullet1": "Dokumentieren Sie die Lernreise durch strukturierte Reflexionsaktivitäten",
+        "bullet2": "Analysieren Sie Wachstum in historischem Denken und Perspektivenübernahmefähigkeiten",
+        "bullet3": "Identifizieren Sie Bereiche für kontinuierliche Entwicklung und Lernen",
+        "bullet4": "Planen Sie zukünftige Lernziele und historische Erkundungsthemen"
       },
       "implementationExamples": {
         "title": "Implementierungsbeispiele über Fächer hinweg",
-        "content": "• Geschichte: Spielen Sie historische Figuren in Schlüsselereignissen und Entscheidungen\n• Literatur: Verkörpern Sie Autoren oder Charaktere, um Motivationen zu verstehen\n• Sozialwissenschaften: Erkunden Sie verschiedene kulturelle Perspektiven und Weltanschauungen\n• Wissenschaft: Übernehmen Sie Rollen von Wissenschaftlern und Erfindern in Entdeckungsmomenten\n• Philosophie: Engagieren Sie sich mit großen Denkern und ihren philosophischen Positionen"
+        "content": "Erkunden Sie verschiedene Anwendungsmöglichkeiten des historischen Rollenspiels in unterschiedlichen Fächern.",
+        "bullet1": "Geschichte: Spielen Sie historische Figuren in Schlüsselereignissen und Entscheidungen",
+        "bullet2": "Literatur: Verkörpern Sie Autoren oder Charaktere, um Motivationen zu verstehen",
+        "bullet3": "Wissenschaft: Übernehmen Sie Rollen von Wissenschaftlern und Erfindern in Entdeckungsmomenten",
+        "bullet4": "Philosophie: Engagieren Sie sich mit großen Denkern und ihren philosophischen Positionen"
       }
     }
   },
@@ -216,29 +280,53 @@
     "slides": {
       "welcome": {
         "title": "Willkommen beim Doppelinterview!",
-        "content": "Führen Sie zwei verschiedene Charaktere in parallelen Gesprächen, um kontrastierende Perspektiven zu erkunden und fortgeschrittene vergleichende Analysefähigkeiten zu entwickeln."
+        "content": "Führen Sie zwei verschiedene Charaktere in parallelen Gesprächen, um kontrastierende Perspektiven zu erkunden und fortgeschrittene vergleichende Analysefähigkeiten zu entwickeln.",
+        "bullet1": "Wählen Sie zwei Charaktere mit unterschiedlichen Hintergründen",
+        "bullet2": "Stellen Sie dieselben Fragen beiden gleichzeitig",
+        "bullet3": "Vergleichen Sie ihre Antworten in Echtzeit",
+        "bullet4": "Entwickeln Sie Verständnis durch vergleichende Analyse"
       },
       "howItWorks": {
         "title": "Wie es funktioniert",
-        "content": "• Wählen Sie zwei Charaktere mit unterschiedlichen Hintergründen oder Standpunkten\n• Stellen Sie dieselben Fragen beiden Charakteren gleichzeitig\n• Vergleichen und kontrastieren Sie ihre Antworten in Echtzeit\n• Analysieren Sie Unterschiede in Perspektive, Argumentation und Schlussfolgerungen\n• Entwickeln Sie nuanciertes Verständnis durch vergleichenden Dialog"
+        "content": "Wählen Sie zwei Charaktere mit unterschiedlichen Hintergründen und stellen Sie dieselben Fragen beiden gleichzeitig.",
+        "bullet1": "Wählen Sie zwei Charaktere mit unterschiedlichen Hintergründen oder Standpunkten",
+        "bullet2": "Stellen Sie dieselben Fragen beiden Charakteren gleichzeitig",
+        "bullet3": "Vergleichen und kontrastieren Sie ihre Antworten in Echtzeit",
+        "bullet4": "Entwickeln Sie nuanciertes Verständnis durch vergleichenden Dialog"
       },
       "comparativeAnalysis": {
         "title": "Vergleichende Analysefähigkeiten",
-        "content": "• Identifizieren Sie Ähnlichkeiten und Unterschiede in Charakterantworten\n• Analysieren Sie zugrundeliegende Annahmen und Weltanschauungen\n• Bewerten Sie die Stärke verschiedener Argumente und Perspektiven\n• Erkennen Sie Voreingenommenheit und kulturelle Einflüsse in Antworten\n• Entwickeln Sie Fähigkeiten im Synthetisieren mehrerer Standpunkte"
-      },
-      "criticalThinking": {
+        "content": "Identifizieren Sie Ähnlichkeiten und Unterschiede in Charakterantworten und analysieren Sie zugrundeliegende Annahmen.",
+        "bullet1": "Identifizieren Sie Ähnlichkeiten und Unterschiede in Charakterantworten",
+        "bullet2": "Analysieren Sie zugrundeliegende Annahmen und Weltanschauungen",
+        "bullet3": "Bewerten Sie die Stärke verschiedener Argumente und Perspektiven",
+        "bullet4": "Entwickeln Sie Fähigkeiten im Synthetisieren mehrerer Standpunkte"
+       },
+       "criticalThinking": {
         "title": "Entwicklung kritischen Denkens",
-        "content": "• Üben Sie die Bewertung mehrerer Informationsquellen\n• Entwickeln Sie Fähigkeiten in Perspektivenübernahme und Empathie\n• Lernen Sie, logische Trugschlüsse und schwache Argumente zu identifizieren\n• Bauen Sie die Fähigkeit auf, komplexe, widersprüchliche Informationen zu synthetisieren\n• Verbessern Sie analytisches Denken und Urteilsfähigkeiten"
+        "content": "Üben Sie die Bewertung mehrerer Informationsquellen und entwickeln Sie Fähigkeiten in Perspektivenübernahme.",
+        "bullet1": "Üben Sie die Bewertung mehrerer Informationsquellen",
+        "bullet2": "Entwickeln Sie Fähigkeiten in Perspektivenübernahme und Empathie",
+        "bullet3": "Lernen Sie, logische Trugschlüsse und schwache Argumente zu identifizieren",
+        "bullet4": "Verbessern Sie analytisches Denken und Urteilsfähigkeiten"
       },
       "educationalApplications": {
         "title": "Bildungsanwendungen",
-        "content": "• Geschichte: Vergleichen Sie Führer aus verschiedenen Epochen oder Kulturen\n• Literatur: Kontrastieren Sie Autorenstile und philosophische Ansätze\n• Wissenschaft: Erkunden Sie verschiedene wissenschaftliche Theorien oder Methodologien\n• Sozialwissenschaften: Untersuchen Sie verschiedene kulturelle Perspektiven zu Themen\n• Ethik: Erforschen Sie moralische Dilemmata aus mehreren Blickwinkeln"
+        "content": "Erkunden Sie verschiedene Anwendungsmöglichkeiten des Doppelinterviews in unterschiedlichen Fächern.",
+        "bullet1": "Geschichte: Vergleichen Sie Führer aus verschiedenen Epochen oder Kulturen",
+        "bullet2": "Literatur: Kontrastieren Sie Autorenstile und philosophische Ansätze",
+        "bullet3": "Wissenschaft: Erkunden Sie verschiedene wissenschaftliche Theorien oder Methodologien",
+        "bullet4": "Ethik: Erforschen Sie moralische Dilemmata aus mehreren Blickwinkeln"
       },
       "classroomBenefits": {
         "title": "Klassenzimmervorteile",
-        "content": "• Fördert tieferes Verständnis durch Vergleich\n• Ermutigt kritische Bewertung von Informationsquellen\n• Entwickelt Toleranz für Mehrdeutigkeit und Komplexität\n• Baut wesentliche Fähigkeiten für akademische Forschung und Analyse auf\n• Bereitet Schüler auf reale Entscheidungsszenarien vor"
-      },
-      "getStarted": {
+        "content": "Fördert tieferes Verständnis durch Vergleich und ermutigt kritische Bewertung von Informationsquellen.",
+        "bullet1": "Fördert tieferes Verständnis durch Vergleich",
+        "bullet2": "Ermutigt kritische Bewertung von Informationsquellen",
+        "bullet3": "Entwickelt Toleranz für Mehrdeutigkeit und Komplexität",
+        "bullet4": "Bereitet Schüler auf reale Entscheidungsszenarien vor"
+       },
+       "getStarted": {
         "title": "Bereit zu vergleichen?",
         "content": "Beginnen Sie Ihre vergleichende Analysereise und entdecken Sie die Macht mehrerer Perspektiven!"
       }

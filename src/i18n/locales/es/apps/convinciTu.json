@@ -1,0 +1,53 @@
+{
+  "name": "Convénceme",
+  "title": "Convénceme",
+  "subtitle": "Intenta convencer a un personaje histórico sobre un tema específico",
+  "description": "Intenta convencer a figuras históricas de tus ideas",
+  "newChatSuccess": "¡Nuevo chat iniciado!",
+  "errors": {
+    "responseGeneration": "Error al generar la respuesta.",
+    "evaluationGeneration": "Error al generar la evaluación."
+  },
+  "characterSelection": {
+    "label": "Elige un personaje",
+    "placeholder": "Busca un personaje histórico..."
+  },
+  "topic": {
+    "label": "¿De qué quieres convencer a {{characterName}}?",
+    "placeholder": "ej: que la pizza con piña es una gran idea"
+  },
+  "startButton": "Iniciar Chat",
+  "chat": {
+    "title": "Conversación",
+    "placeholder": "Escribe tu argumento persuasivo...",
+    "endButton": "Finalizar Chat y Reflexionar",
+    "currentPromptLabel": "Prompt Actual:",
+    "promptValue": "Convence a {{characterName}} de que {{topic}}",
+    "emptyConversation": "La conversación aparecerá aquí",
+    "userLabel": "Tú",
+    "endActivityButton": "Terminar Actividad"
+  },
+  "reflection": {
+    "title": "Reflexión sobre la Persuasión",
+    "description": "Reflexiona sobre tu intento de persuadir al personaje.",
+    "placeholder": "¿Qué estrategias usaste? ¿Qué funcionó y qué no?",
+    "questions": {
+      "success": "¿Lograste convencer a la figura histórica?",
+      "strategies": "¿Qué estrategias utilizaste que fueron efectivas?",
+      "difficulties": "¿Cuáles fueron las principales dificultades que encontraste?",
+      "differently": "¿Qué harías diferente la próxima vez?",
+      "convinced": "¿Crees que lograste convencerlos? ¿Cómo?"
+    }
+  },
+  "feedback": {
+    "title": "Retroalimentación",
+    "subtitle": "Aquí tienes un resumen de tu conversación y la evaluación de la IA.",
+    "conversationHistory": "Historial de Conversación",
+    "yourReflection": "Tu Reflexión",
+    "aiFeedback": "Retroalimentación de IA",
+    "downloadReflection": "Descargar Reflexión",
+    "startNewChat": "Iniciar un Nuevo Chat",
+    "downloadSuccess": "¡Reflexión descargada exitosamente!",
+    "downloadError": "Error al descargar la reflexión"
+  }
+}
