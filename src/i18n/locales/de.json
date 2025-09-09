@@ -88,10 +88,38 @@
   },
   "apps": {
     "wikiInterview": {
-      "name": "Doppelinterview",
-      "title": "Wiki Interview",
+      "name": "Wiki Interview",
+      "title": "Historischer Dialog KI",
       "subtitle": "Interviewen Sie historische Figuren",
-      "description": "Stellen Sie Fragen an historische Figuren und entdecken Sie ihre Geschichte",
+      "description": "Moderieren Sie einen Dialog zwischen zwei historischen Figuren zu einem bestimmten Thema",
+      "tutorial": "Tutorial",
+      "setup": {
+        "buildDialogue": "Dialog Erstellen",
+        "selectDescription": "Wählen Sie zwei historische Figuren für einen moderierten Dialog",
+        "character1": "Erste Figur",
+        "character2": "Zweite Figur",
+        "themeLabel": "Dialog-Thema",
+        "themePlaceholder": "Geben Sie das Diskussionsthema ein...",
+        "startButton": "Dialog Starten",
+        "loadingSummary": "Zusammenfassung wird geladen...",
+        "summaryLoaded": "Zusammenfassung erfolgreich geladen"
+      },
+      "chat": {
+        "systemMessage": "Dialog zwischen {{char1}} und {{char2}} zum Thema: {{theme}}",
+        "endDialogueButton": "Dialog Beenden",
+        "moderatorPrompt": "Als Moderator können Sie das Gespräch leiten...",
+        "speakToAll": "Mit beiden sprechen",
+        "speakTo": "Mit {{name}} sprechen",
+        "askBothPlaceholder": "Stellen Sie beiden Figuren eine Frage...",
+        "askCharacterPlaceholder": "Stellen Sie {{character}} eine Frage...",
+        "nextIntervention": "Nächster Beitrag: {{character}}",
+        "dialogueTab": "Dialog",
+        "charactersTab": "Figuren",
+        "errors": {
+          "fetchError": "Fehler beim Abrufen von Daten von Wikipedia",
+          "summaryError": "Informationen zu dieser Seite konnten nicht abgerufen werden."
+        }
+      },
       "characterStyles": {
         "erudite": "gelehrt",
         "reflective": "nachdenklich"

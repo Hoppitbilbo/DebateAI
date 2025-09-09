@@ -65,37 +65,73 @@
     }
   },
   "convinciTu": {
-    "title": "Tutorial ConvénceTe",
+    "title": "Tutorial ConvinciTu",
     "subtitle": "Domina el arte de la persuasión y la preparación para debates",
-    "startApp": "Iniciar ConvénceTe",
+    "startApp": "Iniciar ConvinciTu",
     "slides": {
       "welcome": {
-        "title": "¡Bienvenido a ConvénceTe!",
-        "content": "Domina el arte de la persuasión participando en debates con oponentes IA sobre temas que te importan."
+        "title": "¡Bienvenido a ConvinciTu!",
+        "content": "Domina el arte de la persuasión participando en debates con oponentes IA sobre temas que te importan.",
+        "bullet1": "Elige temas que te apasionen",
+        "bullet2": "Debate con oponentes IA inteligentes",
+        "bullet3": "Desarrolla habilidades de argumentación",
+        "bullet4": "Construye confianza al hablar"
       },
       "howItWorks": {
         "title": "Cómo Funciona",
-        "content": "• Elige un tema que te apasione\n• Selecciona tu posición (a favor o en contra)\n• Participa en un debate estructurado con un oponente IA\n• Desarrolla y refina tus habilidades de argumentación"
+        "content": "Aprende el proceso paso a paso para participar en debates estructurados y significativos con oponentes IA.",
+        "bullet1": "Elige un tema que te apasione",
+        "bullet2": "Selecciona tu posición (a favor o en contra)",
+        "bullet3": "Participa en un debate estructurado con un oponente IA",
+        "bullet4": "Desarrolla y refina tus habilidades de argumentación"
       },
-      "skillDevelopment": {
-        "title": "Habilidades que Desarrollarás",
-        "content": "• Razonamiento lógico y construcción de argumentos\n• Análisis crítico de puntos de vista opuestos\n• Técnicas de comunicación persuasiva\n• Argumentación basada en evidencia\n• Confianza en hablar en público"
+      "debatePreparation": {
+        "title": "Preparación para el Debate",
+        "content": "Aprende estrategias esenciales para preparar argumentos convincentes y anticipar contraargumentos.",
+        "bullet1": "Realiza investigación exhaustiva sobre el tema",
+        "bullet2": "Estructura argumentos lógicos y coherentes",
+        "bullet3": "Anticipa y prepara contraargumentos",
+        "bullet4": "Reúne evidencia y ejemplos creíbles"
       },
-      "debateStrategy": {
-        "title": "Estrategias de Debate Efectivas",
-        "content": "• Estructura tus argumentos claramente\n• Usa evidencia y ejemplos creíbles\n• Anticipa y aborda contraargumentos\n• Mantén un discurso respetuoso\n• Enfócate en la lógica sobre la emoción"
+      "collaborativeLearning": {
+        "title": "Aprendizaje Colaborativo",
+        "content": "Descubre cómo el aprendizaje entre pares y la guía del maestro mejoran tus habilidades de debate.",
+        "bullet1": "Colabora con compañeros de clase en la preparación",
+        "bullet2": "Recibe retroalimentación constructiva de pares y maestros",
+        "bullet3": "Comparte estrategias y técnicas efectivas",
+        "bullet4": "Aprende observando técnicas de debate de pares"
       },
-      "educationalValue": {
-        "title": "Beneficios Educativos",
-        "content": "• Prepara a los estudiantes para debates académicos\n• Mejora las habilidades de pensamiento crítico\n• Construye confianza en expresar ideas\n• Desarrolla habilidades de investigación y análisis\n• Promueve el compromiso cívico y el discurso"
+      "visibleThinking": {
+        "title": "Pensamiento Visible",
+        "content": "Desarrolla la capacidad de articular claramente tus procesos de razonamiento durante el debate.",
+        "bullet1": "Verbaliza tus procesos de pensamiento",
+        "bullet2": "Explica el razonamiento detrás de cada argumento",
+        "bullet3": "Haz transparentes tus estrategias de debate",
+        "bullet4": "Permite retroalimentación en tiempo real sobre el razonamiento"
       },
-      "realWorldApplication": {
-        "title": "Aplicaciones en el Mundo Real",
-        "content": "• Presentaciones y discusiones académicas\n• Negociaciones y reuniones profesionales\n• Participación cívica y defensa\n• Procesos de toma de decisiones personales\n• Roles de liderazgo y comunicación"
+      "teacherEvaluation": {
+        "title": "Evaluación del Maestro",
+        "content": "Comprende cómo los maestros pueden evaluar y apoyar tu desarrollo en habilidades de debate.",
+        "bullet1": "Evaluación de habilidades de argumentación",
+        "bullet2": "Retroalimentación sobre lógica y estructura de argumentos",
+        "bullet3": "Monitoreo del progreso a lo largo del tiempo",
+        "bullet4": "Apoyo personalizado para la mejora"
       },
-      "getStarted": {
-        "title": "¿Listo para Convencer?",
-        "content": "¡Comienza tu viaje para convertirte en un comunicador más persuasivo y seguro!"
+      "selfReflection": {
+        "title": "Autorreflexión",
+        "content": "Aprende a reflexionar críticamente sobre tu desempeño en debates para una mejora continua.",
+        "bullet1": "Analiza fortalezas y áreas de mejora",
+        "bullet2": "Reflexiona sobre la efectividad de las estrategias utilizadas",
+        "bullet3": "Identifica patrones en tus argumentos",
+        "bullet4": "Planifica objetivos para futuros debates"
+      },
+      "examples": {
+        "title": "Ejemplos Prácticos",
+        "content": "Explora ejemplos concretos de temas de debate y técnicas efectivas en diferentes materias.",
+        "bullet1": "Debates éticos: Inteligencia artificial y privacidad",
+        "bullet2": "Temas ambientales: Cambio climático y sostenibilidad",
+        "bullet3": "Política social: Educación y atención médica",
+        "bullet4": "Tecnología: Redes sociales e impacto social"
       }
     }
   },

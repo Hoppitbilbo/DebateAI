@@ -65,37 +65,73 @@
     }
   },
   "convinciTu": {
-    "title": "Convince YOU Tutorial",
+    "title": "ConvinciTu Tutorial",
     "subtitle": "Master the art of persuasion and debate preparation",
-    "startApp": "Start Convince YOU Game",
+    "startApp": "Start ConvinciTu",
     "slides": {
       "welcome": {
-        "title": "Welcome to Convince YOU!",
-        "content": "Master the art of persuasion by engaging in debates with AI opponents on topics you care about."
+        "title": "Welcome to ConvinciTu!",
+        "content": "Master the art of persuasion by engaging in debates with AI opponents on topics you care about.",
+        "bullet1": "Choose topics you're passionate about",
+        "bullet2": "Debate with intelligent AI opponents",
+        "bullet3": "Develop argumentation skills",
+        "bullet4": "Build confidence in speaking"
       },
       "howItWorks": {
         "title": "How It Works",
-        "content": "• Choose a topic you're passionate about\n• Select your position (for or against)\n• Engage in structured debate with an AI opponent\n• Develop and refine your argumentation skills"
+        "content": "Learn the step-by-step process for engaging in structured and meaningful debates with AI opponents.",
+        "bullet1": "Choose a topic you're passionate about",
+        "bullet2": "Select your position (for or against)",
+        "bullet3": "Engage in structured debate with an AI opponent",
+        "bullet4": "Develop and refine your argumentation skills"
       },
-      "skillDevelopment": {
-        "title": "Skills You'll Develop",
-        "content": "• Logical reasoning and argument construction\n• Critical analysis of opposing viewpoints\n• Persuasive communication techniques\n• Evidence-based argumentation\n• Confidence in public speaking"
+      "debatePreparation": {
+        "title": "Debate Preparation",
+        "content": "Learn essential strategies for preparing compelling arguments and anticipating counterarguments.",
+        "bullet1": "Conduct thorough research on the topic",
+        "bullet2": "Structure logical and coherent arguments",
+        "bullet3": "Anticipate and prepare counterarguments",
+        "bullet4": "Gather credible evidence and examples"
       },
-      "debateStrategy": {
-        "title": "Effective Debate Strategies",
-        "content": "• Structure your arguments clearly\n• Use credible evidence and examples\n• Anticipate and address counterarguments\n• Maintain respectful discourse\n• Focus on logic over emotion"
+      "collaborativeLearning": {
+        "title": "Collaborative Learning",
+        "content": "Discover how peer learning and teacher guidance enhance your debate skills.",
+        "bullet1": "Collaborate with classmates in preparation",
+        "bullet2": "Receive constructive feedback from peers and teachers",
+        "bullet3": "Share effective strategies and techniques",
+        "bullet4": "Learn by observing peer debate techniques"
       },
-      "educationalValue": {
-        "title": "Educational Benefits",
-        "content": "• Prepares students for academic debates\n• Enhances critical thinking abilities\n• Builds confidence in expressing ideas\n• Develops research and analysis skills\n• Promotes civic engagement and discourse"
+      "visibleThinking": {
+        "title": "Visible Thinking",
+        "content": "Develop the ability to clearly articulate your reasoning processes during debate.",
+        "bullet1": "Verbalize your thought processes",
+        "bullet2": "Explain the reasoning behind each argument",
+        "bullet3": "Make your debate strategies transparent",
+        "bullet4": "Allow real-time feedback on reasoning"
       },
-      "realWorldApplication": {
-        "title": "Real-World Applications",
-        "content": "• Academic presentations and discussions\n• Professional negotiations and meetings\n• Civic participation and advocacy\n• Personal decision-making processes\n• Leadership and communication roles"
+      "teacherEvaluation": {
+        "title": "Teacher Evaluation",
+        "content": "Understand how teachers can assess and support your development in debate skills.",
+        "bullet1": "Assessment of argumentation skills",
+        "bullet2": "Feedback on argument logic and structure",
+        "bullet3": "Progress monitoring over time",
+        "bullet4": "Personalized support for improvement"
       },
-      "getStarted": {
-        "title": "Ready to Convince?",
-        "content": "Begin your journey to becoming a more persuasive and confident communicator!"
+      "selfReflection": {
+        "title": "Self-Reflection",
+        "content": "Learn to critically reflect on your debate performance for continuous improvement.",
+        "bullet1": "Analyze strengths and areas for improvement",
+        "bullet2": "Reflect on the effectiveness of strategies used",
+        "bullet3": "Identify patterns in your arguments",
+        "bullet4": "Plan goals for future debates"
+      },
+      "examples": {
+        "title": "Practical Examples",
+        "content": "Explore concrete examples of debate topics and effective techniques across different subjects.",
+        "bullet1": "Ethical debates: Artificial intelligence and privacy",
+        "bullet2": "Environmental issues: Climate change and sustainability",
+        "bullet3": "Social policy: Education and healthcare",
+        "bullet4": "Technology: Social media and societal impact"
       }
     }
   },

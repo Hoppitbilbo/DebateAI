@@ -78,31 +78,67 @@
     "slides": {
       "welcome": {
         "title": "Benvenuto in ConvinciTu!",
-        "content": "Padroneggia l'arte della persuasione impegnandoti in dibattiti con avversari AI su argomenti che ti stanno a cuore."
+        "content": "Padroneggia l'arte della persuasione impegnandoti in dibattiti con avversari AI su argomenti che ti stanno a cuore.",
+        "bullet1": "Scegli argomenti che ti appassionano",
+        "bullet2": "Dibatti con avversari AI intelligenti",
+        "bullet3": "Sviluppa capacità di argomentazione",
+        "bullet4": "Migliora la fiducia nel parlare"
       },
       "howItWorks": {
         "title": "Come Funziona",
-        "content": "• Scegli un argomento che ti appassiona\n• Seleziona la tua posizione (a favore o contro)\n• Impegnati in un dibattito strutturato con un avversario AI\n• Sviluppa e affina le tue capacità di argomentazione"
+        "content": "Impara il processo passo-passo per impegnarti in dibattiti strutturati e significativi con avversari AI.",
+        "bullet1": "Scegli un argomento che ti appassiona",
+        "bullet2": "Seleziona la tua posizione (a favore o contro)",
+        "bullet3": "Impegnati in un dibattito strutturato con un avversario AI",
+        "bullet4": "Sviluppa e affina le tue capacità di argomentazione"
       },
-      "skillDevelopment": {
-        "title": "Competenze che Svilupperai",
-        "content": "• Ragionamento logico e costruzione di argomenti\n• Analisi critica di punti di vista opposti\n• Tecniche di comunicazione persuasiva\n• Argomentazione basata su prove\n• Fiducia nel parlare in pubblico"
+      "debatePreparation": {
+        "title": "Preparazione al Dibattito",
+        "content": "Impara strategie essenziali per preparare argomenti convincenti e anticipare controargomentazioni.",
+        "bullet1": "Ricerca approfondita sull'argomento",
+        "bullet2": "Struttura argomenti logici e coerenti",
+        "bullet3": "Anticipa e prepara controargomentazioni",
+        "bullet4": "Raccogli prove ed esempi credibili"
       },
-      "debateStrategy": {
-        "title": "Strategie di Dibattito Efficaci",
-        "content": "• Struttura chiaramente i tuoi argomenti\n• Usa prove ed esempi credibili\n• Anticipa e affronta i controargomenti\n• Mantieni un discorso rispettoso\n• Concentrati sulla logica piuttosto che sull'emozione"
+      "collaborativeLearning": {
+        "title": "Apprendimento Collaborativo",
+        "content": "Scopri come l'apprendimento tra pari e la guida dell'insegnante migliorano le tue capacità di dibattito.",
+        "bullet1": "Collabora con compagni di classe nella preparazione",
+        "bullet2": "Ricevi feedback costruttivo da pari e insegnanti",
+        "bullet3": "Condividi strategie e tecniche efficaci",
+        "bullet4": "Impara osservando le tecniche di dibattito dei pari"
       },
-      "educationalValue": {
-        "title": "Benefici Educativi",
-        "content": "• Prepara gli studenti ai dibattiti accademici\n• Migliora le capacità di pensiero critico\n• Costruisce fiducia nell'esprimere idee\n• Sviluppa capacità di ricerca e analisi\n• Promuove l'impegno civico e il discorso"
+      "visibleThinking": {
+        "title": "Pensiero Visibile",
+        "content": "Sviluppa la capacità di articolare chiaramente i tuoi processi di ragionamento durante il dibattito.",
+        "bullet1": "Verbalizza i tuoi processi di pensiero",
+        "bullet2": "Spiega il ragionamento dietro ogni argomento",
+        "bullet3": "Rendi trasparenti le tue strategie di dibattito",
+        "bullet4": "Permetti feedback in tempo reale sul ragionamento"
       },
-      "realWorldApplication": {
-        "title": "Applicazioni nel Mondo Reale",
-        "content": "• Presentazioni e discussioni accademiche\n• Negoziazioni e riunioni professionali\n• Partecipazione civica e advocacy\n• Processi decisionali personali\n• Ruoli di leadership e comunicazione"
+      "teacherEvaluation": {
+        "title": "Valutazione dell'Insegnante",
+        "content": "Comprendi come gli insegnanti possono valutare e supportare il tuo sviluppo nelle capacità di dibattito.",
+        "bullet1": "Valutazione delle capacità di argomentazione",
+        "bullet2": "Feedback su logica e struttura degli argomenti",
+        "bullet3": "Monitoraggio del progresso nel tempo",
+        "bullet4": "Supporto personalizzato per il miglioramento"
       },
-      "getStarted": {
-        "title": "Pronto a Convincere?",
-        "content": "Inizia il tuo viaggio per diventare un comunicatore più persuasivo e sicuro!"
+      "selfReflection": {
+        "title": "Auto-riflessione",
+        "content": "Impara a riflettere criticamente sulle tue prestazioni di dibattito per un miglioramento continuo.",
+        "bullet1": "Analizza i punti di forza e le aree di miglioramento",
+        "bullet2": "Rifletti sull'efficacia delle strategie utilizzate",
+        "bullet3": "Identifica modelli nei tuoi argomenti",
+        "bullet4": "Pianifica obiettivi per futuri dibattiti"
+      },
+      "examples": {
+        "title": "Esempi Pratici",
+        "content": "Esplora esempi concreti di argomenti di dibattito e tecniche efficaci in diverse materie.",
+        "bullet1": "Dibattiti etici: Intelligenza artificiale e privacy",
+        "bullet2": "Questioni ambientali: Cambiamento climatico e sostenibilità",
+        "bullet3": "Politica sociale: Istruzione e assistenza sanitaria",
+        "bullet4": "Tecnologia: Social media e impatto sulla società"
       }
     }
   },

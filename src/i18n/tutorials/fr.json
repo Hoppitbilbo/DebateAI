@@ -65,37 +65,73 @@
     }
   },
   "convinciTu": {
-    "title": "Tutoriel ConvaincsToi",
+    "title": "Tutoriel ConvinciTu",
     "subtitle": "Maîtrisez l'art de la persuasion et la préparation au débat",
-    "startApp": "Démarrer ConvaincsToi",
+    "startApp": "Démarrer ConvinciTu",
     "slides": {
       "welcome": {
-        "title": "Bienvenue dans ConvaincsToi !",
-        "content": "Maîtrisez l'art de la persuasion en vous engageant dans des débats avec des adversaires IA sur des sujets qui vous tiennent à cœur."
+        "title": "Bienvenue dans ConvinciTu !",
+        "content": "Maîtrisez l'art de la persuasion en vous engageant dans des débats avec des adversaires IA sur des sujets qui vous tiennent à cœur.",
+        "bullet1": "Choisissez des sujets qui vous passionnent",
+        "bullet2": "Débattez avec des adversaires IA intelligents",
+        "bullet3": "Développez vos compétences d'argumentation",
+        "bullet4": "Renforcez votre confiance en expression orale"
       },
       "howItWorks": {
         "title": "Comment Ça Marche",
-        "content": "• Choisissez un sujet qui vous passionne\n• Sélectionnez votre position (pour ou contre)\n• Engagez-vous dans un débat structuré avec un adversaire IA\n• Développez et affinez vos compétences d'argumentation"
+        "content": "Apprenez le processus étape par étape pour vous engager dans des débats structurés et significatifs avec des adversaires IA.",
+        "bullet1": "Choisissez un sujet qui vous passionne",
+        "bullet2": "Sélectionnez votre position (pour ou contre)",
+        "bullet3": "Engagez-vous dans un débat structuré avec un adversaire IA",
+        "bullet4": "Développez et affinez vos compétences d'argumentation"
       },
-      "skillDevelopment": {
-        "title": "Compétences que Vous Développerez",
-        "content": "• Raisonnement logique et construction d'arguments\n• Analyse critique des points de vue opposés\n• Techniques de communication persuasive\n• Argumentation basée sur des preuves\n• Confiance en prise de parole en public"
+      "debatePreparation": {
+        "title": "Préparation au Débat",
+        "content": "Apprenez les stratégies essentielles pour préparer des arguments convaincants et anticiper les contre-arguments.",
+        "bullet1": "Effectuez des recherches approfondies sur le sujet",
+        "bullet2": "Structurez des arguments logiques et cohérents",
+        "bullet3": "Anticipez et préparez les contre-arguments",
+        "bullet4": "Rassemblez des preuves et exemples crédibles"
       },
-      "debateStrategy": {
-        "title": "Stratégies de Débat Efficaces",
-        "content": "• Structurez clairement vos arguments\n• Utilisez des preuves et exemples crédibles\n• Anticipez et adressez les contre-arguments\n• Maintenez un discours respectueux\n• Concentrez-vous sur la logique plutôt que l'émotion"
+      "collaborativeLearning": {
+        "title": "Apprentissage Collaboratif",
+        "content": "Découvrez comment l'apprentissage entre pairs et la guidance de l'enseignant améliorent vos compétences de débat.",
+        "bullet1": "Collaborez avec vos camarades de classe dans la préparation",
+        "bullet2": "Recevez des commentaires constructifs de pairs et enseignants",
+        "bullet3": "Partagez des stratégies et techniques efficaces",
+        "bullet4": "Apprenez en observant les techniques de débat des pairs"
       },
-      "educationalValue": {
-        "title": "Bénéfices Éducatifs",
-        "content": "• Prépare les étudiants aux débats académiques\n• Améliore les capacités de pensée critique\n• Construit la confiance dans l'expression d'idées\n• Développe les compétences de recherche et d'analyse\n• Favorise l'engagement civique et le discours"
+      "visibleThinking": {
+        "title": "Pensée Visible",
+        "content": "Développez la capacité d'articuler clairement vos processus de raisonnement pendant le débat.",
+        "bullet1": "Verbalisez vos processus de pensée",
+        "bullet2": "Expliquez le raisonnement derrière chaque argument",
+        "bullet3": "Rendez vos stratégies de débat transparentes",
+        "bullet4": "Permettez un feedback en temps réel sur le raisonnement"
       },
-      "realWorldApplication": {
-        "title": "Applications du Monde Réel",
-        "content": "• Présentations et discussions académiques\n• Négociations et réunions professionnelles\n• Participation civique et plaidoyer\n• Processus de prise de décision personnelle\n• Rôles de leadership et de communication"
+      "teacherEvaluation": {
+        "title": "Évaluation de l'Enseignant",
+        "content": "Comprenez comment les enseignants peuvent évaluer et soutenir votre développement en compétences de débat.",
+        "bullet1": "Évaluation des compétences d'argumentation",
+        "bullet2": "Feedback sur la logique et structure des arguments",
+        "bullet3": "Suivi des progrès dans le temps",
+        "bullet4": "Soutien personnalisé pour l'amélioration"
       },
-      "getStarted": {
-        "title": "Prêt à Convaincre ?",
-        "content": "Commencez votre voyage pour devenir un communicateur plus persuasif et confiant !"
+      "selfReflection": {
+        "title": "Auto-réflexion",
+        "content": "Apprenez à réfléchir de manière critique sur vos performances de débat pour une amélioration continue.",
+        "bullet1": "Analysez les forces et domaines d'amélioration",
+        "bullet2": "Réfléchissez sur l'efficacité des stratégies utilisées",
+        "bullet3": "Identifiez les modèles dans vos arguments",
+        "bullet4": "Planifiez des objectifs pour les futurs débats"
+      },
+      "examples": {
+        "title": "Exemples Pratiques",
+        "content": "Explorez des exemples concrets de sujets de débat et techniques efficaces dans différentes matières.",
+        "bullet1": "Débats éthiques : Intelligence artificielle et vie privée",
+        "bullet2": "Questions environnementales : Changement climatique et durabilité",
+        "bullet3": "Politique sociale : Éducation et soins de santé",
+        "bullet4": "Technologie : Médias sociaux et impact sociétal"
       }
     }
   },

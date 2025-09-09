@@ -254,10 +254,7 @@
       "impersonaTu": {
         "name": "ImpersonaTu",
         "description": "Dialoga con una figura storica interpretandone un'altra. Metti alla prova le tue capacità di empatia!"
-      }
-    }
-  },
-  "apps": {
+      },
     "doppiaIntervista": {
       "name": "Doppia Intervista",
       "title": "Doppia Intervista",
@@ -369,12 +366,17 @@
         "newGameButton": "Nuovo Gioco"
       }
     }
-  },
+  }
+},
   "homepage": {
     "teacherGuide": {
       "title": "Guida per Insegnanti",
       "description": "Scopri come utilizzare le nostre applicazioni per creare esperienze di apprendimento innovative e coinvolgenti.",
-      "button": "Visualizza Guida"
+      "button": "Visualizza Guida",
+      "viewTutorial": "Visualizza Tutorial",
+      "slide": "Slide",
+      "progress": "Progresso",
+      "previous": "Precedente"
     },
     "socialPurpose": {
       "title": "Il Nostro Scopo Sociale",
