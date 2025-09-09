@@ -6,7 +6,7 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 import en from './locales/en';
 import es from './locales/es';
 import fr from './locales/fr';
-import de from './locales/de.json';
+import de from './locales/de';
 import it from './locales/it';
 
 // Import tutorial translation files

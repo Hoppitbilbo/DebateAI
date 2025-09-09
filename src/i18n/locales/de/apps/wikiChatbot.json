@@ -1,0 +1,17 @@
+{
+  "title": "Wiki Chatbot",
+  "subtitle": "Chatten Sie mit Wikipedia-Artikeln",
+  "description": "Geben Sie ein Thema ein und chatten Sie mit einem KI-Chatbot, der auf Wikipedia-Inhalten basiert. Lernen Sie interaktiv!",
+  "searchPlaceholder": "Suchen Sie nach einem Thema...",
+  "startChat": "Chat beginnen",
+  "loading": "Lade...",
+  "noResults": "Keine Ergebnisse gefunden",
+  "error": "Fehler beim Laden des Artikels",
+  "suggestions": {
+    "title": "Vorschläge",
+    "science": "Wissenschaft",
+    "history": "Geschichte",
+    "technology": "Technologie",
+    "culture": "Kultur"
+  }
+}

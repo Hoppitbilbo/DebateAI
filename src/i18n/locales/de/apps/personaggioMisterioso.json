@@ -1,0 +1,15 @@
+{
+  "title": "Personaggio Misterioso",
+  "subtitle": "Erraten Sie den mysteriösen Charakter",
+  "description": "Die KI verkörpert einen mysteriösen Charakter. Stellen Sie Fragen und versuchen Sie herauszufinden, wer es ist!",
+  "startGame": "Spiel beginnen",
+  "guessCharacter": "Charakter erraten",
+  "makeGuess": "Vermutung abgeben",
+  "newGame": "Neues Spiel",
+  "hints": {
+    "title": "Hinweise",
+    "askQuestions": "Stellen Sie Ja/Nein-Fragen",
+    "payAttention": "Achten Sie auf Details",
+    "useLogic": "Nutzen Sie logisches Denken"
+  }
+}

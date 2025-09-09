@@ -10,6 +10,7 @@ import errors from './errors.json';
 import language from './language.json';
 import teacherGuide from './teacherGuide.json';
 import aboutPage from './aboutPage.json';
+import footer from './footer.json';
 
 export default {
   apps,
@@ -24,4 +25,5 @@ export default {
   language,
   teacherGuide,
   aboutPage,
+  footer,
 };

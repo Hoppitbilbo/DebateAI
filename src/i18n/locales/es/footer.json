@@ -1,0 +1,14 @@
+{
+  "description": "Herramientas Educativas de IA para crear escenarios educativos efectivos",
+  "resources": {
+    "title": "Recursos",
+    "allApps": "Todas las Apps",
+    "aboutUs": "Acerca de Nosotros"
+  },
+  "legal": {
+    "title": "Legal",
+    "privacy": "Política de Privacidad",
+    "terms": "Términos de Servicio"
+  },
+  "copyright": "© {{year}} AI-Debate.Tech. Todos los derechos reservados."
+}

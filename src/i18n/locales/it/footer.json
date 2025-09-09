@@ -1,0 +1,14 @@
+{
+  "description": "Strumenti Educativi AI per creare scenari educativi efficaci",
+  "resources": {
+    "title": "Risorse",
+    "allApps": "Tutte le App",
+    "aboutUs": "Chi Siamo"
+  },
+  "legal": {
+    "title": "Legale",
+    "privacy": "Politica sulla Privacy",
+    "terms": "Termini di Servizio"
+  },
+  "copyright": "© {{year}} AI-Debate.Tech. Tutti i diritti riservati."
+}

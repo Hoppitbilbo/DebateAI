@@ -1,4 +1,11 @@
 {
+  "common": {
+    "back": "Zurück",
+    "next": "Weiter",
+    "previous": "Vorherige",
+    "progress": "Fortschritt",
+    "slide": "Folie"
+  },
   "personaggioMisterioso": {
     "title": "Geheimnisvolle Persönlichkeit Tutorial",
     "subtitle": "Lernen Sie das Ratespiel für historische Persönlichkeiten zu verwenden",
@@ -138,7 +145,10 @@
     "slides": {
       "welcome": {
         "title": "Willkommen bei Wiki-Interview!",
-        "content": "Übernehmen Sie die Rolle eines kollaborativen Debattenmoderators und erleichtern Sie Diskussionen zwischen KI-gestützten Wikipedia-Charakteren, während Sie kritisches Denken und Moderationsfähigkeiten entwickeln."
+        "content": "Übernehmen Sie die Rolle eines kollaborativen Debattenmoderators und erleichtern Sie Diskussionen zwischen KI-gestützten Wikipedia-Charakteren, während Sie kritisches Denken und Moderationsfähigkeiten entwickeln.",
+        "bullet1": "Interagieren Sie mit KI-gestützten historischen Charakteren",
+        "bullet2": "Entwickeln Sie kritisches Denken und Moderationsfähigkeiten",
+        "bullet3": "Erkunden Sie verschiedene Perspektiven durch strukturierte Debatten"
       },
       "moderatorRole": {
         "title": "Kollaborative Moderationsrolle",

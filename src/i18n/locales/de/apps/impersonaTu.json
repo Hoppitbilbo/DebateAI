@@ -1,0 +1,17 @@
+{
+  "title": "ImpersonaTu",
+  "subtitle": "Verkörpern Sie einen Charakter und chatten Sie mit der KI",
+  "description": "Wählen Sie einen Charakter zum Verkörpern und führen Sie ein Gespräch mit der KI. Testen Sie Ihre schauspielerischen Fähigkeiten!",
+  "selectCharacter": "Wählen Sie einen Charakter",
+  "startChat": "Chat beginnen",
+  "characters": {
+    "shakespeare": "William Shakespeare",
+    "einstein": "Albert Einstein",
+    "davinci": "Leonardo da Vinci",
+    "curie": "Marie Curie",
+    "gandhi": "Mahatma Gandhi",
+    "jobs": "Steve Jobs",
+    "mandela": "Nelson Mandela",
+    "hawking": "Stephen Hawking"
+  }
+}

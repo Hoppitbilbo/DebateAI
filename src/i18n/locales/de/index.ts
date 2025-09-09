@@ -1,4 +1,4 @@
-import apps from './apps';
+import apps from './apps.js';
 import common from './common.json';
 import navigation from './navigation.json';
 import hero from './hero.json';
@@ -11,7 +11,6 @@ import language from './language.json';
 import teacherGuide from './teacherGuide.json';
 import aboutPage from './aboutPage.json';
 import footer from './footer.json';
-import homepage from './homepage.json';
 
 export default {
   apps,
@@ -27,5 +26,4 @@ export default {
   teacherGuide,
   aboutPage,
   footer,
-  homepage,
 };

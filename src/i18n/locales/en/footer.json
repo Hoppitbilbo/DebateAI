@@ -1,0 +1,14 @@
+{
+  "description": "AI Educational Tools for creating effective educational scenarios",
+  "resources": {
+    "title": "Resources",
+    "allApps": "All Apps",
+    "aboutUs": "About Us"
+  },
+  "legal": {
+    "title": "Legal",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service"
+  },
+  "copyright": "© {{year}} AI-Debate.Tech. All rights reserved."
+}

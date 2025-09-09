@@ -1,0 +1,42 @@
+{
+  "title": "KI-Anwendungen für die Bildung",
+  "subtitle": "Entdecken Sie unsere Sammlung von KI-Tools für interaktives Lernen.",
+  "badges": {
+    "new": "Neu",
+    "comingSoon": "Demnächst"
+  },
+  "buttons": {
+    "launchApp": "App Starten",
+    "comingSoon": "Demnächst"
+  },
+  "appCards": {
+    "wikiInterview": {
+      "title": "Historischer KI-Dialog",
+      "description": "Unterhalten Sie sich mit KI-Charakteren basierend auf Wikipedia-Inhalten und verwandeln Sie Bildungsthemen in interaktive Gespräche."
+    },
+    "doppiaIntervista": {
+      "title": "Doppelinterview",
+      "description": "Interagieren Sie gleichzeitig mit zwei historischen Figuren in parallelen Gesprächen und schaffen Sie einen einzigartigen Bildungsdialog."
+    },
+    "wikiChatbot": {
+      "title": "WikiChat KI",
+      "description": "Chatten Sie mit einer künstlichen Intelligenz, die jedes Wikipedia-Thema repräsentiert, perfekt für interaktive Bildungsvertiefungen."
+    },
+    "personaggioMisterioso": {
+      "title": "Rate die Mysteriöse Figur",
+      "description": "Fordern Sie die KI heraus, indem Sie Fragen stellen, um die gewählte historische Figur zu erraten. Sie haben eine begrenzte Anzahl von Fragen, um die mysteriöse Identität zu entdecken!"
+    },
+    "promptEngineer": {
+      "title": "Lehr-Prompt-Ersteller",
+      "description": "Hilft Lehrern und Schülern, effektive Prompts für künstliche Intelligenz in Bildungs- und Lernaktivitäten zu erstellen."
+    },
+    "convinciTu": {
+      "title": "Überzeuge DU",
+      "description": "Fordern Sie Ihre Überzeugungsfähigkeiten heraus, indem Sie versuchen, historische Figuren von Ihren Ideen zu überzeugen."
+    },
+    "impersonaTu": {
+      "title": "Verkörpere Du",
+      "description": "Führen Sie ein Gespräch mit einer historischen Figur, während Sie eine andere interpretieren. Testen Sie Ihre Einfühlungsfähigkeiten!"
+    }
+  }
+}
