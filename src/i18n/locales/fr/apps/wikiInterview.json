@@ -1,0 +1,46 @@
+{
+  "name": "Dialogue Historique",
+  "title": "Dialogue Historique AI",
+  "subtitle": "Interviewer des figures historiques",
+  "description": "Créez et analysez des conversations profondes entre deux figures historiques basées sur leurs profils Wikipedia.",
+  "errors": {
+    "fetchError": "Erreur lors de la récupération des données de Wikipedia pour {{title}}",
+    "noSummary": "Aucun résumé trouvé.",
+    "summaryError": "Impossible de récupérer le résumé pour ce personnage."
+  },
+  "setup": {
+    "buildDialogue": "Construire le Dialogue",
+    "selectDescription": "Sélectionnez deux figures historiques de Wikipedia et définissez un thème pour leur discussion.",
+    "character1": "Premier Personnage",
+    "character2": "Deuxième Personnage",
+    "themeLabel": "Thème de Conversation",
+    "themePlaceholder": "Exemple: L'impact de l'imprimerie sur la société",
+    "startButton": "Commencer le Dialogue",
+    "loadingSummary": "Chargement du résumé depuis Wikipedia...",
+    "summaryLoaded": "Résumé chargé."
+  },
+  "chat": {
+    "systemMessage": "Commencez le dialogue entre {{char1}} et {{char2}} sur le sujet : {{theme}}. Modérateur, vous pouvez guider la conversation ou laisser les personnages interagir librement.",
+    "errorMessage": "Une erreur s'est produite lors de la génération de la réponse.",
+    "autoErrorMessage": "Une erreur s'est produite lors de la génération de la réponse automatique.",
+    "dialogueTab": "Dialogue",
+    "charactersTab": "Profils des Personnages",
+    "endDialogueButton": "Terminer le Dialogue et Réfléchir",
+    "speakToAll": "Parler à tous",
+    "speakTo": "Parler à {{name}}",
+    "askBothPlaceholder": "Posez une question aux deux...",
+    "askCharacterPlaceholder": "Posez une question à {{character}}...",
+    "nextIntervention": "Prochaine Intervention de {{character}}"
+  },
+  "reflection": {
+    "title": "Réflexion sur le Dialogue Historique",
+    "description": "Analysez le dialogue que vous avez observé. Considérez les points de vue, les arguments et ce qui vous a marqué.",
+    "questions": [
+      "Quels ont été les points clés qui ont émergé du dialogue entre les deux personnages ?",
+      "Les arguments présentés par les personnages étaient-ils conformes à leurs figures historiques ? Pourquoi ?",
+      "Quel personnage a offert la perspective la plus surprenante ou éclairante sur le sujet ?",
+      "Comment ce dialogue a-t-il enrichi ou modifié votre compréhension du sujet discuté ?",
+      "Si vous pouviez poser une question à l'un des personnages, quelle serait-elle et à qui la poseriez-vous ?"
+    ]
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "Wiki Chatbot",
+  "title": "WikiChat AI",
+  "subtitle": "Discuter avec des figures historiques",
+  "description": "Conversez avec des personnages et concepts basés sur Wikipédia",
+  "setup": {
+    "chooseWikiTopic": "Choisir un Sujet Wikipédia",
+    "selectDescription": "Sélectionnez une page Wikipédia pour commencer une conversation",
+    "wikiTopicLabel": "Sujet Wikipédia",
+    "startChatButton": "Commencer le Chat"
+  },
+  "chat": {
+    "chatWithTitle": "Chat avec {{title}}"
+  },
+  "errors": {
+    "fetchError": "Erreur lors de la récupération des données de Wikipédia",
+    "summaryError": "Impossible de récupérer les informations sur cette page."
+  }
+}

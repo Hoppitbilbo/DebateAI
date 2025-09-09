@@ -1,0 +1,8 @@
+{
+  "aiEvaluationError": "Erreur lors de la génération de l'évaluation IA.",
+  "evaluationError": "Une erreur s'est produite lors de la génération de l'évaluation IA : {{error}}",
+  "unknownError": "Erreur inconnue",
+  "evaluationFailed": "Une erreur s'est produite pendant l'évaluation. Veuillez réessayer plus tard.",
+  "invalidResponse": "Erreur d'évaluation IA : Réponse invalide du modèle.",
+  "invalidStructure": "Erreur d'évaluation IA : Structure de réponse invalide du modèle."
+}

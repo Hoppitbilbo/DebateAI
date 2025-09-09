@@ -1,0 +1,58 @@
+{
+  "name": "Personnage Mystérieux",
+  "title": "Personnage Mystérieux",
+  "subtitle": "Devinez la figure historique",
+  "description": "Posez des questions pour découvrir qui est le personnage mystérieux",
+  "setup": {
+    "selectCharacterLabel": "Choisissez le Personnage à Deviner",
+    "selectCharacterError": "Vous devez sélectionner un personnage pour commencer le jeu",
+    "difficultyLabel": "Difficulté (Nombre de questions) : {{count}}",
+    "startButton": "Commencer le Jeu"
+  },
+  "game": {
+    "initialMessage": "Bonjour ! Je suis un personnage mystérieux. Vous avez {{count}} questions pour deviner qui je suis. Commencez à poser vos questions !",
+    "gameStarted": "Jeu commencé !",
+    "gameStartedDesc": "Vous avez {{count}} questions pour deviner le personnage",
+    "questionsFinished": "Questions terminées ! Il est temps de faire votre supposition finale.",
+    "questionsFinishedTitle": "Questions terminées !",
+    "questionsFinishedDesc": "Vous avez utilisé toutes vos questions. Il est temps de deviner qui est le personnage mystérieux.",
+    "proceedToGuess": "Procéder à la supposition finale",
+    "timeToGuess": "Il est temps de deviner !",
+    "correctGuess": "Correct ! Vous avez deviné !",
+    "incorrectGuess": "Pas correct, mais vous avez fait une bonne tentative !",
+    "reflectionPrompt": "Maintenant réfléchissez sur votre expérience",
+    "newGameStarted": "Nouveau jeu commencé !",
+    "aiErrorMessage": "Désolé, j'ai eu du mal à répondre.",
+    "systemInstruction": "Vous êtes un historien et acteur de renommée mondiale jouant le rôle de {{characterName}}. Un étudiant vous posera des questions pour deviner qui vous êtes. Répondez en tant que ce personnage, à la première personne, en vous basant sur l'extrait de votre vie fourni : \"{{snippet}}\". Répondez de manière concise (1-2 phrases). Ne révélez pas votre nom ni que vous êtes une IA. L'utilisateur a un nombre limité de questions.",
+    "aiDefaultError": "Je suis désolé, il semble que je sois à court de mots pour le moment. Pourriez-vous poser une autre question ?"
+  },
+  "reflection": {
+    "title": "Réflexion sur le Jeu",
+    "description": "Réfléchissez sur votre expérience dans le jeu du personnage mystérieux",
+    "placeholder": "Comment votre stratégie a-t-elle fonctionné ? Qu'avez-vous appris ? Que feriez-vous différemment ?"
+  },
+  "chat": {
+    "title": "Conversation",
+    "empty": "La conversation apparaîtra ici.",
+    "thinking": "Le personnage est en train de réfléchir...",
+    "placeholder": "Écrivez votre question...",
+    "noMoreQuestions": "Vous n'avez plus de questions.",
+    "send": "Envoyer la question",
+    "questionsLeft": "Questions restantes : {{count}}"
+  },
+  "finalGuess": {
+    "title": "Faites votre tentative finale !",
+    "questionLabel": "Qui pensez-vous que soit le personnage ?",
+    "namePlaceholder": "Entrez le nom du personnage",
+    "reasonLabel": "Pourquoi pensez-vous que c'est ce personnage ?",
+    "reasonPlaceholder": "Expliquez votre raisonnement...",
+    "submit": "Envoyer votre réponse"
+  },
+  "header": {
+    "title": "Jeu en cours",
+    "questionsLeft": "Questions restantes : {{count}}",
+    "characterLabel": "Personnage :",
+    "hiddenCharacter": "???",
+    "newGameButton": "Nouveau Jeu"
+  }
+}

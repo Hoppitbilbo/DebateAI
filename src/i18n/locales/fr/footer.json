@@ -1,0 +1,14 @@
+{
+  "description": "Outils Éducatifs IA pour créer des scénarios éducatifs efficaces",
+  "resources": {
+    "title": "Ressources",
+    "allApps": "Toutes les Apps",
+    "aboutUs": "À Propos"
+  },
+  "legal": {
+    "title": "Légal",
+    "privacy": "Politique de Confidentialité",
+    "terms": "Conditions de Service"
+  },
+  "copyright": "© {{year}} AI-Debate.Tech. Tous droits réservés."
+}

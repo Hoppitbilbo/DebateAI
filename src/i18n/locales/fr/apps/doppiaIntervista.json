@@ -1,0 +1,37 @@
+{
+  "reflection": {
+    "title": "Réflexion sur l'Interview Parallèle",
+    "description": "Analysez les différences et les similitudes dans les réponses des deux personnages.",
+    "questions": {
+      "q1": "Quelles ont été les différences les plus significatives dans la manière dont les deux personnages ont répondu à vos questions ?",
+      "q2": "Quelles similitudes avez-vous remarquées dans leurs réponses malgré leurs différents contextes ?",
+      "q3": "Comment le contexte historique et culturel a-t-il influencé les réponses de chaque personnage ?",
+      "q4": "Quel personnage vous a semblé le plus convaincant ou informatif ? Pourquoi ?",
+      "q5": "Comment pourriez-vous appliquer ce que vous avez appris de cette double interview ?"
+    }
+  },
+  "name": "Interview Double",
+  "title": "Interview Double",
+  "subtitle": "Interview simultanée avec deux figures historiques",
+  "description": "Comparez les réponses de deux figures historiques",
+  "greeting1": "Bonjour, je suis {{name}}. Posez votre question.",
+  "greeting2": "Bonjour, je suis {{name}}. Je suis prêt pour votre question.",
+  "placeholder": "Écrivez à {{target}}...",
+  "placeholderAll": "les deux personnages",
+  "placeholderSingle": "{{name}}",
+  "onlyThis": "Seulement celui-ci",
+  "backToAll": "Retour à tous",
+  "newInterviewStarted": "Nouvelle interview commencée !",
+  "feedback": {
+    "activityName": "Double Interview",
+    "downloadSuccess": "Réflexion téléchargée avec succès !",
+    "downloadError": "Erreur lors du téléchargement de la réflexion",
+    "title": "Feedback et Évaluation de l'Interview",
+    "conversationHistory": "Historique de la Conversation",
+    "userLabel": "Vous",
+    "yourReflection": "Votre Réflexion",
+    "aiFeedback": "Feedback de l'IA",
+    "downloadButton": "Télécharger la Réflexion",
+    "newInterviewButton": "Commencer une Nouvelle Interview"
+  }
+}
