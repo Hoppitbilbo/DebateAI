@@ -1,0 +1,8 @@
+{
+  "aiEvaluationError": "Errore nella generazione della valutazione AI.",
+  "evaluationError": "Si è verificato un errore durante la generazione della valutazione AI: {{error}}",
+  "unknownError": "Errore sconosciuto",
+  "evaluationFailed": "Si è verificato un errore durante la valutazione. Riprova più tardi.",
+  "invalidResponse": "Errore durante la valutazione AI: Risposta non valida dal modello.",
+  "invalidStructure": "Errore durante la valutazione AI: Struttura della risposta non valida dal modello."
+}

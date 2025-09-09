@@ -1,0 +1,132 @@
+{
+  "slide1": {
+    "title": "Benvenuto nella Guida sull'IA per Insegnanti!",
+    "subtitle": "Esploriamo insieme come l'IA può trasformare l'educazione, potenziare le tue strategie didattiche e preparare gli studenti al futuro.",
+    "whatYouWillLearn": {
+      "title": "Cosa Imparerai",
+      "item1": "Il ruolo cruciale dell'IA nell'educazione moderna.",
+      "item2": "Scenari pratici per integrare l'IA in classe.",
+      "item3": "Stili di insegnamento innovativi potenziati dall'IA.",
+      "item4": "Come stimolare il pensiero critico con gli strumenti IA."
+    },
+    "guideObjectives": {
+      "title": "Obiettivi della Guida",
+      "item1": "Fornire una comprensione chiara dei concetti base dell'IA.",
+      "item2": "Ispirare l'adozione di nuove tecnologie educative.",
+      "item3": "Offrire spunti pratici e immediatamente applicabili.",
+      "item4": "Promuovere la riflessione sull'impatto etico dell'IA."
+    },
+    "readyToStart": "Pronto a iniziare questo viaggio innovativo? Clicca su 'Avanti'!"
+  },
+  "slide2": {
+    "title": "Perché l'IA è Cruciale per gli Insegnanti Moderni?",
+    "subtitle": "L'Intelligenza Artificiale non è solo una tecnologia futuristica, ma un potente strumento che può rivoluzionare l'insegnamento e l'apprendimento, oggi.",
+    "teachingEnhancement": {
+      "title": "Potenziamento della Didattica",
+      "description": "L'IA può automatizzare compiti ripetitivi (es. valutazione preliminare, ricerca di risorse), liberando tempo prezioso da dedicare all'interazione diretta con gli studenti e alla progettazione di lezioni più coinvolgenti."
+    },
+    "learningPersonalization": {
+      "title": "Personalizzazione dell'Apprendimento",
+      "description": "I sistemi di IA possono adattare i percorsi di apprendimento alle esigenze individuali di ogni studente, offrendo esercizi mirati, feedback personalizzati e individuando aree di difficoltà o di eccellenza."
+    },
+    "futureProofSkills": {
+      "title": "Sviluppo di Competenze per il Futuro",
+      "description": "Introdurre l'IA in classe aiuta gli studenti a sviluppare familiarità con le tecnologie emergenti, il pensiero critico, il problem-solving e le competenze digitali essenziali per il mondo del lavoro di domani."
+    },
+    "newResources": {
+      "title": "Accesso a Nuove Risorse e Metodi",
+      "description": "L'IA apre le porte a una vasta gamma di strumenti didattici innovativi, simulazioni interattive, tutor virtuali e piattaforme di apprendimento adattivo, arricchendo l'esperienza formativa."
+    },
+    "conclusion": "Comprendere questi vantaggi è il primo passo per integrare con successo l'IA nella tua pratica didattica."
+  },
+  "slide3": {
+    "title": "Scenari Pratici con l'IA in Classe",
+    "subtitle": "Esplora attività concrete per integrare l'Intelligenza Artificiale nella tua didattica quotidiana, stimolando il pensiero critico e l'apprendimento attivo.",
+    "activity1": {
+      "title": "Attività 1: Caccia alle Allucinazioni 🕵️‍♀️",
+      "objective": "<strong>Obiettivo:</strong> Individuare le 'allucinazioni' del modello, ovvero informazioni errate o inventate che il modello presenta come un dato di fatto.",
+      "procedureTitle": "<strong>Procedimento:</strong>",
+      "procedure": {
+        "item1": "Assegna agli studenti un argomento da ricercare (es. evento storico, biografia).",
+        "item2": "Chiedi loro di usare la piattaforma per generare un testo sull'argomento, interagendo con un personaggio storico (se pertinente all'app).",
+        "item3": "Gli studenti devono confrontare le risposte del modello con fonti affidabili, evidenziando le discrepanze.",
+        "item4": "Discussione in classe sui risultati e sull'importanza della verifica delle fonti."
+      }
+    },
+    "activity2": {
+      "title": "Attività 2: Chatbot Didattico Interattivo 🤖",
+      "objective": "<strong>Obiettivo:</strong> Usare un chatbot per ripassare argomenti, simulare dialoghi o esplorare concetti complessi in modo interattivo.",
+      "procedureTitle": "<strong>Procedimento:</strong>",
+      "procedure": {
+        "item1": "Prepara o scegli un chatbot focalizzato su un tema specifico (es. Rivoluzione Francese, ciclo dell'acqua).",
+        "item2": "Gli studenti interagiscono con il chatbot facendo domande, chiedendo spiegazioni o svolgendo brevi quiz proposti dal bot.",
+        "item3": "Incoraggia gli studenti a 'sfidare' il chatbot, verificando l'accuratezza delle sue risposte.",
+        "item4": "Riflessione guidata: quali sono i limiti e i punti di forza di un chatbot come strumento di apprendimento?"
+      }
+    },
+    "activity3": {
+      "title": "Attività 3: Dibattito e Prospettive Multiple 🗣️🔄",
+      "objective": "<strong>Obiettivo:</strong> Usare l'IA per esplorare diversi punti di vista su un argomento controverso o per simulare un dibattito con un 'esperto' virtuale.",
+      "procedureTitle": "<strong>Procedimento:</strong>",
+      "procedure": {
+        "item1": "Scegli un argomento che si presta a diverse interpretazioni (es. questioni etiche, eventi storici dibattuti).",
+        "item2": "Gli studenti possono usare un'IA per generare argomentazioni pro o contro una tesi, o per impersonare figure con opinioni diverse.",
+        "item3": "Organizza un dibattito in classe basato sulle informazioni raccolte e sulle interazioni con l'IA.",
+        "item4": "Focalizzati sulla capacità di argomentare, ascoltare e considerare prospettive differenti."
+      }
+    },
+    "activity4": {
+      "title": "Attività 4: Prompt Engineering Creativo 💡✍️",
+      "objective": "<strong>Obiettivo:</strong> Insegnare agli studenti come formulare prompt efficaci per ottenere i risultati desiderati da un modello IA, sviluppando creatività e precisione.",
+      "procedureTitle": "<strong>Procedimento:</strong>",
+      "procedure": {
+        "item1": "Introduzione ai concetti base del prompt engineering: chiarezza, contesto, ruolo, formato di output.",
+        "item2": "Sfida creativa: generare una storia, una poesia, una descrizione di un'immagine o una soluzione a un problema usando prompt specifici.",
+        "item3": "Gli studenti sperimentano diverse formulazioni di prompt per osservare come cambia l'output dell'IA.",
+        "item4": "Condivisione dei prompt più efficaci e discussione sulle strategie utilizzate."
+      }
+    },
+    "conclusion": "Questi sono solo alcuni esempi. L'IA offre infinite possibilità per arricchire le tue lezioni!"
+  },
+  "slide4": {
+    "title": "Stili Didattici Innovativi con l'IA",
+    "subtitle": "L'IA non sostituisce il docente, ma lo potenzia, aprendo la strada a metodologie di insegnamento più dinamiche, personalizzate e coinvolgenti.",
+    "personalizedLearning": {
+      "title": "Apprendimento Personalizzato e Adattivo",
+      "description": "Sfrutta l'IA per creare percorsi su misura: piattaforme adattive che regolano difficoltà e contenuti in base ai progressi dello studente, tutor virtuali per il supporto individuale e analisi predittive per individuare precocemente chi ha bisogno di aiuto."
+    },
+    "problemBasedLearning": {
+      "title": "Problem-Based Learning Potenziato",
+      "description": "Usa l'IA per generare scenari complessi e realistici, fornire dati e risorse per la risoluzione di problemi o simulare le conseguenze di diverse decisioni, rendendo l'apprendimento più esperienziale."
+    },
+    "inquiryBasedLearning": {
+      "title": "Inquiry-Based Learning e Ricerca Guidata",
+      "description": "L'IA può assistere gli studenti nella ricerca di informazioni, nell'analisi di grandi set di dati o nella formulazione di ipotesi, agendo come un assistente di ricerca che stimola la curiosità e l'autonomia."
+    },
+    "immediateFeedback": {
+      "title": "Feedback Immediato e Formativo",
+      "description": "Gli strumenti IA possono offrire un riscontro istantaneo su quiz, bozze di testo o esercizi di programmazione, permettendo agli studenti di correggere gli errori e migliorare continuamente, e a te di monitorare i progressi in tempo reale."
+    },
+    "conclusion": "Sperimentare questi stili può rendere le tue lezioni più efficaci e preparare meglio i tuoi studenti alle sfide del futuro."
+  },
+  "slide5": {
+    "title": "Il Futuro dell'Educazione è Qui: Pronti al Decollo?",
+    "subtitle": "Hai esplorato il potenziale dell'IA per trasformare la didattica. Ora è il momento di mettere in pratica queste conoscenze e continuare il tuo viaggio di innovazione.",
+    "keyPoints": {
+      "title": "Punti Chiave da Ricordare",
+      "item1": "L'IA è un <strong class=\"text-sky-300\">alleato</strong>, non un sostituto, del docente.",
+      "item2": "La <strong class=\"text-sky-300\">personalizzazione</strong> è uno dei maggiori punti di forza dell'IA.",
+      "item3": "Incoraggiare il <strong class=\"text-sky-300\">pensiero critico</strong> sull'IA è fondamentale.",
+      "item4": "Sperimentare con <strong class=\"text-sky-300\">nuovi stili didattici</strong> arricchisce l'apprendimento."
+    },
+    "nextSteps": {
+      "title": "Prossimi Passi e Risorse",
+      "item1": "Inizia in piccolo: integra un'attività IA alla volta.",
+      "item2": "Collabora con i colleghi: condividi esperienze e risorse.",
+      "item3": "Esplora le app di questa piattaforma per avere esempi pratici.",
+      "item4": "Continua a formarti: il campo dell'IA è in continua evoluzione.",
+      "item5": "Approfondisci su <a href=\"#\" class=\"ml-1 text-sky-400 hover:text-sky-300 underline flex items-center\" target=\"_blank\" rel=\"noopener noreferrer\">EduAI.it <ExternalLink size={16} class=\"ml-1\" /></a> (esempio)."
+    },
+    "conclusion": "Grazie per aver seguito questa guida. In bocca al lupo per le tue avventure didattiche con l'IA!"
+  }
+}

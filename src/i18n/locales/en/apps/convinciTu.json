@@ -1,0 +1,53 @@
+{
+  "name": "PersuadeMe",
+  "title": "PersuadeMe",
+  "subtitle": "Try to convince a historical figure on a specific topic",
+  "description": "Try to convince historical figures of your ideas",
+  "newChatSuccess": "New chat started!",
+  "errors": {
+    "responseGeneration": "Error generating response.",
+    "evaluationGeneration": "Error generating evaluation."
+  },
+  "reflection": {
+    "title": "Reflection on Persuasion",
+    "description": "Reflect on your attempt to persuade the character.",
+    "placeholder": "What strategies did you use? What worked and what didn't?",
+    "questions": {
+      "success": "Did you manage to convince the historical figure?",
+      "strategies": "What strategies did you use that were effective?",
+      "difficulties": "What were the main difficulties you encountered?",
+      "differently": "What would you do differently next time?",
+      "convinced": "Do you think you managed to convince them? How?"
+    }
+  },
+  "feedback": {
+    "title": "Feedback",
+    "subtitle": "Here is a summary of your conversation and the AI's evaluation.",
+    "conversationHistory": "Conversation History",
+    "yourReflection": "Your Reflection",
+    "aiFeedback": "AI Feedback",
+    "downloadReflection": "Download Reflection",
+    "startNewChat": "Start a New Chat",
+    "downloadSuccess": "Reflection downloaded successfully!",
+    "downloadError": "Error downloading reflection"
+  },
+  "characterSelection": {
+    "label": "Select a historical character",
+    "placeholder": "Search for a historical character..."
+  },
+  "topic": {
+    "label": "What do you want to try to convince {{characterName}} to do or not do?",
+    "placeholder": "Example: Convince Leonardo da Vinci not to build war machines"
+  },
+  "startButton": "Start Chat",
+  "chat": {
+    "title": "Conversation",
+    "placeholder": "Write your persuasive argument...",
+    "endButton": "End chat and reflect",
+    "currentPromptLabel": "Current prompt:",
+    "promptValue": "Convince {{characterName}} that {{topic}}",
+    "emptyConversation": "The conversation will appear here",
+    "userLabel": "You",
+    "endActivityButton": "End activity"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "name": "Doppia Intervista",
+  "title": "Doppia Intervista",
+  "subtitle": "Dialoga con due personaggi",
+  "setup": {
+    "chooseCharacters": "Scegli i Personaggi",
+    "selectDescription": "Seleziona due figure storiche per un dialogo parallelo",
+    "character": "Personaggio",
+    "startButton": "Inizia Dialogo"
+  },
+  "chat": {
+    "dialogueTitle": "Dialogo",
+    "defaultCharacterName": "il personaggio",
+    "placeholder": "Scrivi a {{target}}..."
+  },
+  "description": "Dialoga simultaneamente con due personaggi storici",
+  "greeting1": "Ciao, sono {{name}}. Fai la tua domanda.",
+  "greeting2": "Ciao, sono {{name}}. Sono pronto per la tua domanda.",
+  "placeholder": "Scrivi {{target}}..."
+}
