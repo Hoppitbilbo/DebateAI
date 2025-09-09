@@ -1,0 +1,27 @@
+{
+  "title": "Funzionalità",
+  "subtitle": "Strumenti Educativi Basati su IA",
+  "description": "Esplora la nostra collezione di applicazioni AI progettate per trasformare l'apprendimento in un'esperienza interattiva e coinvolgente.",
+  "items": {
+    "wikiInterview": {
+      "name": "Wiki Interview",
+      "description": "Simula conversazioni con personaggi storici attraverso contenuti Wikipedia, rendendo l'apprendimento interattivo e coinvolgente."
+    },
+    "personaggioMisterioso": {
+      "name": "Personaggio Misterioso",
+      "description": "Gioca a indovinare personaggi storici e letterari attraverso domande e risposte con l'IA."
+    },
+    "doppiaIntervista": {
+      "name": "Doppia Intervista",
+      "description": "Modera un dialogo tra due personaggi storici su un tema specifico, esplorando diverse prospettive."
+    },
+    "convinciTu": {
+      "name": "Convinci Tu",
+      "description": "Sfida le tue capacità di persuasione cercando di far cambiare idea a personaggi storici su temi controversi."
+    },
+    "impersonaTu": {
+      "name": "Impersona Tu",
+      "description": "Dialoga con un personaggio storico interpretandone un altro. Metti alla prova le tue capacità di immedesimazione!"
+    }
+  }
+}

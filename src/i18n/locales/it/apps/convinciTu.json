@@ -1,0 +1,57 @@
+{
+  "name": "Convinci Tu",
+  "title": "ConvinciTu",
+  "subtitle": "Prova a convincere un personaggio storico su un argomento specifico",
+  "description": "Prova a convincere personaggi storici delle tue idee",
+  "newChatSuccess": "Nuova chat iniziata!",
+  "errors": {
+    "responseGeneration": "Errore nella generazione della risposta. Riprova più tardi.",
+    "evaluationGeneration": "Errore nella generazione della valutazione. Riprova più tardi."
+  },
+  "reflection": {
+    "title": "Riflessione su ConvinciTu",
+    "description": "Rifletti sulla tua esperienza nel cercare di convincere il personaggio storico.",
+    "placeholder": "Come è andata la conversazione? Quali strategie di persuasione hai usato? Cosa hai imparato sul personaggio e sull'argomento discusso?",
+    "questions": {
+      "success": "Sei riuscito a convincere il personaggio storico?",
+      "strategies": "Quali strategie hai utilizzato che sono state efficaci?",
+      "difficulties": "Quali sono state le principali difficoltà che hai incontrato?",
+      "differently": "Cosa faresti diversamente la prossima volta?",
+      "convinced": "Pensi di essere riuscito a convincerli? Come?"
+    }
+  },
+  "feedback": {
+    "title": "Feedback e Valutazione del Dialogo",
+    "conversationHistory": "Cronologia della Conversazione",
+    "yourReflection": "La tua riflessione",
+    "aiFeedback": "Feedback dell'IA",
+    "downloadReflection": "Scarica Riflessione",
+    "startNewChat": "Inizia una Nuova Chat",
+    "downloadSuccess": "Riflessione scaricata con successo!",
+    "downloadError": "Errore durante il download della riflessione"
+  },
+  "characterSelection": {
+    "label": "Seleziona un personaggio storico",
+    "placeholder": "Cerca un personaggio storico..."
+  },
+  "topic": {
+    "label": "Cosa vuoi provare a convincere {{characterName}} a fare o non fare?",
+    "placeholder": "Esempio: Convincere Leonardo da Vinci a non costruire macchine da guerra"
+  },
+  "startButton": "Inizia Chat",
+  "chat": {
+    "title": "Conversazione",
+    "placeholder": "Scrivi il tuo argomento convincente...",
+    "endButton": "Termina chat e rifletti",
+    "currentPromptLabel": "Prompt attuale:",
+    "promptValue": "Convincere {{characterName}} che {{topic}}",
+    "emptyConversation": "La conversazione apparirà qui",
+    "userLabel": "Tu",
+    "endActivityButton": "Termina attività"
+  },
+  "setup": {
+    "characterSelectLabel": "Seleziona un personaggio storico",
+    "topicLabel": "Cosa vuoi provare a convincere {{characterName}} a fare o non fare?",
+    "topicPlaceholder": "Esempio: Convincere Leonardo da Vinci a non costruire macchine da guerra"
+  }
+}

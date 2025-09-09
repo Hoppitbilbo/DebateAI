@@ -1,0 +1,53 @@
+{
+  "name": "Impersona Tu",
+  "title": "Impersona Tu",
+  "subtitle": "Interpreta un personaggio storico e dialoga con un altro",
+  "description": "Mettiti nei panni di un personaggio storico e dialoga con un altro",
+  "page": {
+    "setup": {
+      "title": "Scegli i Personaggi",
+      "description": "Seleziona il personaggio che l'IA interpreterà e quello che interpreterai tu",
+      "aiCharacterLabel": "Personaggio IA",
+      "yourCharacterLabel": "Il Tuo Personaggio",
+      "topicLabel": "Argomento della Conversazione",
+      "topicPlaceholder": "Es: Convincimi dell'importanza della democrazia...",
+      "startConversationButton": "Inizia Conversazione"
+    },
+    "chat": {
+      "title": "ImpersonaTu",
+      "subtitle": "Impersona un personaggio storico e discuti con un altro personaggio",
+      "placeholder": "Scrivi come {{characterName}}...",
+      "greeting": "Salute! Sono {{aiCharacterName}}. È un piacere discutere di \"{{topic}}\" con te, {{userCharacterName}}. Cosa ti passa per la mente riguardo a questo argomento?",
+      "initError": "Impossibile inizializzare la chat AI. Verifica la configurazione e riprova.",
+      "sessionError": "Sessione di chat non inizializzata.",
+      "sendError": "Errore nella comunicazione con l'IA. Riprova.",
+      "minMessagesWarning": "Devi inviare almeno due messaggi nel ruolo del tuo personaggio prima di poter concludere.",
+      "newChatStarted": "Nuova chat avviata!",
+      "evaluating": "Valutazione in corso...",
+      "evaluatingDescription": "L'IA sta analizzando la conversazione e la tua riflessione.",
+      "conversationTitle": "Conversazione tra {{user}} e {{ai}}",
+      "changeCharacters": "Cambia Personaggi"
+    },
+    "reflection": {
+      "title": "Riflessione sull'Impersonificazione",
+      "description": "Rifletti sulla tua esperienza nell'interpretare {{characterName}}.",
+      "placeholder": "Com'è stato interpretare {{userCharacterName}}? Quali aspetti del personaggio hai trovato più interessanti o difficili da rappresentare? Cosa hai imparato dalla conversazione con {{aiCharacterName}}?",
+      "questions": {
+        "performance": "Quanto bene pensi di aver interpretato {{characterName}}?",
+        "easiest": "Quali aspetti del personaggio sono stati più facili da impersonare?",
+        "understanding": "Come questa esperienza di impersonificazione ha cambiato la tua comprensione del personaggio?",
+        "selfLearning": "Cosa hai imparato su te stesso attraverso questa attività di role-playing?"
+      }
+    },
+    "feedback": {
+      "title": "Feedback e Valutazione",
+      "conversationHistory": "Cronologia della Conversazione",
+      "yourReflection": "La tua riflessione",
+      "aiFeedback": "Feedback dell'IA",
+      "downloadReflection": "Scarica Riflessione",
+      "newImpersonation": "Nuova Impersonificazione",
+      "downloadSuccess": "Riflessione scaricata con successo!",
+      "downloadError": "Errore durante il download della riflessione"
+    }
+  }
+}

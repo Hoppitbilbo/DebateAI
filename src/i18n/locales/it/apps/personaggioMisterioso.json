@@ -1,0 +1,25 @@
+{
+  "name": "Personaggio Misterioso",
+  "title": "Indovina il Personaggio Misterioso",
+  "subtitle": "Fai domande per indovinare il personaggio storico",
+  "description": "Sfida l'IA a indovinare un personaggio storico misterioso.",
+  "setup": {
+    "title": "Impostazione del Gioco",
+    "characterLabel": "Personaggio Misterioso",
+    "characterPlaceholder": "Scegli un personaggio per l'IA",
+    "startButton": "Inizia Partita"
+  },
+  "game": {
+    "title": "Partita in Corso",
+    "questionsLeft": "Domande Rimanenti: {{count}}",
+    "characterLabel": "Personaggio:",
+    "hiddenCharacter": "???",
+    "newGameButton": "Nuova Partita"
+  },
+  "guess": {
+    "title": "Indovina il Personaggio",
+    "reasonLabel": "Perché pensi che sia questo personaggio?",
+    "reasonPlaceholder": "Spiega il tuo ragionamento...",
+    "submit": "Invia la tua risposta"
+  }
+}
