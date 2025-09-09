@@ -1,0 +1,27 @@
+{
+  "title": "Features",
+  "subtitle": "AI-Based Educational Tools",
+  "description": "Explore our collection of AI applications designed to transform learning into an interactive and engaging experience.",
+  "items": {
+    "wikiInterview": {
+      "name": "Wiki Interview",
+      "description": "Simulate conversations with historical figures through Wikipedia content, making learning interactive and engaging."
+    },
+    "personaggioMisterioso": {
+      "name": "Mystery Character",
+      "description": "Play guessing historical and literary characters through questions and answers with AI."
+    },
+    "doppiaIntervista": {
+      "name": "Double Interview",
+      "description": "Moderate a dialogue between two historical figures on a specific theme, exploring different perspectives."
+    },
+    "convinciTu": {
+      "name": "Convince You",
+      "description": "Challenge your persuasion skills by trying to change historical figures' minds on controversial topics."
+    },
+    "impersonaTu": {
+      "name": "You Impersonate",
+      "description": "Dialogue with a historical figure by interpreting another. Test your empathy skills!"
+    }
+  }
+}

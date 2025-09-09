@@ -1,0 +1,63 @@
+{
+  "name": "Mystery Character",
+  "title": "Mystery Character",
+  "subtitle": "Guess the historical figure",
+  "description": "Ask questions to discover who the mystery character is",
+  "setup": {
+    "selectCharacterLabel": "Choose the Character to Guess",
+    "selectCharacterError": "You must select a character to start the game",
+    "difficultyLabel": "Difficulty (Number of questions): {{count}}",
+    "startButton": "Start Game"
+  },
+  "game": {
+    "initialMessage": "Hello! I am a mystery character. You have {{count}} questions to guess who I am. Start asking your questions!",
+    "gameStarted": "Game started!",
+    "gameStartedDesc": "You have {{count}} questions to guess the character",
+    "questionsFinished": "Questions finished! Time to make your final guess.",
+    "questionsFinishedTitle": "Questions finished!",
+    "questionsFinishedDesc": "You have used all your questions. Time to guess who the mystery character is.",
+    "proceedToGuess": "Proceed to final guess",
+    "timeToGuess": "Time to guess!",
+    "correctGuess": "Correct! You guessed it!",
+    "incorrectGuess": "Not correct, but you made a good attempt!",
+    "reflectionPrompt": "Now reflect on your experience",
+    "newGameStarted": "New game started!",
+    "aiErrorMessage": "Sorry, I had trouble responding.",
+    "systemInstruction": "You are {{characterName}}. Never reveal your name or identity directly. Answer questions based on your persona and the historical context provided in the following snippet: \"{{snippet}}\". Provide useful clues but don't make it too easy. The student is trying to guess who you are.",
+    "aiDefaultError": "I don't know how to answer that."
+  },
+  "evaluation": {
+    "topic": "Guess the Mystery Character: {{characterName}}",
+    "generationError": "Error generating evaluation: {{errorMessage}}",
+    "aiError": "Error during AI evaluation: {{errorMessage}}"
+  },
+  "reflection": {
+    "title": "Game Reflection",
+    "description": "Reflect on your experience in the mystery character game",
+    "placeholder": "How did your strategy work? What did you learn? What would you do differently?"
+  },
+  "chat": {
+    "title": "Conversation",
+    "empty": "The conversation will appear here.",
+    "thinking": "The character is thinking...",
+    "placeholder": "Write your question...",
+    "noMoreQuestions": "You have no more questions.",
+    "send": "Send question",
+    "questionsLeft": "Questions left: {{count}}"
+  },
+  "finalGuess": {
+    "title": "Make your final guess!",
+    "questionLabel": "Who do you think the character is?",
+    "namePlaceholder": "Enter the character's name",
+    "reasonLabel": "Why do you think it is this character?",
+    "reasonPlaceholder": "Explain your reasoning...",
+    "submit": "Submit your answer"
+  },
+  "header": {
+    "title": "Game in Progress",
+    "questionsLeft": "Questions Remaining: {{count}}",
+    "characterLabel": "Character:",
+    "hiddenCharacter": "???",
+    "newGameButton": "New Game"
+  }
+}

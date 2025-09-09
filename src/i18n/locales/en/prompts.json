@@ -1,0 +1,16 @@
+{
+  "student": "Student",
+  "error": "Error during {{error}}: Please try again later.",
+  "noRationale": "No rationale provided",
+  "evaluationFallback": "## Conversation Evaluation\n\n**Score**: {{conversationScore}}/10\n\n**Rationale**: {{conversationRationale}}\n\n## Reflection Evaluation\n\n**Score**: {{reflectionScore}}/10\n\n**Rationale**: {{reflectionRationale}}",
+  "overallFeedback": "## Overall Feedback",
+  "defaultFeedback": "Your participation shows commitment. Keep practicing to improve further.",
+  "evaluationError": "Evaluation error",
+  "deprecatedFunction": "evaluateReflection is deprecated for the 'Guess the Mystery Character' game, use getAIGameAndReflectionEvaluation.",
+  "deprecatedNoResult": "The AI evaluation (deprecated) did not produce a valid result.",
+  "deprecatedInvalidResponse": "The AI evaluation (deprecated) did not produce a valid response (structure).",
+  "unknownError": "Unknown error",
+  "deprecatedError": "Error during evaluation (deprecated): {{error}}",
+  "obsoleteFunction": "getAICombinedEvaluation has not been updated for scores and may be obsolete.",
+  "obsoleteFunctionMessage": "This function (getAICombinedEvaluation) has not been updated for scores and is considered obsolete. Use getAIGameAndReflectionEvaluation."
+}

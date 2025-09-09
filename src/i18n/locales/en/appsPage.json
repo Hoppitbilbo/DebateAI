@@ -1,0 +1,42 @@
+{
+  "title": "AI Applications for Education",
+  "subtitle": "Explore our collection of AI tools for interactive learning.",
+  "appCards": {
+    "wikiInterview": {
+      "title": "Historical AI Dialogue",
+      "description": "Converse with AI characters based on Wikipedia content, transforming educational topics into interactive conversations."
+    },
+    "doppiaIntervista": {
+      "title": "Double Interview",
+      "description": "Interact simultaneously with two historical figures in parallel conversations, creating a unique educational dialogue."
+    },
+    "wikiChatbot": {
+      "title": "WikiChat AI",
+      "description": "Chat with an artificial intelligence representing any Wikipedia topic, perfect for interactive educational insights."
+    },
+    "personaggioMisterioso": {
+      "title": "Guess the Mystery Character",
+      "description": "Challenge the AI by asking questions to guess the chosen historical figure. You have a limited number of questions to discover the mysterious identity!"
+    },
+    "promptEngineer": {
+      "title": "Teaching Prompt Creator",
+      "description": "Help teachers and students create effective prompts for artificial intelligence in educational and learning activities."
+    },
+    "convinciTu": {
+      "title": "Convince YOU",
+      "description": "Challenge your persuasion skills by trying to convince historical figures of your ideas."
+    },
+    "impersonaTu": {
+      "title": "You Impersonate",
+      "description": "Dialogue with a historical figure by interpreting another. Test your empathy skills!"
+    }
+  },
+  "badges": {
+    "new": "New",
+    "comingSoon": "Coming Soon"
+  },
+  "buttons": {
+    "launchApp": "Launch App",
+    "comingSoon": "Coming Soon"
+  }
+}

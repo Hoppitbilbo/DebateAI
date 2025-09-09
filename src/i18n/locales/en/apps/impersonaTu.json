@@ -1,0 +1,60 @@
+{
+  "name": "You Impersonate",
+  "title": "You Impersonate",
+  "subtitle": "Dialogue with a historical figure by interpreting another",
+  "description": "Put yourself in the shoes of a historical figure",
+  "reflection": {
+    "title": "Reflection on Impersonation",
+    "description": "Reflect on your experience playing {{characterName}}.",
+    "questions": {
+      "performance": "How well do you think you portrayed {{characterName}}?",
+      "easiest": "Which aspects of the character were easiest to impersonate?",
+      "challenges": "What challenges did you encounter putting yourself in the shoes of this historical figure?",
+      "understanding": "How did this impersonation experience change your understanding of the character?",
+      "selfLearning": "What did you learn about yourself through this role-playing activity?"
+    },
+    "defaultCharacterName": "the character",
+    "placeholder": "How was it to interpret {{userCharacterName}}? Which aspects of the character did you find most interesting or difficult to represent? What did you learn from the conversation with {{aiCharacterName}}?"
+  },
+  "feedback": {
+    "title": "Feedback and Evaluation",
+    "conversationHistory": "Conversation History",
+    "yourReflection": "Your Reflection",
+    "aiFeedback": "AI Feedback",
+    "downloadReflection": "Download Reflection",
+    "newImpersonation": "New Impersonation",
+    "downloadSuccess": "Reflection downloaded successfully!",
+    "downloadError": "Error downloading reflection"
+  },
+  "chat": {
+    "title": "ImpersonaTu",
+    "subtitle": "Impersonate a historical figure and discuss with another character",
+    "aiCharacter": "AI Character",
+    "yourCharacter": "Your Character",
+    "topic": "Topic:",
+    "placeholder": "Write as {{characterName}}...",
+    "greeting": "Greetings! I am {{aiCharacterName}}. It's a pleasure to discuss \"{{topic}}\" with you, {{userCharacterName}}. What comes to mind about this topic?",
+    "initError": "Unable to initialize AI chat. Check configuration and try again.",
+    "sessionError": "Chat session not initialized.",
+    "sendError": "Error communicating with AI. Try again.",
+    "minMessagesWarning": "You must send at least two messages in your character's role before you can conclude.",
+    "newChatStarted": "New chat started!",
+    "evaluating": "Evaluation in progress...",
+    "evaluatingDescription": "AI is analyzing the conversation and your reflection.",
+    "conversationTitle": "Conversation between {{user}} and {{ai}}",
+    "changeCharacters": "Change Characters"
+  },
+  "page": {
+    "title": "You Impersonate",
+    "subtitle": "Dialogue with a historical figure by interpreting another",
+    "setup": {
+      "title": "Choose the Characters",
+      "description": "Select the character the AI will play and the one you will play",
+      "aiCharacterLabel": "AI Character",
+      "yourCharacterLabel": "Your Character",
+      "topicLabel": "Conversation Topic",
+      "topicPlaceholder": "e.g., Convince me of the importance of democracy...",
+      "startConversationButton": "Start Conversation"
+    }
+  }
+}
