@@ -1,4 +1,4 @@
-import wikiInterview from './apps/wikiInterview.json';
+import youModerate from './apps/youModerate.json';
 import wikiChatbot from './apps/wikiChatbot.json';
 import wikiChat from './apps/wikiChat.json';
 import doppiaIntervista from './apps/doppiaIntervista.json';
@@ -7,7 +7,7 @@ import personaggioMisterioso from './apps/personaggioMisterioso.json';
 import impersonaTu from './apps/impersonaTu.json';
 
 export default {
-  wikiInterview,
+  youModerate,
   wikiChatbot,
   wikiChat,
   doppiaIntervista,

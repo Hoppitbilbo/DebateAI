@@ -8,7 +8,7 @@ import { downloadReflection } from "@/utils/downloadUtils";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 
-interface WikiInterviewFeedbackProps {
+interface YouModerateFeedbackProps {
   userReflection: string | null; // Changed from reflection
   aiEvaluation: string | null;   // Changed from evaluation
   isLoading: boolean;
@@ -19,7 +19,7 @@ interface WikiInterviewFeedbackProps {
   topic: string;
 }
 
-const WikiInterviewFeedback: React.FC<WikiInterviewFeedbackProps> = ({
+const YouModerateFeedback: React.FC<YouModerateFeedbackProps> = ({
   userReflection,
   aiEvaluation,
   isLoading,
@@ -39,7 +39,7 @@ const WikiInterviewFeedback: React.FC<WikiInterviewFeedbackProps> = ({
   const handleDownload = () => {
     try {
       downloadReflection({
-        activityType: t('apps.wikiInterview.name'),
+        activityType: t('apps.youModerate.name'),
         characterName: `${character1Name} & ${character2Name}`,
         topic,
         conversation: messages,
@@ -116,7 +116,7 @@ const WikiInterviewFeedback: React.FC<WikiInterviewFeedbackProps> = ({
             className="w-full sm:w-auto bg-education hover:bg-education-dark text-white flex items-center"
             disabled={isLoading}
           >
-            <RefreshCcw className="mr-2 h-4 w-4" /> {t('apps.wikiInterview.setup.startButton', { defaultValue: 'Start New Dialogue' })}
+            <RefreshCcw className="mr-2 h-4 w-4" /> {t('apps.youModerate.setup.startButton', { defaultValue: 'Start New Dialogue' })}
           </Button>
         </div>
       </CardContent>
@@ -124,4 +124,4 @@ const WikiInterviewFeedback: React.FC<WikiInterviewFeedbackProps> = ({
   );
 };
 
-export default WikiInterviewFeedback;
+export default YouModerateFeedback;

@@ -3,8 +3,8 @@
   "subtitle": "KI-basierte Bildungstools",
   "description": "Entdecken Sie unsere Sammlung von KI-Anwendungen, die darauf ausgelegt sind, das Lernen in eine interaktive und ansprechende Erfahrung zu verwandeln.",
   "items": {
-    "wikiInterview": {
-      "name": "Wiki-Interview",
+    "youModerate": {
+      "name": "Du moderierst",
       "description": "Simuliert Gespräche mit historischen Charakteren durch Wikipedia-Inhalte und macht das Lernen interaktiv und ansprechend."
     },
     "personaggioMisterioso": {

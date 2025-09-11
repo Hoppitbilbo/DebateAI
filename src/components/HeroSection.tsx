@@ -9,8 +9,8 @@ const HeroSection = () => {
   
   // Define available apps to randomly choose from
   const apps = useMemo(() => [{
-    path: "/apps/wiki-interview",
-    name: t('features.items.wikiInterview.name')
+    path: "/apps/you-moderate",
+    name: t('features.items.youModerate.name')
   }, {
     path: "/apps/doppia-intervista",
     name: t('features.items.doppiaIntervista.name')

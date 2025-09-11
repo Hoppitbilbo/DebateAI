@@ -9,10 +9,10 @@ const FeaturesSection = () => {
   
   const features = [
     {
-      name: t('features.items.wikiInterview.name'),
-      description: t('features.items.wikiInterview.description'),
+      name: t('features.items.youModerate.name'),
+      description: t('features.items.youModerate.description'),
       icon: <Book className="h-6 w-6" />,
-      link: "/apps/wiki-interview"
+      link: "/apps/you-moderate"
     },
     {
       name: t('features.items.personaggioMisterioso.name'),

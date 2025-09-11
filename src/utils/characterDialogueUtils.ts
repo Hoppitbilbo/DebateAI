@@ -1,9 +1,9 @@
 
 /**
- * Utility functions for generating character dialogue in the WikiInterviewChat
+ * Utility functions for generating character dialogue in the YouModerateChat
  */
 
-import { Character } from "@/components/wiki-interview/types";
+import { Character } from "@/components/you-moderate/types";
 import { Message } from "@/types/conversation";
 import { model } from "@/services/aiService"; // Correctly import the model from Firebase setup
 import { buildDialogueSystemInstruction, buildDialoguePrompt, getErrorMessage, getTranslatedLabel } from "@/utils/aiPromptUtils";
@@ -17,7 +17,7 @@ export const generateCharacterResponse = async (
   theme: string,
   recentMessages: Array<{role: string; character: string; content: string}>,
   userMessage?: string,
-  // isLoading is passed from WikiInterviewChat, keep in signature for compatibility
+  // isLoading is passed from YouModerateChat, keep in signature for compatibility
   // but not directly used by the model call itself here.
   isLoading?: boolean 
 ): Promise<string> => {

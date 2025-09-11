@@ -9,8 +9,8 @@ import { AnimationProvider } from "@/context/AnimationContext";
 import PageFlipAnimation from "@/components/PageFlipAnimation";
 import Index from "./pages/Index";
 import AppsPage from "./pages/AppsPage";
-import WikiInterviewPage from "./pages/WikiInterviewPage";
-import WikiInterviewTutorialPage from "./pages/WikiInterviewTutorialPage";
+import YouModeratePage from "./pages/YouModeratePage";
+import YouModerateTutorialPage from "./pages/YouModerateTutorialPage";
 import WikiChatbotPage from "./pages/WikiChatbotPage";
 import DoppiaIntervistaPage from "./pages/DoppiaIntervistaPage";
 import DoppiaIntervistaTutorialPage from "./pages/DoppiaIntervistaTutorialPage";
@@ -38,8 +38,8 @@ const App = () => (
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/apps" element={<AppsPage />} />
-                <Route path="/apps/wiki-interview" element={<WikiInterviewPage />} />
-                <Route path="/apps/wiki-interview/tutorial" element={<WikiInterviewTutorialPage />} />
+                <Route path="/apps/you-moderate" element={<YouModeratePage />} />
+                <Route path="/apps/you-moderate/tutorial" element={<YouModerateTutorialPage />} />
                 <Route path="/apps/wiki-chatbot" element={<WikiChatbotPage />} />
                 <Route path="/apps/doppia-intervista" element={<DoppiaIntervistaPage />} />
                 <Route path="/apps/doppia-intervista/tutorial" element={<DoppiaIntervistaTutorialPage />} />

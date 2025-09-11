@@ -135,13 +135,13 @@
       }
     }
   },
-  "wikiInterview": {
-    "title": "Tutoriel Wiki-Interview",
+  "youModerate": {
+    "title": "Tutoriel C’est toi qui modères",
     "subtitle": "Maîtrisez la modération collaborative de débats et la pensée critique grâce aux débats entre personnages Wikipédia alimentés par l'IA",
-    "startApp": "Démarrer Wiki-Interview",
+    "startApp": "Démarrer C’est toi qui modères",
     "slides": {
       "welcome": {
-        "title": "Bienvenue dans Wiki-Interview !",
+        "title": "Bienvenue dans C’est toi qui modères !",
         "content": "Endossez le rôle de modérateur collaboratif de débats, facilitant les discussions entre personnages Wikipédia alimentés par l'IA tout en développant la pensée critique et les compétences de modération."
       },
       "moderatorRole": {
