@@ -136,12 +136,12 @@
     }
   },
   "wikiInterview": {
-    "title": "Wiki-Interview Tutorial",
+    "title": "Moderate You Tutorial",
     "subtitle": "Master collaborative debate moderation and critical thinking through AI-powered Wikipedia character debates",
-    "startApp": "Start Wiki-Interview",
+    "startApp": "Start Moderate You",
     "slides": {
       "welcome": {
-        "title": "Welcome to Wiki-Interview!",
+        "title": "Welcome to Moderate You!",
         "content": "Step into the role of a collaborative debate moderator, facilitating discussions between AI-powered Wikipedia characters while developing critical thinking and moderation skills."
       },
       "moderatorRole": {

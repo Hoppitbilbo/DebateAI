@@ -1,27 +1,4 @@
 {
-<<<<<<< HEAD
-  "title": "Doppia Intervista",
-  "subtitle": "Führen Sie ein Doppelinterview mit zwei KI-Charakteren",
-  "description": "Wählen Sie zwei Charaktere und ein Thema für ein faszinierendes Doppelinterview. Beobachten Sie, wie verschiedene Perspektiven aufeinandertreffen.",
-  "selectCharacters": "Wählen Sie zwei Charaktere",
-  "selectTopic": "Wählen Sie ein Thema",
-  "startInterview": "Interview beginnen",
-  "characters": {
-    "scientist": "Wissenschaftler",
-    "philosopher": "Philosoph",
-    "artist": "Künstler",
-    "politician": "Politiker",
-    "entrepreneur": "Unternehmer"
-  },
-  "topics": {
-    "future": "Die Zukunft",
-    "technology": "Technologie",
-    "society": "Gesellschaft",
-    "environment": "Umwelt",
-    "ethics": "Ethik"
-  }
-}
-=======
   "name": "Doppelinterview",
   "title": "Doppelinterview",
   "subtitle": "Simultanes Interview mit zwei historischen Figuren",
@@ -68,4 +45,3 @@
     "newInterviewButton": "Ein neues Interview beginnen"
   }
 }
->>>>>>> origin/feat/i18n-refactor-en-de

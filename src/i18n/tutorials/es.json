@@ -136,12 +136,12 @@
     }
   },
   "wikiInterview": {
-    "title": "Tutorial Wiki-Entrevista",
+    "title": "Tutorial Modera Tú",
     "subtitle": "Domina la moderación colaborativa de debates y el pensamiento crítico a través de debates entre personajes de Wikipedia impulsados por IA",
-    "startApp": "Iniciar Wiki-Entrevista",
+    "startApp": "Iniciar Modera Tú",
     "slides": {
       "welcome": {
-        "title": "¡Bienvenido a Wiki-Entrevista!",
+        "title": "¡Bienvenido a Modera Tú!",
         "content": "Asume el papel de moderador colaborativo de debates, facilitando discusiones entre personajes de Wikipedia impulsados por IA mientras desarrollas pensamiento crítico y habilidades de moderación."
       },
       "moderatorRole": {

@@ -6,8 +6,4 @@
   "noResponse": "Ich habe im Moment keine Antwort.",
   "errorResponse": "Entschuldigung, ich bin auf einen Fehler gestoßen beim Antworten als {{character}}.",
   "you": "Sie"
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> origin/feat/i18n-refactor-en-de

@@ -4,7 +4,7 @@
   "description": "Entdecken Sie unsere Sammlung von KI-Anwendungen, die darauf ausgelegt sind, das Lernen in eine interaktive und ansprechende Erfahrung zu verwandeln.",
   "items": {
     "wikiInterview": {
-      "name": "Wiki-Interview",
+      "name": "Moderieren Sie",
       "description": "Simuliert Gespräche mit historischen Charakteren durch Wikipedia-Inhalte und macht das Lernen interaktiv und ansprechend."
     },
     "personaggioMisterioso": {
@@ -24,8 +24,4 @@
       "description": "Führen Sie ein Gespräch mit einem historischen Charakter, während Sie einen anderen interpretieren. Testen Sie Ihre Verkörperungsfähigkeiten!"
     }
   }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> origin/feat/i18n-refactor-en-de

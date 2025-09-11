@@ -5,8 +5,4 @@
   "evaluationFailed": "Ein Fehler ist während der Bewertung aufgetreten. Bitte versuchen Sie es später erneut.",
   "invalidResponse": "KI-Bewertungsfehler: Ungültige Antwort vom Modell.",
   "invalidStructure": "KI-Bewertungsfehler: Ungültige Antwortstruktur vom Modell."
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> origin/feat/i18n-refactor-en-de

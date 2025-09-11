@@ -1,24 +1,4 @@
 {
-<<<<<<< HEAD
-  "title": "ConvinciTu",
-  "subtitle": "Überzeugen Sie die KI von Ihrer Meinung",
-  "description": "Wählen Sie ein Thema und versuchen Sie, die KI von Ihrer Meinung zu überzeugen. Die KI wird Ihre Argumente bewerten und Ihnen Feedback geben.",
-  "selectTopic": "Wählen Sie ein Thema",
-  "selectPosition": "Wählen Sie Ihre Position",
-  "startDebate": "Debatte beginnen",
-  "topics": {
-    "climateChange": "Klimawandel",
-    "artificialIntelligence": "Künstliche Intelligenz",
-    "socialMedia": "Soziale Medien",
-    "education": "Bildung",
-    "healthcare": "Gesundheitswesen"
-  },
-  "positions": {
-    "for": "Dafür",
-    "against": "Dagegen"
-  }
-}
-=======
   "name": "Überzeuge mich",
   "title": "Überzeuge mich",
   "subtitle": "Versuche, eine historische Figur zu einem bestimmten Thema zu überzeugen",
@@ -71,4 +51,3 @@
     "downloadError": "Fehler beim Herunterladen der Reflexion"
   }
 }
->>>>>>> origin/feat/i18n-refactor-en-de

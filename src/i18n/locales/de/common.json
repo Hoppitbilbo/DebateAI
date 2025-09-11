@@ -61,14 +61,5 @@
   },
   "submitReflection": "Reflexion senden",
   "aiError": "Fehler in der KI-Antwort. Bitte versuchen Sie es erneut.",
-<<<<<<< HEAD
-  "backToApps": "Zurück zu den Apps",
-  "viewTutorial": "Tutorial ansehen",
-  "slide": "Folie",
-  "progress": "Fortschritt",
-  "previous": "Zurück"
-}
-=======
   "backToApps": "Zurück zu den Apps"
 }
->>>>>>> origin/feat/i18n-refactor-en-de

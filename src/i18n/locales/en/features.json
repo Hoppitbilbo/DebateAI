@@ -4,7 +4,7 @@
   "description": "Explore our collection of AI applications designed to transform learning into an interactive and engaging experience.",
   "items": {
     "wikiInterview": {
-      "name": "Wiki Interview",
+      "name": "Moderate You",
       "description": "Simulate conversations with historical figures through Wikipedia content, making learning interactive and engaging."
     },
     "personaggioMisterioso": {

@@ -35,11 +35,7 @@
   "character": "Character:",
   "yourAnswer": "Your answer:",
   "result": "Result:",
-<<<<<<< HEAD
-  "correct": "Correct! 🎉",
-=======
   "correct": "Correct! \ud83c\udf89",
->>>>>>> origin/feat/i18n-en-modular
   "correctShort": "Correct",
   "incorrect": "Incorrect",
   "messagesExchanged": "Messages exchanged:",

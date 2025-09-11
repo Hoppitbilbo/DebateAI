@@ -4,7 +4,7 @@
   "description": "Explora nuestra colección de aplicaciones de IA diseñadas para transformar el aprendizaje en una experiencia interactiva y atractiva.",
   "items": {
     "wikiInterview": {
-      "name": "Entrevista Wiki",
+      "name": "Modera Tú",
       "description": "Simula conversaciones con personajes históricos a través de contenidos de Wikipedia, haciendo el aprendizaje interactivo y atractivo."
     },
     "personaggioMisterioso": {

@@ -1,13 +1,5 @@
 {
-<<<<<<< HEAD
-<<<<<<< HEAD
-  "description": "AI Educational Tools for creating effective educational scenarios",
-=======
   "description": "AI Educational Tools to create effective educational scenarios",
->>>>>>> origin/feat/i18n-refactor-en-de
-=======
-  "description": "AI Educational Tools to create effective educational scenarios",
->>>>>>> origin/feat/i18n-en-modular
   "resources": {
     "title": "Resources",
     "allApps": "All Apps",
@@ -19,12 +11,4 @@
     "terms": "Terms of Service"
   },
   "copyright": "© {{year}} AI-Debate.Tech. All rights reserved."
-<<<<<<< HEAD
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> origin/feat/i18n-refactor-en-de
-=======
-}
->>>>>>> origin/feat/i18n-en-modular

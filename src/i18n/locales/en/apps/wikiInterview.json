@@ -1,6 +1,6 @@
 {
-  "name": "Wiki Interview",
-  "title": "Historical AI Dialogue",
+  "name": "Moderate You",
+  "title": "Moderate You",
   "subtitle": "Interview historical figures",
   "description": "Create and analyze deep conversations between two historical figures based on their Wikipedia profiles.",
   "errors": {

@@ -11,7 +11,7 @@
   },
   "appCards": {
     "wikiInterview": {
-      "title": "Historischer KI-Dialog",
+      "title": "Moderieren Sie",
       "description": "Unterhalten Sie sich mit KI-Charakteren basierend auf Wikipedia-Inhalten und verwandeln Sie Bildungsthemen in interaktive Gespräche."
     },
     "doppiaIntervista": {
@@ -39,8 +39,4 @@
       "description": "Führen Sie ein Gespräch mit einer historischen Figur, während Sie eine andere interpretieren. Testen Sie Ihre Einfühlungsfähigkeiten!"
     }
   }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> origin/feat/i18n-refactor-en-de

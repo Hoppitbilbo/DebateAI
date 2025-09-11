@@ -136,12 +136,12 @@
     }
   },
   "wikiInterview": {
-    "title": "Tutoriel Wiki-Interview",
+    "title": "Tutoriel Modérez Vous",
     "subtitle": "Maîtrisez la modération collaborative de débats et la pensée critique grâce aux débats entre personnages Wikipédia alimentés par l'IA",
-    "startApp": "Démarrer Wiki-Interview",
+    "startApp": "Démarrer Modérez Vous",
     "slides": {
       "welcome": {
-        "title": "Bienvenue dans Wiki-Interview !",
+        "title": "Bienvenue dans Modérez Vous !",
         "content": "Endossez le rôle de modérateur collaboratif de débats, facilitant les discussions entre personnages Wikipédia alimentés par l'IA tout en développant la pensée critique et les compétences de modération."
       },
       "moderatorRole": {

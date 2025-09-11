@@ -3,11 +3,7 @@
   "resources": {
     "title": "Ressourcen",
     "allApps": "Alle Apps",
-<<<<<<< HEAD
-    "aboutUs": "Über uns"
-=======
     "aboutUs": "Über Uns"
->>>>>>> origin/feat/i18n-refactor-en-de
   },
   "legal": {
     "title": "Rechtliches",
@@ -15,8 +11,4 @@
     "terms": "Nutzungsbedingungen"
   },
   "copyright": "© {{year}} AI-Debate.Tech. Alle Rechte vorbehalten."
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> origin/feat/i18n-refactor-en-de
