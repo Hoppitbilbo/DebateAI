@@ -1,6 +1,6 @@
 
 /**
- * Type definitions for the WikiInterviewChat component
+ * Type definitions for the YouModerateChat component
  */
 
 export interface Character {
@@ -16,7 +16,7 @@ export interface Message {
   content: string;
 }
 
-export interface WikiInterviewChatProps {
+export interface YouModerateChatProps {
   characters: [Character, Character];
   theme: string;
 }

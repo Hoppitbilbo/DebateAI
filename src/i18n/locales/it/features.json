@@ -3,8 +3,8 @@
   "subtitle": "Strumenti Educativi Basati su IA",
   "description": "Esplora la nostra collezione di applicazioni AI progettate per trasformare l'apprendimento in un'esperienza interattiva e coinvolgente.",
   "items": {
-    "wikiInterview": {
-      "name": "Modera Tu",
+    "youModerate": {
+      "name": "Modera tu",
       "description": "Simula conversazioni con personaggi storici attraverso contenuti Wikipedia, rendendo l'apprendimento interattivo e coinvolgente."
     },
     "personaggioMisterioso": {

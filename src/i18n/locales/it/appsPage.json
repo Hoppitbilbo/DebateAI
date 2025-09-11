@@ -2,8 +2,8 @@
   "title": "Applicazioni di Intelligenza Artificiale per l'Educazione",
   "subtitle": "Esplora la nostra raccolta di strumenti AI per l'apprendimento interattivo.",
   "appCards": {
-    "wikiInterview": {
-      "title": "Modera Tu",
+    "youModerate": {
+      "title": "Modera tu",
       "description": "Conversa con personaggi AI basati sui contenuti di Wikipedia, trasformando argomenti educativi in conversazioni interattive."
     },
     "doppiaIntervista": {

@@ -10,8 +10,8 @@
     "comingSoon": "Bientôt"
   },
   "appCards": {
-    "wikiInterview": {
-      "title": "Modérez Vous",
+    "youModerate": {
+      "title": "C’est toi qui modères",
       "description": "Conversez avec des personnages IA basés sur le contenu de Wikipédia, transformant les sujets éducatifs en conversations interactives."
     },
     "doppiaIntervista": {

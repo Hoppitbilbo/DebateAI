@@ -10,8 +10,8 @@
     "comingSoon": "Demnächst"
   },
   "appCards": {
-    "wikiInterview": {
-      "title": "Moderieren Sie",
+    "youModerate": {
+      "title": "Du moderierst",
       "description": "Unterhalten Sie sich mit KI-Charakteren basierend auf Wikipedia-Inhalten und verwandeln Sie Bildungsthemen in interaktive Gespräche."
     },
     "doppiaIntervista": {

@@ -45,7 +45,7 @@ const ChatInput = ({
             className={selectedCharacter === name ? "bg-education text-white" : ""}
           >
             <MessageCircle className="h-4 w-4 mr-2" />
-            {selectedCharacter === name ? t('apps.wikiInterview.chat.speakToAll') : t('apps.wikiInterview.chat.speakTo', { name })}
+            {selectedCharacter === name ? t('apps.youModerate.chat.speakToAll') : t('apps.youModerate.chat.speakTo', { name })}
           </Button>
         ))}
       </div>
@@ -55,7 +55,7 @@ const ChatInput = ({
           value={userInput}
           onChange={(e) => setUserInput(e.target.value)}
           onKeyPress={(e) => e.key === "Enter" && handleSend()}
-          placeholder={selectedCharacter === "all" ? t('apps.wikiInterview.chat.askBothPlaceholder') : t('apps.wikiInterview.chat.askCharacterPlaceholder', { character: selectedCharacter })}
+          placeholder={selectedCharacter === "all" ? t('apps.youModerate.chat.askBothPlaceholder') : t('apps.youModerate.chat.askCharacterPlaceholder', { character: selectedCharacter })}
           disabled={isLoading}
         />
         <Button onClick={handleSend} disabled={isLoading || !userInput.trim()}>
@@ -68,7 +68,7 @@ const ChatInput = ({
         disabled={isLoading}
         className="w-full"
       >
-        <ArrowRight className="h-4 w-4 mr-2" /> {t('apps.wikiInterview.chat.nextIntervention', { character: nextSpeaker === "character1" ? characters[0].name : characters[1].name })}
+        <ArrowRight className="h-4 w-4 mr-2" /> {t('apps.youModerate.chat.nextIntervention', { character: nextSpeaker === "character1" ? characters[0].name : characters[1].name })}
       </Button>
     </div>
   );

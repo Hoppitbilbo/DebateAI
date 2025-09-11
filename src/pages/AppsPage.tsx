@@ -10,10 +10,10 @@ const AppsPage = () => {
   
   const apps = [
     {
-      title: t('appsPage.appCards.wikiInterview.title'),
-      description: t('appsPage.appCards.wikiInterview.description'),
+      title: t('appsPage.appCards.youModerate.title'),
+      description: t('appsPage.appCards.youModerate.description'),
       icon: <Book className="h-12 w-12 text-white" />,
-      link: "/apps/wiki-interview",
+      link: "/apps/you-moderate",
       isNew: true,
     },
     {

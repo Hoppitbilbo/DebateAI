@@ -138,13 +138,13 @@
       }
     }
   },
-  "wikiInterview": {
-    "title": "Moderieren Sie Tutorial",
+  "youModerate": {
+    "title": "Du moderierst Tutorial",
     "subtitle": "Meistern Sie kollaborative Debattenmoderation und kritisches Denken durch KI-gestützte Wikipedia-Charakterdebatten",
-    "startApp": "Moderieren Sie starten",
+    "startApp": "Du moderierst starten",
     "slides": {
       "welcome": {
-        "title": "Willkommen bei Moderieren Sie!",
+        "title": "Willkommen bei Du moderierst!",
         "content": "Übernehmen Sie die Rolle eines kollaborativen Debattenmoderators und erleichtern Sie Diskussionen zwischen KI-gestützten Wikipedia-Charakteren, während Sie kritisches Denken und Moderationsfähigkeiten entwickeln.",
         "bullet1": "Interagieren Sie mit KI-gestützten historischen Charakteren",
         "bullet2": "Entwickeln Sie kritisches Denken und Moderationsfähigkeiten",
