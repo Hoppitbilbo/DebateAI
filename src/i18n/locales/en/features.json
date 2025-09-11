@@ -3,8 +3,8 @@
   "subtitle": "AI-Based Educational Tools",
   "description": "Explore our collection of AI applications designed to transform learning into an interactive and engaging experience.",
   "items": {
-    "wikiInterview": {
-      "name": "Wiki Interview",
+    "youModerate": {
+      "name": "You Moderate",
       "description": "Simulate conversations with historical figures through Wikipedia content, making learning interactive and engaging."
     },
     "personaggioMisterioso": {

@@ -11,21 +11,21 @@ import { Button } from "@/components/ui/button";
 import { BookOpen } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-// Define the props for WikiInterviewChat, including the new handlers
-interface WikiInterviewChatProps {
+// Define the props for YouModerateChat, including the new handlers
+interface YouModerateChatProps {
   characters: [Character, Character];
   theme: string;
   onMessagesUpdate: (messages: Message[]) => void;
   handleEndChat: () => void;
 }
 
-const WikiInterviewChat = ({ characters, theme, onMessagesUpdate, handleEndChat }: WikiInterviewChatProps) => {
+const YouModerateChat = ({ characters, theme, onMessagesUpdate, handleEndChat }: YouModerateChatProps) => {
   const { t } = useTranslation();
   const [messages, setMessages] = useState<Message[]>(() => [
     {
       role: "system",
       character: "System",
-      content: t('apps.wikiInterview.chat.systemMessage', { char1: characters[0].name, char2: characters[1].name, theme }),
+      content: t('apps.youModerate.chat.systemMessage', { char1: characters[0].name, char2: characters[1].name, theme }),
     },
     // Initial messages from characters can be uncommented if desired, or handled by generateCharacterResponse
     // {
@@ -89,7 +89,7 @@ const WikiInterviewChat = ({ characters, theme, onMessagesUpdate, handleEndChat 
       addMessage({
         role: "system",
         character: "System",
-        content: t('apps.wikiInterview.chat.errorMessage')
+        content: t('apps.youModerate.chat.errorMessage')
       });
     }
     setIsLoading(false);
@@ -117,7 +117,7 @@ const WikiInterviewChat = ({ characters, theme, onMessagesUpdate, handleEndChat 
       addMessage({
         role: "system",
         character: "System",
-        content: t('apps.wikiInterview.chat.autoErrorMessage')
+        content: t('apps.youModerate.chat.autoErrorMessage')
       });
     }
     setIsLoading(false);
@@ -129,8 +129,8 @@ const WikiInterviewChat = ({ characters, theme, onMessagesUpdate, handleEndChat 
         <Tabs defaultValue="dialogue" className="flex flex-col h-full">
           <div className="bg-education p-2 text-white flex justify-between items-center">
             <TabsList className="grid grid-cols-2 w-full bg-gray-700">
-              <TabsTrigger value="dialogue" className="data-[state=active]:bg-education-dark data-[state=active]:text-white">{t('apps.wikiInterview.chat.dialogueTab')}</TabsTrigger>
-              <TabsTrigger value="characters" className="data-[state=active]:bg-education-dark data-[state=active]:text-white">{t('apps.wikiInterview.chat.charactersTab')}</TabsTrigger>
+              <TabsTrigger value="dialogue" className="data-[state=active]:bg-education-dark data-[state=active]:text-white">{t('apps.youModerate.chat.dialogueTab')}</TabsTrigger>
+              <TabsTrigger value="characters" className="data-[state=active]:bg-education-dark data-[state=active]:text-white">{t('apps.youModerate.chat.charactersTab')}</TabsTrigger>
             </TabsList>
           </div>
 
@@ -159,10 +159,10 @@ const WikiInterviewChat = ({ characters, theme, onMessagesUpdate, handleEndChat 
         disabled={isLoading || messages.length < 3} // Adjusted threshold for ending chat
         className="w-full bg-accent hover:bg-accent-dark text-white py-2.5 border-accent-dark hover:border-accent-darker"
       >
-        <BookOpen className="mr-2 h-4 w-4" /> {t('apps.wikiInterview.chat.endDialogueButton')}
+        <BookOpen className="mr-2 h-4 w-4" /> {t('apps.youModerate.chat.endDialogueButton')}
       </Button>
     </div>
   );
 };
 
-export default WikiInterviewChat;
+export default YouModerateChat;

@@ -3,8 +3,8 @@
   "subtitle": "Outils Éducatifs Basés sur l'IA",
   "description": "Explorez notre collection d'applications d'IA conçues pour transformer l'apprentissage en une expérience interactive et engageante.",
   "items": {
-    "wikiInterview": {
-      "name": "Interview Wiki",
+    "youModerate": {
+      "name": "C’est toi qui modères",
       "description": "Simule des conversations avec des personnages historiques à travers le contenu de Wikipédia, rendant l'apprentissage interactif et engageant."
     },
     "personaggioMisterioso": {
