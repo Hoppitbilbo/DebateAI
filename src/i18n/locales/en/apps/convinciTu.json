@@ -1,19 +1,19 @@
 {
-  "name": "PersuadeMe",
+  "name": "Persuade Me",
   "title": "PersuadeMe",
   "subtitle": "Try to convince a historical figure on a specific topic",
   "description": "Try to convince historical figures of your ideas",
   "newChatSuccess": "New chat started!",
   "errors": {
-    "responseGeneration": "Error generating response.",
-    "evaluationGeneration": "Error generating evaluation."
+    "responseGeneration": "Error generating response. Please try again later.",
+    "evaluationGeneration": "Error generating evaluation. Please try again later."
   },
   "reflection": {
-    "title": "Reflection on Persuasion",
-    "description": "Reflect on your attempt to persuade the character.",
-    "placeholder": "What strategies did you use? What worked and what didn't?",
+    "title": "Reflection on PersuadeMe",
+    "description": "Reflect on your experience trying to convince the historical figure.",
+    "placeholder": "How did the conversation go? What persuasion strategies did you use? What did you learn about the character and the topic discussed?",
     "questions": {
-      "success": "Did you manage to convince the historical figure?",
+      "success": "Were you able to convince the historical figure?",
       "strategies": "What strategies did you use that were effective?",
       "difficulties": "What were the main difficulties you encountered?",
       "differently": "What would you do differently next time?",
@@ -21,8 +21,7 @@
     }
   },
   "feedback": {
-    "title": "Feedback",
-    "subtitle": "Here is a summary of your conversation and the AI's evaluation.",
+    "title": "Feedback and Dialogue Evaluation",
     "conversationHistory": "Conversation History",
     "yourReflection": "Your Reflection",
     "aiFeedback": "AI Feedback",
@@ -49,5 +48,10 @@
     "emptyConversation": "The conversation will appear here",
     "userLabel": "You",
     "endActivityButton": "End activity"
+  },
+  "setup": {
+    "characterSelectLabel": "Select a historical character",
+    "topicLabel": "What do you want to try to convince {{characterName}} to do or not do?",
+    "topicPlaceholder": "Example: Convince Leonardo da Vinci not to build war machines"
   }
 }

@@ -1,53 +1,57 @@
 {
   "name": "Convaincs-moi",
   "title": "Convaincs-moi",
-  "subtitle": "Essayez de convaincre un personnage historique sur un sujet spécifique",
+  "subtitle": "Essayez de convaincre un personnage historique sur un sujet specific",
   "description": "Essayez de convaincre des figures historiques de vos idées",
   "newChatSuccess": "Nouveau chat commencé !",
   "errors": {
-    "responseGeneration": "Erreur lors de la génération de la réponse.",
-    "evaluationGeneration": "Erreur lors de la génération de l'évaluation."
-  },
-  "characterSelection": {
-    "label": "Choisissez un personnage",
-    "placeholder": "Rechercher un personnage historique..."
-  },
-  "topic": {
-    "label": "De quoi voulez-vous convaincre {{characterName}} ?",
-    "placeholder": "ex: que la pizza à l'ananas est une excellente idée"
-  },
-  "startButton": "Commencer le Chat",
-  "chat": {
-    "title": "Conversation",
-    "placeholder": "Écrivez votre argument persuasif...",
-    "endButton": "Terminer le Chat et Réfléchir",
-    "currentPromptLabel": "Prompt Actuel :",
-    "promptValue": "Convainquez {{characterName}} que {{topic}}",
-    "emptyConversation": "La conversation apparaîtra ici",
-    "userLabel": "Vous",
-    "endActivityButton": "Terminer l'Activité"
+    "responseGeneration": "Erreur lors de la génération de la réponse. Veuillez réessayer plus tard.",
+    "evaluationGeneration": "Erreur lors de la génération de l'évaluation. Veuillez réessayer plus tard."
   },
   "reflection": {
-    "title": "Réflexion sur la Persuasion",
-    "description": "Réfléchissez à votre tentative de persuader le personnage.",
-    "placeholder": "Quelles stratégies avez-vous utilisées ? Qu'est-ce qui a fonctionné et qu'est-ce qui n'a pas fonctionné ?",
+    "title": "Réflexion sur Convaincs-moi",
+    "description": "Réfléchissez à votre expérience en essayant de convaincre le personnage historique.",
+    "placeholder": "Comment s'est déroulée la conversation ? Quelles stratégies de persuasion avez-vous utilisées ? Qu'avez-vous appris sur le personnage et le sujet discuté ?",
     "questions": {
-      "success": "Avez-vous réussi à convaincre la figure historique?",
-      "strategies": "Quelles stratégies avez-vous utilisées qui ont été efficaces?",
-      "difficulties": "Quelles ont été les principales difficultés que vous avez rencontrées?",
-      "differently": "Que feriez-vous différemment la prochaine fois?",
-      "convinced": "Pensez-vous avoir réussi à les convaincre? Comment?"
+      "success": "Avez-vous réussi à convaincre le personnage historique ?",
+      "strategies": "Quelles stratégies avez-vous utilisées qui se sont avérées efficaces ?",
+      "difficulties": "Quelles ont été les principales difficultés que vous avez rencontrées ?",
+      "differently": "Que feriez-vous différemment la prochaine fois ?",
+      "convinced": "Pensez-vous avoir réussi à les convaincre ? Comment ?"
     }
   },
   "feedback": {
-    "title": "Retour",
-    "subtitle": "Voici un résumé de votre conversation et l'évaluation de l'IA.",
-    "conversationHistory": "Historique de Conversation",
+    "title": "Feedback et Évaluation du Dialogue",
+    "conversationHistory": "Historique de la Conversation",
     "yourReflection": "Votre Réflexion",
-    "aiFeedback": "Retour de l'IA",
+    "aiFeedback": "Feedback de l'IA",
     "downloadReflection": "Télécharger la Réflexion",
-    "startNewChat": "Commencer un Nouveau Chat",
-    "downloadSuccess": "Réflexion téléchargée avec succès!",
+    "startNewChat": "Démarrer un Nouveau Chat",
+    "downloadSuccess": "Réflexion téléchargée avec succès !",
     "downloadError": "Erreur lors du téléchargement de la réflexion"
+  },
+  "characterSelection": {
+    "label": "Sélectionnez un personnage historique",
+    "placeholder": "Rechercher un personnage historique..."
+  },
+  "topic": {
+    "label": "De quoi voulez-vous essayer de convaincre {{characterName}} de faire ou de ne pas faire ?",
+    "placeholder": "Exemple : Convaincre Léonard de Vinci de ne pas construire de machines de guerre"
+  },
+  "startButton": "Démarrer le Chat",
+  "chat": {
+    "title": "Conversation",
+    "placeholder": "Écrivez votre argument persuasif...",
+    "endButton": "Terminer le chat et réfléchir",
+    "currentPromptLabel": "Prompt actuel :",
+    "promptValue": "Convaincre {{characterName}} que {{topic}}",
+    "emptyConversation": "La conversation apparaîtra ici",
+    "userLabel": "Vous",
+    "endActivityButton": "Terminer l'activité"
+  },
+  "setup": {
+    "characterSelectLabel": "Sélectionnez un personnage historique",
+    "topicLabel": "De quoi voulez-vous essayer de convaincre {{characterName}} de faire ou de ne pas faire ?",
+    "topicPlaceholder": "Exemple : Convaincre Léonard de Vinci de ne pas construire de machines de guerre"
   }
 }

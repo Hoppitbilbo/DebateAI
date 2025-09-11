@@ -1,19 +1,57 @@
 {
-  "title": "ConvinciTu",
-  "subtitle": "Überzeugen Sie die KI von Ihrer Meinung",
-  "description": "Wählen Sie ein Thema und versuchen Sie, die KI von Ihrer Meinung zu überzeugen. Die KI wird Ihre Argumente bewerten und Ihnen Feedback geben.",
-  "selectTopic": "Wählen Sie ein Thema",
-  "selectPosition": "Wählen Sie Ihre Position",
-  "startDebate": "Debatte beginnen",
-  "topics": {
-    "climateChange": "Klimawandel",
-    "artificialIntelligence": "Künstliche Intelligenz",
-    "socialMedia": "Soziale Medien",
-    "education": "Bildung",
-    "healthcare": "Gesundheitswesen"
+  "name": "Überzeuge Mich",
+  "title": "ÜberzeugeMich",
+  "subtitle": "Versuche, eine historische Figur zu einem bestimmten Thema zu überzeugen",
+  "description": "Versuche, historische Figuren von deinen Ideen zu überzeugen",
+  "newChatSuccess": "Neuer Chat gestartet!",
+  "errors": {
+    "responseGeneration": "Fehler beim Generieren der Antwort. Bitte versuchen Sie es später noch einmal.",
+    "evaluationGeneration": "Fehler beim Generieren der Bewertung. Bitte versuchen Sie es später noch einmal."
   },
-  "positions": {
-    "for": "Dafür",
-    "against": "Dagegen"
+  "reflection": {
+    "title": "Reflexion über ÜberzeugeMich",
+    "description": "Reflektiere über deine Erfahrung beim Versuch, die historische Figur zu überzeugen.",
+    "placeholder": "Wie ist das Gespräch verlaufen? Welche Überzeugungsstrategien haben Sie angewendet? Was haben Sie über die Figur und das besprochene Thema gelernt?",
+    "questions": {
+      "success": "Haben Sie es geschafft, die historische Figur zu überzeugen?",
+      "strategies": "Welche Strategien, die Sie angewendet haben, waren wirksam?",
+      "difficulties": "Was waren die größten Schwierigkeiten, auf die Sie gestoßen sind?",
+      "differently": "Was würden Sie beim nächsten Mal anders machen?",
+      "convinced": "Glauben Sie, dass Sie sie überzeugen konnten? Wie?"
+    }
+  },
+  "feedback": {
+    "title": "Feedback und Dialogbewertung",
+    "conversationHistory": "Gesprächsverlauf",
+    "yourReflection": "Deine Reflexion",
+    "aiFeedback": "KI-Feedback",
+    "downloadReflection": "Reflexion herunterladen",
+    "startNewChat": "Neuen Chat starten",
+    "downloadSuccess": "Reflexion erfolgreich heruntergeladen!",
+    "downloadError": "Fehler beim Herunterladen der Reflexion"
+  },
+  "characterSelection": {
+    "label": "Wähle eine historische Figur",
+    "placeholder": "Suche nach einer historischen Figur..."
+  },
+  "topic": {
+    "label": "Wovon möchten Sie {{characterName}} überzeugen, es zu tun oder nicht zu tun?",
+    "placeholder": "Beispiel: Leonardo da Vinci davon überzeugen, keine Kriegsmaschinen zu bauen"
+  },
+  "startButton": "Chat starten",
+  "chat": {
+    "title": "Gespräch",
+    "placeholder": "Schreibe dein überzeugendes Argument...",
+    "endButton": "Chat beenden und nachdenken",
+    "currentPromptLabel": "Aktueller Prompt:",
+    "promptValue": "Überzeuge {{characterName}}, dass {{topic}}",
+    "emptyConversation": "Das Gespräch wird hier angezeigt",
+    "userLabel": "Du",
+    "endActivityButton": "Aktivität beenden"
+  },
+  "setup": {
+    "characterSelectLabel": "Wähle eine historische Figur",
+    "topicLabel": "Wovon möchten Sie {{characterName}} überzeugen, es zu tun oder nicht zu tun?",
+    "topicPlaceholder": "Beispiel: Leonardo da Vinci davon überzeugen, keine Kriegsmaschinen zu bauen"
   }
 }

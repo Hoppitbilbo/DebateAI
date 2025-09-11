@@ -2,33 +2,8 @@
   "name": "Incarnez Vous",
   "title": "Incarnez Vous",
   "subtitle": "Dialoguez avec une figure historique en en interprétant une autre",
-  "description": "Mettez-vous dans la peau d'une figure historique",
-  "reflection": {
-    "title": "Réflexion sur Incarnez-vous",
-    "description": "Réfléchissez à votre expérience d'incarnation du personnage historique.",
-    "placeholder": "Comment était-ce d'interpréter {{userCharacterName}} ? Quels aspects du personnage avez-vous trouvés les plus intéressants ou difficiles à représenter ? Qu'avez-vous appris de la conversation avec {{aiCharacterName}} ?",
-    "questions": {
-      "performance": "À quel point pensez-vous avoir bien incarné {{characterName}}?",
-      "easiest": "Quels aspects du personnage ont été les plus faciles à incarner?",
-      "challenges": "Quels défis avez-vous rencontrés en vous mettant dans la peau de cette figure historique?",
-      "understanding": "Comment cette expérience d'incarnation a-t-elle changé votre compréhension du personnage?",
-      "selfLearning": "Qu'avez-vous appris sur vous-même grâce à cette activité de jeu de rôle?"
-    },
-    "defaultCharacterName": "le personnage"
-  },
-  "feedback": {
-    "title": "Retour et Évaluation",
-    "conversationHistory": "Historique de Conversation",
-    "yourReflection": "Votre Réflexion",
-    "aiFeedback": "Retour de l'IA",
-    "downloadReflection": "Télécharger la Réflexion",
-    "newImpersonation": "Nouvelle Incarnation",
-    "downloadSuccess": "Réflexion téléchargée avec succès!",
-    "downloadError": "Erreur lors du téléchargement de la réflexion"
-  },
+  "description": "Mettez-vous dans la peau d'une figure historique et dialoguez avec une autre",
   "page": {
-    "title": "Incarnez Vous",
-    "subtitle": "Dialoguez avec une figure historique en en interprétant une autre",
     "setup": {
       "title": "Choisissez les Personnages",
       "description": "Sélectionnez le personnage que l'IA incarnera et celui que vous incarnerez",
@@ -37,6 +12,42 @@
       "topicLabel": "Sujet de Conversation",
       "topicPlaceholder": "par ex., Convainquez-moi de l'importance de la démocratie...",
       "startConversationButton": "Démarrer la conversation"
+    },
+    "chat": {
+      "title": "ImpersonaTu",
+      "subtitle": "Incarnez un personnage historique et discutez avec un autre personnage",
+      "placeholder": "Écrivez en tant que {{characterName}}...",
+      "greeting": "Salutations ! Je suis {{aiCharacterName}}. C'est un plaisir de discuter de \"{{topic}}\" avec vous, {{userCharacterName}}. Qu'est-ce qui vous vient à l'esprit à ce sujet ?",
+      "initError": "Impossible d'initialiser le chat IA. Vérifiez la configuration et réessayez.",
+      "sessionError": "Session de chat non initialisée.",
+      "sendError": "Erreur de communication avec l'IA. Réessayez.",
+      "minMessagesWarning": "Vous devez envoyer au moins deux messages dans le rôle de votre personnage avant de pouvoir conclure.",
+      "newChatStarted": "Nouveau chat démarré !",
+      "evaluating": "Évaluation en cours...",
+      "evaluatingDescription": "L'IA analyse la conversation et votre réflexion.",
+      "conversationTitle": "Conversation entre {{user}} et {{ai}}",
+      "changeCharacters": "Changer de personnages"
+    },
+    "reflection": {
+      "title": "Réflexion sur l'Incarnation",
+      "description": "Réfléchissez à votre expérience en incarnant {{characterName}}.",
+      "placeholder": "Comment était-ce d'interpréter {{userCharacterName}} ? Quels aspects du personnage avez-vous trouvés les plus intéressants ou difficiles à représenter ? Qu'avez-vous appris de la conversation avec {{aiCharacterName}} ?",
+      "questions": {
+        "performance": "Dans quelle mesure pensez-vous avoir bien incarné {{characterName}} ?",
+        "easiest": "Quels aspects du personnage ont été les plus faciles à incarner ?",
+        "understanding": "Comment cette expérience d'incarnation a-t-elle changé votre compréhension du personnage ?",
+        "selfLearning": "Qu'avez-vous appris sur vous-même à travers cette activité de jeu de rôle ?"
+      }
+    },
+    "feedback": {
+      "title": "Feedback et Évaluation",
+      "conversationHistory": "Historique de la Conversation",
+      "yourReflection": "Votre Réflexion",
+      "aiFeedback": "Feedback de l'IA",
+      "downloadReflection": "Télécharger la Réflexion",
+      "newImpersonation": "Nouvelle Incarnation",
+      "downloadSuccess": "Réflexion téléchargée avec succès !",
+      "downloadError": "Erreur lors du téléchargement de la réflexion"
     }
   }
 }

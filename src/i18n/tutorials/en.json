@@ -1,13 +1,16 @@
 {
+  "common": {
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "progress": "Progress",
+    "slide": "Slide"
+  },
   "personaggioMisterioso": {
     "title": "Mystery Character Tutorial",
     "subtitle": "Learn how to use the Mystery Character guessing game",
     "startApp": "Start Mystery Character Game",
     "slides": {
-      "welcome": {
-        "title": "Welcome to Mystery Character!",
-        "content": "An interactive guessing game where you discover historical figures through strategic questioning."
-      },
       "welcome": {
         "title": "Welcome to Mystery Character!",
         "content": "An interactive guessing game where you discover historical figures through strategic questioning.",
@@ -65,12 +68,12 @@
     }
   },
   "convinciTu": {
-    "title": "ConvinciTu Tutorial",
+    "title": "PersuadeMe Tutorial",
     "subtitle": "Master the art of persuasion and debate preparation",
-    "startApp": "Start ConvinciTu",
+    "startApp": "Start PersuadeMe",
     "slides": {
       "welcome": {
-        "title": "Welcome to ConvinciTu!",
+        "title": "Welcome to PersuadeMe!",
         "content": "Master the art of persuasion by engaging in debates with AI opponents on topics you care about.",
         "bullet1": "Choose topics you're passionate about",
         "bullet2": "Debate with intelligent AI opponents",
@@ -82,7 +85,7 @@
         "content": "Learn the step-by-step process for engaging in structured and meaningful debates with AI opponents.",
         "bullet1": "Choose a topic you're passionate about",
         "bullet2": "Select your position (for or against)",
-        "bullet3": "Engage in structured debate with an AI opponent",
+        "bullet3": "Engage in a structured debate with an AI opponent",
         "bullet4": "Develop and refine your argumentation skills"
       },
       "debatePreparation": {
@@ -142,7 +145,10 @@
     "slides": {
       "welcome": {
         "title": "Welcome to Wiki-Interview!",
-        "content": "Step into the role of a collaborative debate moderator, facilitating discussions between AI-powered Wikipedia characters while developing critical thinking and moderation skills."
+        "content": "Step into the role of a collaborative debate moderator, facilitating discussions between AI-powered Wikipedia characters while developing critical thinking and moderation skills.",
+        "bullet1": "Interact with AI-powered historical characters",
+        "bullet2": "Develop critical thinking and moderation skills",
+        "bullet3": "Explore diverse perspectives through structured debates"
       },
       "moderatorRole": {
         "title": "Collaborative Moderation Role",
@@ -205,7 +211,7 @@
   "impersonaTu": {
     "title": "ImpersonaTu Tutorial",
     "subtitle": "Master peer learning through historical role-play and critical thinking",
-    "startApp": "Start ImpersonaTu Game",
+    "startApp": "Start ImpersonaTu",
     "slides": {
       "welcome": {
         "title": "Welcome to ImpersonaTu!",
@@ -252,19 +258,83 @@
     "slides": {
       "welcome": {
         "title": "Welcome to Double Interview!",
-        "content": "Engage two different characters in parallel conversations to explore contrasting perspectives and develop advanced comparative analysis skills."
+        "content": "Engage two different characters in parallel conversations to explore contrasting perspectives and develop advanced comparative analysis skills.",
+        "bullet1": "Select two characters with different backgrounds",
+        "bullet2": "Ask the same questions to both simultaneously",
+        "bullet3": "Compare their answers in real-time",
+        "bullet4": "Develop understanding through comparative analysis"
       },
       "howItWorks": {
         "title": "How It Works",
-        "content": "• Select two characters with different backgrounds or viewpoints\n• Ask the same questions to both characters simultaneously\n• Compare and contrast their responses in real-time\n• Analyze differences in perspective, reasoning, and conclusions\n• Develop nuanced understanding through comparative dialogue"
+        "content": "• Select two characters with different backgrounds or viewpoints\n• Ask the same questions to both characters simultaneously\n• Compare and contrast their responses in real-time\n• Analyze differences in perspective, reasoning, and conclusions\n• Develop nuanced understanding through comparative dialogue",
+        "bullet1": "Select two characters with different backgrounds or viewpoints",
+        "bullet2": "Ask the same questions to both characters simultaneously",
+        "bullet3": "Compare and contrast their responses in real-time",
+        "bullet4": "Develop nuanced understanding through comparative dialogue"
+      },
+      "characterComparison": {
+        "title": "Character Comparison",
+        "content": "Learn to identify and analyze key differences between historical, literary, or contemporary figures through targeted questioning.",
+        "bullet1": "Compare historical and cultural backgrounds",
+        "bullet2": "Analyze personal motivations and values",
+        "bullet3": "Examine different approaches to problems",
+        "bullet4": "Identify influences of the era and context"
+      },
+      "strategicQuestioning": {
+        "title": "Strategic Questioning",
+        "content": "Develop the art of asking effective questions that reveal significant differences in characters' perspectives.",
+        "bullet1": "Formulate open-ended questions that stimulate reflection",
+        "bullet2": "Explore core values and beliefs",
+        "bullet3": "Inquire about crucial decisions and choices",
+        "bullet4": "Uncover personal influences and inspirations"
+      },
+      "collaborativeAnalysis": {
+        "title": "Collaborative Analysis",
+        "content": "Work with peers and teachers to deepen understanding through guided discussions and shared observations.",
+        "bullet1": "Share observations with classmates",
+        "bullet2": "Receive feedback from teachers and peers",
+        "bullet3": "Participate in structured group discussions",
+        "bullet4": "Build understanding through multiple perspectives"
       },
       "comparativeAnalysis": {
         "title": "Comparative Analysis Skills",
-        "content": "• Identify similarities and differences in character responses\n• Analyze underlying assumptions and worldviews\n• Evaluate the strength of different arguments and perspectives\n• Recognize bias and cultural influences in responses\n• Develop skills in synthesizing multiple viewpoints"
+        "content": "• Identify similarities and differences in character responses\n• Analyze underlying assumptions and worldviews\n• Evaluate the strength of different arguments and perspectives\n• Develop skills in synthesizing multiple viewpoints",
+        "bullet1": "Identify similarities and differences in character responses",
+        "bullet2": "Analyze underlying assumptions and worldviews",
+        "bullet3": "Evaluate the strength of different arguments and perspectives",
+        "bullet4": "Develop skills in synthesizing multiple viewpoints"
       },
       "criticalThinking": {
         "title": "Critical Thinking Development",
-        "content": "• Practice evaluating multiple sources of information\n• Develop skills in perspective-taking and empathy\n• Learn to identify logical fallacies and weak arguments\n• Build ability to synthesize complex, contradictory information\n• Enhance analytical reasoning and judgment skills"
+        "content": "• Practice evaluating multiple sources of information\n• Develop skills in perspective-taking and empathy\n• Learn to identify logical fallacies and weak arguments\n• Build ability to synthesize complex, contradictory information\n• Enhance analytical reasoning and judgment skills",
+        "bullet1": "Practice evaluating multiple sources of information",
+        "bullet2": "Develop skills in perspective-taking and empathy",
+        "bullet3": "Learn to identify logical fallacies and weak arguments",
+        "bullet4": "Enhance analytical reasoning and judgment skills"
+      },
+      "selfEvaluation": {
+        "title": "Self-Evaluation and Metacognition",
+        "content": "Reflect on your learning process and develop awareness of your analysis and comprehension strategies.",
+        "bullet1": "Evaluate the quality of your questions",
+        "bullet2": "Reflect on your own biases and assumptions",
+        "bullet3": "Identify areas for improvement in analysis",
+        "bullet4": "Document your learning progress"
+      },
+      "reflection": {
+        "title": "Reflection and Synthesis",
+        "content": "Consolidate learning through structured reflections and synthesis of comparative findings.",
+        "bullet1": "Synthesize the main differences discovered",
+        "bullet2": "Connect findings to broader concepts",
+        "bullet3": "Identify recurring patterns and themes",
+        "bullet4": "Plan future comparative explorations"
+      },
+      "examples": {
+        "title": "Practical Examples",
+        "content": "Explore concrete examples of how to use the double interview in different educational and disciplinary contexts.",
+        "bullet1": "History: Compare leaders from different eras",
+        "bullet2": "Literature: Analyze contrasting authorial styles",
+        "bullet3": "Science: Examine alternative scientific theories",
+        "bullet4": "Ethics: Explore moral dilemmas from multiple perspectives"
       },
       "educationalApplications": {
         "title": "Educational Applications",

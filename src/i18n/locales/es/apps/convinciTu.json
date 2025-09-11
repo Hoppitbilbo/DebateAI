@@ -5,32 +5,13 @@
   "description": "Intenta convencer a figuras históricas de tus ideas",
   "newChatSuccess": "¡Nuevo chat iniciado!",
   "errors": {
-    "responseGeneration": "Error al generar la respuesta.",
-    "evaluationGeneration": "Error al generar la evaluación."
-  },
-  "characterSelection": {
-    "label": "Elige un personaje",
-    "placeholder": "Busca un personaje histórico..."
-  },
-  "topic": {
-    "label": "¿De qué quieres convencer a {{characterName}}?",
-    "placeholder": "ej: que la pizza con piña es una gran idea"
-  },
-  "startButton": "Iniciar Chat",
-  "chat": {
-    "title": "Conversación",
-    "placeholder": "Escribe tu argumento persuasivo...",
-    "endButton": "Finalizar Chat y Reflexionar",
-    "currentPromptLabel": "Prompt Actual:",
-    "promptValue": "Convence a {{characterName}} de que {{topic}}",
-    "emptyConversation": "La conversación aparecerá aquí",
-    "userLabel": "Tú",
-    "endActivityButton": "Terminar Actividad"
+    "responseGeneration": "Error al generar la respuesta. Por favor, inténtelo de nuevo más tarde.",
+    "evaluationGeneration": "Error al generar la evaluación. Por favor, inténtelo de nuevo más tarde."
   },
   "reflection": {
-    "title": "Reflexión sobre la Persuasión",
-    "description": "Reflexiona sobre tu intento de persuadir al personaje.",
-    "placeholder": "¿Qué estrategias usaste? ¿Qué funcionó y qué no?",
+    "title": "Reflexión sobre Convénceme",
+    "description": "Reflexiona sobre tu experiencia al intentar convencer a la figura histórica.",
+    "placeholder": "¿Cómo fue la conversación? ¿Qué estrategias de persuasión usaste? ¿Qué aprendiste sobre el personaje y el tema discutido?",
     "questions": {
       "success": "¿Lograste convencer a la figura histórica?",
       "strategies": "¿Qué estrategias utilizaste que fueron efectivas?",
@@ -40,14 +21,37 @@
     }
   },
   "feedback": {
-    "title": "Retroalimentación",
-    "subtitle": "Aquí tienes un resumen de tu conversación y la evaluación de la IA.",
+    "title": "Feedback y Evaluación del Diálogo",
     "conversationHistory": "Historial de Conversación",
     "yourReflection": "Tu Reflexión",
-    "aiFeedback": "Retroalimentación de IA",
+    "aiFeedback": "Feedback de IA",
     "downloadReflection": "Descargar Reflexión",
     "startNewChat": "Iniciar un Nuevo Chat",
     "downloadSuccess": "¡Reflexión descargada exitosamente!",
     "downloadError": "Error al descargar la reflexión"
+  },
+  "characterSelection": {
+    "label": "Selecciona un personaje histórico",
+    "placeholder": "Busca un personaje histórico..."
+  },
+  "topic": {
+    "label": "¿De qué quieres convencer a {{characterName}} que haga o no haga?",
+    "placeholder": "Ejemplo: Convencer a Leonardo da Vinci de no construir máquinas de guerra"
+  },
+  "startButton": "Iniciar Chat",
+  "chat": {
+    "title": "Conversación",
+    "placeholder": "Escribe tu argumento persuasivo...",
+    "endButton": "Finalizar chat y reflexionar",
+    "currentPromptLabel": "Prompt actual:",
+    "promptValue": "Convencer a {{characterName}} de que {{topic}}",
+    "emptyConversation": "La conversación aparecerá aquí",
+    "userLabel": "Tú",
+    "endActivityButton": "Terminar actividad"
+  },
+  "setup": {
+    "characterSelectLabel": "Selecciona un personaje histórico",
+    "topicLabel": "¿De qué quieres convencer a {{characterName}} que haga o no haga?",
+    "topicPlaceholder": "Ejemplo: Convencer a Leonardo da Vinci de no construir máquinas de guerra"
   }
 }
