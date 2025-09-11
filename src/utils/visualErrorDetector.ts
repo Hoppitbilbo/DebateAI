@@ -238,6 +238,12 @@ class VisualErrorDetector {
   }
 
   private analyzeText(text: string, element: Element, source: string): VisualError | null {
+    // Ignora nomi propri che non necessitano traduzione
+    const properNouns = ['AiDebate.tech', 'github', 'GitHub', 'Github'];
+    if (properNouns.some(noun => text.toLowerCase().includes(noun.toLowerCase()))) {
+      return null;
+    }
+
     // Pattern per rilevare chiavi i18n
     const keyPatterns = [
       /^[a-zA-Z]+\.[a-zA-Z.]+$/, // pattern.like.this
@@ -325,6 +331,22 @@ class VisualErrorDetector {
 
   private handleNewErrors(newErrors: VisualError[]) {
     const now = Date.now();
+    
+    // Console error esplicito per nuovi errori rilevati
+    if (newErrors.length > 0) {
+      console.error(`🚨 [Visual Error Detector] NUOVI ERRORI RILEVATI (${newErrors.length})`, {
+        newErrors: newErrors.map(e => ({
+          key: e.key,
+          displayedText: e.displayedText,
+          expectedType: e.expectedType,
+          severity: e.severity,
+          location: e.location,
+          element: e.element.tagName
+        })),
+        totalErrors: this.errors.length,
+        timestamp: new Date().toISOString()
+      });
+    }
     
     // Throttling per evitare spam di toast
     if (now - this.lastToastTime < this.toastCooldown) {

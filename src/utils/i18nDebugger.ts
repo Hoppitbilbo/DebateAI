@@ -69,6 +69,16 @@ class I18nDebugger {
       
       this.debugReport.missingTranslations.push(missingTranslation);
       
+      // Console error esplicito per debugging
+      console.error(`🚨 [i18n Debug] ERRORE: Chiave di traduzione mancante`, {
+        key,
+        language,
+        namespace,
+        context: missingTranslation.context,
+        result,
+        timestamp: new Date().toISOString()
+      });
+      
       if (this.alertsEnabled && this.debugMode) {
         this.showMissingKeyAlert(missingTranslation);
       }
@@ -102,6 +112,12 @@ class I18nDebugger {
   // Controlla se un valore è una chiave non tradotta
   public checkIfDisplayingKey(value: string, expectedKey?: string): boolean {
     if (!value || typeof value !== 'string') return false;
+    
+    // Ignora nomi propri che non necessitano traduzione
+    const properNouns = ['AiDebate.tech', 'github', 'GitHub', 'Github'];
+    if (properNouns.some(noun => value.toLowerCase().includes(noun.toLowerCase()))) {
+      return false;
+    }
     
     // Controlla se il valore sembra una chiave i18n
     const isKey = /^[a-zA-Z][a-zA-Z0-9._-]*$/.test(value) && 
@@ -167,6 +183,16 @@ class I18nDebugger {
         `📝 Testo: ${value.substring(0, 50)}...\n\n` +
         `💡 Soluzione: Aggiungere traduzione per la lingua ${expectedLang}`;
     }
+    
+    // Console error esplicito per errori visivi
+    console.error(`🚨 [i18n Debug] ERRORE VISIVO: ${errorType === 'key' ? 'Chiave visualizzata' : 'Lingua sbagliata'}`, {
+      value,
+      errorType,
+      expectedLanguage: expectedLang,
+      currentLanguage: i18n.language,
+      timestamp: new Date().toISOString(),
+      location: window.location.pathname
+    });
     
     toast.warning("Errore di Visualizzazione", {
       description: message,
@@ -302,6 +328,21 @@ class I18nDebugger {
     // Throttling per evitare aggiornamenti troppo frequenti
     if (now - this.lastReportUpdate < this.reportUpdateCooldown) {
       return;
+    }
+    
+    // Console error esplicito per errori visivi rilevati
+    if (errors.length > 0) {
+      console.error(`🚨 [i18n Debug] ERRORI VISIVI RILEVATI (${errors.length})`, {
+        errors: errors.map(e => ({
+          key: e.key,
+          displayedText: e.displayedText,
+          expectedType: e.expectedType,
+          severity: e.severity,
+          location: e.location
+        })),
+        timestamp: new Date().toISOString(),
+        currentLanguage: i18n.language
+      });
     }
     
     // Aggiorna il report con gli errori visivi solo se ci sono cambiamenti
