@@ -64,8 +64,21 @@ i18n
     },
   });
 
+// Gestione avanzata delle chiavi mancanti
 i18n.on('missingKey', (lng, ns, key, res) => {
-  console.error(`Translation key '${key}' not found for language '${lng}'`);
+  const errorMessage = `🚨 I18N: Chiave '${key}' mancante per lingua '${lng}' nel namespace '${ns}'`;
+  console.error(errorMessage);
+  
+  // In development, mostra anche informazioni aggiuntive
+  if (import.meta.env.DEV) {
+    console.group('🔍 I18N Debug Info');
+    console.log('Lingua:', lng);
+    console.log('Namespace:', ns);
+    console.log('Chiave:', key);
+    console.log('Pagina corrente:', window.location.pathname);
+    console.log('Risultato fallback:', res);
+    console.groupEnd();
+  }
 });
 
 // Force Italian if no language is set in localStorage

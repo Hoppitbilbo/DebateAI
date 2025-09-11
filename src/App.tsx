@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AnimationProvider } from "@/context/AnimationContext";
 import PageFlipAnimation from "@/components/PageFlipAnimation";
+import I18nDebugFloatingButton from "@/components/debug/I18nDebugFloatingButton";
 import Index from "./pages/Index";
 import AppsPage from "./pages/AppsPage";
 import YouModeratePage from "./pages/YouModeratePage";
@@ -34,6 +35,7 @@ const App = () => (
             <Toaster />
             <Sonner />
             <PageFlipAnimation />
+            <I18nDebugFloatingButton />
             <BrowserRouter>
               <Routes>
                 <Route path="/" element={<Index />} />
