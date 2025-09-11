@@ -1,13 +1,16 @@
 {
+  "common": {
+    "back": "Retour",
+    "next": "Suivant",
+    "previous": "Précédent",
+    "progress": "Progrès",
+    "slide": "Diapositive"
+  },
   "personaggioMisterioso": {
     "title": "Tutoriel Personnage Mystérieux",
     "subtitle": "Apprenez à utiliser le jeu de devinettes de personnages historiques",
     "startApp": "Démarrer Personnage Mystérieux",
     "slides": {
-      "welcome": {
-        "title": "Bienvenue dans Personnage Mystérieux !",
-        "content": "Un jeu interactif de devinettes où vous découvrez des figures historiques grâce à des questions stratégiques."
-      },
       "welcome": {
         "title": "Bienvenue dans Personnage Mystérieux !",
         "content": "Un jeu interactif de devinettes où vous découvrez des figures historiques grâce à des questions stratégiques.",
@@ -132,73 +135,6 @@
         "bullet2": "Questions environnementales : Changement climatique et durabilité",
         "bullet3": "Politique sociale : Éducation et soins de santé",
         "bullet4": "Technologie : Médias sociaux et impact sociétal"
-      }
-    }
-  },
-  "wikiInterview": {
-    "title": "Tutoriel Wiki-Interview",
-    "subtitle": "Maîtrisez la modération collaborative de débats et la pensée critique grâce aux débats entre personnages Wikipédia alimentés par l'IA",
-    "startApp": "Démarrer Wiki-Interview",
-    "slides": {
-      "welcome": {
-        "title": "Bienvenue dans Wiki-Interview !",
-        "content": "Endossez le rôle de modérateur collaboratif de débats, facilitant les discussions entre personnages Wikipédia alimentés par l'IA tout en développant la pensée critique et les compétences de modération."
-      },
-      "moderatorRole": {
-        "title": "Rôle de Modération Collaborative",
-        "content": "Endossez le rôle de modérateur collaboratif de débats, travaillant avec enseignants et pairs pour créer des expériences d'apprentissage engageantes.",
-        "bullet1": "Travaillez avec enseignants/pairs pour sélectionner des sujets de débat stimulants",
-        "bullet2": "Facilitez des discussions structurées entre personnages IA contrastés",
-        "bullet3": "Guidez les conversations vers une pensée analytique plus profonde",
-        "bullet4": "Pratiquez les techniques de modération et d'interrogation en temps réel"
-      },
-      "peerCollaboration": {
-        "title": "Apprentissage entre Pairs et Guidance de l'Enseignant",
-        "content": "Collaborez avec votre communauté d'apprentissage pour améliorer les compétences de modération et construire la confiance grâce aux expériences partagées.",
-        "bullet1": "Collaborez avec camarades de classe dans la sélection de scénarios de débat",
-        "bullet2": "Recevez une guidance en temps réel des enseignants pendant la modération",
-        "bullet3": "Apprenez en observant les techniques de modération des pairs",
-        "bullet4": "Partagez insights et stratégies avec la communauté d'apprentissage"
-      },
-      "setupDebate": {
-        "title": "Configuration Stratégique du Débat",
-        "content": "Apprenez à concevoir des scénarios de débat captivants qui favorisent la réflexion profonde et le dialogue significatif entre personnages IA.",
-        "bullet1": "Choisissez des personnages Wikipédia contrastés avec des points de vue opposés",
-        "bullet2": "Concevez des questions stimulantes qui révèlent différentes perspectives",
-        "bullet3": "Créez des scénarios qui encouragent la pensée analytique profonde",
-        "bullet4": "Équilibrez les personnalités des personnages pour des discussions engageantes"
-      },
-      "moderationSkills": {
-        "title": "Compétences de Modération Avancées",
-        "content": "Développez des techniques de facilitation sophistiquées pour guider des débats significatifs et favoriser la pensée critique.",
-        "bullet1": "Maîtrisez l'art de la facilitation neutre",
-        "bullet2": "Apprenez à poser des questions pénétrantes qui approfondissent l'analyse",
-        "bullet3": "Pratiquez la gestion de différents types de personnalité et points de vue",
-        "bullet4": "Développez le timing et le rythme pour des discussions efficaces"
-      },
-      "criticalThinking": {
-        "title": "Pensée Critique à Travers l'Analyse d'Arguments",
-        "content": "Améliorez vos compétences analytiques en évaluant les arguments IA et en développant une compréhension plus profonde des modèles de raisonnement.",
-        "bullet1": "Analysez la qualité et la logique des arguments générés par l'IA",
-        "bullet2": "Identifiez les forces et faiblesses dans les modèles de raisonnement",
-        "bullet3": "Évaluez les preuves et matériaux de support",
-        "bullet4": "Reconnaissez le biais et la perspective dans les récits historiques"
-      },
-      "reflection": {
-        "title": "Réflexion Collaborative et Auto-évaluation 2.0",
-        "content": "Engagez-vous dans une réflexion significative pour améliorer vos compétences de modération et suivre votre croissance en tant que facilitateur.",
-        "bullet1": "Engagez-vous dans une réflexion structurée avec pairs et enseignants",
-        "bullet2": "Analysez l'efficacité de la modération et les résultats d'apprentissage",
-        "bullet3": "Fournissez et recevez des commentaires constructifs sur les compétences de facilitation",
-        "bullet4": "Documentez la croissance en pensée critique et capacités de leadership"
-      },
-      "applications": {
-        "title": "Avantages Éducatifs par Rapport aux Débats Humains",
-        "content": "Découvrez les avantages uniques de la modération de débats alimentée par l'IA pour l'apprentissage et le développement des compétences.",
-        "bullet1": "Environnement de pratique sûr pour développer la confiance",
-        "bullet2": "Parfait pour l'apprentissage à distance et les salles de classe hybrides",
-        "bullet3": "Disponibilité constante de diverses perspectives de personnages",
-        "bullet4": "Opportunité pour étudiants timides de pratiquer les compétences de leadership"
       }
     }
   },
