@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "title": "Doppia Intervista",
   "subtitle": "Führen Sie ein Doppelinterview mit zwei KI-Charakteren",
   "description": "Wählen Sie zwei Charaktere und ein Thema für ein faszinierendes Doppelinterview. Beobachten Sie, wie verschiedene Perspektiven aufeinandertreffen.",
@@ -20,3 +21,51 @@
     "ethics": "Ethik"
   }
 }
+=======
+  "name": "Doppelinterview",
+  "title": "Doppelinterview",
+  "subtitle": "Simultanes Interview mit zwei historischen Figuren",
+  "setup": {
+    "chooseCharacters": "Charaktere Wählen",
+    "selectDescription": "Wählen Sie zwei historische Figuren für einen parallelen Dialog",
+    "character": "Charakter",
+    "startButton": "Dialog Starten"
+  },
+  "chat": {
+    "dialogueTitle": "Dialog",
+    "changeCharacters": "Charaktere Ändern"
+  },
+  "description": "Vergleichen Sie die Antworten von zwei historischen Figuren",
+  "greeting1": "Hallo, ich bin {{name}}. Stellen Sie Ihre Frage.",
+  "greeting2": "Hallo, ich bin {{name}}. Ich bin bereit für Ihre Frage.",
+  "placeholder": "Schreiben Sie an {{target}}...",
+  "placeholderAll": "beide Charaktere",
+  "placeholderSingle": "{{name}}",
+  "onlyThis": "Nur dieser",
+  "backToAll": "Zurück zu allen",
+  "newInterviewStarted": "Neues Interview gestartet!",
+  "reflection": {
+    "title": "Reflexion über das Parallel-Interview",
+    "description": "Analysieren Sie die Unterschiede und Gemeinsamkeiten in den Antworten der beiden Charaktere.",
+    "questions": {
+      "q1": "Was waren die bedeutendsten Unterschiede in der Art und Weise, wie die beiden Charaktere Ihre Fragen beantworteten?",
+      "q2": "Welche Gemeinsamkeiten haben Sie in ihren Antworten trotz ihrer unterschiedlichen Hintergründe bemerkt?",
+      "q3": "Wie hat der historische und kulturelle Kontext die Antworten der einzelnen Charaktere beeinflusst?",
+      "q4": "Welcher Charakter schien überzeugender oder informativer? Warum?",
+      "q5": "Wie könnten Sie das, was Sie aus diesem Doppelinterview gelernt haben, anwenden?"
+    }
+  },
+  "feedback": {
+    "activityName": "Doppelinterview",
+    "downloadSuccess": "Reflexion erfolgreich heruntergeladen!",
+    "downloadError": "Fehler beim Herunterladen der Reflexion",
+    "title": "Interview-Feedback und Bewertung",
+    "conversationHistory": "Gesprächsverlauf",
+    "userLabel": "Sie",
+    "yourReflection": "Ihre Reflexion",
+    "aiFeedback": "KI-Feedback",
+    "downloadButton": "Reflexion herunterladen",
+    "newInterviewButton": "Ein neues Interview beginnen"
+  }
+}
+>>>>>>> origin/feat/i18n-refactor-en-de

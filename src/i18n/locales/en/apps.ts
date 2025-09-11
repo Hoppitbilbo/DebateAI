@@ -6,7 +6,11 @@ import wikiChat from './apps/wikiChat.json';
 import wikiChatbot from './apps/wikiChatbot.json';
 import wikiInterview from './apps/wikiInterview.json';
 
+<<<<<<< HEAD
 export default {
+=======
+const apps = {
+>>>>>>> origin/feat/i18n-refactor-en-de
   convinciTu,
   doppiaIntervista,
   impersonaTu,
@@ -15,3 +19,8 @@ export default {
   wikiChatbot,
   wikiInterview,
 };
+<<<<<<< HEAD
+=======
+
+export default apps;
+>>>>>>> origin/feat/i18n-refactor-en-de

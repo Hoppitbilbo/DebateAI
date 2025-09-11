@@ -1,0 +1,16 @@
+{
+  "student": "Student",
+  "error": "Fehler während {{error}}: Bitte versuchen Sie es später erneut.",
+  "noRationale": "Keine Begründung angegeben",
+  "evaluationFallback": "## Bewertung des Gesprächs\n\n**Punktzahl**: {{conversationScore}}/10\n\n**Begründung**: {{conversationRationale}}\n\n## Bewertung der Reflexion\n\n**Punktzahl**: {{reflectionScore}}/10\n\n**Begründung**: {{reflectionRationale}}",
+  "overallFeedback": "## Gesamtfeedback",
+  "defaultFeedback": "Ihre Teilnahme zeigt Engagement. Üben Sie weiter, um sich noch weiter zu verbessern.",
+  "evaluationError": "Bewertungsfehler",
+  "deprecatedFunction": "evaluateReflection ist für das Spiel 'Rate die mysteriöse Figur' veraltet, verwenden Sie getAIGameAndReflectionEvaluation.",
+  "deprecatedNoResult": "Die KI-Bewertung (veraltet) hat kein gültiges Ergebnis erzielt.",
+  "deprecatedInvalidResponse": "Die KI-Bewertung (veraltet) hat keine gültige Antwort erzielt (Struktur).",
+  "unknownError": "Unbekannter Fehler",
+  "deprecatedError": "Fehler während der Bewertung (veraltet): {{error}}",
+  "obsoleteFunction": "getAICombinedEvaluation wurde nicht für Bewertungen aktualisiert und könnte veraltet sein.",
+  "obsoleteFunctionMessage": "Diese Funktion (getAICombinedEvaluation) wurde nicht für Bewertungen aktualisiert und gilt als veraltet. Verwenden Sie getAIGameAndReflectionEvaluation."
+}

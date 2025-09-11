@@ -1,0 +1,13 @@
+{
+  "teacherGuide": {
+    "title": "Lehrerhandbuch",
+    "description": "Entdecken Sie, wie Sie unsere Anwendungen nutzen können, um innovative und ansprechende Lernerfahrungen zu schaffen.",
+    "button": "Handbuch Anzeigen"
+  },
+  "socialPurpose": {
+    "title": "Unser Sozialer Zweck",
+    "description": "Wir verwandeln Hausaufgaben in interaktive und ansprechende Lernerfahrungen und machen Bildung durch den Einsatz von KI zugänglicher und unterhaltsamer.",
+    "exploreButton": "Anwendungen Erkunden",
+    "learnMoreButton": "Mehr Erfahren"
+  }
+}

@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "title": "Personaggio Misterioso",
   "subtitle": "Erraten Sie den mysteriösen Charakter",
   "description": "Die KI verkörpert einen mysteriösen Charakter. Stellen Sie Fragen und versuchen Sie herauszufinden, wer es ist!",
@@ -13,3 +14,67 @@
     "useLogic": "Nutzen Sie logisches Denken"
   }
 }
+=======
+  "name": "Geheimnisvolle Figur",
+  "title": "Geheimnisvolle Figur",
+  "subtitle": "Erraten Sie die historische Figur",
+  "description": "Stellen Sie Fragen, um herauszufinden, wer die geheimnisvolle Figur ist",
+  "setup": {
+    "selectCharacterLabel": "Wählen Sie den zu erratenden Charakter",
+    "selectCharacterError": "Sie müssen eine Figur auswählen, um das Spiel zu starten",
+    "difficultyLabel": "Schwierigkeit (Anzahl der Fragen): {{count}}",
+    "startButton": "Spiel starten"
+  },
+  "game": {
+    "initialMessage": "Ich bin eine historische Figur. Du hast {{count}} Fragen, um zu erraten, wer ich bin. Ich werde dir niemals direkt meinen Namen sagen. Fang an zu fragen!",
+    "gameStarted": "Das Spiel hat begonnen!",
+    "gameStartedDesc": "Du hast {{count}} Fragen, um den Charakter zu erraten.",
+    "questionsFinished": "Du hast alle Fragen aufgebraucht! Lies die letzte Antwort und gehe dann zur Vermutung über.",
+    "questionsFinishedTitle": "Du hast alle Fragen beendet!",
+    "questionsFinishedDesc": "Die KI hat ihre letzte Antwort gegeben (siehe oben im Chat). Bist du bereit zu erraten, wer der mysteriöse Charakter ist?",
+    "proceedToGuess": "Zur finalen Vermutung",
+    "timeToGuess": "Es ist Zeit zu raten!",
+    "correctGuess": "Glückwunsch! Du hast es erraten!",
+    "incorrectGuess": "Tut mir leid, du hast nicht richtig geraten.",
+    "reflectionPrompt": "Jetzt kannst du über deine Erfahrung reflektieren.",
+    "newGameStarted": "Neues Spiel gestartet!",
+    "aiErrorMessage": "Es tut mir leid, ich hatte ein Problem beim Antworten. Versuche die Frage erneut zu stellen.",
+    "systemInstruction": "Du bist ein weltberühmter Historiker und Schauspieler, der die Rolle von {{characterName}} spielt. Ein Schüler wird dir Fragen stellen, um zu erraten, wer du bist. Antworte als die Figur, in der ersten Person, basierend auf dem bereitgestellten Ausschnitt aus deinem Leben: \"{{snippet}}\". Antworte kurz und bündig (1-2 Sätze). Verrate nicht deinen Namen oder dass du eine KI bist. Der Benutzer hat eine begrenzte Anzahl von Fragen.",
+    "aiDefaultError": "Es tut mir leid, anscheinend fehlen mir im Moment die Worte. Könntest du eine andere Frage stellen?"
+  },
+  "evaluation": {
+    "topic": "Errate die geheimnisvolle Figur: {{characterName}}",
+    "generationError": "Fehler beim Erstellen der Bewertung: {{errorMessage}}",
+    "aiError": "Fehler während der KI-Bewertung: {{errorMessage}}"
+  },
+  "reflection": {
+    "title": "Reflexion über Mysteriöser Charakter",
+    "description": "Reflektiere über deine Erfahrung beim Erraten der historischen Figur.",
+    "placeholder": "Wie lief die Herausforderung? Welche Strategien hast du verwendet, um Fragen zu stellen? Was hast du über den Charakter und den Deduktionsprozess gelernt?"
+  },
+  "chat": {
+    "title": "Gespräch",
+    "empty": "Das Gespräch erscheint hier.",
+    "thinking": "Die Figur denkt nach...",
+    "placeholder": "Schreibe deine Frage...",
+    "noMoreQuestions": "Du hast keine Fragen mehr.",
+    "send": "Frage senden",
+    "questionsLeft": "Verbleibende Fragen: {{count}}"
+  },
+  "finalGuess": {
+    "title": "Mach deinen finalen Versuch!",
+    "questionLabel": "Wer glaubst du, ist die Figur?",
+    "namePlaceholder": "Gib den Namen der Figur ein",
+    "reasonLabel": "Warum denkst du, dass es diese Figur ist?",
+    "reasonPlaceholder": "Erkläre deine Begründung...",
+    "submit": "Antwort absenden"
+  },
+  "header": {
+    "title": "Spiel läuft",
+    "questionsLeft": "Verbleibende Fragen: {{count}}",
+    "characterLabel": "Charakter:",
+    "hiddenCharacter": "???",
+    "newGameButton": "Neues Spiel"
+  }
+}
+>>>>>>> origin/feat/i18n-refactor-en-de

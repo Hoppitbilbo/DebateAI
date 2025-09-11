@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "title": "ConvinciTu",
   "subtitle": "Überzeugen Sie die KI von Ihrer Meinung",
   "description": "Wählen Sie ein Thema und versuchen Sie, die KI von Ihrer Meinung zu überzeugen. Die KI wird Ihre Argumente bewerten und Ihnen Feedback geben.",
@@ -17,3 +18,57 @@
     "against": "Dagegen"
   }
 }
+=======
+  "name": "Überzeuge mich",
+  "title": "Überzeuge mich",
+  "subtitle": "Versuche, eine historische Figur zu einem bestimmten Thema zu überzeugen",
+  "description": "Versuchen Sie, historische Figuren von Ihren Ideen zu überzeugen",
+  "newChatSuccess": "Neuer Chat gestartet!",
+  "errors": {
+    "responseGeneration": "Fehler beim Erstellen der Antwort.",
+    "evaluationGeneration": "Fehler beim Erstellen der Bewertung."
+  },
+  "characterSelection": {
+    "label": "Wähle eine Figur",
+    "placeholder": "Suche nach einer historischen Figur..."
+  },
+  "topic": {
+    "label": "Wovon möchtest du {{characterName}} überzeugen?",
+    "placeholder": "z.B. dass Ananas auf Pizza eine tolle Idee ist"
+  },
+  "startButton": "Chat starten",
+  "chat": {
+    "title": "Unterhaltung",
+    "placeholder": "Schreibe dein überzeugendes Argument...",
+    "endButton": "Chat beenden und reflektieren",
+    "currentPromptLabel": "Aktueller Prompt:",
+    "promptValue": "Überzeugen Sie {{characterName}}, dass {{topic}}",
+    "emptyConversation": "Das Gespräch wird hier angezeigt",
+    "userLabel": "Sie",
+    "endActivityButton": "Aktivität beenden"
+  },
+  "reflection": {
+    "title": "Reflexion über die Überzeugung",
+    "description": "Reflektiere über deinen Versuch, die Figur zu überzeugen.",
+    "placeholder": "Welche Strategien hast du verwendet? Was hat funktioniert und was nicht?",
+    "questions": {
+      "success": "Haben Sie es geschafft, die historische Figur zu überzeugen?",
+      "strategies": "Welche Strategien haben Sie verwendet, die effektiv waren?",
+      "difficulties": "Was waren die Hauptschwierigkeiten, denen Sie begegnet sind?",
+      "differently": "Was würden Sie beim nächsten Mal anders machen?",
+      "convinced": "Denken Sie, dass Sie sie überzeugt haben? Wie?"
+    }
+  },
+  "feedback": {
+    "title": "Feedback",
+    "subtitle": "Hier ist eine Zusammenfassung deines Gesprächs und die Bewertung der KI.",
+    "conversationHistory": "Gesprächsverlauf",
+    "yourReflection": "Ihre Reflexion",
+    "aiFeedback": "KI-Feedback",
+    "downloadReflection": "Reflexion herunterladen",
+    "startNewChat": "Neuen Chat starten",
+    "downloadSuccess": "Reflexion erfolgreich heruntergeladen!",
+    "downloadError": "Fehler beim Herunterladen der Reflexion"
+  }
+}
+>>>>>>> origin/feat/i18n-refactor-en-de
