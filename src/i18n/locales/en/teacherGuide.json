@@ -1,5 +1,6 @@
 {
 <<<<<<< HEAD
+<<<<<<< HEAD
     "slide1": {
       "title": "Welcome to the AI Guide for Teachers!",
       "subtitle": "Let's explore together how AI can transform education, enhance your teaching strategies, and prepare students for the future.",
@@ -131,6 +132,8 @@
       "conclusion": "Thank you for following this guide. Good luck with your teaching adventures with AI!"
     }
 =======
+=======
+>>>>>>> origin/feat/i18n-en-modular
   "slide1": {
     "title": "Welcome to the AI Guide for Teachers!",
     "subtitle": "Let's explore together how AI can transform education, enhance your teaching strategies, and prepare students for the future.",
@@ -261,5 +264,8 @@
     },
     "conclusion": "Thank you for following this guide. Good luck with your teaching adventures with AI!"
   }
+<<<<<<< HEAD
 >>>>>>> origin/feat/i18n-refactor-en-de
+=======
+>>>>>>> origin/feat/i18n-en-modular
 }
