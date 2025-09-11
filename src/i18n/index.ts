@@ -54,7 +54,7 @@ i18n
       escapeValue: false,
     },
     detection: {
-      order: ['localStorage', 'navigator', 'htmlTag'],
+      order: ['localStorage'], // Only check localStorage, ignore browser language
       caches: ['localStorage'],
       lookupLocalStorage: 'i18nextLng',
       lookupSessionStorage: 'i18nextLng',
@@ -68,5 +68,10 @@ i18n.on('missingKey', (lng, ns, key, res) => {
   console.error(`Translation key '${key}' not found for language '${lng}'`);
 });
 
+// Force Italian if no language is set in localStorage
+if (!localStorage.getItem('i18nextLng')) {
+  localStorage.setItem('i18nextLng', 'it');
+  i18n.changeLanguage('it');
+}
 
 export default i18n;
