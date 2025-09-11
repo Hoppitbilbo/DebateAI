@@ -30,12 +30,14 @@ class VisualErrorDetector {
   private observer: MutationObserver | null = null;
   private scanTimer: NodeJS.Timeout | null = null;
   private isScanning = false;
+  private lastToastTime = 0;
+  private toastCooldown = 5000; // 5 secondi tra toast
   
   private config: DetectionConfig = {
     enabled: process.env.NODE_ENV === 'development',
     autoScan: true,
-    scanInterval: 5000, // 5 secondi
-    alertThreshold: 3, // Alert dopo 3 errori
+    scanInterval: 10000, // 10 secondi (ridotto la frequenza)
+    alertThreshold: 5, // Alert dopo 5 errori (aumentato soglia)
     excludeSelectors: [
       'script',
       'style',
@@ -43,7 +45,9 @@ class VisualErrorDetector {
       'title',
       '[data-i18n-ignore]',
       '.i18n-debug-panel',
-      '.i18n-debug-floating'
+      '.i18n-debug-floating',
+      '.sonner-toaster', // Escludi i toast
+      '[data-sonner-toast]' // Escludi i toast
     ],
     includeSelectors: [
       'button',
@@ -137,8 +141,13 @@ class VisualErrorDetector {
         newErrors.push(...errors);
       });
 
-      // Aggiorna la lista degli errori
+      // Aggiorna la lista degli errori con limite massimo
       this.errors = [...this.errors, ...newErrors];
+      
+      // Mantieni solo gli ultimi 50 errori per evitare accumulo eccessivo
+      if (this.errors.length > 50) {
+        this.errors = this.errors.slice(-50);
+      }
       
       // Rimuovi errori duplicati
       this.deduplicateErrors();
@@ -315,17 +324,26 @@ class VisualErrorDetector {
   }
 
   private handleNewErrors(newErrors: VisualError[]) {
+    const now = Date.now();
+    
+    // Throttling per evitare spam di toast
+    if (now - this.lastToastTime < this.toastCooldown) {
+      return;
+    }
+    
     const highSeverityErrors = newErrors.filter(e => e.severity === 'high');
     const totalErrors = this.errors.length;
 
     // Alert immediato per errori ad alta severità
     if (highSeverityErrors.length > 0) {
       this.showHighSeverityAlert(highSeverityErrors);
+      this.lastToastTime = now;
     }
     
     // Alert per soglia raggiunta
-    if (totalErrors >= this.config.alertThreshold) {
+    else if (totalErrors >= this.config.alertThreshold) {
       this.showThresholdAlert(totalErrors);
+      this.lastToastTime = now;
     }
   }
 

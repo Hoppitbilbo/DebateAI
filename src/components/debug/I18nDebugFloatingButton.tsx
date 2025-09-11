@@ -32,14 +32,23 @@ const I18nDebugFloatingButton: React.FC<I18nDebugFloatingButtonProps> = ({
     setIsVisible(import.meta.env.DEV);
   }, []);
 
-  // Aggiorna il report ogni 3 secondi
+  // Aggiorna il report ogni 3 secondi solo se visibile
   useEffect(() => {
+    if (!isVisible) return;
+    
     const interval = setInterval(() => {
-      setDebugReport(getI18nDebugReport());
+      const newReport = getI18nDebugReport();
+      setDebugReport(prevReport => {
+        // Evita aggiornamenti inutili se il report non è cambiato
+        if (JSON.stringify(prevReport) === JSON.stringify(newReport)) {
+          return prevReport;
+        }
+        return newReport;
+      });
     }, 3000);
     
     return () => clearInterval(interval);
-  }, []);
+  }, [isVisible]);
 
   if (!isVisible) return null;
 

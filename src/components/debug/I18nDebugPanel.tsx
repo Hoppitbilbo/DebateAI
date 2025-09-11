@@ -37,14 +37,21 @@ const I18nDebugPanel: React.FC<I18nDebugPanelProps> = ({ isVisible, onClose }) =
   const [autoRefresh, setAutoRefresh] = useState(true);
 
   useEffect(() => {
-    if (!autoRefresh) return;
+    if (!autoRefresh || !isVisible) return;
     
     const interval = setInterval(() => {
-      setDebugReport(getI18nDebugReport());
+      const newReport = getI18nDebugReport();
+      setDebugReport(prevReport => {
+        // Evita aggiornamenti inutili se il report non è cambiato
+        if (JSON.stringify(prevReport) === JSON.stringify(newReport)) {
+          return prevReport;
+        }
+        return newReport;
+      });
     }, 2000);
     
     return () => clearInterval(interval);
-  }, [autoRefresh]);
+  }, [autoRefresh, isVisible]);
 
   const handleRefresh = () => {
     setDebugReport(getI18nDebugReport());

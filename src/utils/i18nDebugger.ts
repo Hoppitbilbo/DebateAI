@@ -26,6 +26,8 @@ class I18nDebugger {
   private missingKeys: Set<string> = new Set();
   private debugMode: boolean = false;
   private alertsEnabled: boolean = true;
+  private lastReportUpdate = 0;
+  private reportUpdateCooldown = 1000; // 1 secondo tra aggiornamenti
   private debugReport: DebugReport = {
     missingTranslations: [],
     missingFiles: [],
@@ -295,12 +297,27 @@ class I18nDebugger {
   }
   
   private handleVisualErrors(errors: VisualError[]) {
-    // Aggiorna il report con gli errori visivi
-    this.debugReport.visualErrors = errors.map(error => ({
+    const now = Date.now();
+    
+    // Throttling per evitare aggiornamenti troppo frequenti
+    if (now - this.lastReportUpdate < this.reportUpdateCooldown) {
+      return;
+    }
+    
+    // Aggiorna il report con gli errori visivi solo se ci sono cambiamenti
+    const newVisualErrors = errors.map(error => ({
       key: error.key,
       displayedValue: error.displayedText,
       expectedType: error.expectedType
     }));
+    
+    // Confronta con gli errori esistenti per evitare aggiornamenti inutili
+    const hasChanges = JSON.stringify(this.debugReport.visualErrors) !== JSON.stringify(newVisualErrors);
+    
+    if (hasChanges) {
+      this.debugReport.visualErrors = newVisualErrors;
+      this.lastReportUpdate = now;
+    }
     
     // Mostra alert specifici per problemi italiani
     if (i18n.language === 'it') {
