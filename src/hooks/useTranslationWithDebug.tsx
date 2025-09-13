@@ -27,10 +27,10 @@ export const useTranslationWithDebug = (ns?: string | string[]) => {
         i18nDebugger.checkLanguageMismatch(translationStr, i18n.language);
       }
       
-      // Log per debug avanzato
-      if (isDisplayingKey) {
-        console.warn(`🔑 I18N DEBUG: Chiave '${key}' non tradotta per lingua '${i18n.language}'`);
-      }
+      // Debug disattivato
+    // if (isDisplayingKey) {
+    //   console.warn(`🔑 I18N DEBUG: Chiave '${key}' non tradotta per lingua '${i18n.language}'`);
+    // }
     }
     
     return translation;

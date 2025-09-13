@@ -34,8 +34,8 @@ class VisualErrorDetector {
   private toastCooldown = 5000; // 5 secondi tra toast
   
   private config: DetectionConfig = {
-    enabled: process.env.NODE_ENV === 'development',
-    autoScan: true,
+    enabled: false, // Completamente disattivato
+    autoScan: false,
     scanInterval: 10000, // 10 secondi (ridotto la frequenza)
     alertThreshold: 5, // Alert dopo 5 errori (aumentato soglia)
     excludeSelectors: [
@@ -63,9 +63,10 @@ class VisualErrorDetector {
   };
 
   constructor() {
-    if (this.config.enabled) {
-      this.initialize();
-    }
+    // Visual error detector completamente disattivato
+    // if (this.config.enabled) {
+    //   this.initialize();
+    // }
   }
 
   private initialize() {

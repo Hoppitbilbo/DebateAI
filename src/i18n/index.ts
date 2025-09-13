@@ -71,13 +71,14 @@ i18n.on('missingKey', (lng, ns, key, res) => {
   
   // In development, mostra anche informazioni aggiuntive
   if (import.meta.env.DEV) {
-    console.group('🔍 I18N Debug Info');
-    console.log('Lingua:', lng);
-    console.log('Namespace:', ns);
-    console.log('Chiave:', key);
-    console.log('Pagina corrente:', window.location.pathname);
-    console.log('Risultato fallback:', res);
-    console.groupEnd();
+    // Debug info disattivato
+    // console.group('🔍 I18N Debug Info');
+    // console.log('Lingua:', lng);
+    // console.log('Namespace:', ns);
+    // console.log('Chiave:', key);
+    // console.log('Pagina corrente:', window.location.pathname);
+    // console.log('Risultato fallback:', res);
+    // console.groupEnd();
   }
 });
 

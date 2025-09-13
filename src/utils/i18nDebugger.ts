@@ -48,7 +48,7 @@ interface DebugReport {
 class I18nDebugger {
   private missingKeys: Set<string> = new Set();
   private debugMode: boolean = false;
-  private alertsEnabled: boolean = true;
+  private alertsEnabled: boolean = false;
   private lastReportUpdate = 0;
   private reportUpdateCooldown = 1000; // 1 secondo tra aggiornamenti
   private debugReport: DebugReport = {
@@ -78,18 +78,19 @@ class I18nDebugger {
   }
 
   private initializeDebugger() {
-    // Abilita il debug mode se siamo in development
-    this.debugMode = false; // Temporarily disabled for production push
+    // Debug mode completamente disattivato
+    this.debugMode = false;
+    this.alertsEnabled = false;
     
-    // Ascolta gli eventi di chiavi mancanti
-    i18n.on('missingKey', (lng: string, ns: string, key: string, res: string) => {
-      this.handleMissingKey(lng, ns, key, res);
-    });
+    // Non ascoltare più gli eventi di chiavi mancanti
+    // i18n.on('missingKey', (lng: string, ns: string, key: string, res: string) => {
+    //   this.handleMissingKey(lng, ns, key, res);
+    // });
 
-    // Controlla la completezza delle traduzioni all'avvio
-    if (this.debugMode) {
-      this.performInitialCheck();
-    }
+    // Non controllare più la completezza delle traduzioni
+    // if (this.debugMode) {
+    //   this.performInitialCheck();
+    // }
   }
 
   private handleMissingKey(language: string, namespace: string, key: string, result: string) {
@@ -117,20 +118,20 @@ class I18nDebugger {
       
       this.debugReport.missingTranslations.push(missingTranslation);
       
-      // Console error dettagliato e strutturato per debugging
-      console.group(`🚨 [i18n Debug] TRADUZIONE MANCANTE`);
-      console.error(`❌ ERRORE: Chiave di traduzione non trovata`);
-      console.table({
-        '🔑 Chiave': key,
-        '🌍 Lingua': language,
-        '📂 Namespace': namespace,
-        '📍 Pagina': missingTranslation.context,
-        '⏰ Timestamp': new Date().toLocaleString('it-IT'),
-        '📄 File atteso': `src/i18n/locales/${language}/${namespace}.json`
-      });
-      console.error(`🔍 Valore restituito:`, result);
-      console.error(`💡 SOLUZIONE: Aggiungi la chiave "${key}" nel file src/i18n/locales/${language}/${namespace}.json`);
-      console.groupEnd();
+      // Console error disattivato
+      // console.group(`🚨 [i18n Debug] TRADUZIONE MANCANTE`);
+      // console.error(`❌ ERRORE: Chiave di traduzione non trovata`);
+      // console.table({
+      //   '🔑 Chiave': key,
+      //   '🌍 Lingua': language,
+      //   '📂 Namespace': namespace,
+      //   '📍 Pagina': missingTranslation.context,
+      //   '⏰ Timestamp': new Date().toLocaleString('it-IT'),
+      //   '📄 File atteso': `src/i18n/locales/${language}/${namespace}.json`
+      // });
+      // console.error(`🔍 Valore restituito:`, result);
+      // console.error(`💡 SOLUZIONE: Aggiungi la chiave "${key}" nel file src/i18n/locales/${language}/${namespace}.json`);
+      // console.groupEnd();
       
       if (this.alertsEnabled && this.debugMode) {
         this.showMissingKeyAlert(missingTranslation);
@@ -239,17 +240,17 @@ class I18nDebugger {
         expectedType: 'translation'
       });
       
-      // Log dettagliato per il debug
-      console.group(`🔑 [i18n Debug] CHIAVE NON TRADOTTA RILEVATA`);
-      console.table({
-        '🔍 Valore': value,
-        '🎯 Confidenza': `${confidence}%`,
-        '📍 Pagina': window.location.pathname,
-        '🌍 Lingua': i18n.language,
-        '⏰ Timestamp': new Date().toLocaleString('it-IT')
-      });
-      console.error(`💡 AZIONE: Verifica se "${value}" dovrebbe essere tradotto`);
-      console.groupEnd();
+      // Log disattivato
+      // console.group(`🔑 [i18n Debug] CHIAVE NON TRADOTTA RILEVATA`);
+      // console.table({
+      //   '🔍 Valore': value,
+      //   '🎯 Confidenza': `${confidence}%`,
+      //   '📍 Pagina': window.location.pathname,
+      //   '🌍 Lingua': i18n.language,
+      //   '⏰ Timestamp': new Date().toLocaleString('it-IT')
+      // });
+      // console.error(`💡 AZIONE: Verifica se "${value}" dovrebbe essere tradotto`);
+      // console.groupEnd();
       
       if (this.alertsEnabled && confidence > 70) {
         this.showVisualErrorAlert(value, 'key');
@@ -410,23 +411,23 @@ class I18nDebugger {
         `💡 Soluzione: Aggiungere traduzione per la lingua ${expectedLang}`;
     }
     
-    // Console error dettagliato per errori visivi
-    console.group(`🚨 [i18n Debug] ERRORE VISIVO: ${errorType === 'key' ? 'CHIAVE NON TRADOTTA' : 'LINGUA SBAGLIATA'}`);
-    console.error(`❌ PROBLEMA: ${errorType === 'key' ? 'Viene mostrata la chiave invece della traduzione' : 'Testo in italiano mostrato per altra lingua'}`);
-    console.table({
-      '📍 Pagina': window.location.pathname,
-      '🔍 Valore mostrato': value.length > 50 ? value.substring(0, 50) + '...' : value,
-      '🌍 Lingua corrente': i18n.language,
-      '🎯 Lingua attesa': expectedLang || 'N/A',
-      '⏰ Timestamp': new Date().toLocaleString('it-IT'),
-      '🔧 Tipo errore': errorType === 'key' ? 'Chiave non tradotta' : 'Mismatch lingua'
-    });
-    if (errorType === 'key') {
-      console.error(`💡 SOLUZIONE: Verifica che la chiave "${value}" sia tradotta per la lingua "${i18n.language}"`);
-    } else {
-      console.error(`💡 SOLUZIONE: Aggiungi traduzione per la lingua "${expectedLang}" o verifica il rilevamento automatico`);
-    }
-    console.groupEnd();
+    // Console error disattivato
+    // console.group(`🚨 [i18n Debug] ERRORE VISIVO: ${errorType === 'key' ? 'CHIAVE NON TRADOTTA' : 'LINGUA SBAGLIATA'}`);
+    // console.error(`❌ PROBLEMA: ${errorType === 'key' ? 'Viene mostrata la chiave invece della traduzione' : 'Testo in italiano mostrato per altra lingua'}`);
+    // console.table({
+    //   '📍 Pagina': window.location.pathname,
+    //   '🔍 Valore mostrato': value.length > 50 ? value.substring(0, 50) + '...' : value,
+    //   '🌍 Lingua corrente': i18n.language,
+    //   '🎯 Lingua attesa': expectedLang || 'N/A',
+    //   '⏰ Timestamp': new Date().toLocaleString('it-IT'),
+    //   '🔧 Tipo errore': errorType === 'key' ? 'Chiave non tradotta' : 'Mismatch lingua'
+    // });
+    // if (errorType === 'key') {
+    //   console.error(`💡 SOLUZIONE: Verifica che la chiave "${value}" sia tradotta per la lingua "${i18n.language}"`);
+    // } else {
+    //   console.error(`💡 SOLUZIONE: Aggiungi traduzione per la lingua "${expectedLang}" o verifica il rilevamento automatico`);
+    // }
+    // console.groupEnd();
     
     toast.warning("Errore di Visualizzazione", {
       description: message,
@@ -435,8 +436,8 @@ class I18nDebugger {
   }
 
   private async performInitialCheck() {
-    console.group('🔍 [i18n Debug] CONTROLLO INIZIALE TRADUZIONI');
-    console.log('📊 Avvio analisi completezza traduzioni...');
+    // console.group('🔍 [i18n Debug] CONTROLLO INIZIALE TRADUZIONI');
+    // console.log('📊 Avvio analisi completezza traduzioni...');
     
     try {
       // Rileva file mancanti
@@ -457,15 +458,15 @@ class I18nDebugger {
         this.showCriticalIssuesAlert(missingFiles.length, analysisResult.recommendations || []);
       }
       
-      console.groupEnd();
+      // console.groupEnd();
       
       setTimeout(() => {
         this.showInitialReport();
       }, 1000);
     } catch (error) {
-      console.error('❌ Errore durante il controllo iniziale i18n:', error);
+      // console.error('❌ Errore durante il controllo iniziale i18n:', error);
       this.checkLanguageCompleteness(); // Fallback al metodo precedente
-      console.groupEnd();
+      // console.groupEnd();
       
       setTimeout(() => {
         this.showInitialReport();
@@ -478,43 +479,43 @@ class I18nDebugger {
     const missingFiles: { language: string; filename: string }[] = [];
     
     try {
-      console.group('🔍 RILEVAMENTO FILE MANCANTI');
+      // console.group('🔍 RILEVAMENTO FILE MANCANTI');
       
       // Ottieni la lista di tutti i file dalla lingua di riferimento (italiano)
       const referenceFiles = await this.getTranslationFilesForLanguage('it');
-      console.log(`📁 File di riferimento (it): ${referenceFiles.length}`);
+      // console.log(`📁 File di riferimento (it): ${referenceFiles.length}`);
       
       // Controlla ogni lingua supportata
       for (const language of SUPPORTED_LANGUAGES) {
         if (language === 'it') continue; // Salta la lingua di riferimento
         
-        console.group(`🌍 Controllo lingua: ${language}`);
+        // console.group(`🌍 Controllo lingua: ${language}`);
         const languageFiles = await this.getTranslationFilesForLanguage(language);
-        console.log(`📄 File trovati: ${languageFiles.length}`);
+        // console.log(`📄 File trovati: ${languageFiles.length}`);
         
         // Trova i file mancanti
         const missing = referenceFiles.filter(file => !languageFiles.includes(file));
         
         if (missing.length > 0) {
-          console.error(`❌ File mancanti per ${language}:`, missing);
+          // console.error(`❌ File mancanti per ${language}:`, missing);
           missing.forEach(filename => {
             missingFiles.push({ language, filename });
           });
         } else {
-          console.log(`✅ Tutti i file presenti per ${language}`);
+          // console.log(`✅ Tutti i file presenti per ${language}`);
         }
         
-        console.groupEnd();
+        // console.groupEnd();
       }
       
       if (missingFiles.length > 0) {
-        console.error(`🚨 TOTALE FILE MANCANTI: ${missingFiles.length}`);
-        console.table(missingFiles);
+        // console.error(`🚨 TOTALE FILE MANCANTI: ${missingFiles.length}`);
+        // console.table(missingFiles);
       } else {
-        console.log('✅ Tutti i file di traduzione sono presenti!');
+        // console.log('✅ Tutti i file di traduzione sono presenti!');
       }
       
-      console.groupEnd();
+      // console.groupEnd();
       
     } catch (error) {
       console.error('❌ Errore durante il rilevamento file mancanti:', error);
@@ -544,7 +545,7 @@ class I18nDebugger {
       return commonFiles;
       
     } catch (error) {
-      console.error(`Errore lettura file per lingua ${language}:`, error);
+      // console.error(`Errore lettura file per lingua ${language}:`, error);
       return [];
     }
   }
@@ -571,7 +572,7 @@ class I18nDebugger {
       duration: 10000,
       action: {
         label: "Dettagli Console",
-        onClick: () => console.table(this.debugReport)
+        onClick: () => {} // console.table disattivato
       }
     });
   }
@@ -661,7 +662,7 @@ class I18nDebugger {
       }
     }, 2000);
     
-    console.log('👁️ Rilevamento errori visivi attivato');
+    // console.log('👁️ Rilevamento errori visivi attivato');
   }
   
   private handleVisualErrors(errors: VisualError[]) {
@@ -672,20 +673,20 @@ class I18nDebugger {
       return;
     }
     
-    // Console error esplicito per errori visivi rilevati
-    if (errors.length > 0) {
-      console.error(`🚨 [i18n Debug] ERRORI VISIVI RILEVATI (${errors.length})`, {
-        errors: errors.map(e => ({
-          key: e.key,
-          displayedText: e.displayedText,
-          expectedType: e.expectedType,
-          severity: e.severity,
-          location: e.location
-        })),
-        timestamp: new Date().toISOString(),
-        currentLanguage: i18n.language
-      });
-    }
+    // Console error disattivato
+    // if (errors.length > 0) {
+    //   console.error(`🚨 [i18n Debug] ERRORI VISIVI RILEVATI (${errors.length})`, {
+    //     errors: errors.map(e => ({
+    //       key: e.key,
+    //       displayedText: e.displayedText,
+    //       expectedType: e.expectedType,
+    //       severity: e.severity,
+    //       location: e.location
+    //     })),
+    //     timestamp: new Date().toISOString(),
+    //     currentLanguage: i18n.language
+    //   });
+    // }
     
     // Aggiorna il report con gli errori visivi solo se ci sono cambiamenti
     const newVisualErrors = errors.map(error => ({
@@ -729,7 +730,7 @@ class I18nDebugger {
       duration: 8000,
       action: {
         label: "Dettagli",
-        onClick: () => console.table(errors)
+        onClick: () => {} // console.table disattivato
       }
     });
   }
@@ -745,7 +746,7 @@ class I18nDebugger {
       duration: 10000,
       action: {
         label: "Analisi Completa",
-        onClick: () => console.table(this.debugReport)
+        onClick: () => {} // console.table disattivato
       }
     });
   }

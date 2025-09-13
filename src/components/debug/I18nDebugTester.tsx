@@ -61,17 +61,18 @@ export const I18nDebugTester: React.FC = () => {
 
   const runAllTests = () => {
     setTestResults([]);
-    console.group('🧪 I18N DEBUG TESTS');
+    // Debug disattivato
+    // console.group('🧪 I18N DEBUG TESTS');
     
     testCases.forEach(testCase => {
-      console.log(`Eseguendo test: ${testCase.title}`);
+      // console.log(`Eseguendo test: ${testCase.title}`);
       testCase.test();
     });
     
     // Test aggiuntivi per problemi specifici
     testSpecificIssues();
     
-    console.groupEnd();
+    // console.groupEnd();
   };
 
   const testSpecificIssues = () => {
