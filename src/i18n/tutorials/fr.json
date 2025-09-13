@@ -65,12 +65,12 @@
     }
   },
   "convinciTu": {
-    "title": "Tutoriel ConvinciTu",
+    "title": "Tutoriel Convaincs-moi",
     "subtitle": "Maîtrisez l'art de la persuasion et la préparation au débat",
-    "startApp": "Démarrer ConvinciTu",
+    "startApp": "Démarrer Convaincs-moi",
     "slides": {
       "welcome": {
-        "title": "Bienvenue dans ConvinciTu !",
+        "title": "Bienvenue dans Convaincs-moi !",
         "content": "Maîtrisez l'art de la persuasion en vous engageant dans des débats avec des adversaires IA sur des sujets qui vous tiennent à cœur.",
         "bullet1": "Choisissez des sujets qui vous passionnent",
         "bullet2": "Débattez avec des adversaires IA intelligents",

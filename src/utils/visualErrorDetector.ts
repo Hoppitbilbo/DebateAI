@@ -332,20 +332,36 @@ class VisualErrorDetector {
   private handleNewErrors(newErrors: VisualError[]) {
     const now = Date.now();
     
-    // Console error esplicito per nuovi errori rilevati
+    // Console error dettagliato per nuovi errori rilevati
     if (newErrors.length > 0) {
-      console.error(`🚨 [Visual Error Detector] NUOVI ERRORI RILEVATI (${newErrors.length})`, {
-        newErrors: newErrors.map(e => ({
-          key: e.key,
-          displayedText: e.displayedText,
-          expectedType: e.expectedType,
-          severity: e.severity,
-          location: e.location,
-          element: e.element.tagName
-        })),
-        totalErrors: this.errors.length,
-        timestamp: new Date().toISOString()
+      console.group(`🚨 [Visual Error Detector] NUOVI ERRORI RILEVATI (${newErrors.length})`);
+      console.error(`❌ PROBLEMA: Rilevati elementi con errori di visualizzazione`);
+      console.table({
+        '📊 Nuovi errori': newErrors.length,
+        '📈 Totale errori': this.errors.length,
+        '🌍 Lingua corrente': i18n.language,
+        '📍 Pagina': window.location.pathname,
+        '⏰ Timestamp': new Date().toLocaleString('it-IT')
       });
+      
+      console.group('📋 DETTAGLI ERRORI:');
+      newErrors.forEach((error, index) => {
+        console.group(`${index + 1}. ${error.severity.toUpperCase()} - ${error.expectedType === 'key' ? 'CHIAVE NON TRADOTTA' : 'TESTO SBAGLIATO'}`);
+        console.table({
+          '🔑 Chiave/Testo': error.key,
+          '📺 Mostrato': error.displayedText.length > 50 ? error.displayedText.substring(0, 50) + '...' : error.displayedText,
+          '📍 Posizione': error.location,
+          '🏷️ Elemento': error.element.tagName,
+          '⚠️ Severità': error.severity,
+          '🎯 Tipo atteso': error.expectedType === 'key' ? 'Traduzione' : 'Chiave'
+        });
+        console.error(`💡 SOLUZIONE: ${error.expectedType === 'key' ? 
+          `Aggiungi traduzione per la chiave "${error.key}" nella lingua "${i18n.language}"` : 
+          `Verifica che il testo "${error.displayedText.substring(0, 30)}..." sia correttamente tradotto`}`);
+        console.groupEnd();
+      });
+      console.groupEnd();
+      console.groupEnd();
     }
     
     // Throttling per evitare spam di toast

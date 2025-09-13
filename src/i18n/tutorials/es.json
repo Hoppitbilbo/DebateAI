@@ -65,24 +65,24 @@
     }
   },
   "convinciTu": {
-    "title": "Tutorial ConvinciTu",
-    "subtitle": "Domina el arte de la persuasión y la preparación para debates",
-    "startApp": "Iniciar ConvinciTu",
+    "title": "Tutorial Convénceme",
+    "subtitle": "Domina el arte de la persuasión y la preparación para el debate",
+    "startApp": "Iniciar Convénceme",
     "slides": {
       "welcome": {
-        "title": "¡Bienvenido a ConvinciTu!",
-        "content": "Domina el arte de la persuasión participando en debates con oponentes IA sobre temas que te importan.",
+        "title": "¡Bienvenido a Convénceme!",
+        "content": "Domina el arte de la persuasión participando en debates con oponentes de IA sobre temas que te importan.",
         "bullet1": "Elige temas que te apasionen",
-        "bullet2": "Debate con oponentes IA inteligentes",
-        "bullet3": "Desarrolla habilidades de argumentación",
-        "bullet4": "Construye confianza al hablar"
+        "bullet2": "Debate con oponentes de IA inteligentes",
+        "bullet3": "Desarrolla tus habilidades de argumentación",
+        "bullet4": "Fortalece tu confianza al hablar"
       },
       "howItWorks": {
         "title": "Cómo Funciona",
-        "content": "Aprende el proceso paso a paso para participar en debates estructurados y significativos con oponentes IA.",
+        "content": "Aprende el proceso paso a paso para participar en debates estructurados y significativos con oponentes de IA.",
         "bullet1": "Elige un tema que te apasione",
         "bullet2": "Selecciona tu posición (a favor o en contra)",
-        "bullet3": "Participa en un debate estructurado con un oponente IA",
+        "bullet3": "Participa en un debate estructurado con un oponente de IA",
         "bullet4": "Desarrolla y refina tus habilidades de argumentación"
       },
       "debatePreparation": {
@@ -95,11 +95,11 @@
       },
       "collaborativeLearning": {
         "title": "Aprendizaje Colaborativo",
-        "content": "Descubre cómo el aprendizaje entre pares y la guía del maestro mejoran tus habilidades de debate.",
+        "content": "Descubre cómo el aprendizaje entre pares y la orientación del profesor mejoran tus habilidades de debate.",
         "bullet1": "Colabora con compañeros de clase en la preparación",
-        "bullet2": "Recibe retroalimentación constructiva de pares y maestros",
+        "bullet2": "Recibe retroalimentación constructiva de pares y profesores",
         "bullet3": "Comparte estrategias y técnicas efectivas",
-        "bullet4": "Aprende observando técnicas de debate de pares"
+        "bullet4": "Aprende observando las técnicas de debate de los pares"
       },
       "visibleThinking": {
         "title": "Pensamiento Visible",
@@ -110,16 +110,16 @@
         "bullet4": "Permite retroalimentación en tiempo real sobre el razonamiento"
       },
       "teacherEvaluation": {
-        "title": "Evaluación del Maestro",
-        "content": "Comprende cómo los maestros pueden evaluar y apoyar tu desarrollo en habilidades de debate.",
+        "title": "Evaluación del Profesor",
+        "content": "Comprende cómo los profesores pueden evaluar y apoyar tu desarrollo de habilidades de debate.",
         "bullet1": "Evaluación de habilidades de argumentación",
         "bullet2": "Retroalimentación sobre lógica y estructura de argumentos",
-        "bullet3": "Monitoreo del progreso a lo largo del tiempo",
+        "bullet3": "Seguimiento del progreso a lo largo del tiempo",
         "bullet4": "Apoyo personalizado para la mejora"
       },
       "selfReflection": {
         "title": "Autorreflexión",
-        "content": "Aprende a reflexionar críticamente sobre tu desempeño en debates para una mejora continua.",
+        "content": "Aprende a reflexionar críticamente sobre tu rendimiento en debates para una mejora continua.",
         "bullet1": "Analiza fortalezas y áreas de mejora",
         "bullet2": "Reflexiona sobre la efectividad de las estrategias utilizadas",
         "bullet3": "Identifica patrones en tus argumentos",
@@ -129,7 +129,7 @@
         "title": "Ejemplos Prácticos",
         "content": "Explora ejemplos concretos de temas de debate y técnicas efectivas en diferentes materias.",
         "bullet1": "Debates éticos: Inteligencia artificial y privacidad",
-        "bullet2": "Temas ambientales: Cambio climático y sostenibilidad",
+        "bullet2": "Cuestiones ambientales: Cambio climático y sostenibilidad",
         "bullet3": "Política social: Educación y atención médica",
         "bullet4": "Tecnología: Redes sociales e impacto social"
       }

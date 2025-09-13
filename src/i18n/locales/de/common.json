@@ -61,5 +61,6 @@
   },
   "submitReflection": "Reflexion senden",
   "aiError": "Fehler in der KI-Antwort. Bitte versuchen Sie es erneut.",
-  "backToApps": "Zurück zu den Apps"
+  "backToApps": "Zurück zu den Apps",
+  "viewTutorial": "Tutorial Anzeigen"
 }

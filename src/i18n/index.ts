@@ -44,7 +44,7 @@ i18n
   .use(initReactI18next)
   .init({
     resources,
-    lng: 'it', // Force Italian as the default language
+    lng: undefined, // Let the language detector determine the language
     fallbackLng: 'it',
     defaultNS: 'translation',
     ns: ['translation', 'tutorial'],
@@ -54,7 +54,7 @@ i18n
       escapeValue: false,
     },
     detection: {
-      order: ['localStorage'], // Only check localStorage, ignore browser language
+      order: ['localStorage', 'navigator'], // Check localStorage first, then browser language
       caches: ['localStorage'],
       lookupLocalStorage: 'i18nextLng',
       lookupSessionStorage: 'i18nextLng',
@@ -81,8 +81,8 @@ i18n.on('missingKey', (lng, ns, key, res) => {
   }
 });
 
-// Force Italian if no language is set in localStorage
-if (!localStorage.getItem('i18nextLng')) {
+// Set Italian as default only if no language is detected
+if (!localStorage.getItem('i18nextLng') && !navigator.language.startsWith('en') && !navigator.language.startsWith('es') && !navigator.language.startsWith('fr') && !navigator.language.startsWith('de')) {
   localStorage.setItem('i18nextLng', 'it');
   i18n.changeLanguage('it');
 }

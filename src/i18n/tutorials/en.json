@@ -65,12 +65,12 @@
     }
   },
   "convinciTu": {
-    "title": "ConvinciTu Tutorial",
+    "title": "PersuadeMe Tutorial",
     "subtitle": "Master the art of persuasion and debate preparation",
-    "startApp": "Start ConvinciTu",
+    "startApp": "Start PersuadeMe",
     "slides": {
       "welcome": {
-        "title": "Welcome to ConvinciTu!",
+        "title": "Welcome to PersuadeMe!",
         "content": "Master the art of persuasion by engaging in debates with AI opponents on topics you care about.",
         "bullet1": "Choose topics you're passionate about",
         "bullet2": "Debate with intelligent AI opponents",

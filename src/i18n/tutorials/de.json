@@ -72,69 +72,73 @@
     }
   },
   "convinciTu": {
-    "title": "ÜberzeugeDich Tutorial",
+    "title": "Überzeuge mich Tutorial",
     "subtitle": "Meistern Sie die Kunst der Überzeugung und Debattenvorbereitung",
-    "startApp": "ÜberzeugeDich starten",
+    "startApp": "Überzeuge mich starten",
     "slides": {
       "welcome": {
-        "title": "Willkommen bei ÜberzeugeDich!",
-        "content": "Meistern Sie die Kunst der Überzeugung, indem Sie sich in Debatten mit KI-Gegnern zu Themen engagieren, die Ihnen wichtig sind."
+        "title": "Willkommen bei Überzeuge mich!",
+        "content": "Meistern Sie die Kunst der Überzeugung, indem Sie sich in Debatten mit KI-Gegnern zu Themen engagieren, die Ihnen wichtig sind.",
+        "bullet1": "Wählen Sie Themen, die Sie leidenschaftlich interessieren",
+        "bullet2": "Debattieren Sie mit intelligenten KI-Gegnern",
+        "bullet3": "Entwickeln Sie Ihre Argumentationsfähigkeiten",
+        "bullet4": "Stärken Sie Ihr Selbstvertrauen beim Sprechen"
       },
       "howItWorks": {
         "title": "Wie es funktioniert",
-        "content": "Lernen Sie den schrittweisen Prozess für strukturierte und bedeutungsvolle Debatten mit KI-Gegnern.",
+        "content": "Lernen Sie den schrittweisen Prozess, um sich in strukturierte und bedeutungsvolle Debatten mit KI-Gegnern zu engagieren.",
         "bullet1": "Wählen Sie ein Thema, das Sie leidenschaftlich interessiert",
         "bullet2": "Wählen Sie Ihre Position (dafür oder dagegen)",
-        "bullet3": "Führen Sie eine strukturierte Debatte mit einem KI-Gegner",
+        "bullet3": "Engagieren Sie sich in einer strukturierten Debatte mit einem KI-Gegner",
         "bullet4": "Entwickeln und verfeinern Sie Ihre Argumentationsfähigkeiten"
       },
       "debatePreparation": {
         "title": "Debattenvorbereitung",
         "content": "Lernen Sie wesentliche Strategien zur Vorbereitung überzeugender Argumente und zur Antizipation von Gegenargumenten.",
-        "bullet1": "Gründliche Recherche zum Thema",
-        "bullet2": "Strukturierung logischer und kohärenter Argumente",
-        "bullet3": "Antizipation und Vorbereitung von Gegenargumenten",
-        "bullet4": "Sammlung glaubwürdiger Beweise und Beispiele"
+        "bullet1": "Führen Sie gründliche Recherchen zum Thema durch",
+        "bullet2": "Strukturieren Sie logische und kohärente Argumente",
+        "bullet3": "Antizipieren und bereiten Sie Gegenargumente vor",
+        "bullet4": "Sammeln Sie glaubwürdige Beweise und Beispiele"
       },
       "collaborativeLearning": {
         "title": "Kollaboratives Lernen",
         "content": "Entdecken Sie, wie Peer-Learning und Lehrerführung Ihre Debattierfähigkeiten verbessern.",
-        "bullet1": "Zusammenarbeit mit Klassenkameraden bei der Vorbereitung",
-        "bullet2": "Konstruktives Feedback von Peers und Lehrern erhalten",
-        "bullet3": "Effektive Strategien und Techniken teilen",
-        "bullet4": "Durch Beobachtung von Peer-Debattiertechniken lernen"
+        "bullet1": "Arbeiten Sie mit Klassenkameraden bei der Vorbereitung zusammen",
+        "bullet2": "Erhalten Sie konstruktives Feedback von Peers und Lehrern",
+        "bullet3": "Teilen Sie effektive Strategien und Techniken",
+        "bullet4": "Lernen Sie durch Beobachtung der Debattiertechniken von Peers"
       },
       "visibleThinking": {
         "title": "Sichtbares Denken",
         "content": "Entwickeln Sie die Fähigkeit, Ihre Denkprozesse während der Debatte klar zu artikulieren.",
-        "bullet1": "Verbalisierung Ihrer Denkprozesse",
-        "bullet2": "Erklärung der Begründung hinter jedem Argument",
-        "bullet3": "Transparente Darstellung Ihrer Debattierstrategien",
-        "bullet4": "Ermöglichung von Echtzeit-Feedback zum Denken"
+        "bullet1": "Verbalisieren Sie Ihre Denkprozesse",
+        "bullet2": "Erklären Sie die Begründung hinter jedem Argument",
+        "bullet3": "Machen Sie Ihre Debattierstrategien transparent",
+        "bullet4": "Ermöglichen Sie Echtzeit-Feedback zum Denken"
       },
       "teacherEvaluation": {
         "title": "Lehrerbewertung",
-        "content": "Verstehen Sie, wie Lehrer Ihre Debattierfähigkeiten bewerten und Feedback für Verbesserungen geben können.",
-        "bullet1": "Strukturierte Bewertungskriterien für Debattierleistung",
-        "bullet2": "Echtzeit-Feedback zu Argumentationsqualität",
-        "bullet3": "Bewertung kritischer Denkfähigkeiten",
-        "bullet4": "Verfolgung des Fortschritts in Überzeugungstechniken"
+        "content": "Verstehen Sie, wie Lehrer Ihre Entwicklung von Debattierfähigkeiten bewerten und unterstützen können.",
+        "bullet1": "Bewertung der Argumentationsfähigkeiten",
+        "bullet2": "Feedback zur Logik und Struktur der Argumente",
+        "bullet3": "Verfolgung des Fortschritts über die Zeit",
+        "bullet4": "Personalisierte Unterstützung zur Verbesserung"
       },
       "selfReflection": {
         "title": "Selbstreflexion",
-        "content": "Lernen Sie, Ihre Debattierleistung zu reflektieren und Bereiche für kontinuierliche Verbesserung zu identifizieren.",
-        "bullet1": "Analyse Ihrer Argumentationsstärken und -schwächen",
-        "bullet2": "Reflexion über Lernfortschritt und Wachstum",
-        "bullet3": "Identifizierung von Bereichen für weitere Entwicklung",
-        "bullet4": "Zielsetzung für zukünftige Debattierherausforderungen"
+        "content": "Lernen Sie, kritisch über Ihre Debattierleistung zu reflektieren für kontinuierliche Verbesserung.",
+        "bullet1": "Analysieren Sie Stärken und Verbesserungsbereiche",
+        "bullet2": "Reflektieren Sie über die Wirksamkeit verwendeter Strategien",
+        "bullet3": "Identifizieren Sie Muster in Ihren Argumenten",
+        "bullet4": "Planen Sie Ziele für zukünftige Debatten"
       },
       "examples": {
         "title": "Praktische Beispiele",
-        "content": "Erkunden Sie konkrete Beispiele für die Nutzung von Debattierfertigkeiten in verschiedenen Kontexten und Fächern.",
-        "bullet1": "Akademische Debatten und Präsentationen",
-        "bullet2": "Gesellschaftliche Themen und aktuelle Ereignisse",
-        "bullet3": "Ethische Dilemmata und moralische Fragen",
-        "bullet4": "Wissenschaftliche Kontroversen und Theorien"
+        "content": "Erkunden Sie konkrete Beispiele von Debattenthemen und effektiven Techniken in verschiedenen Fächern.",
+        "bullet1": "Ethische Debatten: Künstliche Intelligenz und Privatsphäre",
+        "bullet2": "Umweltfragen: Klimawandel und Nachhaltigkeit",
+        "bullet3": "Sozialpolitik: Bildung und Gesundheitswesen",
+        "bullet4": "Technologie: Soziale Medien und gesellschaftliche Auswirkungen"
       }
     }
   },
