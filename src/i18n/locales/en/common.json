@@ -62,6 +62,14 @@
   },
   "reflectionPlaceholder": "Write your reflection here...",
   "submitReflection": "Submit Reflection",
-  "reflectOnExperience": "Reflect on your experience and what you have learned.",
-  "viewTutorial": "View Tutorial"
+  "reflectOnExperience": "Reflect on your experience and what you learned.",
+  "viewTutorial": "View Tutorial",
+  "tutorial": "View Tutorial",
+  "backToApps": "Back to Applications",
+  "reddit": {
+    "shareExperience": "Share your experience",
+    "shareSuggestions": "Share suggestions",
+    "joinCommunity": "Join the community",
+    "teachersShare": "Teachers, share your ideas and classroom experiments!"
+  }
 }

@@ -3,6 +3,10 @@
   "title": "Incarnez Vous",
   "subtitle": "Dialoguez avec une figure historique en en interprétant une autre",
   "description": "Mettez-vous dans la peau d'une figure historique",
+  "page": {
+    "title": "Incarnez Vous",
+    "subtitle": "Dialoguez avec une figure historique en en interprétant une autre"
+  },
   "reflection": {
     "title": "Réflexion sur Incarnez-vous",
     "description": "Réfléchissez à votre expérience d'incarnation du personnage historique.",

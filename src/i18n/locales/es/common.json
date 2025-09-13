@@ -64,6 +64,13 @@
   "submitReflection": "Enviar Reflexión",
   "reflectOnExperience": "Reflexiona sobre tu experiencia y lo que has aprendido.",
   "viewTutorial": "Ver Tutorial",
+  "tutorial": "Ver Tutorial",
   "slide": "Diapositiva",
-  "progress": "Progreso"
+  "progress": "Progreso",
+  "reddit": {
+    "shareExperience": "Comparte tu experiencia",
+    "shareSuggestions": "Comparte sugerencias",
+    "joinCommunity": "Únete a la comunidad",
+    "teachersShare": "¡Profesores, compartid vuestras ideas y experimentos en clase!"
+  }
 }

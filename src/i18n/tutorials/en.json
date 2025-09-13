@@ -209,7 +209,19 @@
     "slides": {
       "welcome": {
         "title": "Welcome to ImpersonaTu!",
-        "content": "Engage in collaborative historical role-play where you embody famous figures while peers and teachers facilitate your learning journey through think-aloud protocols and critical analysis."
+        "content": "Engage in collaborative historical role-play where you embody famous figures while peers and teachers facilitate your learning journey through think-aloud protocols and critical analysis.",
+        "bullet1": "Embody famous historical figures through collaborative role-play",
+        "bullet2": "Develop critical thinking and historical analysis skills",
+        "bullet3": "Learn through think-aloud protocols and peer feedback",
+        "bullet4": "Build understanding through collaborative learning"
+      },
+      "peerLearning": {
+        "title": "Peer Learning and Facilitation",
+        "content": "Discover how collaborative learning and peer facilitation enhance the educational experience through mutual support and knowledge sharing.",
+        "bullet1": "Collaborate with classmates in facilitator and observer roles",
+        "bullet2": "Share knowledge and perspectives through structured interaction",
+        "bullet3": "Receive constructive feedback and support from peers",
+        "bullet4": "Build confidence through collaborative learning"
       },
       "collaborativeRolePlay": {
         "title": "Collaborative Role-Playing with Peer/Teacher Facilitation",

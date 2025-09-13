@@ -4,6 +4,8 @@
   "subtitle": "Führe einen Dialog mit einer historischen Figur, indem du eine andere darstellst",
   "description": "Schlüpfe in die Rolle einer historischen Figur und führe einen Dialog mit einer anderen",
   "page": {
+    "title": "Verkörpere Du",
+    "subtitle": "Führe einen Dialog mit einer historischen Figur, indem du eine andere darstellst",
     "setup": {
       "title": "Wähle die Charaktere",
       "description": "Wähle den Charakter, den die KI spielen soll, und den, den du spielen wirst",

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Menu, Github } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "@/components/shared/LanguageSwitcher";
+import RedditButton from "@/components/shared/RedditButton";
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -39,9 +40,14 @@ const Navbar = () => {
               <Link to="/apps" className="px-3 py-2 rounded-md text-sm font-medium text-education hover:text-education-light font-heading">
                 {t('navigation.apps')}
               </Link>
-              <Link to="/teacher-guide" className="px-3 py-2 rounded-md text-sm font-medium text-education hover:text-education-light font-heading">
-                {t('navigation.teacherGuide')}
+              <Link to="/tutorials" className="px-3 py-2 rounded-md text-sm font-medium text-education hover:text-education-light font-heading">
+                Tutorial
               </Link>
+              {/* <Link to="/teacher-guide" className="px-3 py-2 rounded-md text-sm font-medium text-education hover:text-education-light font-heading">
+                {t('navigation.teacherGuide')}
+              </Link> */}
+              
+              <RedditButton />
               
               <LanguageSwitcher />
               
@@ -78,9 +84,16 @@ const Navbar = () => {
             <Link to="/apps" className="block px-3 py-2 rounded-md text-base font-medium text-education hover:text-education-light font-heading" onClick={() => setIsMobileMenuOpen(false)}>
               {t('navigation.apps')}
             </Link>
-            <Link to="/teacher-guide" className="block px-3 py-2 rounded-md text-base font-medium text-education hover:text-education-light font-heading" onClick={() => setIsMobileMenuOpen(false)}>
-              {t('navigation.teacherGuide')}
+            <Link to="/tutorials" className="block px-3 py-2 rounded-md text-base font-medium text-education hover:text-education-light font-heading" onClick={() => setIsMobileMenuOpen(false)}>
+              Tutorial
             </Link>
+            {/* <Link to="/teacher-guide" className="block px-3 py-2 rounded-md text-base font-medium text-education hover:text-education-light font-heading" onClick={() => setIsMobileMenuOpen(false)}>
+              {t('navigation.teacherGuide')}
+            </Link> */}
+            
+            <div className="px-3 py-2">
+              <RedditButton />
+            </div>
             <a href="https://github.com/Hoppitbilbo/DebateAI" target="_blank" rel="noopener noreferrer" className="block w-full my-2">
               <Button className="w-full bg-education hover:bg-education-light text-education-dark font-heading">
                 <Github className="h-4 w-4 mr-2" />

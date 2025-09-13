@@ -209,7 +209,19 @@
     "slides": {
       "welcome": {
         "title": "Bienvenue dans ImpersonneToi !",
-        "content": "Engagez-vous dans un jeu de rôle historique collaboratif où vous incarnez des figures célèbres tandis que pairs et enseignants facilitent votre parcours d'apprentissage grâce aux protocoles de pensée à voix haute et à l'analyse critique."
+        "content": "Engagez-vous dans un jeu de rôle historique collaboratif où vous incarnez des figures célèbres tandis que pairs et enseignants facilitent votre parcours d'apprentissage grâce aux protocoles de pensée à voix haute et à l'analyse critique.",
+        "bullet1": "Incarnez des figures historiques célèbres grâce au jeu de rôle collaboratif",
+        "bullet2": "Développez les compétences de pensée critique et d'analyse historique",
+        "bullet3": "Apprenez grâce aux protocoles de pensée à voix haute et aux commentaires des pairs",
+        "bullet4": "Construisez la compréhension grâce à l'apprentissage collaboratif"
+      },
+      "peerLearning": {
+        "title": "Apprentissage entre Pairs et Facilitation",
+        "content": "Découvrez comment l'apprentissage collaboratif et la facilitation entre pairs améliorent l'expérience éducative grâce au soutien mutuel et au partage de connaissances.",
+        "bullet1": "Collaborez avec camarades de classe dans des rôles de facilitateurs et observateurs",
+        "bullet2": "Partagez connaissances et perspectives grâce à l'interaction structurée",
+        "bullet3": "Recevez commentaires constructifs et soutien des pairs",
+        "bullet4": "Développez la confiance grâce à l'apprentissage collaboratif"
       },
       "collaborativeRolePlay": {
         "title": "Jeu de Rôle Collaboratif avec Facilitation Pair/Enseignant",

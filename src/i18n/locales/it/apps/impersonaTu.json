@@ -4,6 +4,8 @@
   "subtitle": "Interpreta un personaggio storico e dialoga con un altro",
   "description": "Mettiti nei panni di un personaggio storico e dialoga con un altro",
   "page": {
+    "title": "Impersona Tu",
+    "subtitle": "Interpreta un personaggio storico e dialoga con un altro",
     "setup": {
       "title": "Scegli i Personaggi",
       "description": "Seleziona il personaggio che l'IA interpreterà e quello che interpreterai tu",

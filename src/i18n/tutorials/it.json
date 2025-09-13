@@ -219,7 +219,19 @@
     "slides": {
       "welcome": {
         "title": "Benvenuto in ImpersonaTu!",
-        "content": "Impegnati nel gioco di ruolo storico collaborativo dove incarni figure famose mentre pari e insegnanti facilitano il tuo percorso di apprendimento attraverso protocolli think-aloud e analisi critica."
+        "content": "Impegnati nel gioco di ruolo storico collaborativo dove incarni figure famose mentre pari e insegnanti facilitano il tuo percorso di apprendimento attraverso protocolli think-aloud e analisi critica.",
+        "bullet1": "Incarna figure storiche famose attraverso il gioco di ruolo collaborativo",
+        "bullet2": "Sviluppa capacità di pensiero critico e analisi storica",
+        "bullet3": "Impara attraverso protocolli think-aloud e feedback dei pari",
+        "bullet4": "Costruisci comprensione attraverso l'apprendimento collaborativo"
+      },
+      "peerLearning": {
+        "title": "Apprendimento tra Pari e Facilitazione",
+        "content": "Scopri come l'apprendimento collaborativo e la facilitazione tra pari migliorano l'esperienza educativa attraverso il supporto reciproco e la condivisione di conoscenze.",
+        "bullet1": "Collabora con compagni di classe in ruoli di facilitatori e osservatori",
+        "bullet2": "Condividi conoscenze e prospettive attraverso l'interazione strutturata",
+        "bullet3": "Ricevi feedback costruttivo e supporto dai pari",
+        "bullet4": "Sviluppa fiducia attraverso l'apprendimento collaborativo"
       },
       "collaborativeRolePlay": {
         "title": "Gioco di Ruolo Collaborativo con Facilitazione di Pari/Insegnante",

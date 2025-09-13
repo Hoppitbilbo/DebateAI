@@ -79,7 +79,7 @@ class I18nDebugger {
 
   private initializeDebugger() {
     // Abilita il debug mode se siamo in development
-    this.debugMode = import.meta.env.DEV;
+    this.debugMode = false; // Temporarily disabled for production push
     
     // Ascolta gli eventi di chiavi mancanti
     i18n.on('missingKey', (lng: string, ns: string, key: string, res: string) => {

@@ -5,7 +5,7 @@ import HeroSection from "@/components/HeroSection";
 import FeaturesSection from "@/components/FeaturesSection";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { School, Users } from "lucide-react";
+import { School, Users, BookOpen } from "lucide-react";
 import { useScrollReveal } from "@/hooks/use-scroll-reveal";
 import { useTranslation } from "react-i18next";
 
@@ -76,6 +76,12 @@ const Index = () => {
                 <Link to="/apps">
                   <Button className="bg-education hover:bg-education-dark text-white w-full sm:w-auto">
                     {t('homepage.socialPurpose.exploreButton')}
+                  </Button>
+                </Link>
+                <Link to="/tutorials">
+                  <Button className="bg-education-light hover:bg-education text-white w-full sm:w-auto">
+                    <BookOpen className="w-4 h-4 mr-2" />
+                    Tutorial
                   </Button>
                 </Link>
                 <Link to="/about">

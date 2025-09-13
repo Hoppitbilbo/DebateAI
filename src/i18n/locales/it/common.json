@@ -76,5 +76,11 @@
   "reflectOnExperience": "Rifletti sulla tua esperienza e su ciò che hai imparato.",
   "viewTutorial": "Visualizza Tutorial",
   "tutorial": "Visualizza Tutorial",
-  "backToApps": "Torna alle Applicazioni"
+  "backToApps": "Torna alle Applicazioni",
+  "reddit": {
+    "shareExperience": "Raccontaci la tua esperienza",
+    "shareSuggestions": "Condividi suggerimenti",
+    "joinCommunity": "Unisciti alla community",
+    "teachersShare": "Docenti, condividete le vostre idee e sperimentazioni in classe!"
+  }
 }

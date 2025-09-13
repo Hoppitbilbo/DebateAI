@@ -209,7 +209,19 @@
     "slides": {
       "welcome": {
         "title": "¡Bienvenido a ImpersonaTú!",
-        "content": "Participa en juego de roles histórico colaborativo donde encarnas figuras famosas mientras pares y maestros facilitan tu viaje de aprendizaje a través de protocolos de pensamiento en voz alta y análisis crítico."
+        "content": "Participa en juego de roles histórico colaborativo donde encarnas figuras famosas mientras pares y maestros facilitan tu viaje de aprendizaje a través de protocolos de pensamiento en voz alta y análisis crítico.",
+        "bullet1": "Encarna figuras históricas famosas a través del juego de roles colaborativo",
+        "bullet2": "Desarrolla habilidades de pensamiento crítico y análisis histórico",
+        "bullet3": "Aprende a través de protocolos de pensamiento en voz alta y retroalimentación de pares",
+        "bullet4": "Construye comprensión a través del aprendizaje colaborativo"
+      },
+      "peerLearning": {
+        "title": "Aprendizaje entre Pares y Facilitación",
+        "content": "Descubre cómo el aprendizaje colaborativo y la facilitación entre pares mejoran la experiencia educativa a través del apoyo mutuo y el intercambio de conocimientos.",
+        "bullet1": "Colabora con compañeros de clase en roles de facilitadores y observadores",
+        "bullet2": "Comparte conocimientos y perspectivas a través de la interacción estructurada",
+        "bullet3": "Recibe retroalimentación constructiva y apoyo de los pares",
+        "bullet4": "Desarrolla confianza a través del aprendizaje colaborativo"
       },
       "collaborativeRolePlay": {
         "title": "Juego de Roles Colaborativo con Facilitación de Pares/Maestro",

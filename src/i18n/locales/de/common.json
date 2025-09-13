@@ -61,6 +61,14 @@
   },
   "submitReflection": "Reflexion senden",
   "aiError": "Fehler in der KI-Antwort. Bitte versuchen Sie es erneut.",
-  "backToApps": "Zurück zu den Apps",
-  "viewTutorial": "Tutorial Anzeigen"
+  "reflectOnExperience": "Reflektieren Sie über Ihre Erfahrung und was Sie gelernt haben.",
+  "viewTutorial": "Tutorial anzeigen",
+  "tutorial": "Tutorial anzeigen",
+  "backToApps": "Zurück zu den Anwendungen",
+  "reddit": {
+    "shareExperience": "Teilen Sie Ihre Erfahrung",
+    "shareSuggestions": "Teilen Sie Vorschläge",
+    "joinCommunity": "Der Community beitreten",
+    "teachersShare": "Lehrer, teilt eure Ideen und Klassenexperimente!"
+  }
 }

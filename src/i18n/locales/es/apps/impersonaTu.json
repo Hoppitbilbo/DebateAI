@@ -3,6 +3,10 @@
   "title": "Personifica Tú",
   "subtitle": "Dialoga con una figura histórica interpretando a otra",
   "description": "Pon a prueba tus habilidades de empatía dialogando con un personaje histórico mientras interpretas a otro",
+  "page": {
+    "title": "Personifica Tú",
+    "subtitle": "Dialoga con una figura histórica interpretando a otra"
+  },
   "reflection": {
     "title": "Reflexión sobre la Personificación",
     "description": "Reflexiona sobre tu experiencia interpretando al {{characterName}}.",

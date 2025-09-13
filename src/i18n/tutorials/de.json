@@ -219,7 +219,19 @@
     "slides": {
       "welcome": {
         "title": "Willkommen bei VerkörpereDich!",
-        "content": "Engagieren Sie sich in kollaborativem historischem Rollenspiel, wo Sie berühmte Figuren verkörpern, während Gleichaltrige und Lehrer Ihre Lernreise durch Think-Aloud-Protokolle und kritische Analyse erleichtern."
+        "content": "Engagieren Sie sich in kollaborativem historischem Rollenspiel, wo Sie berühmte Figuren verkörpern, während Gleichaltrige und Lehrer Ihre Lernreise durch Think-Aloud-Protokolle und kritische Analyse erleichtern.",
+        "bullet1": "Verkörpern Sie berühmte historische Figuren durch kollaboratives Rollenspiel",
+        "bullet2": "Entwickeln Sie kritisches Denken und historische Analysefähigkeiten",
+        "bullet3": "Lernen Sie durch Think-Aloud-Protokolle und Peer-Feedback",
+        "bullet4": "Bauen Sie Verständnis durch kollaboratives Lernen auf"
+      },
+      "peerLearning": {
+        "title": "Peer-Learning und Facilitation",
+        "content": "Entdecken Sie, wie kollaboratives Lernen und Peer-Facilitation die Bildungserfahrung durch gegenseitige Unterstützung und Wissensaustausch verbessern.",
+        "bullet1": "Arbeiten Sie mit Klassenkameraden in Facilitator- und Beobachterrollen zusammen",
+        "bullet2": "Teilen Sie Wissen und Perspektiven durch strukturierte Interaktion",
+        "bullet3": "Erhalten Sie konstruktives Feedback und Unterstützung von Peers",
+        "bullet4": "Bauen Sie Vertrauen durch kollaboratives Lernen auf"
       },
       "collaborativeRolePlay": {
         "title": "Kollaboratives Rollenspiel mit Peer-/Lehrererleichterung",

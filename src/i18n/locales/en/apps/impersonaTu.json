@@ -3,6 +3,10 @@
   "title": "You Impersonate",
   "subtitle": "Dialogue with a historical figure by interpreting another",
   "description": "Put yourself in the shoes of a historical figure",
+  "page": {
+    "title": "You Impersonate",
+    "subtitle": "Dialogue with a historical figure by interpreting another"
+  },
   "reflection": {
     "title": "Reflection on Impersonation",
     "description": "Reflect on your experience playing {{characterName}}.",

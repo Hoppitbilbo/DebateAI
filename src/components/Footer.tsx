@@ -2,6 +2,7 @@
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Github } from "lucide-react";
+import RedditButton from "@/components/shared/RedditButton";
 
 const Footer = () => {
   const { t } = useTranslation();
@@ -34,6 +35,9 @@ const Footer = () => {
                   <Github className="h-4 w-4 mr-2" />
                   GitHub
                 </a>
+              </li>
+              <li>
+                <RedditButton />
               </li>
             </ul>
           </div>
