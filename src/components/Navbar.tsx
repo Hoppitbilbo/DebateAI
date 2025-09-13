@@ -27,7 +27,7 @@ const Navbar = () => {
           <div className="flex items-center">
             <Link to="/" className="flex items-center">
               <span className="text-xl font-bold text-education logo">
-                {t('navigation.brand')}
+                AiDebate<span className="text-slate-50">.tech</span>
               </span>
             </Link>
           </div>
