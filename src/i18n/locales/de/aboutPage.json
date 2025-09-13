@@ -24,5 +24,21 @@
     "title": "Eine Zukunft des kollaborativen und inklusiven Lernens",
     "content": "Unser sozialer Zweck ist es, eine Zukunft zu schaffen, in der KI ein starker Verbündeter für Schüler und Lehrer ist und das Lernen zu einem aufregenden, personalisierten und vor allem für jeden zugänglichen Abenteuer macht."
   },
+  "section7": {
+    "title": "Von der Theorie zur Praxis: Unser Bildungsrahmen",
+    "paragraph1": "Die rasche Verbreitung der generativen künstlichen Intelligenz hat die Bildung an einen entscheidenden Punkt gebracht und bietet Chancen, aber auch erhebliche Herausforderungen. Während das Potenzial der generativen KI zur Verbesserung des Lerndesigns und zur Bereitstellung personalisierter Rückmeldungen weithin anerkannt ist, besteht eine kritische Diskrepanz zwischen theoretischen Modellen und praktischen, ethisch gestalteten Werkzeugen für den Klassenraum.",
+    "paragraph2": "AIDebate.Tech stellt einen bedeutenden Schritt zur Überbrückung dieser Theorie-Praxis-Lücke dar. Durch die Operationalisierung etablierter Lerntheorien—wie situiertes Lernen und duales Prozessdenken—in ein transparentes, lehrergeführtes Toolkit bietet unsere Plattform ein überzeugendes Modell für die Nutzung generativer KI nicht als bloßen Informationsspender, sondern als Katalysator für die Entwicklung höherer Denkfähigkeiten.",
+    "paragraph3": "Unsere Anwendungen wie 'Convince YOU' und 'You Impersonate' tauchen Schüler in authentische Praxis ein und verlangen von ihnen, Wissen in spezifischen historischen und kulturellen Kontexten anzuwenden. Schüler sind nicht mehr passive Empfänger von Fakten, sondern aktive Akteure, die verschiedene Weltanschauungen verkörpern müssen, um überzeugende Argumente zu konstruieren, wodurch das Lernen von deklarativ zu prozedural transformiert wird.",
+    "paragraph4": "Die Plattform ist darauf ausgelegt, komplexe kritische Denkfähigkeiten zu fördern, die ungeleitete KI-Nutzung unbeabsichtigt unterdrücken kann. Aktivitäten wie 'You Moderate' und 'Double Interview' schaffen Szenarien intellektueller Reibung und zwingen Schüler dazu, Debatten zu moderieren oder divergierende Perspektiven zu vergleichen—Kennzeichen komplexen kritischen Denkens, die bewusstes, analytisches Denken aktivieren.",
+    "paragraph5": "Jede Aktivität gipfelt in einer strukturierten kritischen Meta-Reflexionsphase, die entscheidend für die Transformation von Erfahrung in dauerhaftes Wissen ist. Schüler bewerten die Leistung der KI durch Fragen wie 'Hat die KI den Charakter gut verkörpert?' oder 'Welche Aspekte ihres Arguments waren unüberzeugend?' Dies verlagert den Fokus von der Aufgabenerledigung zur kritischen Prozessbewertung.",
+    "paragraph6": "Die Flexibilität der Plattform, basierend auf der Wikipedia-API-Integration, macht sie von Natur aus domänenagnostisch. Schüler können literarische Charaktere verkörpern, geografische Perspektiven vergleichen oder wissenschaftliche Debatten moderieren. Diese interdisziplinäre Vielseitigkeit zeigt, dass unser Kernwert nicht in spezifischen Inhalten liegt, sondern in dem Prozess kritischer Untersuchung, den wir fördern.",
+    "paragraph7": "Als Open-Source-Projekt, das auf lokalen Schulservern installiert werden kann, ohne Chat-Verläufe zu sammeln, bieten wir eine sichere Alternative zu kommerziellen Plattformen. Durch die Bereitstellung eines Forums für Pädagogen zum Teilen von Experimenten und Kritiken erleichtert AIDebate.Tech die kollaborative, gemeinschaftsgetriebene Forschung, die erforderlich ist, um ein gemeinsames Verständnis für den effektiven und ethischen Einsatz von KI in der Bildung aufzubauen."
+  },
+  "helpDevelopment": {
+    "title": "Helfen Sie uns, AIDebate.Tech zu entwickeln",
+    "description": "Treten Sie unserer Gemeinschaft bei, um bei der Entwicklung von Ollama-Unterstützung zu helfen, neue Sprachen hinzuzufügen, die Dokumentation zu verbessern und Klassenzimmererfahrungen zu teilen. Ihr Beitrag macht KI-Bildung für alle zugänglicher.",
+    "redditButton": "Reddit-Community beitreten",
+    "githubButton": "Auf GitHub beitragen"
+  },
   "supportButton": "Unterstützen Sie uns"
 }

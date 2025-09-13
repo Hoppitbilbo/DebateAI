@@ -24,5 +24,21 @@
     "title": "A Future of Collaborative and Inclusive Learning",
     "content": "Our social purpose is to build a future where AI is a powerful ally for students and teachers, making learning an exciting, personalized, and, above all, accessible adventure for everyone."
   },
+  "section7": {
+    "title": "From Theory to Practice: Our Educational Framework",
+    "paragraph1": "The rapid proliferation of generative artificial intelligence has positioned education at a pivotal juncture, presenting opportunities yet fraught with challenges. While the potential for GenAI to enhance learning design and provide personalized feedback is widely acknowledged, a critical disconnect exists between theoretical models and practical, ethically designed tools for classroom use.",
+    "paragraph2": "AIDebate.Tech represents a significant step toward bridging this theory-practice gap. By operationalizing established learning theories—such as situated learning and dual-process reasoning—into a transparent, teacher-guided toolkit, our platform offers a compelling model for leveraging GenAI not as a mere information dispenser, but as a catalyst for developing higher-order thinking skills.",
+    "paragraph3": "Our applications such as 'Convince YOU' and 'You Impersonate' immerse students in authentic practice, requiring them to apply knowledge within specific historical and cultural contexts. Students are no longer passive recipients of facts but active agents who must embody different worldviews to construct persuasive arguments, transforming learning from declarative to procedural.",
+    "paragraph4": "The platform is engineered to foster complex critical thinking skills that unguided AI use can inadvertently suppress. Activities like 'You Moderate' and 'Double Interview' create scenarios of intellectual friction, compelling students to mediate debates or compare divergent perspectives—hallmarks of complex critical thinking that activate deliberate, analytical reasoning.",
+    "paragraph5": "Each activity culminates in a structured critical meta-reflection phase, crucial for transforming experience into lasting knowledge. Students evaluate the AI's performance through prompts like 'Did the AI impersonate the character well?' or 'What aspects of its argument were unconvincing?' This shifts focus from task completion to critical process appraisal.",
+    "paragraph6": "The platform's flexibility, based on Wikipedia API integration, makes it inherently domain-agnostic. Students can impersonate literary characters, compare geographical perspectives, or moderate scientific debates. This interdisciplinary versatility demonstrates that our core value lies not in specific content but in the process of critical inquiry we foster.",
+    "paragraph7": "As an open-source project installable on local school servers without collecting chat history, we offer a secure alternative to commercial platforms. By providing a forum for educators to share experiments and critiques, AIDebate.Tech facilitates the collaborative, community-driven research required to build shared understanding of effective and ethical AI use in education."
+  },
+  "helpDevelopment": {
+    "title": "Help Us Develop AIDebate.Tech",
+    "description": "Join our community to help develop Ollama support, add new languages, improve documentation, and share classroom experiences. Your contribution makes AI education more accessible for everyone.",
+    "redditButton": "Join Reddit Community",
+    "githubButton": "Contribute on GitHub"
+  },
   "supportButton": "Support Us"
 }

@@ -24,5 +24,21 @@
     "title": "Un Avenir d'Apprentissage Collaboratif et Inclusif",
     "content": "Notre objectif social est de construire un avenir où l'IA est un allié puissant pour les élèves et les enseignants, faisant de l'apprentissage une aventure passionnante, personnalisée et, surtout, accessible à tous."
   },
+  "section7": {
+    "title": "De la Théorie à la Pratique : Notre Cadre Éducatif",
+    "paragraph1": "La prolifération rapide de l'intelligence artificielle générative a positionné l'éducation à un moment charnière, présentant des opportunités mais aussi des défis significatifs. Bien que le potentiel de l'IA générative pour améliorer la conception de l'apprentissage et fournir des retours personnalisés soit largement reconnu, il existe une déconnexion critique entre les modèles théoriques et les outils pratiques et éthiquement conçus pour l'usage en classe.",
+    "paragraph2": "AIDebate.Tech représente un pas significatif vers la réduction de cet écart théorie-pratique. En opérationnalisant des théories d'apprentissage établies—comme l'apprentissage situé et le raisonnement à double processus—dans une boîte à outils transparente et guidée par les enseignants, notre plateforme offre un modèle convaincant pour exploiter l'IA générative non pas comme un simple distributeur d'informations, mais comme un catalyseur pour développer des compétences de pensée d'ordre supérieur.",
+    "paragraph3": "Nos applications comme 'Convince YOU' et 'You Impersonate' immergent les étudiants dans des pratiques authentiques, leur demandant d'appliquer des connaissances dans des contextes historiques et culturels spécifiques. Les étudiants ne sont plus des récepteurs passifs de faits mais des agents actifs qui doivent incarner différentes visions du monde pour construire des arguments persuasifs, transformant l'apprentissage de déclaratif à procédural.",
+    "paragraph4": "La plateforme est conçue pour favoriser des compétences de pensée critique complexe que l'usage non guidé de l'IA peut involontairement supprimer. Des activités comme 'You Moderate' et 'Double Interview' créent des scénarios de friction intellectuelle, obligeant les étudiants à médier des débats ou comparer des perspectives divergentes—caractéristiques de la pensée critique complexe qui activent le raisonnement délibéré et analytique.",
+    "paragraph5": "Chaque activité culmine dans une phase structurée de méta-réflexion critique, cruciale pour transformer l'expérience en connaissance durable. Les étudiants évaluent la performance de l'IA à travers des questions comme 'L'IA a-t-elle bien incarné le personnage ?' ou 'Quels aspects de son argument étaient peu convaincants ?' Cela déplace l'attention de l'achèvement de la tâche vers l'évaluation critique du processus.",
+    "paragraph6": "La flexibilité de la plateforme, basée sur l'intégration de l'API Wikipedia, la rend intrinsèquement domain-agnostique. Les étudiants peuvent incarner des personnages littéraires, comparer des perspectives géographiques ou modérer des débats scientifiques. Cette polyvalence interdisciplinaire démontre que notre valeur principale ne réside pas dans des contenus spécifiques mais dans le processus d'enquête critique que nous favorisons.",
+    "paragraph7": "En tant que projet open-source installable sur des serveurs scolaires locaux sans collecter d'historiques de chat, nous offrons une alternative sécurisée aux plateformes commerciales. En fournissant un forum pour que les éducateurs partagent expériences et critiques, AIDebate.Tech facilite la recherche collaborative et communautaire nécessaire pour construire une compréhension partagée de l'usage efficace et éthique de l'IA en éducation."
+  },
+  "helpDevelopment": {
+    "title": "Aidez-nous à Développer AIDebate.Tech",
+    "description": "Rejoignez notre communauté pour aider à développer le support Ollama, ajouter de nouvelles langues, améliorer la documentation et partager des expériences en classe. Votre contribution rend l'éducation IA plus accessible pour tous.",
+    "redditButton": "Rejoindre la Communauté Reddit",
+    "githubButton": "Contribuer sur GitHub"
+  },
   "supportButton": "Soutenez-nous"
 }
