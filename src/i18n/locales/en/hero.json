@@ -1,11 +1,11 @@
 {
   "title": "Interactive Learning with",
   "subtitle": "AI-Powered Conversations",
-  "description": "Engage with great figures from the past, immerse yourself in their time and try a new way of doing homework",
+  "description": "Dialogue with the brightest minds of every era! Meet scientists, writers, mathematicians, explorers, artists and philosophers. Discover their secrets, their passions and transform studying into an extraordinary adventure!",
   "tryApps": "Try our apps",
   "sampleChat": {
-    "bot1": "Well then young man, who are you? They told me you need to interview me for school. Come on, let's not waste time!",
-    "user": "Leonardo DaVinci, did it seem normal to you to create weapons for people who only wanted more power?",
-    "bot2": "Bad from the start, I like it, you seem Tuscan to me. My dear, unfortunately I couldn't do otherwise. We artists in this era had to submit to patrons or we would have starved to death. But don't worry, almost none of my weapons were built. They were just sketches. A bit like when you exaggerate in your resume portfolio"
+    "bot1": "Greetings! I am Marie Curie. I understand you wish to discuss my research? Science knows no boundaries - ask me anything about radioactivity or my laboratory work!",
+    "user": "How did you manage to work in science when so few women were accepted in your field?",
+    "bot2": "Ah, persistence and passion, my dear student! I faced many obstacles, but I believed that knowledge belongs to everyone. When they wouldn't let me into the University of Warsaw, I attended the 'Flying University' - secret classes for women. Science was my calling, and I would not be deterred!"
   }
 }

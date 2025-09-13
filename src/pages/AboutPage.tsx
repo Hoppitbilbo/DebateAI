@@ -1,7 +1,7 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { Handshake, Github, MessageCircle } from "lucide-react";
+import { Handshake, Github, MessageCircle, Linkedin } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
@@ -88,6 +88,13 @@ const AboutPage = () => {
                    >
                     <Github className="mr-2" size={20} />
                     {t('aboutPage.helpDevelopment.githubButton')}
+                  </Button>
+                  <Button 
+                     className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg shadow-md transition-all flex items-center"
+                     onClick={() => window.open('https://www.linkedin.com/in/andres-moles-ab620a263/', '_blank')}
+                   >
+                    <Linkedin className="mr-2" size={20} />
+                    {t('aboutPage.helpDevelopment.linkedinButton')}
                   </Button>
                 </div>
               </div>

@@ -38,7 +38,8 @@
     "title": "Aidez-nous à Développer AIDebate.Tech",
     "description": "Rejoignez notre communauté pour aider à développer le support Ollama, ajouter de nouvelles langues, améliorer la documentation et partager des expériences en classe. Votre contribution rend l'éducation IA plus accessible pour tous.",
     "redditButton": "Rejoindre la Communauté Reddit",
-    "githubButton": "Contribuer sur GitHub"
+    "githubButton": "Contribuer sur GitHub",
+    "linkedinButton": "Se Connecter sur LinkedIn"
   },
   "supportButton": "Soutenez-nous"
 }
