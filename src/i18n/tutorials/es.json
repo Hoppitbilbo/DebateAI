@@ -142,7 +142,10 @@
     "slides": {
       "welcome": {
         "title": "¡Bienvenido a Moderas Tú!",
-        "content": "Asume el papel de moderador colaborativo de debates, facilitando discusiones entre personajes de Wikipedia impulsados por IA mientras desarrollas pensamiento crítico y habilidades de moderación."
+        "content": "Asume el papel de moderador colaborativo de debates, facilitando discusiones entre personajes de Wikipedia impulsados por IA mientras desarrollas pensamiento crítico y habilidades de moderación.",
+        "bullet1": "Interactúa con personajes históricos impulsados por IA",
+        "bullet2": "Desarrolla habilidades de pensamiento crítico y moderación",
+        "bullet3": "Explora perspectivas diversas a través de debates estructurados"
       },
       "moderatorRole": {
         "title": "Papel de Moderación Colaborativa",

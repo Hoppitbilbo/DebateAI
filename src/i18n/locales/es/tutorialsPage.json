@@ -1,0 +1,107 @@
+{
+  "title": "Tutoriales y Guías",
+  "subtitle": "Aprende a utilizar nuestras herramientas de IA para crear escenarios educativos atractivos y efectivos.",
+  "sections": {
+    "availableTutorials": {
+      "title": "Tutoriales Disponibles",
+      "availableLabel": "Disponible",
+      "comingSoonLabel": "Próximamente",
+      "goToAppButton": "Ir a la App",
+      "startTutorialButton": "Iniciar Tutorial",
+      "tutorialComingSoonButton": "Tutorial Próximamente",
+      "comingSoonLabel": "Próximamente",
+      "tutorials": {
+        "youModerate": {
+          "title": "You Moderate",
+          "description": "Conversa con personajes de IA basados en contenido de Wikipedia, transformando temas educativos en conversaciones interactivas."
+        },
+        "doppiaIntervista": {
+          "title": "Doble Entrevista",
+          "description": "Interactúa simultáneamente con dos figuras históricas en conversaciones paralelas, creando un diálogo educativo único."
+        },
+        "convinciTu": {
+          "title": "Tú Convences",
+          "description": "Pon a prueba tus habilidades de persuasión tratando de convencer a figuras históricas de tus ideas."
+        },
+        "personaggioMisterioso": {
+          "title": "Personaje Misterioso",
+          "description": "Desafía a la IA haciendo preguntas para adivinar la figura histórica elegida. ¡Tienes un número limitado de preguntas para descubrir la identidad misteriosa!"
+        },
+        "impersonaTu": {
+          "title": "Tú Personificas",
+          "description": "Personifica figuras históricas y responde preguntas como si fueras ese personaje."
+        },
+        "wikiChatbot": {
+          "title": "WikiChat AI",
+          "description": "Chatea con una inteligencia artificial que representa cualquier tema de Wikipedia, perfecto para conocimientos educativos interactivos."
+        }
+      }
+    },
+    "comingSoon": {
+      "title": "Aplicaciones en Desarrollo",
+      "comingSoonButton": "Próximamente",
+      "promptEngineer": {
+        "title": "Ingeniero de Prompts para la Enseñanza",
+        "description": "Ayuda a profesores y estudiantes a crear prompts efectivos para la inteligencia artificial en actividades educativas y de aprendizaje."
+      }
+    },
+    "additionalResources": {
+      "title": "Recursos Adicionales",
+      "teacherGuide": {
+        "title": "Guía para Profesores",
+        "description": "Una guía completa sobre cómo usar nuestras aplicaciones para crear experiencias de aprendizaje innovadoras y atractivas.",
+        "button": "Ver Guía"
+      },
+      "allApps": {
+        "title": "Todas las Aplicaciones",
+        "description": "Ve todas las aplicaciones disponibles en una sola página para una visión completa.",
+        "button": "Explorar Aplicaciones"
+      },
+      "reddit": {
+        "title": "Comunidad Reddit",
+        "description": "Únete a nuestra comunidad de Reddit para compartir experiencias, ideas y experimentos educativos con otros educadores."
+      }
+    },
+    "howToStart": {
+      "title": "Cómo Empezar",
+      "steps": {
+        "step1": {
+          "title": "Elige una aplicación",
+          "description": "De la lista de arriba"
+        },
+        "step2": {
+          "title": "Lee el tutorial",
+          "description": "Para entender cómo usarla"
+        },
+        "step3": {
+          "title": "Comienza a experimentar",
+          "description": "Con la aplicación"
+        },
+        "step4": {
+          "title": "Consulta la Guía",
+          "description": "Para ideas de enseñanza"
+        }
+      }
+    },
+    "tips": {
+      "title": "Consejos de Uso",
+      "forTeachers": {
+        "title": "Para Profesores",
+        "description": "Cada aplicación puede usarse para crear actividades atractivas que transforman el aprendizaje tradicional en experiencias interactivas."
+      },
+      "forStudents": {
+        "title": "Para Estudiantes",
+        "description": "Usa estas herramientas para explorar la historia, practicar el debate y desarrollar el pensamiento crítico."
+      },
+      "forEveryone": {
+        "title": "Para Todos",
+        "description": "Experimenta con diferentes combinaciones de aplicaciones para crear rutas de aprendizaje personalizadas."
+      }
+    }
+  },
+  "footer": {
+    "lastUpdate": "Última actualización: Enero 2025",
+    "supportText": "Para soporte o preguntas, visita nuestra",
+    "supportLink": "página de soporte"
+  }
+}

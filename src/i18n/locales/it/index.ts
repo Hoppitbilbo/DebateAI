@@ -12,6 +12,7 @@ import teacherGuide from './teacherGuide.json';
 import aboutPage from './aboutPage.json';
 import footer from './footer.json';
 import homepage from './homepage.json';
+import tutorialsPage from './tutorialsPage.json';
 
 export default {
   apps,
@@ -28,4 +29,5 @@ export default {
   aboutPage,
   footer,
   homepage,
+  tutorialsPage,
 };

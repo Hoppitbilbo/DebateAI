@@ -1,0 +1,107 @@
+{
+  "title": "Tutorials & Guides",
+  "subtitle": "Learn how to use our AI tools to create engaging and effective educational scenarios.",
+  "sections": {
+    "availableTutorials": {
+      "title": "Available Tutorials",
+      "availableLabel": "Available",
+      "comingSoonLabel": "Coming Soon",
+      "goToAppButton": "Go to App",
+      "startTutorialButton": "Start Tutorial",
+      "tutorialComingSoonButton": "Tutorial Coming Soon",
+      "comingSoonLabel": "Coming Soon",
+      "tutorials": {
+        "youModerate": {
+          "title": "You Moderate",
+          "description": "Converse with AI characters based on Wikipedia content, transforming educational topics into interactive conversations."
+        },
+        "doppiaIntervista": {
+          "title": "Double Interview",
+          "description": "Interact simultaneously with two historical figures in parallel conversations, creating a unique educational dialogue."
+        },
+        "convinciTu": {
+          "title": "You Convince",
+          "description": "Test your persuasion skills by trying to convince historical figures of your ideas."
+        },
+        "personaggioMisterioso": {
+          "title": "Mystery Character",
+          "description": "Challenge the AI by asking questions to guess the chosen historical figure. You have a limited number of questions to discover the mysterious identity!"
+        },
+        "impersonaTu": {
+          "title": "You Impersonate",
+          "description": "Impersonate historical figures and answer questions as if you were that character."
+        },
+        "wikiChatbot": {
+          "title": "WikiChat AI",
+          "description": "Chat with an artificial intelligence that represents any Wikipedia topic, perfect for interactive educational insights."
+        }
+      }
+    },
+    "comingSoon": {
+      "title": "Applications in Development",
+      "comingSoonButton": "Coming Soon",
+      "promptEngineer": {
+        "title": "Prompt Engineer for Teaching",
+        "description": "Help teachers and students create effective prompts for artificial intelligence in educational and learning activities."
+      }
+    },
+    "additionalResources": {
+      "title": "Additional Resources",
+      "teacherGuide": {
+        "title": "Teacher Guide",
+        "description": "A comprehensive guide on how to use our applications to create innovative and engaging learning experiences.",
+        "button": "View Guide"
+      },
+      "allApps": {
+        "title": "All Applications",
+        "description": "View all available applications on a single page for a complete overview.",
+        "button": "Explore Applications"
+      },
+      "reddit": {
+        "title": "Reddit Community",
+        "description": "Join our Reddit community to share experiences, ideas, and educational experiments with other educators."
+      }
+    },
+    "howToStart": {
+      "title": "How to Get Started",
+      "steps": {
+        "step1": {
+          "title": "Choose an application",
+          "description": "From the list above"
+        },
+        "step2": {
+          "title": "Read the tutorial",
+          "description": "To understand how to use it"
+        },
+        "step3": {
+          "title": "Start experimenting",
+          "description": "With the application"
+        },
+        "step4": {
+          "title": "Consult the Guide",
+          "description": "For teaching ideas"
+        }
+      }
+    },
+    "tips": {
+      "title": "Usage Tips",
+      "forTeachers": {
+        "title": "For Teachers",
+        "description": "Each application can be used to create engaging activities that transform traditional learning into interactive experiences."
+      },
+      "forStudents": {
+        "title": "For Students",
+        "description": "Use these tools to explore history, practice debate, and develop critical thinking."
+      },
+      "forEveryone": {
+        "title": "For Everyone",
+        "description": "Experiment with different combinations of applications to create personalized learning paths."
+      }
+    }
+  },
+  "footer": {
+    "lastUpdate": "Last updated: January 2025",
+    "supportText": "For support or questions, visit our",
+    "supportLink": "support page"
+  }
+}

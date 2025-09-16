@@ -15,6 +15,7 @@ import notFound from './notFound.json';
 import prompts from './prompts.json';
 import teacherGuide from './teacherGuide.json';
 import teacherGuidePage from './teacherGuidePage.json';
+import tutorialsPage from './tutorialsPage.json';
 import ai from './ai.json';
 import evaluation from './evaluation.json';
 
@@ -36,6 +37,7 @@ export default {
   prompts,
   teacherGuide,
   teacherGuidePage,
+  tutorialsPage,
   ai,
   evaluation,
 };

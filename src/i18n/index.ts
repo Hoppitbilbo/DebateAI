@@ -16,26 +16,38 @@ import frTutorials from './tutorials/fr.json';
 import deTutorials from './tutorials/de.json';
 import itTutorials from './tutorials/it.json';
 
+// Import tutorialsPage translation files
+import enTutorialsPage from './locales/en/tutorialsPage.json';
+import esTutorialsPage from './locales/es/tutorialsPage.json';
+import frTutorialsPage from './locales/fr/tutorialsPage.json';
+import deTutorialsPage from './locales/de/tutorialsPage.json';
+import itTutorialsPage from './locales/it/tutorialsPage.json';
+
 const resources = {
   en: { 
     translation: en,
-    tutorial: enTutorials
+    tutorial: enTutorials,
+    tutorialsPage: enTutorialsPage
   },
   es: { 
     translation: es,
-    tutorial: esTutorials
+    tutorial: esTutorials,
+    tutorialsPage: esTutorialsPage
   },
   fr: { 
     translation: fr,
-    tutorial: frTutorials
+    tutorial: frTutorials,
+    tutorialsPage: frTutorialsPage
   },
   de: { 
     translation: de,
-    tutorial: deTutorials
+    tutorial: deTutorials,
+    tutorialsPage: deTutorialsPage
   },
   it: { 
     translation: it,
-    tutorial: itTutorials
+    tutorial: itTutorials,
+    tutorialsPage: itTutorialsPage
   },
 };
 
@@ -47,7 +59,7 @@ i18n
     lng: undefined, // Let the language detector determine the language
     fallbackLng: 'it',
     defaultNS: 'translation',
-    ns: ['translation', 'tutorial'],
+    ns: ['translation', 'tutorial', 'tutorialsPage'],
     debug: false,
     saveMissing: true, // This is useful for development to discover missing keys
     interpolation: {

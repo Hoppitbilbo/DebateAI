@@ -1,0 +1,107 @@
+{
+  "title": "Tutorials & Leitfäden",
+  "subtitle": "Lernen Sie, wie Sie unsere KI-Tools verwenden, um ansprechende und effektive Bildungsszenarien zu erstellen.",
+  "sections": {
+    "availableTutorials": {
+      "title": "Verfügbare Tutorials",
+      "availableLabel": "Verfügbar",
+      "comingSoonLabel": "Demnächst",
+      "goToAppButton": "Zur App",
+      "startTutorialButton": "Tutorial starten",
+      "tutorialComingSoonButton": "Tutorial demnächst",
+      "comingSoonLabel": "Demnächst",
+      "tutorials": {
+        "youModerate": {
+          "title": "You Moderate",
+          "description": "Unterhalten Sie sich mit KI-Charakteren basierend auf Wikipedia-Inhalten und verwandeln Sie Bildungsthemen in interaktive Gespräche."
+        },
+        "doppiaIntervista": {
+          "title": "Doppelinterview",
+          "description": "Interagieren Sie gleichzeitig mit zwei historischen Figuren in parallelen Gesprächen und schaffen Sie einen einzigartigen Bildungsdialog."
+        },
+        "convinciTu": {
+          "title": "Sie Überzeugen",
+          "description": "Testen Sie Ihre Überzeugungsfähigkeiten, indem Sie versuchen, historische Figuren von Ihren Ideen zu überzeugen."
+        },
+        "personaggioMisterioso": {
+          "title": "Mysteriöse Figur",
+          "description": "Fordern Sie die KI heraus, indem Sie Fragen stellen, um die gewählte historische Figur zu erraten. Sie haben eine begrenzte Anzahl von Fragen, um die mysteriöse Identität zu entdecken!"
+        },
+        "impersonaTu": {
+          "title": "Sie Verkörpern",
+          "description": "Verkörpern Sie historische Figuren und beantworten Sie Fragen, als wären Sie diese Figur."
+        },
+        "wikiChatbot": {
+          "title": "WikiChat AI",
+          "description": "Chatten Sie mit einer künstlichen Intelligenz, die jedes Wikipedia-Thema repräsentiert, perfekt für interaktive Bildungseinblicke."
+        }
+      }
+    },
+    "comingSoon": {
+      "title": "Anwendungen in Entwicklung",
+      "comingSoonButton": "Demnächst",
+      "promptEngineer": {
+        "title": "Prompt-Ingenieur für den Unterricht",
+        "description": "Helfen Sie Lehrern und Schülern, effektive Prompts für künstliche Intelligenz in Bildungs- und Lernaktivitäten zu erstellen."
+      }
+    },
+    "additionalResources": {
+      "title": "Zusätzliche Ressourcen",
+      "teacherGuide": {
+        "title": "Lehrerleitfaden",
+        "description": "Ein umfassender Leitfaden zur Nutzung unserer Anwendungen für innovative und ansprechende Lernerfahrungen.",
+        "button": "Leitfaden anzeigen"
+      },
+      "allApps": {
+        "title": "Alle Anwendungen",
+        "description": "Sehen Sie alle verfügbaren Anwendungen auf einer einzigen Seite für einen vollständigen Überblick.",
+        "button": "Anwendungen erkunden"
+      },
+      "reddit": {
+        "title": "Reddit-Community",
+        "description": "Treten Sie unserer Reddit-Community bei, um Erfahrungen, Ideen und Bildungsexperimente mit anderen Pädagogen zu teilen."
+      }
+    },
+    "howToStart": {
+      "title": "Wie man anfängt",
+      "steps": {
+        "step1": {
+          "title": "Wählen Sie eine Anwendung",
+          "description": "Aus der obigen Liste"
+        },
+        "step2": {
+          "title": "Lesen Sie das Tutorial",
+          "description": "Um zu verstehen, wie man es benutzt"
+        },
+        "step3": {
+          "title": "Beginnen Sie zu experimentieren",
+          "description": "Mit der Anwendung"
+        },
+        "step4": {
+          "title": "Konsultieren Sie den Leitfaden",
+          "description": "Für Unterrichtsideen"
+        }
+      }
+    },
+    "tips": {
+      "title": "Nutzungstipps",
+      "forTeachers": {
+        "title": "Für Lehrer",
+        "description": "Jede Anwendung kann verwendet werden, um ansprechende Aktivitäten zu schaffen, die traditionelles Lernen in interaktive Erfahrungen verwandeln."
+      },
+      "forStudents": {
+        "title": "Für Schüler",
+        "description": "Nutzen Sie diese Werkzeuge, um Geschichte zu erkunden, Debatten zu üben und kritisches Denken zu entwickeln."
+      },
+      "forEveryone": {
+        "title": "Für Alle",
+        "description": "Experimentieren Sie mit verschiedenen Anwendungskombinationen, um personalisierte Lernpfade zu erstellen."
+      }
+    }
+  },
+  "footer": {
+    "lastUpdate": "Letzte Aktualisierung: Januar 2025",
+    "supportText": "Für Support oder Fragen besuchen Sie unsere",
+    "supportLink": "Support-Seite"
+  }
+}

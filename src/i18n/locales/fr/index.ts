@@ -17,6 +17,7 @@ import notFound from './notFound.json';
 import prompts from './prompts.json';
 import reflection from './reflection.json';
 import teacherGuidePage from './teacherGuidePage.json';
+import tutorialsPage from './tutorialsPage.json';
 import apps from './apps';
 
 export default {
@@ -39,5 +40,6 @@ export default {
   prompts,
   reflection,
   teacherGuidePage,
+  tutorialsPage,
   apps,
 };

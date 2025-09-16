@@ -17,6 +17,7 @@ import notFound from './notFound.json';
 import prompts from './prompts.json';
 import teacherGuide from './teacherGuide.json';
 import teacherGuidePage from './teacherGuidePage.json';
+import tutorialsPage from './tutorialsPage.json';
 
 const de = {
   aboutPage,
@@ -38,6 +39,7 @@ const de = {
   prompts,
   teacherGuide,
   teacherGuidePage,
+  tutorialsPage,
 };
 
 export default de;
