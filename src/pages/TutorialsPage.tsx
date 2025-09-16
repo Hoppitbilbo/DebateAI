@@ -20,13 +20,13 @@ import { useTranslation } from 'react-i18next';
 import RedditButton from '@/components/shared/RedditButton';
 
 const TutorialsPage = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('tutorialsPage');
 
   const tutorials = [
     {
       id: 'you-moderate',
-      title: 'You Moderate',
-      description: 'Conversa con personaggi AI basati su contenuti Wikipedia, trasformando argomenti educativi in conversazioni interattive.',
+      title: t('sections.availableTutorials.tutorials.youModerate.title'),
+      description: t('sections.availableTutorials.tutorials.youModerate.description'),
       icon: <Book className="h-8 w-8 text-white" />,
       appLink: '/apps/you-moderate',
       tutorialLink: '/apps/you-moderate/tutorial',
@@ -34,8 +34,8 @@ const TutorialsPage = () => {
     },
     {
       id: 'doppia-intervista',
-      title: 'Doppia Intervista',
-      description: 'Interagisci simultaneamente con due figure storiche in conversazioni parallele, creando un dialogo educativo unico.',
+      title: t('sections.availableTutorials.tutorials.doppiaIntervista.title'),
+      description: t('sections.availableTutorials.tutorials.doppiaIntervista.description'),
       icon: <Users className="h-8 w-8 text-white" />,
       appLink: '/apps/doppia-intervista',
       tutorialLink: '/apps/doppia-intervista/tutorial',
@@ -43,8 +43,8 @@ const TutorialsPage = () => {
     },
     {
       id: 'convinci-tu',
-      title: 'Convinci Tu',
-      description: 'Metti alla prova le tue capacità di persuasione cercando di convincere figure storiche delle tue idee.',
+      title: t('sections.availableTutorials.tutorials.convinciTu.title'),
+      description: t('sections.availableTutorials.tutorials.convinciTu.description'),
       icon: <Speech className="h-8 w-8 text-white" />,
       appLink: '/apps/convinci-tu',
       tutorialLink: '/apps/convinci-tu/tutorial',
@@ -52,8 +52,8 @@ const TutorialsPage = () => {
     },
     {
       id: 'personaggio-misterioso',
-      title: 'Personaggio Misterioso',
-      description: 'Sfida l\'AI facendo domande per indovinare la figura storica scelta. Hai un numero limitato di domande per scoprire l\'identità misteriosa!',
+      title: t('sections.availableTutorials.tutorials.personaggioMisterioso.title'),
+      description: t('sections.availableTutorials.tutorials.personaggioMisterioso.description'),
       icon: <Search className="h-8 w-8 text-white" />,
       appLink: '/apps/personaggio-misterioso',
       tutorialLink: '/apps/personaggio-misterioso/tutorial',
@@ -61,8 +61,8 @@ const TutorialsPage = () => {
     },
     {
       id: 'impersona-tu',
-      title: 'Impersona Tu',
-      description: 'Impersona figure storiche e rispondi alle domande come se fossi quel personaggio.',
+      title: t('sections.availableTutorials.tutorials.impersonaTu.title'),
+      description: t('sections.availableTutorials.tutorials.impersonaTu.description'),
       icon: <User className="h-8 w-8 text-white" />,
       appLink: '/apps/impersona-tu',
       tutorialLink: '/apps/impersona-tu/tutorial',
@@ -70,8 +70,8 @@ const TutorialsPage = () => {
     },
     {
       id: 'wiki-chatbot',
-      title: 'WikiChat AI',
-      description: 'Chatta con un\'intelligenza artificiale che rappresenta qualsiasi argomento di Wikipedia, perfetto per approfondimenti educativi interattivi.',
+      title: t('sections.availableTutorials.tutorials.wikiChatbot.title'),
+      description: t('sections.availableTutorials.tutorials.wikiChatbot.description'),
       icon: <MessageSquare className="h-8 w-8 text-white" />,
       appLink: '/apps/wiki-chatbot',
       tutorialLink: null,
@@ -82,8 +82,8 @@ const TutorialsPage = () => {
   const comingSoon = [
     {
       id: 'prompt-engineer',
-      title: 'Prompt Engineer per l\'Insegnamento',
-      description: 'Aiuta insegnanti e studenti a creare prompt efficaci per l\'intelligenza artificiale nelle attività educative e di apprendimento.',
+      title: t('sections.comingSoon.promptEngineer.title'),
+      description: t('sections.comingSoon.promptEngineer.description'),
       icon: <Calendar className="h-8 w-8 text-white" />,
       appLink: '/apps/prompt-engineer'
     }
@@ -98,10 +98,10 @@ const TutorialsPage = () => {
           {/* Header */}
           <div className="text-center mb-12">
             <h1 className="text-4xl font-extrabold text-education-light mb-4">
-              📚 Tutorial delle Applicazioni
+              {t('title')}
             </h1>
             <p className="text-xl text-gray-200 max-w-3xl mx-auto">
-              Questa guida fornisce un accesso rapido a tutti i tutorial disponibili per le applicazioni educative di AI-Debate.Tech.
+              {t('subtitle')}
             </p>
           </div>
 
@@ -109,7 +109,7 @@ const TutorialsPage = () => {
           <section className="mb-16">
             <h2 className="text-3xl font-bold text-education-light mb-8 flex items-center">
               <BookOpen className="mr-3" />
-              Tutorial Disponibili
+              {t('sections.availableTutorials.title')}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {tutorials.map((tutorial) => (
@@ -119,7 +119,7 @@ const TutorialsPage = () => {
                       {tutorial.icon}
                       {tutorial.available && (
                         <span className="bg-green-500 text-white text-xs px-2 py-1 rounded-full">
-                          Disponibile
+                          {t('sections.availableTutorials.availableLabel')}
                         </span>
                       )}
                     </div>
@@ -131,20 +131,20 @@ const TutorialsPage = () => {
                       <Link to={tutorial.appLink}>
                         <Button className="w-full bg-education hover:bg-education-dark text-white">
                           <ExternalLink className="w-4 h-4 mr-2" />
-                          Apri Applicazione
+                          {t('sections.availableTutorials.goToAppButton')}
                         </Button>
                       </Link>
                       {tutorial.tutorialLink ? (
                         <Link to={tutorial.tutorialLink}>
                           <Button variant="outline" className="w-full border-education text-education hover:bg-education hover:text-white">
                             <Book className="w-4 h-4 mr-2" />
-                            Visualizza Tutorial
+                            {t('sections.availableTutorials.startTutorialButton')}
                           </Button>
                         </Link>
                       ) : (
                         <Button variant="outline" disabled className="w-full">
                           <Book className="w-4 h-4 mr-2" />
-                          Tutorial in arrivo
+                          {t('sections.availableTutorials.tutorialComingSoonButton')}
                         </Button>
                       )}
                     </div>
@@ -158,7 +158,7 @@ const TutorialsPage = () => {
           <section className="mb-16">
             <h2 className="text-3xl font-bold text-education-light mb-8 flex items-center">
               <Rocket className="mr-3" />
-              Applicazioni in Sviluppo
+              {t('sections.comingSoon.title')}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {comingSoon.map((app) => (
@@ -167,7 +167,7 @@ const TutorialsPage = () => {
                     <div className="flex items-center justify-between mb-4">
                       {app.icon}
                       <span className="bg-yellow-500 text-white text-xs px-2 py-1 rounded-full">
-                        In arrivo
+                        {t('sections.availableTutorials.comingSoonLabel')}
                       </span>
                     </div>
                     <h3 className="text-xl font-bold text-white mb-2">{app.title}</h3>
@@ -176,7 +176,7 @@ const TutorialsPage = () => {
                     <p className="text-foreground mb-6">{app.description}</p>
                     <Button disabled className="w-full">
                       <Calendar className="w-4 h-4 mr-2" />
-                      Prossimamente
+                      {t('sections.comingSoon.comingSoonButton')}
                     </Button>
                   </div>
                 </div>
@@ -188,38 +188,38 @@ const TutorialsPage = () => {
           <section className="mb-16">
             <h2 className="text-3xl font-bold text-education-light mb-8 flex items-center">
               <BookOpen className="mr-3" />
-              Risorse Aggiuntive
+              {t('sections.additionalResources.title')}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div className="bg-card rounded-lg shadow-lg p-6 border border-border">
-                <h3 className="text-xl font-bold text-education-light mb-4">Guida per Insegnanti</h3>
-                <p className="text-foreground mb-6">
-                  Una guida completa su come utilizzare le nostre applicazioni per creare esperienze di apprendimento innovative e coinvolgenti.
-                </p>
+                <h3 className="text-xl font-bold text-education-light mb-4">{t('sections.additionalResources.teacherGuide.title')}</h3>
+                 <p className="text-foreground mb-6">
+                   {t('sections.additionalResources.teacherGuide.description')}
+                 </p>
                 <Link to="/teacher-guide">
                   <Button className="bg-education hover:bg-education-dark text-white">
                     <BookOpen className="w-4 h-4 mr-2" />
-                    Visualizza Guida
+                    {t('sections.additionalResources.teacherGuide.button')}
                   </Button>
                 </Link>
               </div>
               <div className="bg-card rounded-lg shadow-lg p-6 border border-border">
-                <h3 className="text-xl font-bold text-education-light mb-4">Tutte le Applicazioni</h3>
-                <p className="text-foreground mb-6">
-                  Visualizza tutte le applicazioni disponibili in un'unica pagina per una panoramica completa.
-                </p>
+                <h3 className="text-xl font-bold text-education-light mb-4">{t('sections.additionalResources.allApps.title')}</h3>
+                 <p className="text-foreground mb-6">
+                   {t('sections.additionalResources.allApps.description')}
+                 </p>
                 <Link to="/apps">
                   <Button className="bg-education hover:bg-education-dark text-white">
                     <ExternalLink className="w-4 h-4 mr-2" />
-                    Esplora Applicazioni
+                    {t('sections.additionalResources.allApps.button')}
                   </Button>
                 </Link>
               </div>
               <div className="bg-card rounded-lg shadow-lg p-6 border border-border">
-                <h3 className="text-xl font-bold text-education-light mb-4">Community Reddit</h3>
-                <p className="text-foreground mb-6">
-                  Unisciti alla nostra community su Reddit per condividere esperienze, idee e sperimentazioni didattiche con altri educatori.
-                </p>
+                <h3 className="text-xl font-bold text-education-light mb-4">{t('sections.additionalResources.reddit.title')}</h3>
+                 <p className="text-foreground mb-6">
+                   {t('sections.additionalResources.reddit.description')}
+                 </p>
                 <RedditButton variant="default" className="w-full" />
               </div>
             </div>
@@ -229,7 +229,7 @@ const TutorialsPage = () => {
           <section className="mb-16">
             <h2 className="text-3xl font-bold text-education-light mb-8 flex items-center">
               <Rocket className="mr-3" />
-              Come Iniziare
+              {t('sections.howToStart.title')}
             </h2>
             <div className="bg-card rounded-lg shadow-lg p-8 border border-border">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -237,29 +237,29 @@ const TutorialsPage = () => {
                   <div className="bg-education rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-4">
                     <span className="text-white font-bold text-lg">1</span>
                   </div>
-                  <h3 className="font-bold text-education-light mb-2">Scegli un'applicazione</h3>
-                  <p className="text-sm text-foreground">Dalla lista sopra</p>
+                  <h3 className="font-bold text-education-light mb-2">{t('sections.howToStart.steps.step1.title')}</h3>
+                   <p className="text-sm text-foreground">{t('sections.howToStart.steps.step1.description')}</p>
                 </div>
                 <div className="text-center">
                   <div className="bg-education rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-4">
                     <span className="text-white font-bold text-lg">2</span>
                   </div>
-                  <h3 className="font-bold text-education-light mb-2">Leggi il tutorial</h3>
-                  <p className="text-sm text-foreground">Per capire come utilizzarla</p>
+                  <h3 className="font-bold text-education-light mb-2">{t('sections.howToStart.steps.step2.title')}</h3>
+                   <p className="text-sm text-foreground">{t('sections.howToStart.steps.step2.description')}</p>
                 </div>
                 <div className="text-center">
                   <div className="bg-education rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-4">
                     <span className="text-white font-bold text-lg">3</span>
                   </div>
-                  <h3 className="font-bold text-education-light mb-2">Inizia a sperimentare</h3>
-                  <p className="text-sm text-foreground">Con l'applicazione</p>
+                  <h3 className="font-bold text-education-light mb-2">{t('sections.howToStart.steps.step3.title')}</h3>
+                   <p className="text-sm text-foreground">{t('sections.howToStart.steps.step3.description')}</p>
                 </div>
                 <div className="text-center">
                   <div className="bg-education rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-4">
                     <span className="text-white font-bold text-lg">4</span>
                   </div>
-                  <h3 className="font-bold text-education-light mb-2">Consulta la Guida</h3>
-                  <p className="text-sm text-foreground">Per idee didattiche</p>
+                  <h3 className="font-bold text-education-light mb-2">{t('sections.howToStart.steps.step4.title')}</h3>
+                   <p className="text-sm text-foreground">{t('sections.howToStart.steps.step4.description')}</p>
                 </div>
               </div>
             </div>
@@ -269,34 +269,34 @@ const TutorialsPage = () => {
           <section className="mb-16">
             <h2 className="text-3xl font-bold text-education-light mb-8 flex items-center">
               <Lightbulb className="mr-3" />
-              Suggerimenti per l'Uso
+              {t('sections.tips.title')}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div className="bg-card rounded-lg shadow-lg p-6 border border-border">
                 <h3 className="font-bold text-education-light mb-4 flex items-center">
                   <BookOpen className="w-5 h-5 mr-2" />
-                  Per Insegnanti
+                  {t('sections.tips.forTeachers.title')}
                 </h3>
                 <p className="text-foreground">
-                  Ogni applicazione può essere utilizzata per creare attività coinvolgenti che trasformano l'apprendimento tradizionale in esperienze interattive.
+                  {t('sections.tips.forTeachers.description')}
                 </p>
               </div>
               <div className="bg-card rounded-lg shadow-lg p-6 border border-border">
                 <h3 className="font-bold text-education-light mb-4 flex items-center">
                   <User className="w-5 h-5 mr-2" />
-                  Per Studenti
+                  {t('sections.tips.forStudents.title')}
                 </h3>
                 <p className="text-foreground">
-                  Usa questi strumenti per esplorare la storia, praticare il dibattito e sviluppare il pensiero critico.
+                  {t('sections.tips.forStudents.description')}
                 </p>
               </div>
               <div className="bg-card rounded-lg shadow-lg p-6 border border-border">
                 <h3 className="font-bold text-education-light mb-4 flex items-center">
                   <Users className="w-5 h-5 mr-2" />
-                  Per Tutti
+                  {t('sections.tips.forEveryone.title')}
                 </h3>
                 <p className="text-foreground">
-                  Sperimenta con diverse combinazioni di applicazioni per creare percorsi di apprendimento personalizzati.
+                  {t('sections.tips.forEveryone.description')}
                 </p>
               </div>
             </div>
@@ -304,13 +304,13 @@ const TutorialsPage = () => {
 
           {/* Footer Info */}
           <div className="text-center text-gray-400 text-sm">
-            <p>Ultimo aggiornamento: Gennaio 2025</p>
-            <p className="mt-2">
-              Per supporto o domande, visita la nostra{' '}
-              <Link to="/about" className="text-education hover:text-education-light underline">
-                pagina di supporto
-              </Link>
-            </p>
+            <p>{t('footer.lastUpdate')}</p>
+             <p className="mt-2">
+               {t('footer.supportText')}{' '}
+               <Link to="/about" className="text-education hover:text-education-light underline">
+                 {t('footer.supportLink')}
+               </Link>
+             </p>
           </div>
         </div>
       </main>
