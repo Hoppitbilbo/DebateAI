@@ -14,6 +14,7 @@ import YouModerateFeedback from "@/components/YouModerate/YouModerateFeedback";
 // Import local Message type from you-moderate for the handler
 import { Message as YouModerateMessage } from "@/components/you-moderate/types";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 
 interface WikiSearchResult {
   title: string;
@@ -220,14 +221,15 @@ const YouModeratePage = () => {
               {t('apps.youModerate.description')}
             </p>
             <div className="mt-6">
-              <Button
-                variant="outline"
-                onClick={() => window.location.href = '/apps/you-moderate/tutorial'}
-                className="inline-flex items-center space-x-2 border-education-light text-education-light hover:bg-education-light hover:text-gray-900"
-              >
-                <BookOpen className="w-4 h-4" />
-                <span>{t('common.viewTutorial', 'View Tutorial')}</span>
-              </Button>
+              <Link to="/apps/you-moderate/tutorial">
+                <Button
+                  variant="outline"
+                  className="inline-flex items-center space-x-2 border-education-light text-education-light hover:bg-education-light hover:text-gray-900"
+                >
+                  <BookOpen className="w-4 h-4" />
+                  <span>{t('common.viewTutorial', 'View Tutorial')}</span>
+                </Button>
+              </Link>
             </div>
           </div>
           

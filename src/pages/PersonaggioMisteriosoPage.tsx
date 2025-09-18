@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { BookOpen } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 
 const PersonaggioMisteriosoPage = () => {
   const { t } = useTranslation();
@@ -19,14 +20,15 @@ const PersonaggioMisteriosoPage = () => {
           {t('apps.personaggioMisterioso.description')}
         </p>
         <div className="text-center mb-8">
-          <Button
-            variant="outline"
-            onClick={() => window.location.href = '/apps/personaggio-misterioso/tutorial'}
-            className="inline-flex items-center space-x-2"
-          >
-            <BookOpen className="w-4 h-4" />
-            <span>{t('common.tutorial', 'View Tutorial')}</span>
-          </Button>
+          <Link to="/apps/personaggio-misterioso/tutorial">
+            <Button
+              variant="outline"
+              className="inline-flex items-center space-x-2"
+            >
+              <BookOpen className="w-4 h-4" />
+              <span>{t('common.tutorial', 'View Tutorial')}</span>
+            </Button>
+          </Link>
         </div>
         <PersonaggioMisteriosoInterface />
       </main>

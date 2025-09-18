@@ -5,6 +5,7 @@ import ConvinciTuInterface from "@/components/ConvinciTuInterface";
 import { Button } from "@/components/ui/button";
 import { BookOpen } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 
 const ConvinciTuPage = () => {
   const { t } = useTranslation();
@@ -21,14 +22,15 @@ const ConvinciTuPage = () => {
               {t('apps.convinciTu.subtitle')}
             </p>
             <div className="mb-8">
-              <Button
-                variant="outline"
-                onClick={() => window.location.href = '/apps/convinci-tu/tutorial'}
-                className="inline-flex items-center space-x-2"
-              >
-                <BookOpen className="w-4 h-4" />
-                <span>{t('common.tutorial', 'View Tutorial')}</span>
-              </Button>
+              <Link to="/apps/convinci-tu/tutorial">
+                <Button
+                  variant="outline"
+                  className="inline-flex items-center space-x-2"
+                >
+                  <BookOpen className="w-4 h-4" />
+                  <span>{t('common.tutorial', 'View Tutorial')}</span>
+                </Button>
+              </Link>
             </div>
           </div>
           <ConvinciTuInterface />

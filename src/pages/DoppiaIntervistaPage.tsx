@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowRight, BookOpen } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 interface WikiSearchResult {
   title: string;
   snippet: string;
@@ -42,14 +43,15 @@ const DoppiaIntervistaPage = () => {
               {t('apps.doppiaIntervista.description')}
             </p>
             <div className="mt-6">
-              <Button
-                variant="outline"
-                onClick={() => window.location.href = '/apps/doppia-intervista/tutorial'}
-                className="border-education text-education hover:bg-education hover:text-white"
-              >
-                <BookOpen className="w-4 h-4 mr-2" />
-                {t('common.tutorial')}
-              </Button>
+              <Link to="/apps/doppia-intervista/tutorial">
+                <Button
+                  variant="outline"
+                  className="border-education text-education hover:bg-education hover:text-white"
+                >
+                  <BookOpen className="w-4 h-4 mr-2" />
+                  {t('common.tutorial')}
+                </Button>
+              </Link>
             </div>
           </div>
           
