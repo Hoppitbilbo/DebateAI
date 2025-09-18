@@ -1,30 +1,76 @@
 import { GoogleGenerativeAI, GenerativeModel, ChatSession, GenerateContentRequest, GenerateContentResult, Part } from "@google/generative-ai";
 
-// Get the API key from environment variables
-const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+const API_KEY_STORAGE_KEY = 'gemini_api_key';
 
-let genAI: GoogleGenerativeAI;
-let model: GenerativeModel;
+let genAI: GoogleGenerativeAI | null = null;
+let model: GenerativeModel | null = null;
 
-if (apiKey && apiKey !== 'your_api_key_here') {
+/**
+ * Gets the API key from session storage or environment variables (fallback)
+ */
+const getApiKey = (): string | null => {
+  // First try session storage
+  const sessionApiKey = sessionStorage.getItem(API_KEY_STORAGE_KEY);
+  if (sessionApiKey && sessionApiKey.trim()) {
+    return sessionApiKey.trim();
+  }
+  
+  // Fallback to environment variable
+  const envApiKey = import.meta.env.VITE_GEMINI_API_KEY;
+  if (envApiKey && envApiKey !== 'your_api_key_here') {
+    return envApiKey;
+  }
+  
+  return null;
+};
+
+/**
+ * Initializes the AI service with the current API key
+ */
+const initializeAiService = (): boolean => {
+  const apiKey = getApiKey();
+  
+  if (!apiKey) {
+    console.warn("No Gemini API key found. AI Service will be disabled.");
+    console.info("Please add your API key using the API key button in the navbar.");
+    genAI = null;
+    model = null;
+    return false;
+  }
+
   try {
     genAI = new GoogleGenerativeAI(apiKey);
     model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-001" });
     console.log("Google AI service initialized successfully");
+    return true;
   } catch (error) {
     console.error("Error initializing GoogleGenerativeAI:", error);
     console.warn("AI Service initialization failed. Please check your API key.");
+    genAI = null;
+    model = null;
+    return false;
   }
-} else {
-  console.warn("Gemini API key is not configured. AI Service will be disabled.");
-  console.info("Please add your API key to the .env file as VITE_GEMINI_API_KEY");
-}
+};
+
+// Initialize on module load
+initializeAiService();
 
 /**
  * Checks if the AI service is available and configured.
  */
 export const isAiServiceAvailable = (): boolean => {
+  // Try to reinitialize if model is not available
+  if (!model) {
+    initializeAiService();
+  }
   return !!model;
+};
+
+/**
+ * Reinitializes the AI service (useful when API key changes)
+ */
+export const reinitializeAiService = (): boolean => {
+  return initializeAiService();
 };
 
 /**
@@ -37,7 +83,7 @@ export const startChat = (
   systemInstructionText?: string
 ): ChatSession => {
   if (!isAiServiceAvailable()) {
-    throw new Error("AI Service is not configured. Cannot start chat. Please check your VITE_GEMINI_API_KEY in the .env file.");
+    throw new Error("AI Service is not configured. Cannot start chat. Please add your API key using the API key button in the navbar.");
   }
 
   if (!model) {

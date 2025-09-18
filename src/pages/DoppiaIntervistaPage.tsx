@@ -48,7 +48,7 @@ const DoppiaIntervistaPage = () => {
                 className="border-education text-education hover:bg-education hover:text-white"
               >
                 <BookOpen className="w-4 h-4 mr-2" />
-                {t('apps.doppiaIntervista.tutorial')}
+                {t('common.tutorial')}
               </Button>
             </div>
           </div>
