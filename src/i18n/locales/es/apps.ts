@@ -1,17 +1,19 @@
-import youModerate from './apps/youModerate.json';
-import wikiChatbot from './apps/wikiChatbot.json';
-import wikiChat from './apps/wikiChat.json';
-import doppiaIntervista from './apps/doppiaIntervista.json';
 import convinciTu from './apps/convinciTu.json';
-import personaggioMisterioso from './apps/personaggioMisterioso.json';
+import doppiaIntervista from './apps/doppiaIntervista.json';
 import impersonaTu from './apps/impersonaTu.json';
+import inquiryDialogue from './apps/inquiryDialogue.json';
+import personaggioMisterioso from './apps/personaggioMisterioso.json';
+import wikiChat from './apps/wikiChat.json';
+import wikiChatbot from './apps/wikiChatbot.json';
+import youModerate from './apps/youModerate.json';
 
 export default {
-  youModerate,
-  wikiChatbot,
-  wikiChat,
-  doppiaIntervista,
   convinciTu,
+  doppiaIntervista,
+  impersonaTu,
+  inquiryDialogue,
   personaggioMisterioso,
-  impersonaTu
+  wikiChat,
+  wikiChatbot,
+  youModerate
 };

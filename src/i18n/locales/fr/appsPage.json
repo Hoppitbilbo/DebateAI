@@ -37,6 +37,10 @@
     "impersonaTu": {
       "title": "Incarnez Vous",
       "description": "Dialoguez avec une figure historique en en interprétant une autre. Testez vos compétences d'empathie !"
+    },
+    "inquiryDialogue": {
+      "title": "Dialogue d'Enquête",
+      "description": "Modérez des discussions entre figures historiques et développez la pensée critique grâce à l'enquête guidée."
     }
   }
 }

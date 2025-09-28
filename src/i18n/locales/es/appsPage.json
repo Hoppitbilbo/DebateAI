@@ -27,8 +27,12 @@
       "description": "Desafía tus habilidades de persuasión tratando de convencer a figuras históricas de tus ideas."
     },
     "impersonaTu": {
-      "title": "Personifica Tú",
-      "description": "Dialoga con una figura histórica interpretando a otra. ¡Pon a prueba tus habilidades de empatía!"
+      "title": "Tú Personificas",
+      "description": "¡Dialoga con una figura histórica interpretando a otra. Pon a prueba tus habilidades de empatía!"
+    },
+    "inquiryDialogue": {
+      "title": "Diálogo de Investigación",
+      "description": "Modera discusiones entre figuras históricas y desarrolla el pensamiento crítico a través de la investigación guiada."
     }
   },
   "badges": {

@@ -1,0 +1,75 @@
+{
+  "name": "Dialogue d'enquête",
+  "title": "Dialogue d'enquête",
+  "subtitle": "Interviewer des figures historiques",
+  "description": "Créez et analysez des conversations profondes entre deux figures historiques basées sur leurs profils Wikipedia.",
+  "errors": {
+    "fetchError": "Erreur lors de la récupération des données de Wikipedia pour {{title}}",
+    "noSummary": "Aucun résumé trouvé.",
+    "summaryError": "Impossible de récupérer le résumé pour ce personnage.",
+    "technicalReflection": "Une erreur technique s'est produite lors de l'évaluation de la réflexion."
+  },
+  "tutorial": "Voir le Tutoriel",
+  "setup": {
+    "buildDialogue": "Construire le Dialogue",
+    "selectDescription": "Sélectionnez deux figures historiques de Wikipedia et définissez un thème pour leur discussion.",
+    "character1": "Premier Personnage",
+    "character2": "Deuxième Personnage",
+    "themeLabel": "Thème de Conversation",
+    "themePlaceholder": "Exemple : L'impact de l'imprimerie sur la société",
+    "startConversationButton": "Commencer la Conversation",
+    "startButton": "Commencer le Dialogue",
+    "loadingSummary": "Chargement du résumé depuis Wikipedia...",
+    "summaryLoaded": "Résumé chargé.",
+    "selectCharacters": "Sélectionner les Personnages",
+    "selectCharactersDescription": "Choisissez 2-3 figures historiques pour participer à la discussion.",
+    "searchPlaceholder": "Rechercher des figures historiques...",
+    "selectedCharacters": "Personnages Sélectionnés",
+    "discussionTopic": "Sujet de Discussion",
+    "discussionTopicDescription": "Définissez le sujet qui guidera la conversation.",
+    "topicPlaceholder": "Entrez un sujet de discussion...",
+    "exampleTopics": "Sujets d'Exemple",
+    "exampleTopic1": "Le rôle de la technologie dans la société",
+    "exampleTopic2": "Démocratie vs. autoritarisme",
+    "exampleTopic3": "La nature du progrès scientifique",
+    "startDiscussion": "Commencer la Discussion"
+  },
+  "chat": {
+    "systemMessage": "Commencez le dialogue entre {{char1}} et {{char2}} sur le sujet : {{theme}}. Modérateur, vous pouvez guider la conversation ou laisser les personnages interagir librement.",
+    "errorMessage": "Une erreur s'est produite lors de la génération de la réponse.",
+    "autoErrorMessage": "Une erreur s'est produite lors de la génération de la réponse automatique.",
+    "dialogueTab": "Dialogue",
+    "charactersTab": "Profils des Personnages",
+    "endDialogueButton": "Terminer le Dialogue et Réfléchir",
+    "speakToAll": "Parler à tous",
+    "speakTo": "Parler à {{name}}",
+    "askBothPlaceholder": "Posez une question aux deux...",
+    "askCharacterPlaceholder": "Posez une question à {{character}}...",
+    "nextIntervention": "Prochaine Intervention de {{character}}"
+  },
+  "characterStyles": {
+    "erudite": "érudit",
+    "reflective": "réflexif"
+  },
+  "reflection": {
+    "title": "Réflexion sur le Dialogue d'Enquête",
+    "description": "Analysez le dialogue que vous avez observé. Considérez les points de vue, les arguments et ce qui vous a marqué.",
+    "questions": [
+      "Quels ont été les points clés qui ont émergé du dialogue entre les deux personnages ?",
+      "Les arguments présentés par les personnages étaient-ils conformes à leurs figures historiques ? Pourquoi ?",
+      "Quel personnage a offert la perspective la plus surprenante ou éclairante sur le sujet ?",
+      "Comment ce dialogue a-t-il enrichi ou modifié votre compréhension du sujet discuté ?",
+      "Si vous pouviez poser une question à l'un des personnages, quelle serait-elle et à qui la poseriez-vous ?"
+    ]
+  },
+  "feedback": {
+    "title": "Retour sur le Dialogue d'Enquête",
+    "conversationTitle": "Conversation",
+    "downloadReflection": "Télécharger la Réflexion",
+    "downloadSuccess": "Réflexion téléchargée avec succès !",
+    "downloadError": "Erreur lors du téléchargement de la réflexion"
+  },
+  "status": {
+    "evaluating": "Évaluation de la réflexion en cours..."
+  }
+}

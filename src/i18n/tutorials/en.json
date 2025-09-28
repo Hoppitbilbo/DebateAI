@@ -291,5 +291,76 @@
         "content": "Begin your comparative analysis journey and discover the power of multiple perspectives!"
       }
     }
+  },
+  "inquiryDialogue": {
+    "title": "Inquiry Dialogue Tutorial",
+    "subtitle": "Learn to moderate collaborative peer discussions",
+    "startApp": "Start Inquiry Dialogue",
+    "slides": {
+      "welcome": {
+        "title": "Welcome to Inquiry Dialogue!",
+        "content": "Facilitate collaborative discussions where participants explore complex topics together through structured dialogue.",
+        "bullet1": "Moderate collaborative peer discussions",
+        "bullet2": "Facilitate exploration of complex topics",
+        "bullet3": "Develop facilitation skills",
+        "bullet4": "Promote group critical thinking"
+      },
+      "moderatorRole": {
+        "title": "The Moderator Role",
+        "content": "Learn essential skills to effectively guide collaborative discussions and maintain a productive learning environment.",
+        "bullet1": "Facilitate dialogue without dominating conversation",
+        "bullet2": "Ask questions that stimulate critical thinking",
+        "bullet3": "Maintain a respectful and inclusive environment",
+        "bullet4": "Guide the group toward deeper insights"
+      },
+      "peerCollaboration": {
+        "title": "Peer Collaboration",
+        "content": "Discover how to create an environment where participants learn from each other through constructive dialogue.",
+        "bullet1": "Encourage active participation from all",
+        "bullet2": "Facilitate exchange of diverse perspectives",
+        "bullet3": "Build understanding through dialogue",
+        "bullet4": "Develop active listening skills"
+      },
+      "setupDebate": {
+        "title": "Discussion Setup",
+        "content": "Learn to structure and organize effective discussions that promote collaborative learning.",
+        "bullet1": "Choose appropriate topics for exploration",
+        "bullet2": "Establish clear discussion guidelines",
+        "bullet3": "Create a safe environment for sharing",
+        "bullet4": "Plan strategic guiding questions"
+      },
+      "moderationSkills": {
+        "title": "Moderation Skills",
+        "content": "Develop key skills needed to effectively moderate collaborative and group discussions.",
+        "bullet1": "Ask open-ended questions that stimulate reflection",
+        "bullet2": "Summarize and synthesize key points",
+        "bullet3": "Manage difficult group dynamics",
+        "bullet4": "Maintain focus on learning objectives"
+      },
+      "criticalThinking": {
+        "title": "Promoting Critical Thinking",
+        "content": "Learn techniques to encourage deep analysis and critical evaluation during group discussions.",
+        "bullet1": "Challenge assumptions constructively",
+        "bullet2": "Encourage evidence analysis",
+        "bullet3": "Promote consideration of multiple perspectives",
+        "bullet4": "Facilitate connections between ideas and concepts"
+      },
+      "reflection": {
+        "title": "Reflection and Synthesis",
+        "content": "Discover how to effectively conclude discussions with meaningful reflection and synthesis of key insights.",
+        "bullet1": "Guide reflection on key points learned",
+        "bullet2": "Help participants synthesize new understandings",
+        "bullet3": "Identify areas for further exploration",
+        "bullet4": "Document group insights and progress"
+      },
+      "applications": {
+        "title": "Practical Applications",
+        "content": "Explore how to use inquiry dialogue in various educational and professional contexts.",
+        "bullet1": "Classroom discussions on complex topics",
+        "bullet2": "Professional development workshops",
+        "bullet3": "Group problem-solving sessions",
+        "bullet4": "Collaborative meeting facilitation"
+      }
+    }
   }
 }

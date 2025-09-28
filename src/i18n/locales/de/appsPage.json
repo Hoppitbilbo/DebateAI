@@ -35,8 +35,12 @@
       "description": "Fordern Sie Ihre Überzeugungsfähigkeiten heraus, indem Sie versuchen, historische Figuren von Ihren Ideen zu überzeugen."
     },
     "impersonaTu": {
-      "title": "Verkörpere Du",
-      "description": "Führen Sie ein Gespräch mit einer historischen Figur, während Sie eine andere interpretieren. Testen Sie Ihre Einfühlungsfähigkeiten!"
+      "title": "Du Verkörperst",
+      "description": "Führe einen Dialog mit einer historischen Figur, indem du eine andere interpretierst. Teste deine Empathiefähigkeiten!"
+    },
+    "inquiryDialogue": {
+      "title": "Forschungsdialog",
+      "description": "Moderieren Sie Diskussionen zwischen historischen Figuren und entwickeln Sie kritisches Denken durch geführte Untersuchung."
     }
   }
 }

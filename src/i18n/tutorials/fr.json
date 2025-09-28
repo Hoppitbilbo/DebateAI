@@ -291,5 +291,76 @@
         "content": "Commencez votre voyage d'analyse comparative et découvrez le pouvoir de multiples perspectives !"
       }
     }
+  },
+  "inquiryDialogue": {
+    "title": "Tutoriel Dialogue d'Enquête",
+    "subtitle": "Apprenez à modérer des discussions collaboratives entre pairs",
+    "startApp": "Commencer le Dialogue d'Enquête",
+    "slides": {
+      "welcome": {
+        "title": "Bienvenue dans le Dialogue d'Enquête !",
+        "content": "Facilitez des discussions collaboratives où les participants explorent ensemble des sujets complexes à travers un dialogue structuré.",
+        "bullet1": "Modérez des discussions collaboratives entre pairs",
+        "bullet2": "Facilitez l'exploration de sujets complexes",
+        "bullet3": "Développez des compétences de facilitation",
+        "bullet4": "Promouvez la pensée critique de groupe"
+      },
+      "moderatorRole": {
+        "title": "Le Rôle du Modérateur",
+        "content": "Apprenez les compétences essentielles pour guider efficacement les discussions collaboratives et maintenir un environnement d'apprentissage productif.",
+        "bullet1": "Facilitez le dialogue sans dominer la conversation",
+        "bullet2": "Posez des questions qui stimulent la pensée critique",
+        "bullet3": "Maintenez un environnement respectueux et inclusif",
+        "bullet4": "Guidez le groupe vers des insights plus profonds"
+      },
+      "peerCollaboration": {
+        "title": "Collaboration entre Pairs",
+        "content": "Découvrez comment créer un environnement où les participants apprennent les uns des autres à travers un dialogue constructif.",
+        "bullet1": "Encouragez la participation active de tous",
+        "bullet2": "Facilitez l'échange de perspectives diverses",
+        "bullet3": "Construisez la compréhension à travers le dialogue",
+        "bullet4": "Développez des compétences d'écoute active"
+      },
+      "setupDebate": {
+        "title": "Configuration de la Discussion",
+        "content": "Apprenez à structurer et organiser des discussions efficaces qui favorisent l'apprentissage collaboratif.",
+        "bullet1": "Choisissez des sujets appropriés pour l'exploration",
+        "bullet2": "Établissez des directives claires pour la discussion",
+        "bullet3": "Créez un environnement sûr pour le partage",
+        "bullet4": "Planifiez des questions guides stratégiques"
+      },
+      "moderationSkills": {
+        "title": "Compétences de Modération",
+        "content": "Développez les compétences clés nécessaires pour modérer efficacement les discussions collaboratives et de groupe.",
+        "bullet1": "Posez des questions ouvertes qui stimulent la réflexion",
+        "bullet2": "Résumez et synthétisez les points clés",
+        "bullet3": "Gérez les dynamiques de groupe difficiles",
+        "bullet4": "Maintenez l'attention sur les objectifs d'apprentissage"
+      },
+      "criticalThinking": {
+        "title": "Promouvoir la Pensée Critique",
+        "content": "Apprenez des techniques pour encourager l'analyse approfondie et l'évaluation critique pendant les discussions de groupe.",
+        "bullet1": "Remettez en question les suppositions de manière constructive",
+        "bullet2": "Encouragez l'analyse des preuves",
+        "bullet3": "Promouvez la considération de multiples perspectives",
+        "bullet4": "Facilitez les connexions entre idées et concepts"
+      },
+      "reflection": {
+        "title": "Réflexion et Synthèse",
+        "content": "Découvrez comment conclure efficacement les discussions avec une réflexion significative et une synthèse des insights clés.",
+        "bullet1": "Guidez la réflexion sur les points clés appris",
+        "bullet2": "Aidez les participants à synthétiser de nouvelles compréhensions",
+        "bullet3": "Identifiez les domaines pour une exploration plus poussée",
+        "bullet4": "Documentez les insights et progrès du groupe"
+      },
+      "applications": {
+        "title": "Applications Pratiques",
+        "content": "Explorez comment utiliser le dialogue d'enquête dans divers contextes éducatifs et professionnels.",
+        "bullet1": "Discussions en classe sur des sujets complexes",
+        "bullet2": "Ateliers de développement professionnel",
+        "bullet3": "Sessions de résolution de problèmes en groupe",
+        "bullet4": "Facilitation de réunions collaboratives"
+      }
+    }
   }
 }

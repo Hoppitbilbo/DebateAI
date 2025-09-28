@@ -294,5 +294,76 @@
         "content": "¡Comienza tu viaje de análisis comparativo y descubre el poder de múltiples perspectivas!"
       }
     }
+  },
+  "inquiryDialogue": {
+    "title": "Tutorial Diálogo de Investigación",
+    "subtitle": "Aprende a moderar discusiones colaborativas entre pares",
+    "startApp": "Iniciar Diálogo de Investigación",
+    "slides": {
+      "welcome": {
+        "title": "¡Bienvenido al Diálogo de Investigación!",
+        "content": "Facilita discusiones colaborativas donde los participantes exploran temas complejos juntos a través del diálogo estructurado.",
+        "bullet1": "Modera discusiones colaborativas entre pares",
+        "bullet2": "Facilita la exploración de temas complejos",
+        "bullet3": "Desarrolla habilidades de facilitación",
+        "bullet4": "Promueve el pensamiento crítico grupal"
+      },
+      "moderatorRole": {
+        "title": "El Rol del Moderador",
+        "content": "Aprende habilidades esenciales para guiar efectivamente discusiones colaborativas y mantener un ambiente de aprendizaje productivo.",
+        "bullet1": "Facilita el diálogo sin dominar la conversación",
+        "bullet2": "Haz preguntas que estimulen el pensamiento crítico",
+        "bullet3": "Mantén un ambiente respetuoso e inclusivo",
+        "bullet4": "Guía al grupo hacia percepciones más profundas"
+      },
+      "peerCollaboration": {
+        "title": "Colaboración entre Pares",
+        "content": "Descubre cómo crear un ambiente donde los participantes aprendan unos de otros a través del diálogo constructivo.",
+        "bullet1": "Fomenta la participación activa de todos",
+        "bullet2": "Facilita el intercambio de perspectivas diversas",
+        "bullet3": "Construye comprensión a través del diálogo",
+        "bullet4": "Desarrolla habilidades de escucha activa"
+      },
+      "setupDebate": {
+        "title": "Configuración de la Discusión",
+        "content": "Aprende a estructurar y organizar discusiones efectivas que promuevan el aprendizaje colaborativo.",
+        "bullet1": "Elige temas apropiados para la exploración",
+        "bullet2": "Establece pautas claras para la discusión",
+        "bullet3": "Crea un ambiente seguro para compartir",
+        "bullet4": "Planifica preguntas guía estratégicas"
+      },
+      "moderationSkills": {
+        "title": "Habilidades de Moderación",
+        "content": "Desarrolla habilidades clave necesarias para moderar efectivamente discusiones colaborativas y grupales.",
+        "bullet1": "Haz preguntas abiertas que estimulen la reflexión",
+        "bullet2": "Resume y sintetiza puntos clave",
+        "bullet3": "Maneja dinámicas grupales difíciles",
+        "bullet4": "Mantén el enfoque en los objetivos de aprendizaje"
+      },
+      "criticalThinking": {
+        "title": "Promoviendo el Pensamiento Crítico",
+        "content": "Aprende técnicas para fomentar el análisis profundo y la evaluación crítica durante las discusiones grupales.",
+        "bullet1": "Desafía las suposiciones de manera constructiva",
+        "bullet2": "Fomenta el análisis de evidencias",
+        "bullet3": "Promueve la consideración de múltiples perspectivas",
+        "bullet4": "Facilita conexiones entre ideas y conceptos"
+      },
+      "reflection": {
+        "title": "Reflexión y Síntesis",
+        "content": "Descubre cómo concluir efectivamente las discusiones con reflexión significativa y síntesis de percepciones clave.",
+        "bullet1": "Guía la reflexión sobre puntos clave aprendidos",
+        "bullet2": "Ayuda a los participantes a sintetizar nuevas comprensiones",
+        "bullet3": "Identifica áreas para mayor exploración",
+        "bullet4": "Documenta percepciones y progreso del grupo"
+      },
+      "applications": {
+        "title": "Aplicaciones Prácticas",
+        "content": "Explora cómo usar el diálogo de investigación en varios contextos educativos y profesionales.",
+        "bullet1": "Discusiones en clase sobre temas complejos",
+        "bullet2": "Talleres de desarrollo profesional",
+        "bullet3": "Sesiones de resolución de problemas grupales",
+        "bullet4": "Facilitación de reuniones colaborativas"
+      }
+    }
   }
 }

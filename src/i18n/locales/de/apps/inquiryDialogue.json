@@ -1,0 +1,75 @@
+{
+  "name": "Forschungsdialog",
+  "title": "Forschungsdialog",
+  "subtitle": "Historische Figuren interviewen",
+  "description": "Erstellen und analysieren Sie tiefgreifende Gespräche zwischen zwei historischen Figuren basierend auf ihren Wikipedia-Profilen.",
+  "errors": {
+    "fetchError": "Fehler beim Abrufen von Daten aus Wikipedia für {{title}}",
+    "noSummary": "Keine Zusammenfassung gefunden.",
+    "summaryError": "Zusammenfassung für diese Figur konnte nicht abgerufen werden.",
+    "technicalReflection": "Ein technischer Fehler ist bei der Reflexionsbewertung aufgetreten."
+  },
+  "tutorial": "Tutorial Anzeigen",
+  "setup": {
+    "buildDialogue": "Dialog Erstellen",
+    "selectDescription": "Wählen Sie zwei historische Figuren aus Wikipedia und definieren Sie ein Thema für ihre Diskussion.",
+    "character1": "Erste Figur",
+    "character2": "Zweite Figur",
+    "themeLabel": "Gesprächsthema",
+    "themePlaceholder": "Beispiel: Der Einfluss des Buchdrucks auf die Gesellschaft",
+    "startConversationButton": "Gespräch Beginnen",
+    "startButton": "Dialog Starten",
+    "loadingSummary": "Zusammenfassung von Wikipedia wird geladen...",
+    "summaryLoaded": "Zusammenfassung geladen.",
+    "selectCharacters": "Figuren Auswählen",
+    "selectCharactersDescription": "Wählen Sie 2-3 historische Figuren für die Diskussion aus.",
+    "searchPlaceholder": "Nach historischen Figuren suchen...",
+    "selectedCharacters": "Ausgewählte Figuren",
+    "discussionTopic": "Diskussionsthema",
+    "discussionTopicDescription": "Definieren Sie das Thema, das das Gespräch leiten wird.",
+    "topicPlaceholder": "Geben Sie ein Diskussionsthema ein...",
+    "exampleTopics": "Beispielthemen",
+    "exampleTopic1": "Die Rolle der Technologie in der Gesellschaft",
+    "exampleTopic2": "Demokratie vs. Autoritarismus",
+    "exampleTopic3": "Die Natur des wissenschaftlichen Fortschritts",
+    "startDiscussion": "Diskussion Beginnen"
+  },
+  "chat": {
+    "systemMessage": "Beginnen Sie den Dialog zwischen {{char1}} und {{char2}} zum Thema: {{theme}}. Moderator, Sie können das Gespräch leiten oder die Figuren frei interagieren lassen.",
+    "errorMessage": "Ein Fehler ist beim Generieren der Antwort aufgetreten.",
+    "autoErrorMessage": "Ein Fehler ist beim Generieren der automatischen Antwort aufgetreten.",
+    "dialogueTab": "Dialog",
+    "charactersTab": "Figurenprofile",
+    "endDialogueButton": "Dialog Beenden und Reflektieren",
+    "speakToAll": "Zu allen sprechen",
+    "speakTo": "Zu {{name}} sprechen",
+    "askBothPlaceholder": "Eine Frage an beide stellen...",
+    "askCharacterPlaceholder": "Eine Frage an {{character}} stellen...",
+    "nextIntervention": "Nächste Intervention von {{character}}"
+  },
+  "characterStyles": {
+    "erudite": "gelehrt",
+    "reflective": "nachdenklich"
+  },
+  "reflection": {
+    "title": "Reflexion über den Forschungsdialog",
+    "description": "Analysieren Sie den Dialog, den Sie miterlebt haben. Betrachten Sie die Standpunkte, Argumente und was Sie beeindruckt hat.",
+    "questions": [
+      "Was waren die Hauptpunkte, die aus dem Dialog zwischen den beiden Figuren hervorgingen?",
+      "Entsprachen die von den Figuren präsentierten Argumente ihren historischen Persönlichkeiten? Warum?",
+      "Welche Figur bot die überraschendste oder aufschlussreichste Perspektive zum Thema?",
+      "Wie hat dieser Dialog Ihr Verständnis des diskutierten Themas bereichert oder verändert?",
+      "Wenn Sie einer der Figuren eine Frage stellen könnten, was wäre das und an wen würden Sie sie richten?"
+    ]
+  },
+  "feedback": {
+    "title": "Forschungsdialog Feedback",
+    "conversationTitle": "Gespräch",
+    "downloadReflection": "Reflexion Herunterladen",
+    "downloadSuccess": "Reflexion erfolgreich heruntergeladen!",
+    "downloadError": "Fehler beim Herunterladen der Reflexion"
+  },
+  "status": {
+    "evaluating": "Reflexionsbewertung läuft..."
+  }
+}

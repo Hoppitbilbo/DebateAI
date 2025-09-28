@@ -25,6 +25,8 @@ import PersonaggioMisteriosoTutorialPage from "./pages/PersonaggioMisteriosoTuto
 import TeacherGuidePage from "./pages/TeacherGuidePage";
 import ImpersonaTuPage from "./pages/ImpersonaTuPage";
 import ImpersonaTuTutorialPage from "./pages/ImpersonaTuTutorialPage";
+import InquiryDialoguePage from "./pages/InquiryDialoguePage";
+import InquiryDialogueTutorialPage from "./pages/InquiryDialogueTutorialPage";
 import TutorialsPage from "./pages/TutorialsPage";
 
 const queryClient = new QueryClient();
@@ -58,6 +60,8 @@ const App = () => (
                 <Route path="/apps/personaggio-misterioso/tutorial" element={<PersonaggioMisteriosoTutorialPage />} />
                 <Route path="/apps/impersona-tu" element={<ImpersonaTuPage />} />
                 <Route path="/apps/impersona-tu/tutorial" element={<ImpersonaTuTutorialPage />} />
+                <Route path="/apps/inquiry-dialogue" element={<InquiryDialoguePage />} />
+                <Route path="/apps/inquiry-dialogue/tutorial" element={<InquiryDialogueTutorialPage />} />
                 <Route path="/tutorials" element={<TutorialsPage />} />
                 <Route path="/about" element={<AboutPage />} />
                 <Route path="/teacher-guide" element={<TeacherGuidePage />} />

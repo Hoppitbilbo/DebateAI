@@ -1,6 +1,7 @@
 import convinciTu from './apps/convinciTu.json';
 import doppiaIntervista from './apps/doppiaIntervista.json';
 import impersonaTu from './apps/impersonaTu.json';
+import inquiryDialogue from './apps/inquiryDialogue.json';
 import personaggioMisterioso from './apps/personaggioMisterioso.json';
 import wikiChat from './apps/wikiChat.json';
 import wikiChatbot from './apps/wikiChatbot.json';
@@ -10,6 +11,7 @@ const apps = {
   convinciTu,
   doppiaIntervista,
   impersonaTu,
+  inquiryDialogue,
   personaggioMisterioso,
   wikiChat,
   wikiChatbot,

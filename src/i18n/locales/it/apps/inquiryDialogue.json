@@ -1,0 +1,75 @@
+{
+  "name": "Dialogo di ricerca",
+  "title": "Dialogo di ricerca",
+  "subtitle": "Intervista figure storiche",
+  "description": "Crea e analizza conversazioni profonde tra due figure storiche basate sui loro profili Wikipedia.",
+  "errors": {
+    "fetchError": "Errore nel recupero dei dati da Wikipedia per {{title}}",
+    "noSummary": "Nessun sommario trovato.",
+    "summaryError": "Non è stato possibile recuperare il sommario per questo personaggio.",
+    "technicalReflection": "Si è verificato un errore tecnico durante la valutazione della riflessione."
+  },
+  "tutorial": "Visualizza Tutorial",
+  "setup": {
+    "buildDialogue": "Costruisci il Dialogo",
+    "selectDescription": "Seleziona due figure storiche da Wikipedia e definisci un tema per la loro discussione.",
+    "character1": "Primo Personaggio",
+    "character2": "Secondo Personaggio",
+    "themeLabel": "Tema della Conversazione",
+    "themePlaceholder": "Esempio: L'impatto della stampa sulla società",
+    "startConversationButton": "Inizia Conversazione",
+    "startButton": "Inizia Dialogo",
+    "loadingSummary": "Caricamento sommario da Wikipedia...",
+    "summaryLoaded": "Sommario caricato.",
+    "selectCharacters": "Seleziona Personaggi",
+    "selectCharactersDescription": "Scegli 2-3 figure storiche per partecipare alla discussione.",
+    "searchPlaceholder": "Cerca figure storiche...",
+    "selectedCharacters": "Personaggi Selezionati",
+    "discussionTopic": "Argomento di Discussione",
+    "discussionTopicDescription": "Definisci l'argomento che guiderà la conversazione.",
+    "topicPlaceholder": "Inserisci un argomento di discussione...",
+    "exampleTopics": "Argomenti di Esempio",
+    "exampleTopic1": "Il ruolo della tecnologia nella società",
+    "exampleTopic2": "Democrazia vs. autoritarismo",
+    "exampleTopic3": "La natura del progresso scientifico",
+    "startDiscussion": "Inizia Discussione"
+  },
+  "chat": {
+    "systemMessage": "Inizia il dialogo tra {{char1}} e {{char2}} sul tema: {{theme}}. Moderatore, puoi guidare la conversazione o lasciare che i personaggi interagiscano liberamente.",
+    "errorMessage": "Si è verificato un errore nella generazione della risposta.",
+    "autoErrorMessage": "Si è verificato un errore nella generazione della risposta automatica.",
+    "dialogueTab": "Dialogo",
+    "charactersTab": "Profili Personaggi",
+    "endDialogueButton": "Concludi Dialogo e Rifletti",
+    "speakToAll": "Parla con tutti",
+    "speakTo": "Parla con {{name}}",
+    "askBothPlaceholder": "Fai una domanda a entrambi...",
+    "askCharacterPlaceholder": "Fai una domanda a {{character}}...",
+    "nextIntervention": "Prossimo Intervento di {{character}}"
+  },
+  "characterStyles": {
+    "erudite": "erudito",
+    "reflective": "riflessivo"
+  },
+  "reflection": {
+    "title": "Riflessione sul Dialogo di Ricerca",
+    "description": "Analizza il dialogo a cui hai assistito. Considera i punti di vista, le argomentazioni e cosa ti ha colpito.",
+    "questions": [
+      "Quali sono stati i punti chiave emersi dal dialogo tra i due personaggi?",
+      "Le argomentazioni presentate dai personaggi erano in linea con le loro figure storiche? Perché?",
+      "Quale personaggio ha offerto la prospettiva più sorprendente o illuminante sul tema?",
+      "Come questo dialogo ha arricchito o modificato la tua comprensione del tema discusso?",
+      "Se potessi fare una domanda a uno dei personaggi, quale sarebbe e a chi la faresti?"
+    ]
+  },
+  "feedback": {
+    "title": "Feedback sul Dialogo di Ricerca",
+    "conversationTitle": "Conversazione",
+    "downloadReflection": "Scarica Riflessione",
+    "downloadSuccess": "Riflessione scaricata con successo!",
+    "downloadError": "Errore nel download della riflessione"
+  },
+  "status": {
+    "evaluating": "Valutazione della riflessione in corso..."
+  }
+}

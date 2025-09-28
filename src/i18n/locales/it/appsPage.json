@@ -29,6 +29,10 @@
     "impersonaTu": {
       "title": "Impersona Tu",
       "description": "Dialoga con un personaggio storico interpretandone un altro. Metti alla prova le tue capacità di immedesimazione!"
+    },
+    "inquiryDialogue": {
+      "title": "Dialogo di Ricerca",
+      "description": "Modera discussioni tra figure storiche e sviluppa il pensiero critico attraverso l'indagine guidata."
     }
   },
   "badges": {

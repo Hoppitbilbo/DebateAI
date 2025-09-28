@@ -357,5 +357,76 @@
         "content": "Beginnen Sie Ihre vergleichende Analysereise und entdecken Sie die Macht mehrerer Perspektiven!"
       }
     }
+  },
+  "inquiryDialogue": {
+    "title": "Untersuchungsdialog Tutorial",
+    "subtitle": "Lernen Sie, kollaborative Peer-Diskussionen zu moderieren",
+    "startApp": "Untersuchungsdialog starten",
+    "slides": {
+      "welcome": {
+        "title": "Willkommen beim Untersuchungsdialog!",
+        "content": "Erleichtern Sie kollaborative Diskussionen, bei denen Teilnehmer komplexe Themen gemeinsam durch strukturierten Dialog erkunden.",
+        "bullet1": "Moderieren Sie kollaborative Peer-Diskussionen",
+        "bullet2": "Erleichtern Sie die Erkundung komplexer Themen",
+        "bullet3": "Entwickeln Sie Moderationsfähigkeiten",
+        "bullet4": "Fördern Sie kritisches Gruppendenken"
+      },
+      "moderatorRole": {
+        "title": "Die Moderatorenrolle",
+        "content": "Lernen Sie wesentliche Fähigkeiten, um kollaborative Diskussionen effektiv zu leiten und eine produktive Lernumgebung aufrechtzuerhalten.",
+        "bullet1": "Erleichtern Sie den Dialog, ohne das Gespräch zu dominieren",
+        "bullet2": "Stellen Sie Fragen, die kritisches Denken anregen",
+        "bullet3": "Erhalten Sie eine respektvolle und inklusive Umgebung aufrecht",
+        "bullet4": "Führen Sie die Gruppe zu tieferen Einsichten"
+      },
+      "peerCollaboration": {
+        "title": "Peer-Zusammenarbeit",
+        "content": "Entdecken Sie, wie Sie eine Umgebung schaffen, in der Teilnehmer durch konstruktiven Dialog voneinander lernen.",
+        "bullet1": "Ermutigen Sie zur aktiven Teilnahme aller",
+        "bullet2": "Erleichtern Sie den Austausch verschiedener Perspektiven",
+        "bullet3": "Bauen Sie Verständnis durch Dialog auf",
+        "bullet4": "Entwickeln Sie aktive Zuhörfähigkeiten"
+      },
+      "setupDebate": {
+        "title": "Diskussionsaufbau",
+        "content": "Lernen Sie, effektive Diskussionen zu strukturieren und zu organisieren, die kollaboratives Lernen fördern.",
+        "bullet1": "Wählen Sie geeignete Themen für die Erkundung",
+        "bullet2": "Etablieren Sie klare Diskussionsrichtlinien",
+        "bullet3": "Schaffen Sie eine sichere Umgebung zum Teilen",
+        "bullet4": "Planen Sie strategische Leitfragen"
+      },
+      "moderationSkills": {
+        "title": "Moderationsfähigkeiten",
+        "content": "Entwickeln Sie Schlüsselfähigkeiten, die für die effektive Moderation kollaborativer und Gruppendiskussionen erforderlich sind.",
+        "bullet1": "Stellen Sie offene Fragen, die zur Reflexion anregen",
+        "bullet2": "Fassen Sie Schlüsselpunkte zusammen und synthetisieren Sie sie",
+        "bullet3": "Bewältigen Sie schwierige Gruppendynamiken",
+        "bullet4": "Behalten Sie den Fokus auf Lernzielen bei"
+      },
+      "criticalThinking": {
+        "title": "Kritisches Denken fördern",
+        "content": "Lernen Sie Techniken, um tiefe Analyse und kritische Bewertung während Gruppendiskussionen zu fördern.",
+        "bullet1": "Hinterfragen Sie Annahmen konstruktiv",
+        "bullet2": "Ermutigen Sie zur Evidenzanalyse",
+        "bullet3": "Fördern Sie die Betrachtung multipler Perspektiven",
+        "bullet4": "Erleichtern Sie Verbindungen zwischen Ideen und Konzepten"
+      },
+      "reflection": {
+        "title": "Reflexion und Synthese",
+        "content": "Entdecken Sie, wie Sie Diskussionen effektiv mit bedeutungsvoller Reflexion und Synthese wichtiger Einsichten abschließen.",
+        "bullet1": "Leiten Sie die Reflexion über gelernte Schlüsselpunkte",
+        "bullet2": "Helfen Sie Teilnehmern, neue Verständnisse zu synthetisieren",
+        "bullet3": "Identifizieren Sie Bereiche für weitere Erkundung",
+        "bullet4": "Dokumentieren Sie Gruppeneinsichten und Fortschritte"
+      },
+      "applications": {
+        "title": "Praktische Anwendungen",
+        "content": "Erkunden Sie, wie Sie Untersuchungsdialog in verschiedenen Bildungs- und Berufskontexten einsetzen können.",
+        "bullet1": "Klassendiskussionen über komplexe Themen",
+        "bullet2": "Workshops zur beruflichen Entwicklung",
+        "bullet3": "Gruppenproblem-Lösungssitzungen",
+        "bullet4": "Moderation kollaborativer Meetings"
+      }
+    }
   }
 }

@@ -365,5 +365,76 @@
         "content": "Inizia il tuo viaggio di analisi comparativa e scopri il potere delle prospettive multiple!"
       }
     }
+  },
+  "inquiryDialogue": {
+    "title": "Tutorial Dialogo di Indagine",
+    "subtitle": "Impara a moderare discussioni collaborative tra pari",
+    "startApp": "Inizia Dialogo di Indagine",
+    "slides": {
+      "welcome": {
+        "title": "Benvenuto nel Dialogo di Indagine!",
+        "content": "Facilita discussioni collaborative dove i partecipanti esplorano insieme argomenti complessi attraverso il dialogo strutturato.",
+        "bullet1": "Modera discussioni collaborative tra pari",
+        "bullet2": "Facilita l'esplorazione di argomenti complessi",
+        "bullet3": "Sviluppa capacità di facilitazione",
+        "bullet4": "Promuovi il pensiero critico di gruppo"
+      },
+      "moderatorRole": {
+        "title": "Il Ruolo del Moderatore",
+        "content": "Impara le competenze essenziali per guidare efficacemente discussioni collaborative e mantenere un ambiente di apprendimento produttivo.",
+        "bullet1": "Facilita il dialogo senza dominare la conversazione",
+        "bullet2": "Poni domande che stimolano il pensiero critico",
+        "bullet3": "Mantieni un ambiente rispettoso e inclusivo",
+        "bullet4": "Guida il gruppo verso intuizioni più profonde"
+      },
+      "peerCollaboration": {
+        "title": "Collaborazione tra Pari",
+        "content": "Scopri come creare un ambiente dove i partecipanti imparano l'uno dall'altro attraverso il dialogo costruttivo.",
+        "bullet1": "Incoraggia la partecipazione attiva di tutti",
+        "bullet2": "Facilita lo scambio di prospettive diverse",
+        "bullet3": "Costruisci comprensione attraverso il dialogo",
+        "bullet4": "Sviluppa capacità di ascolto attivo"
+      },
+      "setupDebate": {
+        "title": "Configurazione della Discussione",
+        "content": "Impara a strutturare e organizzare discussioni efficaci che promuovano l'apprendimento collaborativo.",
+        "bullet1": "Scegli argomenti appropriati per l'esplorazione",
+        "bullet2": "Stabilisci linee guida chiare per la discussione",
+        "bullet3": "Crea un ambiente sicuro per la condivisione",
+        "bullet4": "Pianifica domande guida strategiche"
+      },
+      "moderationSkills": {
+        "title": "Competenze di Moderazione",
+        "content": "Sviluppa le competenze chiave necessarie per moderare efficacemente discussioni collaborative e di gruppo.",
+        "bullet1": "Poni domande aperte che stimolano la riflessione",
+        "bullet2": "Riassumi e sintetizza i punti chiave",
+        "bullet3": "Gestisci dinamiche di gruppo difficili",
+        "bullet4": "Mantieni il focus sugli obiettivi di apprendimento"
+      },
+      "criticalThinking": {
+        "title": "Promuovere il Pensiero Critico",
+        "content": "Impara tecniche per incoraggiare l'analisi profonda e la valutazione critica durante le discussioni di gruppo.",
+        "bullet1": "Sfida le assunzioni in modo costruttivo",
+        "bullet2": "Incoraggia l'analisi delle evidenze",
+        "bullet3": "Promuovi la considerazione di prospettive multiple",
+        "bullet4": "Facilita connessioni tra idee e concetti"
+      },
+      "reflection": {
+        "title": "Riflessione e Sintesi",
+        "content": "Scopri come concludere efficacemente le discussioni con riflessione significativa e sintesi delle intuizioni chiave.",
+        "bullet1": "Guida la riflessione sui punti chiave appresi",
+        "bullet2": "Aiuta i partecipanti a sintetizzare nuove comprensioni",
+        "bullet3": "Identifica aree per ulteriore esplorazione",
+        "bullet4": "Documenta intuizioni e progressi del gruppo"
+      },
+      "applications": {
+        "title": "Applicazioni Pratiche",
+        "content": "Esplora come utilizzare il dialogo di indagine in vari contesti educativi e professionali.",
+        "bullet1": "Discussioni in classe su argomenti complessi",
+        "bullet2": "Workshop di sviluppo professionale",
+        "bullet3": "Sessioni di risoluzione dei problemi di gruppo",
+        "bullet4": "Facilitazione di riunioni collaborative"
+      }
+    }
   }
 }

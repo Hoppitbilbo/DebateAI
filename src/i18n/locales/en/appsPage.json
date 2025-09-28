@@ -29,6 +29,10 @@
     "impersonaTu": {
       "title": "You Impersonate",
       "description": "Dialogue with a historical figure by interpreting another. Test your empathy skills!"
+    },
+    "inquiryDialogue": {
+      "title": "Inquiry Dialogue",
+      "description": "Moderate discussions between historical figures and develop critical thinking through guided inquiry."
     }
   },
   "badges": {

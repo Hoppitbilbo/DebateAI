@@ -2,7 +2,7 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import AppCard from "@/components/AppCard";
-import { Book, Search, Calendar, MessageSquare, Users, Speech, User } from "lucide-react";
+import { Book, Search, Calendar, MessageSquare, Users, Speech, User, HelpCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 const AppsPage = () => {
@@ -56,6 +56,13 @@ const AppsPage = () => {
       description: t('appsPage.appCards.impersonaTu.description'),
       icon: <User className="h-12 w-12 text-white" />,
       link: "/apps/impersona-tu",
+      isNew: true,
+    },
+    {
+      title: t('appsPage.appCards.inquiryDialogue.title'),
+      description: t('appsPage.appCards.inquiryDialogue.description'),
+      icon: <HelpCircle className="h-12 w-12 text-white" />,
+      link: "/apps/inquiry-dialogue",
       isNew: true,
     },
   ];
