@@ -3,6 +3,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import InquiryDialogueChat from "@/components/InquiryDialogueChat";
 import WikiSearchSelect from "@/components/WikiSearchSelect";
+import InquiryDialogueQuestionSuggestions from "@/components/InquiryDialogueQuestionSuggestions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -272,6 +273,15 @@ const InquiryDialoguePage = () => {
                         onChange={e => setTheme(e.target.value)} 
                         className="bg-gray-800 border-gray-600 placeholder-gray-500 text-white focus:ring-education focus:border-education"
                     />
+                    
+                    {selectedCharacters[0] && selectedCharacters[1] && (
+                      <InquiryDialogueQuestionSuggestions
+                        character1Name={selectedCharacters[0].title}
+                        character2Name={selectedCharacters[1].title}
+                        onQuestionSelect={(question) => setTheme(question)}
+                        className="mt-3"
+                      />
+                    )}
                   </div>
                   <Button 
                     onClick={handleStartDialogue} 
