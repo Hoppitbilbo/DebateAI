@@ -32,7 +32,13 @@
     "exampleTopic1": "The role of technology in society",
     "exampleTopic2": "Democracy vs. authoritarianism",
     "exampleTopic3": "The nature of scientific progress",
-    "startDiscussion": "Start Discussion"
+    "startDiscussion": "Start Discussion",
+    "generateQuestions": "Generate Suggested Questions",
+    "generatingQuestions": "Generating questions...",
+    "suggestedQuestions": "Suggested Questions",
+    "selectQuestion": "Select a question",
+    "questionsGenerated": "{{count}} questions generated successfully",
+    "questionGenerationError": "Error generating questions"
   },
   "chat": {
     "systemMessage": "Start the dialogue between {{char1}} and {{char2}} on the topic: {{theme}}. Moderator, you can guide the conversation or let the characters interact freely.",

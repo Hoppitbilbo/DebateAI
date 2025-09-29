@@ -1,8 +1,0 @@
-{
-  "title": "Réflexion sur {{activity}}",
-  "description": "Réfléchissez sur votre expérience",
-  "placeholder": "Décrivez votre expérience, ce que vous avez appris et comment vous vous êtes senti pendant l'activité...",
-  "submit": "Soumettre la Réflexion",
-  "doppiaIntervistaDescription": "Réfléchissez sur votre expérience d'interviewer deux figures historiques simultanément.",
-  "doppiaIntervistaPlaceholder": "Comment était-ce de gérer l'interview avec {{char1}} et {{char2}} simultanément ? Quelles différences avez-vous remarquées dans leurs réponses ? Qu'avez-vous appris de la comparaison directe ?"
-}

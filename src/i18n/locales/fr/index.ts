@@ -15,7 +15,6 @@ import footer from './footer.json';
 import homepage from './homepage.json';
 import notFound from './notFound.json';
 import prompts from './prompts.json';
-import reflection from './reflection.json';
 import teacherGuidePage from './teacherGuidePage.json';
 import tutorialsPage from './tutorialsPage.json';
 import apps from './apps';
@@ -38,7 +37,6 @@ export default {
   homepage,
   notFound,
   prompts,
-  reflection,
   teacherGuidePage,
   tutorialsPage,
   apps,

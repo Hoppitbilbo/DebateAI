@@ -32,7 +32,13 @@
     "exampleTopic1": "El papel de la tecnología en la sociedad",
     "exampleTopic2": "Democracia vs. autoritarismo",
     "exampleTopic3": "La naturaleza del progreso científico",
-    "startDiscussion": "Iniciar Discusión"
+    "startDiscussion": "Iniciar Discusión",
+    "generateQuestions": "Generar Preguntas Sugeridas",
+    "generatingQuestions": "Generando preguntas...",
+    "suggestedQuestions": "Preguntas Sugeridas",
+    "selectQuestion": "Seleccionar una pregunta",
+    "questionsGenerated": "{{count}} preguntas generadas exitosamente",
+    "questionGenerationError": "Error al generar las preguntas"
   },
   "chat": {
     "systemMessage": "Inicia el diálogo entre {{char1}} y {{char2}} sobre el tema: {{theme}}. Moderador, puedes guiar la conversación o dejar que los personajes interactúen libremente.",

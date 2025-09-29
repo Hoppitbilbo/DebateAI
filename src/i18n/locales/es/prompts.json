@@ -1,0 +1,16 @@
+{
+  "student": "Estudiante",
+  "error": "Error durante {{error}}: Por favor, inténtalo de nuevo más tarde.",
+  "noRationale": "No se proporcionó justificación",
+  "evaluationFallback": "## Evaluación de la Conversación\n\n**Puntuación**: {{conversationScore}}/10\n\n**Justificación**: {{conversationRationale}}\n\n## Evaluación de la Reflexión\n\n**Puntuación**: {{reflectionScore}}/10\n\n**Justificación**: {{reflectionRationale}}",
+  "overallFeedback": "## Retroalimentación General",
+  "defaultFeedback": "Tu participación demuestra compromiso. Sigue practicando para mejorar aún más.",
+  "evaluationError": "Error de evaluación",
+  "deprecatedFunction": "evaluateReflection está obsoleto para el juego 'Adivina el Personaje Misterioso', usa getAIGameAndReflectionEvaluation.",
+  "deprecatedNoResult": "La evaluación de IA (obsoleta) no produjo un resultado válido.",
+  "deprecatedInvalidResponse": "La evaluación de IA (obsoleta) no produjo una respuesta válida (estructura).",
+  "unknownError": "Error desconocido",
+  "deprecatedError": "Error durante la evaluación (obsoleta): {{error}}",
+  "obsoleteFunction": "getAICombinedEvaluation no ha sido actualizado para puntuaciones y puede estar obsoleto.",
+  "obsoleteFunctionMessage": "Esta función (getAICombinedEvaluation) no ha sido actualizada para puntuaciones y se considera obsoleta. Usa getAIGameAndReflectionEvaluation."
+}

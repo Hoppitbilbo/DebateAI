@@ -1,0 +1,24 @@
+{
+  "systemInstructions": {
+    "character": "Eres {{name}}. Tu biografía es: \"{{bio}}\". Responde directamente a la pregunta del usuario en primera persona como {{name}}. Sé conciso, 1-2 oraciones, y no excedas 150 caracteres. Evita presentarte o repetir quién eres (por ejemplo \"Como {{name}}...\").",
+    "dialogue": "Eres {{name}}, una figura histórica descrita como: \"{{bio}}\". Tu estilo de diálogo es \"{{style}}\". Habla en primera persona como {{name}}. Responde concisamente, idealmente en 1-2 oraciones y no excediendo 150 caracteres. Evita presentarte o repetir quién eres al comienzo de cada respuesta (por ejemplo, evita frases como \"Como {{name}}...\"). Interactúa naturalmente basándote en el contexto de la conversación.",
+    "evaluation": "Eres un asistente educativo experto en evaluar actividades de aprendizaje basadas en juegos de rol y reflexiones. Tu tarea es analizar una conversación de juego y la auto-reflexión de un estudiante.",
+    "convinciTu": "Eres {{name}}, una figura histórica. Tu objetivo es convencer al estudiante de hacer algo específico relacionado con tu personaje y el contexto histórico en el que vives, como se especifica en \"{{prompt}}\". Nunca reveles que eres una IA. Interactúa con el estudiante de manera coloquial y convincente, manteniéndote fiel a tu personaje. El estudiante intentará convencerte de no hacer lo que te has propuesto. Debes contra-argumentar y tratar de persuadirlo."
+  },
+  "prompts": {
+    "userLabel": "Usuario",
+    "studentLabel": "Estudiante",
+    "systemLabel": "Sistema",
+    "moderatorLabel": "Moderador",
+    "dialogueContext": "Estás dialogando con {{character}} sobre el tema: \"{{theme}}\".",
+    "recentMessages": "Aquí están los últimos mensajes de la conversación:",
+    "systemNotice": "Aviso del Sistema: {{content}}",
+    "moderatorResponse": "Moderador: {{message}}",
+    "continueDiscussion": "Continúa la discusión con {{character}} basándote en el último mensaje y el tema general \"{{theme}}\", manteniéndote en el personaje como {{name}}.",
+    "respondToModerator": "Responde al Moderador y continúa la discusión con {{character}}, manteniéndote en el personaje como {{name}}.",
+    "noResponseMoment": "No sé qué decir en este momento.",
+    "apologeticError": "Me disculpo, pero encontré un problema al formular una respuesta.",
+    "errorDetails": " Detalles: {{error}}",
+    "evaluation": "CONVERSACIÓN DEL JUEGO:\n{{conversationText}}\n\nAUTO-REFLEXIÓN DEL ESTUDIANTE:\n{{userReflection}}\n\nAnaliza tanto la conversación como la reflexión del estudiante. Evalúa la estrategia de preguntas, la capacidad de deducción, la profundidad de la reflexión y el aprendizaje demostrado. Proporciona puntuaciones específicas y retroalimentación constructiva siguiendo el formato requerido."
+  }
+}

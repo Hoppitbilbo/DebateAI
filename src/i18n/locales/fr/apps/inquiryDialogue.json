@@ -28,11 +28,17 @@
     "discussionTopic": "Sujet de Discussion",
     "discussionTopicDescription": "Définissez le sujet qui guidera la conversation.",
     "topicPlaceholder": "Entrez un sujet de discussion...",
-    "exampleTopics": "Sujets d'Exemple",
+    "exampleTopics": "Thèmes d'Exemple",
     "exampleTopic1": "Le rôle de la technologie dans la société",
     "exampleTopic2": "Démocratie vs. autoritarisme",
     "exampleTopic3": "La nature du progrès scientifique",
-    "startDiscussion": "Commencer la Discussion"
+    "startDiscussion": "Commencer la Discussion",
+    "generateQuestions": "Générer des Questions Suggérées",
+    "generatingQuestions": "Génération des questions...",
+    "suggestedQuestions": "Questions Suggérées",
+    "selectQuestion": "Sélectionner une question",
+    "questionsGenerated": "{{count}} questions générées avec succès",
+    "questionGenerationError": "Erreur lors de la génération des questions"
   },
   "chat": {
     "systemMessage": "Commencez le dialogue entre {{char1}} et {{char2}} sur le sujet : {{theme}}. Modérateur, vous pouvez guider la conversation ou laisser les personnages interagir librement.",

@@ -13,6 +13,11 @@ import aboutPage from './aboutPage.json';
 import footer from './footer.json';
 import homepage from './homepage.json';
 import tutorialsPage from './tutorialsPage.json';
+import ai from './ai.json';
+import evaluation from './evaluation.json';
+import notFound from './notFound.json';
+import prompts from './prompts.json';
+import teacherGuidePage from './teacherGuidePage.json';
 
 export default {
   apps,
@@ -30,4 +35,9 @@ export default {
   footer,
   homepage,
   tutorialsPage,
+  ai,
+  evaluation,
+  notFound,
+  prompts,
+  teacherGuidePage,
 };

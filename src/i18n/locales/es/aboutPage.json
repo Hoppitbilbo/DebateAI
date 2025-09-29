@@ -24,5 +24,22 @@
     "title": "Un Futuro de Aprendizaje Colaborativo e Inclusivo",
     "content": "Nuestro propósito social es construir un futuro en el que la IA sea un poderoso aliado para estudiantes y profesores, haciendo del aprendizaje una aventura emocionante, personalizada y, sobre todo, accesible para todos."
   },
+  "section7": {
+    "title": "De la Teoría a la Práctica: Nuestro Marco Educativo",
+    "paragraph1": "La rápida proliferación de la inteligencia artificial generativa ha posicionado a la educación en una encrucijada crucial, presentando oportunidades pero también desafíos. Mientras que el potencial de la IA generativa para mejorar el diseño del aprendizaje y proporcionar retroalimentación personalizada es ampliamente reconocido, existe una desconexión crítica entre los modelos teóricos y las herramientas prácticas y éticamente diseñadas para el uso en el aula.",
+    "paragraph2": "AIDebate.Tech representa un paso significativo hacia la superación de esta brecha entre teoría y práctica. Al operacionalizar teorías de aprendizaje establecidas - como el aprendizaje situado y el razonamiento de doble proceso - en un kit de herramientas transparente y guiado por el profesor, nuestra plataforma ofrece un modelo convincente para aprovechar la IA generativa no como un simple dispensador de información, sino como un catalizador para desarrollar habilidades de pensamiento de orden superior.",
+    "paragraph3": "Nuestras aplicaciones como 'Convence TÚ' y 'Tú Personificas' sumergen a los estudiantes en la práctica auténtica, requiriendo que apliquen el conocimiento dentro de contextos históricos y culturales específicos. Los estudiantes ya no son receptores pasivos de hechos, sino agentes activos que deben personificar diferentes cosmovisiones para construir argumentos persuasivos, transformando el aprendizaje de declarativo a procedimental.",
+    "paragraph4": "La plataforma está diseñada para fomentar habilidades de pensamiento crítico complejo que el uso no guiado de la IA puede suprimir inadvertidamente. Actividades como 'Tú Moderas' y 'Doble Entrevista' crean escenarios de fricción intelectual, obligando a los estudiantes a mediar debates o comparar perspectivas divergentes - sellos distintivos del pensamiento crítico complejo que activan el razonamiento analítico y deliberativo.",
+    "paragraph5": "Cada actividad culmina en una fase de meta-reflexión crítica estructurada, crucial para transformar la experiencia en conocimiento duradero. Los estudiantes evalúan el rendimiento de la IA a través de prompts como '¿La IA personificó bien al personaje?' o '¿Qué aspectos de su argumento fueron poco convincentes?'. Esto cambia el enfoque de la finalización de tareas a la evaluación crítica del proceso.",
+    "paragraph6": "La flexibilidad de la plataforma, basada en la integración de la API de Wikipedia, la hace inherentemente agnóstica al dominio. Los estudiantes pueden personificar personajes literarios, comparar perspectivas geográficas o moderar debates científicos. Esta versatilidad interdisciplinaria demuestra que nuestro valor principal no reside en el contenido específico, sino en el proceso de indagación crítica que fomentamos.",
+    "paragraph7": "Como proyecto de código abierto que se puede instalar en servidores escolares locales sin recopilar el historial de chat, ofrecemos una alternativa segura a las plataformas comerciales. Al proporcionar un foro para que los educadores compartan experimentos y críticas, AIDebate.Tech facilita la investigación colaborativa e impulsada por la comunidad necesaria para construir una comprensión compartida del uso efectivo y ético de la IA en la educación."
+  },
+  "helpDevelopment": {
+    "title": "Ayúdanos a Desarrollar AIDebate.Tech",
+    "description": "Únete a nuestra comunidad para ayudar a desarrollar soporte para Ollama, añadir nuevos idiomas, mejorar la documentación y compartir experiencias en el aula. Tu contribución hace que la educación con IA sea más accesible para todos.",
+    "redditButton": "Únete a la Comunidad de Reddit",
+    "githubButton": "Contribuye en GitHub",
+    "linkedinButton": "Conéctate en LinkedIn"
+  },
   "supportButton": "Apóyanos"
 }

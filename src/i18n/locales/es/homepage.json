@@ -1,0 +1,13 @@
+{
+  "teacherGuide": {
+    "title": "Guía del Profesor",
+    "description": "Descubre cómo usar nuestras aplicaciones para crear experiencias de aprendizaje innovadoras y atractivas.",
+    "button": "Ver Guía"
+  },
+  "socialPurpose": {
+    "title": "Nuestro Propósito Social",
+    "description": "Transformamos las tareas en experiencias de aprendizaje interactivas y atractivas, haciendo que la educación sea más accesible y divertida mediante el uso de la IA.",
+    "exploreButton": "Explorar Aplicaciones",
+    "learnMoreButton": "Saber Más"
+  }
+}

@@ -2,6 +2,8 @@
   "search": "Buscar",
   "searchPlaceholder": "Buscar...",
   "noResults": "No se encontraron resultados",
+  "textarea": "Área de texto",
+  "button": "Botón",
   "loading": "Cargando...",
   "error": "Error",
   "tryAgain": "Intentar de nuevo",
@@ -72,5 +74,13 @@
     "shareSuggestions": "Comparte sugerencias",
     "joinCommunity": "Únete a la comunidad",
     "teachersShare": "¡Profesores, compartid vuestras ideas y experimentos en clase!"
-  }
+  },
+  "aiError": "Error de IA",
+  "unknownError": "Error desconocido",
+  "buttons": {
+    "submit": "Enviar"
+  },
+  "collapse": "Colapsar",
+  "expand": "Expandir",
+  "tryAgain": "Intentar de nuevo"
 }
