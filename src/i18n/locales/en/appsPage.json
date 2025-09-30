@@ -33,6 +33,10 @@
     "inquiryDialogue": {
       "title": "Inquiry Dialogue",
       "description": "Moderate discussions between historical figures and develop critical thinking through guided inquiry."
+    },
+    "aiIdentity": {
+      "title": "AI Identity",
+      "description": "Discover character identities through dialogue. Interact with two characters and guess who they are!"
     }
   },
   "badges": {

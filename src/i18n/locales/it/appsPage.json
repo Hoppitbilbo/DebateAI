@@ -33,6 +33,10 @@
     "inquiryDialogue": {
       "title": "Dialogo di Ricerca",
       "description": "Modera discussioni tra figure storiche e sviluppa il pensiero critico attraverso l'indagine guidata."
+    },
+    "aiIdentity": {
+      "title": "AI Identity",
+      "description": "Scopri l'identità dei personaggi attraverso il dialogo. Interagisci con due personaggi e indovina chi sono!"
     }
   },
   "badges": {

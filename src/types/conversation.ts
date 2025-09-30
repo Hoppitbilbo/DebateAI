@@ -20,4 +20,4 @@ export interface ConversationState {
   error: string | null;
 }
 
-export type ActivityPhase = "chatting" | "reflection" | "feedback";
+export type ActivityPhase = "chatting" | "identification" | "reflection" | "feedback";

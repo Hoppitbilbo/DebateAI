@@ -41,6 +41,10 @@
     "inquiryDialogue": {
       "title": "Forschungsdialog",
       "description": "Moderieren Sie Diskussionen zwischen historischen Figuren und entwickeln Sie kritisches Denken durch geführte Untersuchung."
+    },
+    "aiIdentity": {
+      "title": "AI Identity",
+      "description": "Entdecken Sie die Identitäten der Charaktere durch Dialog. Interagieren Sie mit zwei Charakteren und erraten Sie, wer sie sind!"
     }
   }
 }

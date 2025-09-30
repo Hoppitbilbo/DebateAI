@@ -41,6 +41,10 @@
     "inquiryDialogue": {
       "title": "Dialogue d'Enquête",
       "description": "Modérez des discussions entre figures historiques et développez la pensée critique grâce à l'enquête guidée."
+    },
+    "aiIdentity": {
+      "title": "AI Identity",
+      "description": "Découvrez les identités des personnages à travers le dialogue. Interagissez avec deux personnages et devinez qui ils sont !"
     }
   }
 }
