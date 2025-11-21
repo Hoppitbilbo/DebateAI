@@ -18,6 +18,7 @@ import evaluation from './evaluation.json';
 import notFound from './notFound.json';
 import prompts from './prompts.json';
 import teacherGuidePage from './teacherGuidePage.json';
+import reflection from './reflection.json';
 
 export default {
   apps,
@@ -40,4 +41,5 @@ export default {
   notFound,
   prompts,
   teacherGuidePage,
+  reflection,
 };

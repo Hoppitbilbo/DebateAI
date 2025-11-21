@@ -1,4 +1,8 @@
 {
+  "common": {
+    "back": "Retour",
+    "next": "Suivant"
+  },
   "personaggioMisterioso": {
     "title": "Tutoriel Personnage Mystérieux",
     "subtitle": "Apprenez à utiliser le jeu de devinettes de personnages historiques",
@@ -360,6 +364,80 @@
         "bullet2": "Ateliers de développement professionnel",
         "bullet3": "Sessions de résolution de problèmes en groupe",
         "bullet4": "Facilitation de réunions collaboratives"
+      }
+    }
+  }
+  ,
+  "aiIdentity": {
+    "title": "Tutoriel AI Identity",
+    "subtitle": "Apprenez à identifier des personnages via un dialogue guidé par IA",
+    "startApp": "Démarrer AI Identity",
+    "slides": {
+      "welcome": {
+        "title": "Bienvenue dans AI Identity",
+        "content": "Identifiez deux personnages Wikipédia en posant des questions stratégiques dans un dialogue guidé.",
+        "bullet1": "Activité d'identification interactive",
+        "bullet2": "Deux personnages conversent",
+        "bullet3": "Vous inférez les identités réelles",
+        "bullet4": "Pratique d'analyse et de déduction"
+      },
+      "difficultyLevels": {
+        "title": "Niveaux de difficulté",
+        "content": "Choisissez combien d'informations d'identité sont visibles pendant le dialogue.",
+        "bullet1": "Facile : noms réels visibles",
+        "bullet2": "Moyen : indices à choix multiples",
+        "bullet3": "Difficile : noms cachés ; vous devez deviner"
+      },
+      "easyMode": {
+        "title": "Mode Facile",
+        "content": "Idéal pour se familiariser avec l'activité.",
+        "bullet1": "Noms réels affichés",
+        "bullet2": "Se concentrer sur l'art du questionnement",
+        "bullet3": "Faible charge cognitive"
+      },
+      "mediumMode": {
+        "title": "Mode Moyen",
+        "content": "Équilibre entre défi et accompagnement.",
+        "bullet1": "Noms avec options",
+        "bullet2": "Comparer des possibilités",
+        "bullet3": "Utiliser les indices du dialogue"
+      },
+      "hardMode": {
+        "title": "Mode Difficile",
+        "content": "Parfait pour apprenants avancés.",
+        "bullet1": "Noms cachés",
+        "bullet2": "Construire une liste de candidats",
+        "bullet3": "Vérifier des hypothèses",
+        "bullet4": "Décider des identités finales"
+      },
+      "strategicQuestioning": {
+        "title": "Questionnement stratégique",
+        "content": "Posez des questions efficaces pour révéler des traits distinctifs.",
+        "bullet1": "Commencer large puis affiner",
+        "bullet2": "Utiliser époque, profession, nationalité",
+        "bullet3": "Poursuivre les indices",
+        "bullet4": "Éviter les questions suggestives"
+      },
+      "analysisSkills": {
+        "title": "Compétences d'analyse",
+        "content": "Développez le raisonnement en évaluant les réponses.",
+        "bullet1": "Extraire des faits clés",
+        "bullet2": "Vérifier la cohérence",
+        "bullet3": "Suivre les preuves"
+      },
+      "reflection": {
+        "title": "Réflexion",
+        "content": "Concluez en réfléchissant aux stratégies et aux apprentissages.",
+        "bullet1": "Ce qui a bien fonctionné",
+        "bullet2": "Ce à améliorer",
+        "bullet3": "Ce que vous avez appris"
+      },
+      "examples": {
+        "title": "Exemples",
+        "content": "Manières d'utiliser AI Identity en classe.",
+        "bullet1": "Histoire : dirigeants, inventeurs, artistes",
+        "bullet2": "Science : scientifiques, chercheurs",
+        "bullet3": "Littérature : auteurs, poètes"
       }
     }
   }

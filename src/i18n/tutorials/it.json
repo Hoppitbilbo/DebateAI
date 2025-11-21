@@ -437,4 +437,78 @@
       }
     }
   }
+  ,
+  "aiIdentity": {
+    "title": "Tutorial AI Identity",
+    "subtitle": "Impara a identificare i personaggi attraverso un dialogo guidato dall'IA",
+    "startApp": "Avvia AI Identity",
+    "slides": {
+      "welcome": {
+        "title": "Benvenuto in AI Identity",
+        "content": "Identifica due personaggi di Wikipedia ponendo domande strategiche in un dialogo guidato.",
+        "bullet1": "Attività di identificazione interattiva",
+        "bullet2": "Due personaggi conversano",
+        "bullet3": "Deduci le identità reali",
+        "bullet4": "Allena analisi e deduzione"
+      },
+      "difficultyLevels": {
+        "title": "Livelli di difficoltà",
+        "content": "Scegli quante informazioni sull'identità sono visibili durante il dialogo.",
+        "bullet1": "Facile: nomi reali visibili",
+        "bullet2": "Medio: indizi a scelta multipla",
+        "bullet3": "Difficile: nomi nascosti; devi indovinare"
+      },
+      "easyMode": {
+        "title": "Modalità Facile",
+        "content": "Ottima per familiarizzarsi con l'attività.",
+        "bullet1": "Nomi reali mostrati",
+        "bullet2": "Focus sull'arte del fare domande",
+        "bullet3": "Basso carico cognitivo"
+      },
+      "mediumMode": {
+        "title": "Modalità Media",
+        "content": "Equilibrio tra sfida e guida.",
+        "bullet1": "Nomi con opzioni",
+        "bullet2": "Confronta possibilità",
+        "bullet3": "Usa indizi dal dialogo"
+      },
+      "hardMode": {
+        "title": "Modalità Difficile",
+        "content": "Ideale per studenti avanzati.",
+        "bullet1": "Nomi nascosti",
+        "bullet2": "Costruisci lista di candidati",
+        "bullet3": "Verifica ipotesi",
+        "bullet4": "Decidi le identità finali"
+      },
+      "strategicQuestioning": {
+        "title": "Domande strategiche",
+        "content": "Poni domande efficaci che rivelino tratti distintivi.",
+        "bullet1": "Inizia ampio, poi restringi",
+        "bullet2": "Usa epoca, professione, nazionalità",
+        "bullet3": "Segui gli indizi",
+        "bullet4": "Evita domande suggestive"
+      },
+      "analysisSkills": {
+        "title": "Competenze di analisi",
+        "content": "Sviluppa il ragionamento valutando le risposte.",
+        "bullet1": "Estrarre fatti chiave",
+        "bullet2": "Verificare la coerenza",
+        "bullet3": "Tenere traccia delle evidenze"
+      },
+      "reflection": {
+        "title": "Riflessione",
+        "content": "Concludi riflettendo su strategie e apprendimenti.",
+        "bullet1": "Cosa ha funzionato",
+        "bullet2": "Cosa migliorare",
+        "bullet3": "Cosa hai imparato"
+      },
+      "examples": {
+        "title": "Esempi",
+        "content": "Modi di usare AI Identity in classe.",
+        "bullet1": "Storia: leader, inventori, artisti",
+        "bullet2": "Scienze: scienziati, ricercatori",
+        "bullet3": "Letteratura: autori, poeti"
+      }
+    }
+  }
 }

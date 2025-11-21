@@ -18,6 +18,7 @@ import prompts from './prompts.json';
 import teacherGuidePage from './teacherGuidePage.json';
 import tutorialsPage from './tutorialsPage.json';
 import apps from './apps';
+import reflection from './reflection.json';
 
 export default {
   common,
@@ -40,4 +41,5 @@ export default {
   teacherGuidePage,
   tutorialsPage,
   apps,
+  reflection,
 };

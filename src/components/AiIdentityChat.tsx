@@ -15,6 +15,7 @@ import AiIdentityIdentificationPhase from "@/components/AiIdentity/AiIdentityIde
 import { ChatSession } from "@google/generative-ai";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
 interface Character {
   name: string;
@@ -31,9 +32,12 @@ type DifficultyLevel = "easy" | "medium" | "hard";
 interface AiIdentityChatProps {
   character1: Character;
   character2: Character;
+  maxQuestions?: number;
+  onExitToSelection?: () => void;
+  onUserQuestion?: () => void;
 }
 
-const AiIdentityChat = ({ character1, character2 }: AiIdentityChatProps) => {
+const AiIdentityChat = ({ character1, character2, maxQuestions, onExitToSelection, onUserQuestion }: AiIdentityChatProps) => {
   const { t } = useTranslation();
   
   const [messages1, setMessages1] = useState<Message[]>([
@@ -63,6 +67,8 @@ const AiIdentityChat = ({ character1, character2 }: AiIdentityChatProps) => {
   const [userGuess2, setUserGuess2] = useState("");
   const [aiEvaluation, setAiEvaluation] = useState<string | null>(null);
   const [isEvaluating, setIsEvaluating] = useState(false);
+  const [userQuestionCount, setUserQuestionCount] = useState(0);
+  const questionsLimit = maxQuestions || undefined;
 
   useEffect(() => {
     if (difficulty === "medium") {
@@ -127,27 +133,28 @@ const AiIdentityChat = ({ character1, character2 }: AiIdentityChatProps) => {
     }
 
     try {
-      const chat: ChatSession = startChat([], systemInstruction);
-      for (const msg of chatHistory) {
+      const assistantLabel = char === character1 ? 'Personaggio A' : 'Personaggio B';
+      const history: { role: 'user' | 'model'; parts: { text: string }[] }[] = [];
+      for (let i = 0; i < chatHistory.length; i++) {
+        const msg = chatHistory[i];
         if (msg.character === t('chat.you')) {
-          await chat.sendMessage(msg.content);
-        } else if (msg.character.includes(char.name)) {
-          const result = await chat.sendMessage(userInput);
-          const response = await result.response;
-          const aiText = response.text();
-          if (aiText.trim() !== msg.content.trim()) {
-            console.warn(`Mismatch in conversation history. Expected "${msg.content}", got "${aiText}"`);
+          history.push({ role: 'user', parts: [{ text: msg.content }] });
+          const next = chatHistory[i + 1];
+          if (next && next.character === assistantLabel) {
+            history.push({ role: 'model', parts: [{ text: next.content }] });
+            i++;
           }
         }
       }
 
+      const chat: ChatSession = startChat(history, systemInstruction);
       const result = await chat.sendMessage(userInput);
       const response = await result.response;
       const aiText = response.text();
       return aiText && aiText.trim() !== "" ? aiText.trim() : t('chat.noResponse');
     } catch (error) {
       console.error(`Error getting response from ${char.name}:`, error);
-      return t('chat.errorResponse', { character: char.name });
+      return t('chat.technicalProblem');
     }
   };
 
@@ -158,9 +165,21 @@ const AiIdentityChat = ({ character1, character2 }: AiIdentityChatProps) => {
     setInput("");
     setIsLoading(true);
 
+    // Respect max questions limit
+    if (questionsLimit !== undefined && userQuestionCount >= questionsLimit) {
+      setIsLoading(false);
+      toast.warning(t('apps.aiIdentity.questionsLimitReached', { defaultValue: 'Hai raggiunto il limite di domande. Termina e rifletti.' }));
+      return;
+    }
+
     const userMessageObj: Message = { character: t('chat.you'), content: userMessageContent };
     setMessages1(prev => [...prev, userMessageObj]);
     setMessages2(prev => [...prev, userMessageObj]);
+    setUserQuestionCount(prev => {
+      const next = prev + 1;
+      if (onUserQuestion) onUserQuestion();
+      return next;
+    });
 
     const [response1Result, response2Result] = await Promise.allSettled([
       getAIResponse(character1, userMessageContent, messages1, character2.name),
@@ -189,8 +208,8 @@ const AiIdentityChat = ({ character1, character2 }: AiIdentityChatProps) => {
       toast.error(t('apps.aiIdentity.pleaseGuessBothCharacters'));
       return;
     }
-    // For easy mode, go to identification phase instead of reflection
-    if (difficulty === "easy") {
+    // Easy and Medium go to identification phase; Hard goes to reflection
+    if (difficulty === "easy" || difficulty === "medium") {
       setActivityPhase("identification");
     } else {
       setActivityPhase("reflection");
@@ -261,7 +280,7 @@ const AiIdentityChat = ({ character1, character2 }: AiIdentityChatProps) => {
       
       let finalEvaluation = evaluationResult.textualFeedback;
       
-      if (difficulty === "hard" || difficulty === "easy") {
+      if (difficulty === "hard" || difficulty === "easy" || difficulty === "medium") {
         const correct1 = userGuess1.toLowerCase().trim() === character1.name.toLowerCase().trim();
         const correct2 = userGuess2.toLowerCase().trim() === character2.name.toLowerCase().trim();
         const guessResult = `\n\n${t('apps.aiIdentity.identificationResults')}:\n${t('apps.aiIdentity.character1')}: ${correct1 ? "✅" : "❌"} ${userGuess1} ${correct1 ? t('apps.aiIdentity.correct') : `(${t('apps.aiIdentity.wrong')}: ${character1.name})`}\n${t('apps.aiIdentity.character2')}: ${correct2 ? "✅" : "❌"} ${userGuess2} ${correct2 ? t('apps.aiIdentity.correct') : `(${t('apps.aiIdentity.wrong')}: ${character2.name})`}`;
@@ -321,6 +340,34 @@ const AiIdentityChat = ({ character1, character2 }: AiIdentityChatProps) => {
     }
   };
 
+  const getMediumOptions = (): string[] => {
+    const realNames = [character1.name, character2.name];
+    const incorrectPool = [
+      ...confusingNames1.filter(n => !realNames.includes(n)),
+      ...confusingNames2.filter(n => !realNames.includes(n)),
+    ];
+    const uniqueIncorrect = Array.from(new Set(incorrectPool));
+    const pickedIncorrect = uniqueIncorrect.slice(0, 2);
+    return [...realNames, ...pickedIncorrect];
+  };
+
+  const generatePlausibleVariants = (originalName: string, otherCharName?: string): string[] => {
+    const curated: Record<string, string[]> = {
+      "Benito Mussolini": ["Benito Macallini", "Benedetto Molinari", "Vincenzo Musolino"],
+      "Adolf Hitler": ["Adolph Hüttler", "Adolf Hitner", "Aldolf Hittle"],
+    };
+    const base = curated[originalName];
+    if (base) return base;
+    const pool = [
+      originalName.replace(/i/g, "y"),
+      otherCharName || "Winston Churchill",
+      "Joseph Stalin",
+      "Neville Chamberlain",
+    ];
+    const variants = Array.from(new Set(pool.filter(n => n && n !== originalName)));
+    return variants.slice(0, 3);
+  };
+
   const handleStartNewChat = () => {
     setMessages1([
       {
@@ -348,6 +395,8 @@ const AiIdentityChat = ({ character1, character2 }: AiIdentityChatProps) => {
   };
 
   if (activityPhase === "identification") {
+    const optionsA = [character1.name, ...generatePlausibleVariants(character1.name, character2.name)];
+    const optionsB = [character2.name, ...generatePlausibleVariants(character2.name, character1.name)];
     return (
       <AppLayout
         title={t('apps.aiIdentity.title')}
@@ -360,7 +409,12 @@ const AiIdentityChat = ({ character1, character2 }: AiIdentityChatProps) => {
             character2Name={character2.name}
             character1Snippet={character1.snippet}
             character2Snippet={character2.snippet}
+            mode={difficulty}
+            optionsA={optionsA}
+            optionsB={optionsB}
+            recentMessages={getCombinedMessagesForDisplay().slice(-8)}
             onIdentificationComplete={handleIdentificationComplete}
+            onBackToReflection={() => setActivityPhase("reflection")}
           />
         </div>
       </AppLayout>
@@ -440,6 +494,35 @@ const AiIdentityChat = ({ character1, character2 }: AiIdentityChatProps) => {
       subtitle={t('apps.aiIdentity.subtitle')}
       onReset={handleStartNewChat}
     >
+      <div className="mb-4 flex justify-between items-center">
+        <div className="text-sm text-education">
+          {questionsLimit !== undefined && (
+            <span>{t('apps.aiIdentity.remainingQuestions', { defaultValue: 'Domande rimanenti' })}: {Math.max(0, (questionsLimit - userQuestionCount))}</span>
+          )}
+        </div>
+        {onExitToSelection && (
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="outline" className="border-education text-education hover:bg-education hover:text-white">
+                {t('apps.aiIdentity.chat.changeCharacters')}
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>{t('apps.aiIdentity.changeConfirmTitle', { defaultValue: 'Cambiare personaggi?' })}</AlertDialogTitle>
+                <AlertDialogDescription>
+                  {t('apps.aiIdentity.changeConfirmDesc', { defaultValue: 'Vuoi terminare e riflettere ora o continuare a usare le domande rimanenti?' })}
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>{t('common.cancel', { defaultValue: 'Annulla' })}</AlertDialogCancel>
+                <AlertDialogAction onClick={handleEndActivity}>{t('common.endAndReflect', { defaultValue: 'Termina e riflettere' })}</AlertDialogAction>
+                <AlertDialogAction onClick={onExitToSelection}>{t('apps.aiIdentity.chat.changeCharacters', { defaultValue: 'Cambia personaggi' })}</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        )}
+      </div>
       {/* Difficulty Selector */}
       <Card className="mb-6 p-4">
         <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
@@ -470,6 +553,13 @@ const AiIdentityChat = ({ character1, character2 }: AiIdentityChatProps) => {
             </div>
           </div>
         </div>
+      </Card>
+
+      {/* Instruction Banner */}
+      <Card className="mb-4 p-4 bg-yellow-50 border-yellow-200">
+        <p className="text-sm text-yellow-900">
+          {t('apps.aiIdentity.identification.instructionsBanner', { defaultValue: 'Dopo almeno 2 domande, premi “Termina e riflettere” per identificare i personaggi.' })}
+        </p>
       </Card>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -584,13 +674,14 @@ const AiIdentityChat = ({ character1, character2 }: AiIdentityChatProps) => {
         onSendMessage={handleSend}
         onEndActivity={handleEndActivity}
         isLoading={isLoading}
-        placeholder={t('apps.aiIdentity.placeholder', { 
-          target: selectedCharacter === "all" 
-            ? t('apps.aiIdentity.placeholderAll') 
-            : selectedCharacter === character1.name 
-              ? "Personaggio A"
-              : "Personaggio B"
-        })}
+        userMessageCountOverride={messages1.filter(m => m.character === t('chat.you')).length}
+        placeholder={
+          selectedCharacter === "all"
+            ? t('apps.aiIdentity.placeholderAll')
+            : t('apps.aiIdentity.placeholderSingle', {
+                name: selectedCharacter === character1.name ? 'Personaggio A' : 'Personaggio B'
+              })
+        }
         showEndButton={true}
         minMessagesForEnd={2}
         className="h-auto"

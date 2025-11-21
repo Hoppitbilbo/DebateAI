@@ -35,7 +35,9 @@
     "easyDesc": "I nomi reali sono mostrati",
     "mediumDesc": "I nomi sono mostrati con opzioni multiple",
     "hardDesc": "I nomi reali sono nascosti - devi indovinare",
-    "startButton": "Avvia dialogo"
+    "startButton": "Avvia dialogo",
+    "maxQuestionsTitle": "Numero massimo di domande",
+    "maxQuestionsLabel": "Seleziona il limite"
   },
   "chat": {
     "dialogueTitle": "Dialogo tra",
@@ -48,9 +50,15 @@
   "reflectionDescription": "Rifletti sul tuo processo di identificazione e su ciò che hai imparato",
   "reflectionPlaceholder": "Descrivi il tuo processo di identificazione, le strategie che hai usato e cosa hai imparato...",
   "possibleNames": "Nomi possibili",
+  "remainingQuestions": "Domande rimanenti",
+  "questionsLimitReached": "Hai raggiunto il limite di domande. Termina e rifletti.",
+  "changeConfirmTitle": "Cambiare personaggi?",
+  "changeConfirmDesc": "Vuoi terminare e riflettere ora o continuare a usare le domande rimanenti?",
   "identification": {
     "title": "Chi è Chi?",
     "subtitle": "Basandoti sulle conversazioni, collega ogni personaggio al suo nome corretto",
+    "instructionsBanner": "Dopo almeno 2 domande, premi “Termina e riflettere” per identificare i personaggi.",
+    "instructionsDrag": "Trascina ogni nome nelle caselle di Personaggio A e Personaggio B, oppure usa i pulsanti sotto.",
     "selectBothCharacters": "Per favore seleziona entrambi i personaggi",
     "submit": "Invia Identificazione",
     "resultsTitle": "Risultati Identificazione",

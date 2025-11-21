@@ -429,4 +429,78 @@
       }
     }
   }
+  ,
+  "aiIdentity": {
+    "title": "AI Identity Tutorial",
+    "subtitle": "Lerne, Charaktere durch KI-geleiteten Dialog zu identifizieren",
+    "startApp": "AI Identity starten",
+    "slides": {
+      "welcome": {
+        "title": "Willkommen bei AI Identity",
+        "content": "Identifiziere zwei Wikipedia‑Charaktere, indem du strategische Fragen in einem geführten Dialog stellst.",
+        "bullet1": "Interaktive Identifikationsaktivität",
+        "bullet2": "Zwei Charaktere führen ein Gespräch",
+        "bullet3": "Du leitest die realen Identitäten ab",
+        "bullet4": "Übe Analyse und Deduktion"
+      },
+      "difficultyLevels": {
+        "title": "Schwierigkeitsstufen",
+        "content": "Wähle, wie viele Identitätsinformationen während des Dialogs sichtbar sind.",
+        "bullet1": "Leicht: echte Namen sichtbar",
+        "bullet2": "Mittel: Auswahlhinweise",
+        "bullet3": "Schwer: Namen verborgen; du musst raten"
+      },
+      "easyMode": {
+        "title": "Leicht",
+        "content": "Ideal zum Einstieg in die Aktivität.",
+        "bullet1": "Echte Namen angezeigt",
+        "bullet2": "Fokus auf Fragetechniken",
+        "bullet3": "Geringe kognitive Belastung"
+      },
+      "mediumMode": {
+        "title": "Mittel",
+        "content": "Ausgewogen zwischen Herausforderung und Unterstützung.",
+        "bullet1": "Namen mit Optionen",
+        "bullet2": "Möglichkeiten vergleichen",
+        "bullet3": "Hinweise aus dem Dialog nutzen"
+      },
+      "hardMode": {
+        "title": "Schwer",
+        "content": "Perfekt für Fortgeschrittene.",
+        "bullet1": "Namen verborgen",
+        "bullet2": "Kandidatenliste aufbauen",
+        "bullet3": "Hypothesen prüfen",
+        "bullet4": "Endgültige Identitäten festlegen"
+      },
+      "strategicQuestioning": {
+        "title": "Strategisches Fragen",
+        "content": "Stelle wirksame Fragen, die unterscheidende Merkmale offenlegen.",
+        "bullet1": "Breit beginnen, dann eingrenzen",
+        "bullet2": "Epoche, Beruf, Nationalität nutzen",
+        "bullet3": "Hinweisen nachgehen",
+        "bullet4": "Suggestivfragen vermeiden"
+      },
+      "analysisSkills": {
+        "title": "Analysefähigkeiten",
+        "content": "Entwickle Argumentation, während du Antworten bewertest.",
+        "bullet1": "Schlüsselfakten herausziehen",
+        "bullet2": "Kohärenz gegenprüfen",
+        "bullet3": "Belege dokumentieren"
+      },
+      "reflection": {
+        "title": "Reflexion",
+        "content": "Schließe mit einer Reflexion über Strategien und Lernen ab.",
+        "bullet1": "Was gut funktionierte",
+        "bullet2": "Was zu verbessern ist",
+        "bullet3": "Was du gelernt hast"
+      },
+      "examples": {
+        "title": "Beispiele",
+        "content": "Einsatzmöglichkeiten von AI Identity im Unterricht.",
+        "bullet1": "Geschichte: Führungspersönlichkeiten, Erfinder, Künstler",
+        "bullet2": "Naturwissenschaften: Wissenschaftler, Forscher",
+        "bullet3": "Literatur: Autoren, Dichter"
+      }
+    }
+  }
 }

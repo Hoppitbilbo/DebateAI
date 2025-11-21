@@ -5,5 +5,6 @@
   "technicalProblem": "Ho riscontrato un problema tecnico.",
   "noResponse": "Non ho una risposta al momento.",
   "errorResponse": "Mi dispiace, ho riscontrato un errore nel rispondere come {{character}}.",
-  "you": "Tu"
+  "you": "Tu",
+  "previous": "Chat precedente"
 }

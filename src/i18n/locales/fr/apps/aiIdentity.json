@@ -35,7 +35,9 @@
     "easyDesc": "Les vrais noms sont affichés",
     "mediumDesc": "Les noms sont affichés avec des options multiples",
     "hardDesc": "Les vrais noms sont cachés - vous devez deviner",
-    "startButton": "Démarrer le dialogue"
+    "startButton": "Démarrer le dialogue",
+    "maxQuestionsTitle": "Nombre maximum de questions",
+    "maxQuestionsLabel": "Sélectionnez la limite"
   },
   "chat": {
     "dialogueTitle": "Dialogue entre",
@@ -48,4 +50,12 @@
   "reflectionDescription": "Réfléchissez à votre processus d'identification et à ce que vous avez appris",
   "reflectionPlaceholder": "Décrivez votre processus d'identification, les stratégies que vous avez utilisées et ce que vous avez appris...",
   "possibleNames": "Noms possibles"
+  ,"remainingQuestions": "Questions restantes"
+  ,"questionsLimitReached": "Vous avez atteint la limite de questions. Terminez et réfléchissez."
+  ,"changeConfirmTitle": "Changer de personnages ?"
+  ,"changeConfirmDesc": "Voulez-vous terminer et réfléchir maintenant ou continuer avec les questions restantes ?"
+  ,"identification": {
+    "instructionsBanner": "Après au moins 2 questions, appuyez sur \"Terminer et réfléchir\" pour identifier les personnages.",
+    "instructionsDrag": "Faites glisser chaque nom vers les cases Personnage A et Personnage B, ou utilisez les boutons ci-dessous."
+  }
 }

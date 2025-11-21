@@ -1,4 +1,8 @@
 {
+  "common": {
+    "back": "Back",
+    "next": "Next"
+  },
   "personaggioMisterioso": {
     "title": "Mystery Character Tutorial",
     "subtitle": "Learn how to use the Mystery Character guessing game",
@@ -360,6 +364,80 @@
         "bullet2": "Professional development workshops",
         "bullet3": "Group problem-solving sessions",
         "bullet4": "Collaborative meeting facilitation"
+      }
+    }
+  }
+  ,
+  "aiIdentity": {
+    "title": "AI Identity Tutorial",
+    "subtitle": "Learn to identify characters through AI-guided dialogue",
+    "startApp": "Start AI Identity",
+    "slides": {
+      "welcome": {
+        "title": "Welcome to AI Identity",
+        "content": "Identify two Wikipedia characters by asking strategic questions in a guided dialogue.",
+        "bullet1": "Interactive identification activity",
+        "bullet2": "Two characters converse",
+        "bullet3": "You infer real identities",
+        "bullet4": "Practice analysis and deduction"
+      },
+      "difficultyLevels": {
+        "title": "Difficulty Levels",
+        "content": "Choose how much identity information is visible during the dialogue.",
+        "bullet1": "Easy: real names visible",
+        "bullet2": "Medium: multiple-choice hints",
+        "bullet3": "Hard: names hidden; you must guess"
+      },
+      "easyMode": {
+        "title": "Easy Mode",
+        "content": "Great for getting familiar with the activity.",
+        "bullet1": "Real names shown",
+        "bullet2": "Focus on learning questioning",
+        "bullet3": "Low cognitive load"
+      },
+      "mediumMode": {
+        "title": "Medium Mode",
+        "content": "Balance challenge and guidance.",
+        "bullet1": "Names with options",
+        "bullet2": "Compare possibilities",
+        "bullet3": "Use clues from dialogue"
+      },
+      "hardMode": {
+        "title": "Hard Mode",
+        "content": "Ideal for advanced learners.",
+        "bullet1": "Names hidden",
+        "bullet2": "Build candidate list",
+        "bullet3": "Verify hypotheses",
+        "bullet4": "Decide final identities"
+      },
+      "strategicQuestioning": {
+        "title": "Strategic Questioning",
+        "content": "Ask effective questions to reveal distinguishing traits.",
+        "bullet1": "Start broad, then narrow",
+        "bullet2": "Use era, profession, nationality",
+        "bullet3": "Follow up on hints",
+        "bullet4": "Avoid leading questions"
+      },
+      "analysisSkills": {
+        "title": "Analysis Skills",
+        "content": "Develop reasoning while evaluating answers.",
+        "bullet1": "Extract key facts",
+        "bullet2": "Cross-check consistency",
+        "bullet3": "Track evidence"
+      },
+      "reflection": {
+        "title": "Reflection",
+        "content": "Conclude by reflecting on strategies and learning.",
+        "bullet1": "What worked well",
+        "bullet2": "What to improve",
+        "bullet3": "What you learned"
+      },
+      "examples": {
+        "title": "Examples",
+        "content": "Ways to use AI Identity in class.",
+        "bullet1": "History: leaders, inventors, artists",
+        "bullet2": "Science: scientists, researchers",
+        "bullet3": "Literature: authors, poets"
       }
     }
   }

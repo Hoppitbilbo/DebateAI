@@ -5,7 +5,8 @@ import AiIdentityChat from "@/components/AiIdentityChat";
 import WikiSearchSelect from "@/components/WikiSearchSelect";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowRight, BookOpen, HelpCircle } from "lucide-react";
+import { ArrowRight, BookOpen, HelpCircle, SlidersHorizontal } from "lucide-react";
+import { Slider } from "@/components/ui/slider";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import {
@@ -25,6 +26,7 @@ const AiIdentityPage = () => {
   const { t } = useTranslation();
   const [selectedCharacters, setSelectedCharacters] = useState<WikiSearchResult[]>([]);
   const [showChat, setShowChat] = useState(false);
+  const [maxQuestions, setMaxQuestions] = useState<number>(5);
 
   const handleCharacterSelect = (index: number, result: WikiSearchResult) => {
     const newSelectedCharacters = [...selectedCharacters];
@@ -106,7 +108,29 @@ const AiIdentityPage = () => {
                       </div>
                     ))}
                   </div>
-                  
+
+                  <div className="mb-4 p-3 bg-green-50 rounded-lg">
+                    <h4 className="font-medium text-green-900 mb-2">
+                      {t('apps.aiIdentity.setup.maxQuestionsTitle', { defaultValue: 'Numero massimo di domande' })}
+                    </h4>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2 text-green-900">
+                        <SlidersHorizontal className="h-4 w-4" />
+                        <span className="text-sm">
+                          {t('apps.aiIdentity.setup.maxQuestionsLabel', { defaultValue: 'Seleziona il limite' })}: {maxQuestions}
+                        </span>
+                      </div>
+                      <Slider
+                        value={[maxQuestions]}
+                        onValueChange={(vals) => setMaxQuestions(vals[0])}
+                        min={2}
+                        max={10}
+                        step={1}
+                        className="w-full"
+                      />
+                    </div>
+                  </div>
+
                   <div className="mb-4 p-3 bg-blue-50 rounded-lg">
                     <h4 className="font-medium text-blue-900 mb-2">
                       {t('apps.aiIdentity.setup.difficultyTitle')}
@@ -128,19 +152,12 @@ const AiIdentityPage = () => {
                 </CardContent>
               </Card>
             </div>
-          ) : (
-            <div className="max-w-6xl mx-auto">
-              <div className="mb-4 flex justify-between items-center">
+            ) : (
+              <div className="max-w-6xl mx-auto">
+              <div className="mb-4">
                 <h2 className="text-xl font-bold">
-                  {t('apps.aiIdentity.chat.dialogueTitle')}: {selectedCharacters[0]?.title} & {selectedCharacters[1]?.title}
+                  {t('apps.aiIdentity.chat.dialogueTitle')}: Personaggio A & Personaggio B
                 </h2>
-                <Button 
-                  variant="outline" 
-                  onClick={() => setShowChat(false)} 
-                  className="border-education text-education hover:bg-education hover:text-white"
-                >
-                  {t('apps.aiIdentity.chat.changeCharacters')}
-                </Button>
               </div>
               <AiIdentityChat 
                 character1={{
@@ -151,8 +168,10 @@ const AiIdentityPage = () => {
                   name: selectedCharacters[1]?.title || "",
                   snippet: selectedCharacters[1]?.snippet || ""
                 }} 
+                maxQuestions={maxQuestions}
+                onExitToSelection={() => setShowChat(false)}
               />
-            </div>
+              </div>
           )}
         </div>
       </main>

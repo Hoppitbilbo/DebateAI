@@ -35,7 +35,9 @@
     "easyDesc": "Real names are shown",
     "mediumDesc": "Names are shown with multiple options",
     "hardDesc": "Real names are hidden - you must guess",
-    "startButton": "Start dialogue"
+    "startButton": "Start dialogue",
+    "maxQuestionsTitle": "Maximum number of questions",
+    "maxQuestionsLabel": "Select the limit"
   },
   "chat": {
     "dialogueTitle": "Dialogue between",
@@ -48,9 +50,15 @@
   "reflectionDescription": "Reflect on your identification process and what you learned",
   "reflectionPlaceholder": "Describe your identification process, the strategies you used, and what you learned...",
   "possibleNames": "Possible names",
+  "remainingQuestions": "Remaining questions",
+  "questionsLimitReached": "You reached the question limit. End and reflect.",
+  "changeConfirmTitle": "Change characters?",
+  "changeConfirmDesc": "Do you want to end and reflect now or continue with the remaining questions?",
   "identification": {
     "title": "Who is Who?",
     "subtitle": "Based on the conversations, match each character to their correct name",
+    "instructionsBanner": "After at least 2 questions, press “End and reflect” to identify the characters.",
+    "instructionsDrag": "Drag each name into the Personaggio A and Personaggio B boxes, or use the buttons below.",
     "selectBothCharacters": "Please select both characters",
     "submit": "Submit Identification",
     "resultsTitle": "Identification Results",

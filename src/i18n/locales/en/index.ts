@@ -18,6 +18,7 @@ import teacherGuidePage from './teacherGuidePage.json';
 import tutorialsPage from './tutorialsPage.json';
 import ai from './ai.json';
 import evaluation from './evaluation.json';
+import reflection from './reflection.json';
 
 export default {
   aboutPage,
@@ -40,4 +41,5 @@ export default {
   tutorialsPage,
   ai,
   evaluation,
+  reflection,
 };

@@ -20,6 +20,7 @@ interface ChatInterfaceProps {
   aiCharacterName?: string;
   showEndButton?: boolean;
   minMessagesForEnd?: number;
+  userMessageCountOverride?: number;
   className?: string;
 }
 
@@ -35,6 +36,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   aiCharacterName,
   showEndButton = true,
   minMessagesForEnd = 4,
+  userMessageCountOverride,
   className = ''
 }) => {
   const { t } = useTranslation();
@@ -55,7 +57,9 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     }
   };
 
-  const userMessageCount = messages.filter(m => m.role === 'user').length;
+  const userMessageCount = typeof userMessageCountOverride === 'number'
+    ? userMessageCountOverride
+    : messages.filter(m => m.role === 'user').length;
   const canEndActivity = userMessageCount >= minMessagesForEnd;
 
   return (
