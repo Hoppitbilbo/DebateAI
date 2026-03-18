@@ -1,6 +1,5 @@
 
 import { Book, School, Users, Link, User } from "lucide-react";
-import { useState, useEffect } from "react";
 import { useScrollReveal } from "@/hooks/use-scroll-reveal";
 import { useTranslation } from "react-i18next";
 
@@ -42,9 +41,6 @@ const FeaturesSection = () => {
 
   // Create individual reveal elements for features
   const headerReveal = useScrollReveal({ threshold: 0.1 });
-  const featureReveals = features.map(() => 
-    useScrollReveal({ threshold: 0.1 })
-  );
 
   return (
     <div className="py-12 bg-background">
@@ -70,8 +66,7 @@ const FeaturesSection = () => {
               <a 
                 key={feature.name} 
                 href={feature.link}
-                ref={featureReveals[index].ref as React.RefObject<HTMLAnchorElement>}
-                className={`block group reveal-animation ${featureReveals[index].isVisible ? 'revealed' : ''} reveal-delay-${index % 3 + 1}`}
+                className={`block group reveal-animation revealed reveal-delay-${index % 3 + 1}`}
               >
                 <div className="flex flex-col items-center p-6 bg-accent rounded-lg transition-all duration-300 hover:shadow-lg hover:scale-105">
                   <div className="flex items-center justify-center h-12 w-12 rounded-md bg-education text-education-dark">

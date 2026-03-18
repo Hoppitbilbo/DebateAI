@@ -19,7 +19,7 @@
   "noResults": "No results found",
   "textarea": "Text area",
   "button": "Button",
-  "backToApps": "Back to Apps",
+  "backToApps": "Back to Applications",
   "startConversation": "Start the conversation by writing a message...",
   "writeMessage": "Write your message...",
   "endAndReflect": "End and Reflect",
@@ -35,7 +35,7 @@
   "character": "Character:",
   "yourAnswer": "Your answer:",
   "result": "Result:",
-  "correct": "Correct! \ud83c\udf89",
+  "correct": "Correct! 🎉",
   "correctShort": "Correct",
   "incorrect": "Incorrect",
   "messagesExchanged": "Messages exchanged:",
@@ -65,11 +65,12 @@
   "reflectOnExperience": "Reflect on your experience and what you learned.",
   "viewTutorial": "View Tutorial",
   "tutorial": "View Tutorial",
-  "backToApps": "Back to Applications",
   "reddit": {
     "shareExperience": "Share your experience",
     "shareSuggestions": "Share suggestions",
     "joinCommunity": "Join the community",
     "teachersShare": "Teachers, share your ideas and classroom experiments!"
-  }
+  },
+  "startVoiceInput": "Start voice input",
+  "stopVoiceInput": "Stop voice input"
 }

@@ -3,6 +3,8 @@ import { toast } from '@/components/ui/sonner';
 import { i18nAnalyzer } from './i18nAnalyzer';
 import { visualErrorDetector, type VisualError } from './visualErrorDetector';
 
+type TranslationOptions = Record<string, unknown>;
+
 // Configurazione delle lingue supportate
 const SUPPORTED_LANGUAGES = ['it', 'en', 'es', 'fr', 'de'];
 const DEFAULT_LANGUAGE = 'it';
@@ -752,7 +754,7 @@ class I18nDebugger {
   }
 
   // Hook per componenti React
-  public useTranslationWithDebug(key: string, options?: any) {
+  public useTranslationWithDebug(key: string, options?: TranslationOptions) {
     const translation = i18n.t(key, options);
     const translationStr = String(translation);
     
@@ -806,7 +808,7 @@ class I18nDebugger {
 export const i18nDebugger = new I18nDebugger();
 
 // Hook personalizzato per React
-export const useTranslationWithDebug = (key: string, options?: any) => {
+export const useTranslationWithDebug = (key: string, options?: TranslationOptions) => {
   return i18nDebugger.useTranslationWithDebug(key, options);
 };
 

@@ -82,5 +82,7 @@
     "shareSuggestions": "Condividi suggerimenti",
     "joinCommunity": "Unisciti alla community",
     "teachersShare": "Docenti, condividete le vostre idee e sperimentazioni in classe!"
-  }
+  },
+  "startVoiceInput": "Avvia input vocale",
+  "stopVoiceInput": "Ferma input vocale"
 }
