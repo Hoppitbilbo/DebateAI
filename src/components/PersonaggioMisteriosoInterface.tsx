@@ -8,7 +8,7 @@ import GameSetup from "./personaggio-misterioso/GameSetup";
 import GameHeader from "./personaggio-misterioso/GameHeader";
 import ChatInterface from "./personaggio-misterioso/ChatInterface";
 import FinalGuess from "./personaggio-misterioso/FinalGuess";
-import { model, startChat } from "@/services/aiService";
+import { aiFacade } from "@/services/aiFacade";
 import { getAIGameAndReflectionEvaluation, AIScoreEvaluation } from "@/utils/evaluationUtils";
 import { ConversationData } from "@/utils/evaluationUtils";
 import { Button } from "@/components/ui/button";
@@ -112,10 +112,9 @@ const PersonaggioMisteriosoInterface = () => {
         snippet: selectedCharacter.snippet,
       });
 
-      const chat = startChat(history, systemInstruction);
+      const chat = aiFacade.text.startChat({ history, systemInstructionText: systemInstruction });
 
-      const result = await chat.sendMessage(currentQuestion);
-      const aiResponseText = result.response.text();
+      const aiResponseText = await aiFacade.text.sendMessage(chat, currentQuestion);
 
       const aiMessage: Message = {
         role: "character",

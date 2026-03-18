@@ -4,14 +4,13 @@ import { Button } from "@/components/ui/button";
 import { MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
-import { model, startChat } from "@/services/aiService";
+import { aiFacade } from "@/services/aiFacade";
 import { getAIGameAndReflectionEvaluation, ConversationData } from "@/utils/evaluationUtils";
 import { Message as EvaluationMessage } from "@/types/conversation";
 import AppLayout from "@/components/shared/AppLayout";
 import ChatInterface from "@/components/shared/ChatInterface";
 import ReflectionInterface from "@/components/shared/ReflectionInterface";
 import FeedbackInterface from "@/components/shared/FeedbackInterface";
-import { ChatSession } from "@google/generative-ai";
 
 interface Character {
   name: string;
@@ -65,24 +64,19 @@ const DoppiaIntervistaChat = ({ character1, character2 }: DoppiaIntervistaChatPr
     });
 
     try {
-      const chat: ChatSession = startChat([], systemInstruction);
-      for (const msg of chatHistory) {
-        if (msg.character === t('chat.you')) {
-          await chat.sendMessage(msg.content);
-        } else if (msg.character === char.name) {
-          // This is a message from the assistant, so we need to make sure the history is correct
-          const result = await chat.sendMessage(userInput);
-          const response = await result.response;
-          const aiText = response.text();
-          if (aiText.trim() !== msg.content.trim()) {
-            console.warn(`Mismatch in conversation history. Expected "${msg.content}", got "${aiText}"`);
-          }
-        }
-      }
+      const history = chatHistory
+        .filter((msg) => msg.character === t('chat.you') || msg.character === char.name)
+        .map((msg) => ({
+          role: (msg.character === t('chat.you') ? 'user' : 'model') as 'user' | 'model',
+          parts: [{ text: msg.content }],
+        }));
 
-      const result = await chat.sendMessage(userInput);
-      const response = await result.response;
-      const aiText = response.text();
+      const chat = aiFacade.text.startChat({
+        history,
+        systemInstructionText: systemInstruction,
+      });
+
+      const aiText = await aiFacade.text.sendMessage(chat, userInput);
       return aiText && aiText.trim() !== "" ? aiText.trim() : t('chat.noResponse');
     } catch (error) {
       console.error(`Error getting response from ${char.name}:`, error);

@@ -2,11 +2,12 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
-import { Send, BookOpen, Bot, User } from 'lucide-react';
+import { Send, BookOpen, Bot, User, Mic, MicOff } from 'lucide-react';
 import { Message } from '@/types/conversation';
 import { useTranslation } from 'react-i18next';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { aiFacade, LiveTranscriptionHandle } from '@/services/aiFacade';
 
 interface ChatInterfaceProps {
   messages: Message[];
@@ -37,8 +38,12 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   minMessagesForEnd = 4,
   className = ''
 }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const transcriptionControllerRef = useRef<LiveTranscriptionHandle | null>(null);
+  const [isRecording, setIsRecording] = useState(false);
+
+  const liveTranscriptionAvailable = aiFacade.live.isTranscriptionAvailable();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -47,6 +52,12 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  useEffect(() => {
+    return () => {
+      transcriptionControllerRef.current?.stop();
+    };
+  }, []);
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey && !isLoading) {
@@ -57,6 +68,50 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
 
   const userMessageCount = messages.filter(m => m.role === 'user').length;
   const canEndActivity = userMessageCount >= minMessagesForEnd;
+
+  const getTranscriptionLanguageCode = () => {
+    const languageMap: Record<string, string> = {
+      it: 'it-IT',
+      en: 'en-US',
+      es: 'es-ES',
+      fr: 'fr-FR',
+      de: 'de-DE',
+    };
+
+    return languageMap[i18n.language] || navigator.language || 'it-IT';
+  };
+
+  const handleVoiceInput = async () => {
+    if (!liveTranscriptionAvailable || isLoading) {
+      return;
+    }
+
+    if (isRecording && transcriptionControllerRef.current) {
+      await transcriptionControllerRef.current.stop();
+      transcriptionControllerRef.current = null;
+      setIsRecording(false);
+      return;
+    }
+
+    try {
+      const controller = await aiFacade.live.startTranscription({
+        languageCode: getTranscriptionLanguageCode(),
+        onTranscription: (text) => {
+          onInputChange(text);
+        },
+        onError: (errorMessage) => {
+          console.error('Live transcription error:', errorMessage);
+          setIsRecording(false);
+        },
+      });
+
+      transcriptionControllerRef.current = controller;
+      setIsRecording(true);
+    } catch (error) {
+      console.error('Error starting live transcription:', error);
+      setIsRecording(false);
+    }
+  };
 
   return (
     <Card className={`flex flex-col h-[600px] bg-white/90 backdrop-blur-sm border-education/20 ${className}`}>
@@ -130,6 +185,18 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
             disabled={isLoading}
             className="flex-1 border-education/30 focus:border-education focus:ring-education/20"
           />
+          {liveTranscriptionAvailable && (
+            <Button
+              type="button"
+              onClick={handleVoiceInput}
+              disabled={isLoading}
+              variant="outline"
+              title={isRecording ? t('common.stopVoiceInput') : t('common.startVoiceInput')}
+              className="border-education/30 text-education hover:bg-education/10"
+            >
+              {isRecording ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+            </Button>
+          )}
           <Button
             onClick={onSendMessage}
             disabled={isLoading || !input.trim()}

@@ -5,7 +5,7 @@
 
 import { Character } from "@/components/you-moderate/types";
 import { Message } from "@/types/conversation";
-import { model } from "@/services/aiService"; // Correctly import the model from Firebase setup
+import { aiFacade } from "@/services/aiFacade";
 import { buildDialogueSystemInstruction, buildDialoguePrompt, getErrorMessage, getTranslatedLabel } from "@/utils/aiPromptUtils";
 
 /**
@@ -41,7 +41,7 @@ export const generateCharacterResponse = async (
   // console.log("User Prompt for Vertex:", userPrompt);
 
   try {
-    const result = await model.generateContent({
+    const result = await aiFacade.text.generateContent({
       contents: [{ role: "user", parts: [{ text: userPrompt }] }],
       systemInstruction: { 
         role: "system", // Role for system instruction should be 'system'

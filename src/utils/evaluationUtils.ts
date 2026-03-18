@@ -1,6 +1,6 @@
 
 import { Message } from "@/types/conversation";
-import { model, generateContentStream } from "@/services/aiService"; // Import the model instance and streaming
+import { aiFacade } from "@/services/aiFacade";
 import { getTranslatedSystemInstruction, getTranslatedPrompt } from "./aiPromptUtils";
 
 export interface ConversationData {
@@ -16,6 +16,14 @@ export interface AIScoreEvaluation {
   conversationRationale?: string;
   reflectionScore?: number;
   reflectionRationale?: string;
+}
+
+interface ReflectionPromptArgs {
+  sessionData: {
+    characterName: string;
+    topic: string;
+  };
+  userReflection: string;
 }
 
 const parseAIScoreResponse = (responseText: string): AIScoreEvaluation => {
@@ -109,12 +117,10 @@ export const getAIGameAndReflectionEvaluationStream = async function* (
       userReflection
     });
 
-    console.log("System Instruction:", systemInstruction);
-    console.log("Data Prompt:", dataPrompt);
     
     let accumulatedText = "";
     
-    for await (const chunk of generateContentStream({
+    for await (const chunk of aiFacade.text.generateContentStream({
       contents: [{ role: "user", parts: [{ text: dataPrompt }] }],
       systemInstruction: { role: "system", parts: [{ text: systemInstruction }] },
       generationConfig: {
@@ -182,10 +188,8 @@ export const getAIGameAndReflectionEvaluation = async (
       userReflection
     });
 
-    console.log("System Instruction:", systemInstruction);
-    console.log("Data Prompt:", dataPrompt);
     
-    const result = await model.generateContent({
+    const result = await aiFacade.text.generateContent({
       contents: [{ role: "user", parts: [{ text: dataPrompt }] }],
       systemInstruction: { role: "system", parts: [{ text: systemInstruction }] },
       generationConfig: {
@@ -257,7 +261,7 @@ export const evaluateReflection = async (
 ): Promise<string> => {
   console.warn(getTranslatedPrompt('deprecatedFunction', {}));
 
-  const mockPrepareReflectionEvaluationPrompt = (args: any): { systemInstruction: string, dataPrompt: string } => {
+  const mockPrepareReflectionEvaluationPrompt = (args: ReflectionPromptArgs): { systemInstruction: string, dataPrompt: string } => {
     return {
       systemInstruction: "Mock system instruction per evaluateReflection (deprecata)",
       dataPrompt: `Mock data prompt per evaluateReflection (deprecata):
@@ -279,7 +283,7 @@ export const evaluateReflection = async (
   });
 
   try {
-    const result = await model.generateContent({
+    const result = await aiFacade.text.generateContent({
       contents: [{ role: "user", parts: [{ text: oldDataPrompt }] }],
       systemInstruction: {
         role: "system",

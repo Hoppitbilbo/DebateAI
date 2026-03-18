@@ -2,6 +2,8 @@ import { useTranslation as useOriginalTranslation } from 'react-i18next';
 import { useEffect, useCallback } from 'react';
 import { i18nDebugger } from '@/utils/i18nDebugger';
 
+type TranslationOptions = Record<string, unknown>;
+
 /**
  * Hook personalizzato che estende useTranslation con funzionalità di debug
  * Rileva automaticamente:
@@ -13,7 +15,7 @@ export const useTranslationWithDebug = (ns?: string | string[]) => {
   const { t: originalT, i18n, ready, ...rest } = useOriginalTranslation(ns);
 
   // Wrapper per la funzione t che include il debug
-  const t = useCallback((key: string, options?: any) => {
+  const t = useCallback((key: string, options?: TranslationOptions) => {
     const translation = originalT(key, options);
     const translationStr = String(translation);
     

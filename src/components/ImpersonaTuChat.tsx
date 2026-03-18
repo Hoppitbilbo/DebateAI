@@ -3,8 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { getAIGameAndReflectionEvaluation, ConversationData } from "@/utils/evaluationUtils";
 import { Message } from "@/types/conversation";
-import { model } from "@/services/aiService";
-import { ChatSession } from "@google/generative-ai";
+import { useAiChatSession } from "@/hooks/useAiChatSession";
 import AppLayout from "@/components/shared/AppLayout";
 import ChatInterface from "@/components/shared/ChatInterface";
 import ReflectionInterface from "@/components/shared/ReflectionInterface";
@@ -28,12 +27,12 @@ const ImpersonaTuChat = ({ aiCharacter, userCharacter, topic }: ImpersonaTuChatP
   // Corrected state type: Use Message[]
   const [messages, setMessages] = useState<Message[]>([]); 
   const [input, setInput] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+
   const [activityPhase, setActivityPhase] = useState<"chatting" | "reflection" | "evaluating" | "feedback">("chatting");
   const [userReflection, setUserReflection] = useState<string | null>(null);
   const [aiEvaluation, setAiEvaluation] = useState<string | null>(null);
   const [isEvaluating, setIsEvaluating] = useState(false);
-  const [chat, setChat] = useState<ChatSession | null>(null); // State for Vertex AI chat session
+  const { chat, isLoading, startSession, send } = useAiChatSession();
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -47,7 +46,6 @@ const ImpersonaTuChat = ({ aiCharacter, userCharacter, topic }: ImpersonaTuChatP
 
   // Initialize or re-initialize chat session
   const initializeChat = () => {
-      setIsLoading(true); // Show loading while setting up
       setMessages([]); // Clear previous messages
       const systemPrompt = `Sei ${aiCharacter.name}. La tua biografia è: ${aiCharacter.bio}. \
 Interagisci come se fossi realmente ${aiCharacter.name}, basandoti sulla tua biografia e sul contesto storico. \
@@ -65,26 +63,19 @@ Mantieni un tono e uno stile appropriati al tuo personaggio e all'epoca.`;
       });
 
       try {
-          const newChat = model.startChat({
+          startSession({
             history: [
               { role: "user", parts: [{ text: systemPrompt }] },
               { role: "model", parts: [{ text: initialAiMessage }] },
             ],
-            generationConfig: {
-              temperature: 0.75,
-              maxOutputTokens: 1000,
-            },
+            systemInstructionText: systemPrompt,
           });
-          setChat(newChat);
           // Set initial message - Use Message type
           setMessages([{ role: "assistant", content: initialAiMessage }]); 
       } catch (error) {
           console.error("Error initializing chat:", error);
           toast.error(t('apps.impersonaTu.chat.initError'));
           setMessages([]); 
-          setChat(null); // Ensure chat is null on error
-      } finally {
-          setIsLoading(false);
       }
   };
 
@@ -111,12 +102,9 @@ Mantieni un tono e uno stile appropriati al tuo personaggio e all'epoca.`;
       content: userMessageContent,
     };
     setMessages(prev => [...prev, newUserMessage]);
-    setIsLoading(true);
 
     try {
-      const result = await chat.sendMessage(userMessageContent);
-      const response = await result.response; 
-      const aiTextResponse = await response.text();
+      const aiTextResponse = await send(userMessageContent, chat);
 
       // Add AI response - Use Message type
       const aiResponseMessage: Message = {
@@ -130,8 +118,6 @@ Mantieni un tono e uno stile appropriati al tuo personaggio e all'epoca.`;
       toast.error(t('apps.impersonaTu.chat.sendError'));
       setMessages(prev => prev.filter(msg => msg !== newUserMessage));
       setInput(currentInput); 
-    } finally {
-      setIsLoading(false);
     }
   };
 

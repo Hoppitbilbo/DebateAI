@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { Search, Loader2 } from "lucide-react";
 import {
   Command,
@@ -24,6 +24,16 @@ interface WikiSearchResult {
   pageid: number;
 }
 
+interface WikiSearchApiResponse {
+  query?: {
+    search?: Array<{
+      title: string;
+      snippet: string;
+      pageid: number;
+    }>;
+  };
+}
+
 interface WikiSearchSelectProps {
   onSelect: (result: WikiSearchResult) => void;
 }
@@ -36,28 +46,18 @@ const WikiSearchSelect = ({ onSelect }: WikiSearchSelectProps) => {
   const [searchResults, setSearchResults] = useState<WikiSearchResult[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const getWikipediaLanguageCode = () => {
+  const wikipediaLanguageCode = useMemo(() => {
     const langMap: { [key: string]: string } = {
       'it': 'it',
-      'en': 'en', 
+      'en': 'en',
       'es': 'es',
       'fr': 'fr',
       'de': 'de'
     };
     return langMap[i18n.language] || 'it';
-  };
+  }, [i18n.language]);
 
-  useEffect(() => {
-    const debounceTimer = setTimeout(() => {
-      if (inputValue) {
-        handleSearch(inputValue);
-      }
-    }, 500);
-
-    return () => clearTimeout(debounceTimer);
-  }, [inputValue]);
-
-  const handleSearch = async (searchTerm: string) => {
+  const handleSearch = useCallback(async (searchTerm: string) => {
     if (!searchTerm) {
       setSearchResults([]);
       return;
@@ -65,7 +65,7 @@ const WikiSearchSelect = ({ onSelect }: WikiSearchSelectProps) => {
 
     setLoading(true);
     try {
-      const wikiLang = getWikipediaLanguageCode();
+      const wikiLang = wikipediaLanguageCode;
       const endpoint = `https://${wikiLang}.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(
         searchTerm
       )}&format=json&origin=*&srlimit=10&srinfo=totalhits&srprop=snippet|titlesnippet`;
@@ -73,9 +73,9 @@ const WikiSearchSelect = ({ onSelect }: WikiSearchSelectProps) => {
       const response = await fetch(endpoint);
       if (!response.ok) throw new Error("Errore nella ricerca Wikipedia");
       
-      const data = await response.json();
+      const data: WikiSearchApiResponse = await response.json();
       
-      const results: WikiSearchResult[] = data.query.search.map((item: any) => ({
+      const results: WikiSearchResult[] = (data.query?.search ?? []).map((item) => ({
         title: item.title,
         snippet: item.snippet.replace(/<\/?[^>]+(>|$)/g, ""), // Rimuove i tag HTML
         pageid: item.pageid,
@@ -88,7 +88,17 @@ const WikiSearchSelect = ({ onSelect }: WikiSearchSelectProps) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [wikipediaLanguageCode]);
+
+  useEffect(() => {
+    const debounceTimer = setTimeout(() => {
+      if (inputValue) {
+        handleSearch(inputValue);
+      }
+    }, 500);
+
+    return () => clearTimeout(debounceTimer);
+  }, [inputValue, handleSearch]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
