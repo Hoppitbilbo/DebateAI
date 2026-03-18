@@ -1,16 +1,51 @@
-import { GoogleGenerativeAI, GenerativeModel, ChatSession, GenerateContentRequest, GenerateContentResult, Part } from "@google/generative-ai";
+import {
+  ChatSession,
+  GenerateContentRequest,
+  GenerateContentResult,
+  GenerativeModel,
+  GoogleGenerativeAI,
+  Part,
+} from "@google/generative-ai";
 
-// Get the API key from environment variables
 const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+const textModelName = import.meta.env.VITE_GEMINI_TEXT_MODEL || "gemini-3-flash-preview";
 
 let genAI: GoogleGenerativeAI;
 let model: GenerativeModel;
 
-if (apiKey && apiKey !== 'your_api_key_here') {
+const extractRetryDelay = (errorMessage: string): string | null => {
+  const match = errorMessage.match(/Please retry in\s+([\d.]+)s/i) || errorMessage.match(/retryDelay":"([^"]+)"/i);
+  return match?.[1] ?? null;
+};
+
+export const formatAiServiceError = (error: unknown): string => {
+  const fallbackMessage = "Si è verificato un errore durante la comunicazione con Gemini.";
+
+  if (!(error instanceof Error) || !error.message) {
+    return fallbackMessage;
+  }
+
+  const message = error.message;
+  const isQuotaError =
+    message.includes("429") ||
+    message.toLowerCase().includes("quota exceeded") ||
+    message.toLowerCase().includes("rate limit");
+
+  if (!isQuotaError) {
+    return message;
+  }
+
+  const retryDelay = extractRetryDelay(message);
+  const retryText = retryDelay ? ` Riprova tra circa ${retryDelay} secondi.` : " Riprova più tardi.";
+
+  return `La quota Gemini per il modello ${textModelName} è stata superata o non è disponibile per questa API key.${retryText} Se vuoi continuare subito, controlla billing/piano oppure imposta un modello diverso tramite VITE_GEMINI_TEXT_MODEL.`;
+};
+
+if (apiKey && apiKey !== "your_api_key_here") {
   try {
     genAI = new GoogleGenerativeAI(apiKey);
-    model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-001" });
-    console.log("Google AI service initialized successfully");
+    model = genAI.getGenerativeModel({ model: textModelName });
+    console.log(`Google AI service initialized successfully with model ${textModelName}`);
   } catch (error) {
     console.error("Error initializing GoogleGenerativeAI:", error);
     console.warn("AI Service initialization failed. Please check your API key.");
@@ -20,21 +55,13 @@ if (apiKey && apiKey !== 'your_api_key_here') {
   console.info("Please add your API key to the .env file as VITE_GEMINI_API_KEY");
 }
 
-/**
- * Checks if the AI service is available and configured.
- */
 export const isAiServiceAvailable = (): boolean => {
   return !!model;
 };
 
-/**
- * Starts a new chat session with the generative model.
- * @param history - Optional chat history to initialize the session.
- * @returns A new ChatSession instance.
- */
 export const startChat = (
   history: { role: "user" | "model"; parts: Part[] }[] = [],
-  systemInstructionText?: string
+  systemInstructionText?: string,
 ): ChatSession => {
   if (!isAiServiceAvailable()) {
     throw new Error("AI Service is not configured. Cannot start chat. Please check your VITE_GEMINI_API_KEY in the .env file.");
@@ -44,11 +71,14 @@ export const startChat = (
     throw new Error("AI model is not initialized. This should not happen if isAiServiceAvailable() returns true.");
   }
 
-  const chatOptions: { history: { role: "user" | "model"; parts: Part[] }[], systemInstruction?: { role: string, parts: Part[] } } = { history };
+  const chatOptions: {
+    history: { role: "user" | "model"; parts: Part[] }[];
+    systemInstruction?: { role: string; parts: Part[] };
+  } = { history };
 
   if (systemInstructionText) {
     chatOptions.systemInstruction = {
-      role: 'system',
+      role: "system",
       parts: [{ text: systemInstructionText }],
     };
   }
@@ -56,40 +86,35 @@ export const startChat = (
   return model.startChat(chatOptions);
 };
 
-/**
- * Sends a message in an ongoing chat session.
- * @param chat - The ChatSession instance.
- * @param message - The message to send.
- * @returns The model's response text.
- */
 export const sendMessage = async (chat: ChatSession, message: string): Promise<string> => {
   if (!isAiServiceAvailable()) {
     console.warn("AI Service not available. Returning mock response.");
     return "Mock response: AI service is not available.";
   }
-  const result = await chat.sendMessage(message);
-  const response = await result.response;
-  return response.text();
+
+  try {
+    const result = await chat.sendMessage(message);
+    const response = await result.response;
+    return response.text();
+  } catch (error) {
+    console.error("Error sending message to AI service:", error);
+    throw new Error(formatAiServiceError(error));
+  }
 };
 
-/**
- * Generates content from the model based on a request.
- * @param request - The content generation request.
- * @returns The generated content result.
- */
 export const generateContent = async (request: GenerateContentRequest): Promise<GenerateContentResult> => {
   if (!isAiServiceAvailable()) {
     throw new Error("AI Service is not configured. Cannot generate content.");
   }
-  return model.generateContent(request);
+
+  try {
+    return await model.generateContent(request);
+  } catch (error) {
+    console.error("Error generating content:", error);
+    throw new Error(formatAiServiceError(error));
+  }
 };
 
-/**
- * A versatile function to get a response for a given prompt, with optional system instructions.
- * @param prompt - The user prompt text.
- * @param systemInstructionText - Optional system instruction text.
- * @returns The model's response text.
- */
 export const getResponse = async (prompt: string, systemInstructionText?: string): Promise<string> => {
   if (!isAiServiceAvailable()) {
     console.warn("AI Service not available. Returning mock response.");
@@ -110,23 +135,20 @@ export const getResponse = async (prompt: string, systemInstructionText?: string
     return response.text();
   } catch (error) {
     console.error("Error getting response from AI service:", error);
-    throw error;
+    throw new Error(formatAiServiceError(error));
   }
 };
 
-/**
- * Generates streaming content from the model based on a request.
- * @param request - The content generation request.
- * @returns An async generator that yields text chunks.
- */
-export const generateContentStream = async function* (request: GenerateContentRequest): AsyncGenerator<string, void, unknown> {
+export const generateContentStream = async function* (
+  request: GenerateContentRequest,
+): AsyncGenerator<string, void, unknown> {
   if (!isAiServiceAvailable()) {
     throw new Error("AI Service is not configured. Cannot generate streaming content.");
   }
-  
+
   try {
     const result = await model.generateContentStream(request);
-    
+
     for await (const chunk of result.stream) {
       const text = chunk.text();
       if (text) {
@@ -135,17 +157,14 @@ export const generateContentStream = async function* (request: GenerateContentRe
     }
   } catch (error) {
     console.error("Error generating streaming content:", error);
-    throw error;
+    throw new Error(formatAiServiceError(error));
   }
 };
 
-/**
- * A streaming version of getResponse that yields text chunks as they arrive.
- * @param prompt - The user prompt text.
- * @param systemInstructionText - Optional system instruction text.
- * @returns An async generator that yields text chunks.
- */
-export const getResponseStream = async function* (prompt: string, systemInstructionText?: string): AsyncGenerator<string, void, unknown> {
+export const getResponseStream = async function* (
+  prompt: string,
+  systemInstructionText?: string,
+): AsyncGenerator<string, void, unknown> {
   if (!isAiServiceAvailable()) {
     console.warn("AI Service not available. Returning mock response.");
     yield "Mock response: AI service is not available.";
@@ -165,8 +184,8 @@ export const getResponseStream = async function* (prompt: string, systemInstruct
     yield* generateContentStream(request);
   } catch (error) {
     console.error("Error getting streaming response from AI service:", error);
-    throw error;
+    throw new Error(formatAiServiceError(error));
   }
 };
 
-export { model }; // Exporting model for direct use if needed
+export { model, textModelName };

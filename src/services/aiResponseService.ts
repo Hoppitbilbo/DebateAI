@@ -1,6 +1,7 @@
 import { Message } from "@/types/conversation";
 import { TFunction } from 'i18next';
 import { aiFacade } from "@/services/aiFacade";
+import { formatAiServiceError } from "@/services/aiService";
 import { ChatSession } from "@google/generative-ai";
 
 // Define a more specific character type, expecting title and snippet
@@ -40,10 +41,6 @@ export const generateAIResponse = async (
     return aiText && aiText.trim() !== "" ? aiText.trim() : "Non so come rispondere a questo.";
   } catch (error) {
     console.error(`Error generating AI response for ${character.title}:`, error);
-    let errorMessage = "Mi scuso, ma ho riscontrato un problema nel formulare una risposta.";
-    if (error instanceof Error && error.message) {
-        errorMessage += ` Dettagli: ${error.message}`;
-    }
-    return errorMessage;
+    return `Mi scuso, ma ho riscontrato un problema nel formulare una risposta. Dettagli: ${formatAiServiceError(error)}`;
   }
 };
