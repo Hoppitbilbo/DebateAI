@@ -3,7 +3,7 @@ import { Message } from "@/types/conversation";
 import { ReflectionData } from "@/types/reflection";
 // import { generateGeminiEvaluation } from "./geminiUtils"; // No longer using direct GeminiUtils here
 import { conversationToString } from "./characterDialogueUtils";
-import { getResponse, isAiServiceAvailable } from '@/services/aiService';
+import { aiFacade } from '@/services/aiFacade';
 
 export interface SessionData {
   characterName: string;
@@ -62,7 +62,7 @@ export const generateReflectionEvaluation = async (
   sessionData: SessionData,
   userReflection: string
 ): Promise<string> => {
-  if (!isAiServiceAvailable()) {
+  if (!aiFacade.text.isAvailable()) {
     return 'Servizio AI non disponibile. Impossibile generare la valutazione.';
   }
 
@@ -72,7 +72,7 @@ export const generateReflectionEvaluation = async (
   });
 
   try {
-    const evaluation = await getResponse(dataPrompt, systemInstruction);
+    const evaluation = await aiFacade.text.getResponse(dataPrompt, systemInstruction);
     return evaluation.trim() !== ''
       ? evaluation.trim()
       : 'La valutazione AI non ha prodotto un risultato valido.';

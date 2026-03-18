@@ -70,5 +70,7 @@
     "shareSuggestions": "Teilen Sie Vorschläge",
     "joinCommunity": "Der Community beitreten",
     "teachersShare": "Lehrer, teilt eure Ideen und Klassenexperimente!"
-  }
+  },
+  "startVoiceInput": "Spracheingabe starten",
+  "stopVoiceInput": "Spracheingabe stoppen"
 }
