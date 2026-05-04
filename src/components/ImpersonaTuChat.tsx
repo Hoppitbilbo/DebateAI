@@ -1,5 +1,4 @@
-
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { toast } from "sonner";
 import { getAIGameAndReflectionEvaluation, ConversationData } from "@/utils/evaluationUtils";
 import { Message } from "@/types/conversation";
@@ -9,7 +8,9 @@ import ChatInterface from "@/components/shared/ChatInterface";
 import ReflectionInterface from "@/components/shared/ReflectionInterface";
 import FeedbackInterface from "@/components/shared/FeedbackInterface";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
+import { useLiveAi } from "@/hooks/useLiveAi";
 
 interface Character {
   name: string;
@@ -34,6 +35,49 @@ const ImpersonaTuChat = ({ aiCharacter, userCharacter, topic }: ImpersonaTuChatP
   const [isEvaluating, setIsEvaluating] = useState(false);
   const { chat, isLoading, startSession, send } = useAiChatSession();
 
+  const systemPrompt = `Sei ${aiCharacter.name}. La tua biografia è: ${aiCharacter.bio}. \
+Interagisci come se fossi realmente ${aiCharacter.name}, basandoti sulla tua biografia e sul contesto storico. \
+Stai conversando con uno studente che sta cercando di impersonare ${userCharacter.name} (la sua biografia è: ${userCharacter.bio}). \
+L'argomento della vostra discussione è: "${topic}". \
+Il tuo obiettivo è mantenere una conversazione realistica e coinvolgente nel ruolo di ${aiCharacter.name}, discutendo dell'argomento ${topic} con lo studente (che interpreta ${userCharacter.name}). \
+Rispondi alle sue affermazioni, poni domande pertinenti e guida la conversazione, sempre rimanendo nel personaggio. \
+Non devi MAI rivelare di essere un'intelligenza artificiale o un modello linguistico. Parla sempre in prima persona come ${aiCharacter.name}. \
+Mantieni un tono e uno stile appropriati al tuo personaggio e all'epoca.`;
+
+  const handleLiveTextReceived = useCallback((text: string, isStreaming: boolean) => {
+    setMessages((prev) => {
+      if (isStreaming && prev[prev.length - 1]?.role === "assistant") {
+        const updated = [...prev];
+        const last = updated[updated.length - 1];
+        updated[updated.length - 1] = { ...last, content: `${last.content}${text}` };
+        return updated;
+      }
+      return [...prev, { role: "assistant", content: text }];
+    });
+  }, []);
+
+  const handleUserTranscriptionReceived = useCallback((text: string, isFinal: boolean) => {
+    setMessages((prev) => {
+      const updated = [...prev];
+      const last = updated[updated.length - 1];
+
+      if (last?.role === "user") {
+        updated[updated.length - 1] = { ...last, content: text };
+        return updated;
+      } else {
+        return [...updated, { role: "user", content: text }];
+      }
+    });
+  }, []);
+
+  const { isLiveMode, setIsLiveMode, isLiveAvailable, sendLiveMessage, resetLiveSession } = useLiveAi({
+    onTextReceived: handleLiveTextReceived,
+    onUserTranscription: handleUserTranscriptionReceived,
+    systemInstruction: systemPrompt,
+    characterName: aiCharacter.name,
+    characterBio: aiCharacter.bio,
+  });
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -47,14 +91,6 @@ const ImpersonaTuChat = ({ aiCharacter, userCharacter, topic }: ImpersonaTuChatP
   // Initialize or re-initialize chat session
   const initializeChat = () => {
       setMessages([]); // Clear previous messages
-      const systemPrompt = `Sei ${aiCharacter.name}. La tua biografia è: ${aiCharacter.bio}. \
-Interagisci come se fossi realmente ${aiCharacter.name}, basandoti sulla tua biografia e sul contesto storico. \
-Stai conversando con uno studente che sta cercando di impersonare ${userCharacter.name} (la sua biografia è: ${userCharacter.bio}). \
-L'argomento della vostra discussione è: "${topic}". \
-Il tuo obiettivo è mantenere una conversazione realistica e coinvolgente nel ruolo di ${aiCharacter.name}, discutendo dell'argomento ${topic} con lo studente (che interpreta ${userCharacter.name}). \
-Rispondi alle sue affermazioni, poni domande pertinenti e guida la conversazione, sempre rimanendo nel personaggio. \
-Non devi MAI rivelare di essere un'intelligenza artificiale o un modello linguistico. Parla sempre in prima persona come ${aiCharacter.name}. \
-Mantieni un tono e uno stile appropriati al tuo personaggio e all'epoca.`;
 
       const initialAiMessage = t('apps.impersonaTu.chat.greeting', { 
         aiCharacterName: aiCharacter.name, 
@@ -102,6 +138,16 @@ Mantieni un tono e uno stile appropriati al tuo personaggio e all'epoca.`;
       content: userMessageContent,
     };
     setMessages(prev => [...prev, newUserMessage]);
+
+    if (isLiveMode && !isLiveAvailable) {
+      toast.error("Live mode is enabled but non disponibile.");
+      return;
+    }
+
+    if (isLiveMode) {
+      sendLiveMessage(userMessageContent);
+      return;
+    }
 
     try {
       const aiTextResponse = await send(userMessageContent, chat);
@@ -158,6 +204,7 @@ Mantieni un tono e uno stile appropriati al tuo personaggio e all'epoca.`;
   };
 
   const handleStartNewChat = () => {
+    resetLiveSession();
     initializeChat(); 
     setInput("");
     setActivityPhase("chatting");
@@ -176,6 +223,15 @@ Mantieni un tono e uno stile appropriati al tuo personaggio e all'epoca.`;
         subtitle={t('apps.impersonaTu.subtitle')}
         onReset={handleStartNewChat}
       >
+        <div className="mb-4 flex justify-end">
+          <Button
+            variant={isLiveMode ? "default" : "outline"}
+            onClick={() => setIsLiveMode((prev) => !prev)}
+            disabled={!isLiveAvailable}
+          >
+            {isLiveMode ? "Live mode ON" : "Live mode OFF"}
+          </Button>
+        </div>
         {/* Character Info Header */}
         <Card className="p-4 bg-white/90 backdrop-blur-sm border-education/20">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">

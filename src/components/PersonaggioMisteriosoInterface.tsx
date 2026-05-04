@@ -1,5 +1,4 @@
-
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from 'react-i18next'; 
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
@@ -15,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import AppLayout from "@/components/shared/AppLayout";
 import ReflectionInterface from "@/components/shared/ReflectionInterface";
 import FeedbackInterface from "@/components/shared/FeedbackInterface"; 
+import { useLiveAi } from "@/hooks/useLiveAi";
 
 // Helper for flexible name checking
 const normalizeString = (str: string) => {
@@ -45,6 +45,62 @@ const PersonaggioMisteriosoInterface = () => {
   const [isEvaluating, setIsEvaluating] = useState(false);
   const [guessCorrect, setGuessCorrect] = useState(false);
   const [nameScore, setNameScore] = useState<number | null>(null);
+
+  const handleLiveTextReceived = useCallback((text: string, isStreaming: boolean) => {
+    setConversation((prev) => {
+      if (isStreaming && prev[prev.length - 1]?.role === "character") {
+        const updated = [...prev];
+        const last = updated[updated.length - 1];
+        updated[updated.length - 1] = { ...last, content: `${last.content}${text}` };
+        return updated;
+      }
+      return [...prev, { role: "character", content: text }];
+    });
+  }, []);
+
+  const handleUserTranscriptionReceived = useCallback((text: string, isFinal: boolean) => {
+    setConversation((prev) => {
+      // If the last message was the user and wasn't finalized previously, update it.
+      // We don't have a strict 'isFinal' tracking flag on the UI yet, but we can append or replace the last unfinished user turn.
+      // For simplicity, let's keep it straightforward for now: 
+      // check if the last message is from the user and we can overwrite it, or just append new user text when it's final.
+      
+      const updated = [...prev];
+      const last = updated[updated.length - 1];
+
+      if (last?.role === "user") {
+        updated[updated.length - 1] = { ...last, content: text };
+        return updated;
+      } else {
+        return [...updated, { role: "user", content: text }];
+      }
+    });
+
+    if (isFinal) {
+      // Reduce question count if a complete question was recognized
+      setQuestionsLeft((prev) => {
+        const remaining = prev - 1;
+        if (remaining === 0) {
+          setReadyForFinalGuess(true);
+          toast.info(t('apps.personaggioMisterioso.game.questionsFinished'));
+        }
+        return remaining;
+      });
+    }
+  }, [t]);
+
+  const systemInstruction = selectedCharacter ? t('apps.personaggioMisterioso.game.systemInstruction', {
+    characterName: selectedCharacter.title,
+    snippet: selectedCharacter.snippet,
+  }) : undefined;
+
+  const { isLiveMode, setIsLiveMode, isLiveAvailable, sendLiveMessage, resetLiveSession } = useLiveAi({
+    onTextReceived: handleLiveTextReceived,
+    onUserTranscription: handleUserTranscriptionReceived,
+    systemInstruction,
+    characterName: selectedCharacter?.title,
+    characterBio: selectedCharacter?.snippet,
+  });
 
   useEffect(() => {
     setQuestionsLeft(difficulty);
@@ -98,6 +154,23 @@ const PersonaggioMisteriosoInterface = () => {
     setCurrentQuestion("");
     setIsAiResponding(true);
     setReadyForFinalGuess(false);
+
+    if (isLiveMode && !isLiveAvailable) {
+      toast.error("Live mode is enabled but non disponibile.");
+      return;
+    }
+
+    if (isLiveMode) {
+      sendLiveMessage(currentQuestion);
+      const remaining = questionsLeft - 1;
+      setQuestionsLeft(remaining);
+      if (remaining === 0) {
+        setReadyForFinalGuess(true);
+        toast.info(t('apps.personaggioMisterioso.game.questionsFinished'));
+      }
+      setIsAiResponding(false);
+      return;
+    }
 
     try {
       const history = conversation
@@ -206,6 +279,8 @@ const PersonaggioMisteriosoInterface = () => {
   };
 
   const handleNewGame = () => {
+    resetLiveSession();
+    setSelectedCharacter(null);
     setSelectedCharacter(null);
     setIsGameStarted(false);
     setHideCharacter(true);
@@ -235,6 +310,15 @@ const PersonaggioMisteriosoInterface = () => {
       {(activityPhase === "game" && (!isGameStarted || !readyForFinalGuess)) && !showFinalGuess && (
         <Card className="p-6 bg-white/90 backdrop-blur-sm border-education/20">
           <div className="space-y-4">
+            <div className="mb-4 flex justify-end">
+              <Button
+                variant={isLiveMode ? "default" : "outline"}
+                onClick={() => setIsLiveMode((prev) => !prev)}
+                disabled={!isLiveAvailable}
+              >
+                {isLiveMode ? "Live mode ON" : "Live mode OFF"}
+              </Button>
+            </div>
             {!isGameStarted ? (
               <GameSetup
                 onCharacterSelect={handleCharacterSelect}

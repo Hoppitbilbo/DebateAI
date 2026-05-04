@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { toast } from "@/components/ui/sonner";
 import { Message, ActivityPhase } from "@/types/conversation";
 import { getAIGameAndReflectionEvaluation, ConversationData } from "@/utils/evaluationUtils";
@@ -9,6 +9,8 @@ import { generateAIResponse } from "@/services/aiResponseService";
 import AppLayout from "@/components/shared/AppLayout";
 import ReflectionInterface from "@/components/shared/ReflectionInterface";
 import FeedbackInterface from "@/components/shared/FeedbackInterface";
+import { useLiveAi } from "@/hooks/useLiveAi";
+import { Button } from "@/components/ui/button";
 
 interface WikiCharacter {
   title: string;
@@ -27,6 +29,45 @@ const ConvinciTuInterface = () => {
   const [isEvaluating, setIsEvaluating] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  const handleLiveTextReceived = useCallback((text: string, isStreaming: boolean) => {
+    setConversation((prev) => {
+      if (isStreaming && prev[prev.length - 1]?.role === "assistant") {
+        const updated = [...prev];
+        const last = updated[updated.length - 1];
+        updated[updated.length - 1] = { ...last, content: `${last.content}${text}`, characterName: selectedCharacter?.title };
+        return updated;
+      }
+      return [...prev, { role: "assistant", content: text, characterName: selectedCharacter?.title }];
+    });
+  }, [selectedCharacter]);
+
+  const handleUserTranscriptionReceived = useCallback((text: string, isFinal: boolean) => {
+    setConversation((prev) => {
+      const updated = [...prev];
+      const last = updated[updated.length - 1];
+
+      if (last?.role === "user") {
+        updated[updated.length - 1] = { ...last, content: text };
+        return updated;
+      } else {
+        return [...updated, { role: "user", content: text }];
+      }
+    });
+  }, []);
+
+  const systemInstruction = selectedCharacter && persuasionTopic ? t('ai.systemInstructions.convinciTu', {
+    name: selectedCharacter.title,
+    prompt: persuasionTopic
+  }) : undefined;
+
+  const { isLiveMode, setIsLiveMode, isLiveAvailable, sendLiveMessage, resetLiveSession } = useLiveAi({
+    onTextReceived: handleLiveTextReceived,
+    onUserTranscription: handleUserTranscriptionReceived,
+    systemInstruction,
+    characterName: selectedCharacter?.title,
+    characterBio: selectedCharacter?.snippet,
+  });
+
   const handleCharacterSelect = (character: WikiCharacter) => {
     setSelectedCharacter(character);
     setConversation([]);
@@ -39,6 +80,16 @@ const ConvinciTuInterface = () => {
     };
     setConversation(prev => [...prev, userMessage]);
     
+    if (isLiveMode && !isLiveAvailable) {
+      toast.error("Live mode is enabled but non disponibile.");
+      return;
+    }
+
+    if (isLiveMode) {
+      sendLiveMessage(message);
+      return;
+    }
+
     setIsLoading(true);
     try {
       // Ensure selectedCharacter and its snippet are passed correctly if generateAIResponse expects it
@@ -101,6 +152,7 @@ const ConvinciTuInterface = () => {
   };
   
   const handleStartNewChat = () => {
+    resetLiveSession();
     setSelectedCharacter(null);
     setPersuasionTopic("");
     setConversation([]);
@@ -120,6 +172,15 @@ const ConvinciTuInterface = () => {
     >
       {activityPhase === "chatting" && (
         <>
+          <div className="mb-4 flex justify-end">
+            <Button
+              variant={isLiveMode ? "default" : "outline"}
+              onClick={() => setIsLiveMode((prev) => !prev)}
+              disabled={!isLiveAvailable}
+            >
+              {isLiveMode ? "Live mode ON" : "Live mode OFF"}
+            </Button>
+          </div>
           <CharacterSelection
             selectedCharacter={selectedCharacter}
             persuasionTopic={persuasionTopic}

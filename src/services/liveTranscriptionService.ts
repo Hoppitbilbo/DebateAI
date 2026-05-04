@@ -1,7 +1,7 @@
 import { GoogleGenAI, LiveServerMessage, Modality, Session } from "@google/genai";
 
 const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-const liveModel = import.meta.env.VITE_GEMINI_LIVE_MODEL || "gemini-live-2.5-flash-preview";
+const liveModel = import.meta.env.VITE_GEMINI_LIVE_MODEL || "gemini-2.0-flash-exp";
 
 interface StartLiveTranscriptionOptions {
   languageCode?: string;
@@ -13,19 +13,7 @@ export interface LiveTranscriptionController {
   stop: () => Promise<void>;
 }
 
-const getSupportedRecorderMimeType = (): string | undefined => {
-  if (typeof MediaRecorder === "undefined") {
-    return undefined;
-  }
 
-  const candidateTypes = [
-    "audio/webm;codecs=opus",
-    "audio/webm",
-    "audio/mp4",
-  ];
-
-  return candidateTypes.find((mimeType) => MediaRecorder.isTypeSupported(mimeType));
-};
 
 export const isLiveTranscriptionAvailable = (): boolean => {
   return !!apiKey && typeof window !== "undefined" && !!navigator.mediaDevices?.getUserMedia && typeof MediaRecorder !== "undefined";
@@ -41,8 +29,11 @@ export const startLiveTranscription = async (
   const ai = new GoogleGenAI({ apiKey });
 
   let session: Session | null = null;
-  let mediaRecorder: MediaRecorder | null = null;
   let stream: MediaStream | null = null;
+  let audioContext: AudioContext | null = null;
+  let scriptProcessor: ScriptProcessorNode | null = null;
+  let gainNode: GainNode | null = null;
+  let source: MediaStreamAudioSourceNode | null = null;
   let stopped = false;
 
   const handleServerMessage = (message: LiveServerMessage) => {
@@ -74,26 +65,60 @@ export const startLiveTranscription = async (
     },
   });
 
-  stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  stream = await navigator.mediaDevices.getUserMedia({ 
+    audio: {
+      echoCancellation: true,
+      noiseSuppression: true,
+      autoGainControl: true,
+    } 
+  });
 
-  const mimeType = getSupportedRecorderMimeType();
-  mediaRecorder = mimeType
-    ? new MediaRecorder(stream, { mimeType })
-    : new MediaRecorder(stream);
+  audioContext = new (window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext)({
+    sampleRate: 16000,
+  });
 
-  mediaRecorder.ondataavailable = (event: BlobEvent) => {
-    if (!event.data || event.data.size === 0 || !session) {
-      return;
+  source = audioContext.createMediaStreamSource(stream);
+  scriptProcessor = audioContext.createScriptProcessor(4096, 1, 1);
+  gainNode = audioContext.createGain();
+  gainNode.gain.value = 0; // Prevent feedback loop
+
+  scriptProcessor.onaudioprocess = (audioProcessingEvent) => {
+    if (!session) return;
+    
+    // Get float32 PCM
+    const inputBuffer = audioProcessingEvent.inputBuffer;
+    const inputData = inputBuffer.getChannelData(0);
+
+    // Convert to PCM16
+    const pcm16 = new Int16Array(inputData.length);
+    for (let i = 0; i < inputData.length; i++) {
+      let sample = Math.max(-1, Math.min(1, inputData[i]));
+      pcm16[i] = sample < 0 ? sample * 0x8000 : sample * 0x7FFF;
     }
 
-    session.sendRealtimeInput({ audio: event.data });
+    // Convert to base64
+    const uint8Array = new Uint8Array(pcm16.buffer);
+    let binaryString = '';
+    for (let i = 0; i < uint8Array.length; i++) {
+        binaryString += String.fromCharCode(uint8Array[i]);
+    }
+    const base64Data = btoa(binaryString);
+
+    try {
+      session.sendRealtimeInput({
+        audio: {
+          mimeType: "audio/pcm;rate=16000",
+          data: base64Data
+        }
+      });
+    } catch (e) {
+      console.error(e);
+    }
   };
 
-  mediaRecorder.onerror = () => {
-    options.onError?.("Microphone recording error.");
-  };
-
-  mediaRecorder.start(250);
+  source.connect(scriptProcessor);
+  scriptProcessor.connect(gainNode);
+  gainNode.connect(audioContext.destination);
 
   const stop = async () => {
     if (stopped) {
@@ -102,8 +127,17 @@ export const startLiveTranscription = async (
 
     stopped = true;
 
-    if (mediaRecorder && mediaRecorder.state !== "inactive") {
-      mediaRecorder.stop();
+    if (scriptProcessor) {
+      scriptProcessor.disconnect();
+    }
+    if (gainNode) {
+      gainNode.disconnect();
+    }
+    if (source) {
+      source.disconnect();
+    }
+    if (audioContext) {
+      void audioContext.close();
     }
 
     stream?.getTracks().forEach((track) => track.stop());
@@ -119,7 +153,10 @@ export const startLiveTranscription = async (
     }
 
     session = null;
-    mediaRecorder = null;
+    scriptProcessor = null;
+    source = null;
+    gainNode = null;
+    audioContext = null;
     stream = null;
   };
 
