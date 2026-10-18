@@ -38,7 +38,7 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto · `[-]` scartato (spieg
 ## Stato attuale
 
 - **Fase in corso:** 4 (service, State, Observer, backend)
-- **Prossimo task:** 4.3
+- **Prossimo task:** 4.4
 - **Lavoro a metà:** nessuno
 - **Test:** Go 33 test nuovi + quelli esistenti verdi; Vitest 18 test verdi; lint 0 errori (18 warning preesistenti)
 
@@ -180,7 +180,7 @@ Un'area per task, spostando l'SQL in `internal/store`:
   - [x] **4.2a** (`08ed03b`) `authService`
   - [x] **4.2b** (`a07cc6a`) `classService`
   - [x] **4.2c** (`a11df2e`) `assignmentService` (+ `sessionService.Start/Load/Complete`)
-- [ ] **4.3** Observer per le notifiche mail.
+- [x] **4.3** (`ec6a61d`) Observer per le notifiche mail.
 - [ ] **4.4** `main.go` come composition root; `Server` ridotto a router e middleware; handler spostati in `httpapi/`.
 
 ### Fase 5: attività (frontend)
@@ -242,3 +242,4 @@ Un'area per task, spostando l'SQL in `internal/store`:
 | 2026-10-18 | 4.2a | `08ed03b` | Claude Code | `server/internal/app/auth_service.go`: `CreateUser`, `SetPassword`, `StartSession`, `UserForToken`, `Logout`, `Login`, `UpdateProfile`, `FindInvite`, `Register`, `RequestReset`, `ResetPassword`, `CreateInvite`. Errori tipizzati (`errInvalidCredentials`, `errAccountDisabled`, `errWrongPassword`, `errInvalidInvite`, `errUserNotFound`) e `invalid(err)` per gli input non validi; `writeServiceErr` risponde 400 o 500. Interfaccia `mailer`. Campo `Server.accounts` (il nome `auth` era già del middleware). Nuovi test in `auth_service_test.go`. Differenza: un errore del DB in creazione utente ora dà 500 invece di 400. |
 | 2026-10-18 | 4.2b | `a07cc6a` | Claude Code | `server/internal/app/class_service.go`: `CanManage`, `List`, `Create`, `Update`, `RegenerateCode`, `Invite` (+ `addExisting`), `Join`, `Joined`, `splitEmails`; errori `errBadMemberRole`, `errOnlyOwner`, `errInvalidCode`. Helper `managedClass` per il controllo 403 ripetuto in 6 handler. Test in `class_service_test.go`. |
 | 2026-10-18 | 4.2c | `a11df2e` | Claude Code | `server/internal/app/assignment_service.go`: `Managed`, `Visible`, `ListForClass`, `ListForStudent`, `Create`, `Update`, `Progress`, `notifyStudents` (da trasformare in Observer nel 4.3), `dueText`. `sessionService` ora ha anche `Start`, `Load` (regole di accesso) e `Complete`; handler delle sessioni spostati in `sessions.go` con helper `ownSession`; helper `managedAssignment`. Rimossi `getAssignment`, `appTypes`, `canManageClass`, `isClassMember`, `latestSession`, `bestSession`. Test in `assignment_service_test.go`. |
+| 2026-10-18 | 4.3 | `ec6a61d` | Claude Code | `server/internal/app/notify.go`: interfaccia `assignmentListener` (`AssignmentPublished`), `mailNotifier` e `dueText`. `assignmentService` ha `listeners` e non conosce più mail o SMTP. L'evento parte solo se il docente ha chiesto la notifica e il compito diventa pubblicato (come prima). Le altre mail (benvenuto, invito, aggiunta alla classe) restano dentro i flussi di `authService`/`classService`, perché il risultato dell'invio serve alla risposta. Test in `notify_test.go`. |
