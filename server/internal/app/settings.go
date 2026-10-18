@@ -77,7 +77,7 @@ type JevSettings struct {
 }
 
 func defaultJev() JevSettings {
-	return JevSettings{Enabled: true, Threshold: 0.7, EvaluateEvery: 1, MaxStateChars: 24000}
+	return JevSettings{Enabled: true, Threshold: defaultJudgeThreshold, EvaluateEvery: 1, MaxStateChars: 24000}
 }
 
 func (s *Server) general() GeneralSettings {

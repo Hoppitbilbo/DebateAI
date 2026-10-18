@@ -428,7 +428,7 @@ func (s *Server) handleCreateProvider(w http.ResponseWriter, r *http.Request) {
 	// Fetch the full model list right away (OpenRouter, OpenCode, Gemini,
 	// Ollama…); the preset list is only a fallback when listing fails.
 	fetched := false
-	ctx, cancel := context.WithTimeout(r.Context(), 20*time.Second)
+	ctx, cancel := context.WithTimeout(r.Context(), modelListTimeout)
 	if cp, err := s.provider(id); err == nil {
 		if models, err := cp.p.ListModels(ctx); err == nil && len(models) > 0 {
 			s.storeModels(id, models)
@@ -633,7 +633,7 @@ func (s *Server) handleRefreshModels(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 400, "provider_error", err.Error())
 		return
 	}
-	ctx, cancel := context.WithTimeout(r.Context(), 30*time.Second)
+	ctx, cancel := context.WithTimeout(r.Context(), modelRefreshTimeout)
 	defer cancel()
 	models, err := cp.p.ListModels(ctx)
 	if err != nil {
@@ -657,7 +657,7 @@ func (s *Server) handleTestProvider(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 400, "provider_error", err.Error())
 		return
 	}
-	ctx, cancel := context.WithTimeout(r.Context(), 60*time.Second)
+	ctx, cancel := context.WithTimeout(r.Context(), providerTestTimeout)
 	defer cancel()
 	start := time.Now()
 	u := currentUser(r)

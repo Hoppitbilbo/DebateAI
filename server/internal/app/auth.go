@@ -184,7 +184,7 @@ func (s *Server) handleSetup(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleLogin(w http.ResponseWriter, r *http.Request) {
-	if !s.limiter.allow("login:"+clientIP(r), 20, 15*time.Minute) {
+	if !s.limiter.allow("login:"+clientIP(r), loginAttemptsLimit, loginAttemptsWindow) {
 		writeErr(w, 429, "rate_limited", "too many attempts, retry later")
 		return
 	}
@@ -381,7 +381,7 @@ func (s *Server) handleRegister(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleForgot(w http.ResponseWriter, r *http.Request) {
-	if !s.limiter.allow("forgot:"+clientIP(r), 5, time.Hour) {
+	if !s.limiter.allow("forgot:"+clientIP(r), forgotRequestsLimit, time.Hour) {
 		writeErr(w, 429, "rate_limited", "too many requests")
 		return
 	}
@@ -392,7 +392,7 @@ func (s *Server) handleForgot(w http.ResponseWriter, r *http.Request) {
 		tok := randomToken(24)
 		// The answer stays OK on failure too (no enumeration); only the mail is skipped.
 		_, err := s.db.Exec(`INSERT INTO invites(token_hash, kind, email, role, locale, created_at, expires_at) VALUES(?,?,?,?,?,?,?)`,
-			hashToken(tok), "reset", u.Email, u.Role, u.Locale, now(), time.Now().Add(2*time.Hour).UTC().Format(time.RFC3339))
+			hashToken(tok), "reset", u.Email, u.Role, u.Locale, now(), time.Now().Add(resetLinkTTL).UTC().Format(time.RFC3339))
 		if err != nil {
 			log.Printf("password reset for user %d: %v", u.ID, err)
 			writeJSON(w, 200, map[string]bool{"ok": true})
@@ -447,7 +447,7 @@ func (s *Server) createInvite(r *http.Request, inviter *User, email, role string
 		return nil, errors.New("invalid role")
 	}
 	tok := randomToken(24)
-	exp := time.Now().Add(14 * 24 * time.Hour).UTC().Format(time.RFC3339)
+	exp := time.Now().Add(inviteTTL).UTC().Format(time.RFC3339)
 	res, err := s.db.Exec(`INSERT INTO invites(token_hash, kind, email, role, class_id, invited_by, locale, created_at, expires_at) VALUES(?,?,?,?,?,?,?,?,?)`,
 		hashToken(tok), "invite", email, role, classID, inviter.ID, normLocale(locale), now(), exp)
 	if err != nil {

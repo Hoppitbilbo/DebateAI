@@ -63,7 +63,7 @@ func (s *Server) bootstrap() {
 			return 0
 		}
 		if cp, err := s.provider(id); err == nil {
-			ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+			ctx, cancel := context.WithTimeout(context.Background(), modelListTimeout)
 			if models, err := cp.p.ListModels(ctx); err == nil && len(models) > 0 {
 				s.storeModels(id, models)
 			} else if err != nil {
@@ -377,7 +377,7 @@ type bucket struct {
 func newRateLimiter() *rateLimiter {
 	rl := &rateLimiter{buckets: map[string]*bucket{}}
 	go func() {
-		for range time.Tick(10 * time.Minute) {
+		for range time.Tick(rateLimiterSweepEvery) {
 			rl.mu.Lock()
 			for k, b := range rl.buckets {
 				if time.Now().After(b.reset) {

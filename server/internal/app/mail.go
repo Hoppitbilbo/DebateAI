@@ -146,7 +146,7 @@ func (s *Server) sendMail(to, subject, body string) error {
 
 	var c *smtp.Client
 	if cfg.Security == "tls" {
-		conn, err := tls.DialWithDialer(&net.Dialer{Timeout: 15 * time.Second}, "tcp", addr, &tls.Config{ServerName: cfg.Host})
+		conn, err := tls.DialWithDialer(&net.Dialer{Timeout: smtpDialTimeout}, "tcp", addr, &tls.Config{ServerName: cfg.Host})
 		if err != nil {
 			return err
 		}
@@ -155,7 +155,7 @@ func (s *Server) sendMail(to, subject, body string) error {
 			return err
 		}
 	} else {
-		conn, err := net.DialTimeout("tcp", addr, 15*time.Second)
+		conn, err := net.DialTimeout("tcp", addr, smtpDialTimeout)
 		if err != nil {
 			return err
 		}

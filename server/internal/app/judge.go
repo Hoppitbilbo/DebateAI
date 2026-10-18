@@ -142,7 +142,7 @@ func (s *Server) judge(ctx context.Context, in judgeInput, userID, sessionID *in
 	state := buildState(judgeInput{Instructions: in.Instructions, Goals: goals, AppType: in.AppType, Context: in.Context, Transcript: in.Transcript}, js.MaxStateChars)
 	threshold := js.Threshold
 	if threshold <= 0 || threshold >= 1 {
-		threshold = 0.7
+		threshold = defaultJudgeThreshold
 	}
 
 	var lastErr error
@@ -152,7 +152,7 @@ func (s *Server) judge(ctx context.Context, in judgeInput, userID, sessionID *in
 			lastErr = err
 			continue
 		}
-		cctx, cancel := context.WithTimeout(ctx, 60*time.Second)
+		cctx, cancel := context.WithTimeout(ctx, judgeTargetTimeout)
 		var r *JudgeResult
 		start := time.Now()
 		var usage ai.Usage
@@ -232,7 +232,7 @@ func (s *Server) judgeWithJev(ctx context.Context, d ai.Decider, model string, s
 	for i, g := range goals {
 		r.Goals = append(r.Goals, GoalStatus{Text: g, Score: val(fmt.Sprintf("goal_%d", i))})
 	}
-	r.OffTopic = val("off_topic") >= 0.8 || val("manipulation") >= 0.8
+	r.OffTopic = val("off_topic") >= offTopicThreshold || val("manipulation") >= offTopicThreshold
 	return r, out.Usage, nil
 }
 

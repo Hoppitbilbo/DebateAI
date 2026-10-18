@@ -378,8 +378,8 @@ func (s *Server) handleGenerate(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 400, "bad_request", "messages required")
 		return
 	}
-	if len(in.Messages) > 200 {
-		in.Messages = in.Messages[len(in.Messages)-200:]
+	if len(in.Messages) > maxChatHistoryMessages {
+		in.Messages = in.Messages[len(in.Messages)-maxChatHistoryMessages:]
 	}
 	var userID *int64
 	if u != nil {
@@ -439,7 +439,7 @@ func (s *Server) handleLiveToken(w http.ResponseWriter, r *http.Request) {
 	if _, ok := s.aiAllowed(w, r); !ok {
 		return
 	}
-	if !s.limiter.allow(fmt.Sprintf("live:%s:%v", clientIP(r), u != nil), 30, time.Hour) {
+	if !s.limiter.allow(fmt.Sprintf("live:%s:%v", clientIP(r), u != nil), liveTokensLimit, time.Hour) {
 		writeErr(w, 429, "rate_limited", "too many live sessions, retry later")
 		return
 	}
@@ -469,7 +469,7 @@ func (s *Server) handleLiveToken(w http.ResponseWriter, r *http.Request) {
 		if err != nil || cp.cfg.Kind != ai.KindGemini {
 			continue
 		}
-		ctx, cancel := context.WithTimeout(r.Context(), 20*time.Second)
+		ctx, cancel := context.WithTimeout(r.Context(), liveTokenTimeout)
 		tok, exp, err := ai.CreateLiveToken(ctx, cp.cfg, ai.LiveTokenOptions{Model: t.Model, SystemInstruction: in.SystemInstruction, VoiceName: voice})
 		cancel()
 		if err != nil {

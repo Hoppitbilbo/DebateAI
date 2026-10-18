@@ -338,7 +338,7 @@ func (s *Server) handleJoinClass(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 403, "disabled", "joining by code is disabled")
 		return
 	}
-	if !s.limiter.allow(fmt.Sprintf("join:%d", u.ID), 20, time.Hour) {
+	if !s.limiter.allow(fmt.Sprintf("join:%d", u.ID), joinAttemptsLimit, time.Hour) {
 		writeErr(w, 429, "rate_limited", "too many attempts")
 		return
 	}

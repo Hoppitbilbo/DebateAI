@@ -95,8 +95,8 @@ func cleanGoals(g []string) []string {
 			out = append(out, s)
 		}
 	}
-	if len(out) > 12 {
-		out = out[:12]
+	if len(out) > maxAssignmentGoals {
+		out = out[:maxAssignmentGoals]
 	}
 	return out
 }
@@ -552,7 +552,7 @@ func (s *Server) handleCreateSession(w http.ResponseWriter, r *http.Request) {
 		ctx = string(in.Context)
 	}
 	res, err := s.db.Exec(`INSERT INTO activity_sessions(user_id, assignment_id, app_type, title, context_json, started_at, updated_at) VALUES(?,?,?,?,?,?,?)`,
-		u.ID, aid, in.AppType, truncate(in.Title, 200), ctx, now(), now())
+		u.ID, aid, in.AppType, truncate(in.Title, maxSessionTitleChars), ctx, now(), now())
 	if err != nil {
 		writeErr(w, 500, "internal", err.Error())
 		return
@@ -641,8 +641,8 @@ func (s *Server) handleSaveTranscript(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 400, "bad_request", err.Error())
 		return
 	}
-	if len(in.Messages) > 1000 {
-		in.Messages = in.Messages[len(in.Messages)-1000:]
+	if len(in.Messages) > maxTranscriptMessages {
+		in.Messages = in.Messages[len(in.Messages)-maxTranscriptMessages:]
 	}
 	turns := 0
 	for _, m := range in.Messages {
@@ -690,8 +690,8 @@ func (s *Server) handleSaveTranscript(w http.ResponseWriter, r *http.Request) {
 		} else {
 			ctxText = string(d.Context)
 		}
-		ctx, cancel := context.WithTimeout(r.Context(), 90*time.Second)
-		jr := s.judge(ctx, judgeInput{Instructions: a.Instructions, Goals: a.Goals, AppType: a.AppType, Context: truncate(ctxText, 2000),
+		ctx, cancel := context.WithTimeout(r.Context(), judgeRequestTimeout)
+		jr := s.judge(ctx, judgeInput{Instructions: a.Instructions, Goals: a.Goals, AppType: a.AppType, Context: truncate(ctxText, maxJudgeContextChars),
 			Transcript: in.Messages, Locale: u.Locale, MinTurns: a.MinTurns, Turns: turns}, &u.ID, &d.ID)
 		cancel()
 		resp["jev"] = jr
@@ -739,7 +739,7 @@ func (s *Server) handleCompleteSession(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	_, err = s.db.Exec(`UPDATE activity_sessions SET status = 'completed', reflection = ?, evaluation = ?, score_conversation = ?, score_reflection = ?, completed_at = ?, updated_at = ? WHERE id = ?`,
-		truncate(in.Reflection, 20000), truncate(in.Evaluation, 40000), in.ScoreConversation, in.ScoreReflection, now(), now(), d.ID)
+		truncate(in.Reflection, maxReflectionChars), truncate(in.Evaluation, maxEvaluationChars), in.ScoreConversation, in.ScoreReflection, now(), now(), d.ID)
 	if err != nil {
 		writeErr(w, 500, "internal", err.Error())
 		return
