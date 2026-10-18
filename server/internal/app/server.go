@@ -35,6 +35,7 @@ type Server struct {
 
 	sessionSvc *sessionService
 	accounts   *authService
+	classSvc   *classService
 	crypto     *Crypto
 	static     fs.FS
 
@@ -63,6 +64,8 @@ func NewServer(cfg Config, db *sql.DB, static fs.FS) *Server {
 	}
 	s.accounts = &authService{users: s.users, logins: s.logins, invites: s.invites, classes: s.classes, mail: s,
 		siteName: func() string { return s.general().SiteName }}
+	s.classSvc = &classService{classes: s.classes, users: s.users, accounts: s.accounts, mail: s,
+		siteName: func() string { return s.general().SiteName }, mailOn: func() bool { return s.smtp().Host != "" }}
 	s.sessionSvc = &sessionService{sessions: s.sessions, assignments: s.assignments, judge: s, jevSettings: s.jevSettings}
 	s.bootstrap()
 	return s

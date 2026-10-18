@@ -1,32 +1,32 @@
 package app
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
 	"time"
-
-	"github.com/Hoppitbilbo/DebateAI/server/internal/domain"
 )
 
-// canManageClass: admins, the owner, or co-teachers.
-func (s *Server) canManageClass(u *User, classID int64) bool {
-	return u.Role == domain.RoleAdmin || s.classes.Teaches(classID, u.ID)
-}
+func (s *Server) canManageClass(u *User, classID int64) bool { return s.classSvc.CanManage(u, classID) }
 
 func (s *Server) isClassMember(u *User, classID int64) bool {
 	return s.classes.IsMember(classID, u.ID)
 }
 
-func (s *Server) handleListClasses(w http.ResponseWriter, r *http.Request) {
-	u := currentUser(r)
-	var out []*Class
-	var err error
-	if u.Role == domain.RoleAdmin && r.URL.Query().Get("mine") != "1" {
-		out, err = s.classes.ListAll()
-	} else {
-		out, err = s.classes.ListTaughtBy(u.ID)
+// managedClass returns the {id} of the path when the current user may
+// manage that class; otherwise it answers 403 and ok is false.
+func (s *Server) managedClass(w http.ResponseWriter, r *http.Request) (u *User, id int64, ok bool) {
+	u, id = currentUser(r), pathID(r, "id")
+	if !s.classSvc.CanManage(u, id) {
+		writeErr(w, 403, "forbidden", "not your class")
+		return nil, 0, false
 	}
+	return u, id, true
+}
+
+func (s *Server) handleListClasses(w http.ResponseWriter, r *http.Request) {
+	out, err := s.classSvc.List(currentUser(r), r.URL.Query().Get("mine") == "1")
 	if err != nil {
 		writeErr(w, 500, "internal", err.Error())
 		return
@@ -35,7 +35,6 @@ func (s *Server) handleListClasses(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleCreateClass(w http.ResponseWriter, r *http.Request) {
-	u := currentUser(r)
 	var in struct {
 		Name, Description string
 		OwnerID           *int64 `json:"ownerId"`
@@ -44,24 +43,17 @@ func (s *Server) handleCreateClass(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 400, "bad_request", "name required")
 		return
 	}
-	owner := u.ID
-	if u.Role == "admin" && in.OwnerID != nil {
-		owner = *in.OwnerID
-	}
-	id, err := s.classes.Create(strings.TrimSpace(in.Name), strings.TrimSpace(in.Description), owner)
+	c, err := s.classSvc.Create(currentUser(r), in.Name, in.Description, in.OwnerID)
 	if err != nil {
 		writeErr(w, 500, "internal", err.Error())
 		return
 	}
-	c, _ := s.classes.Get(id)
 	writeJSON(w, 201, c)
 }
 
 func (s *Server) handleGetClass(w http.ResponseWriter, r *http.Request) {
-	u := currentUser(r)
-	id := pathID(r, "id")
-	if !s.canManageClass(u, id) {
-		writeErr(w, 403, "forbidden", "not your class")
+	_, id, ok := s.managedClass(w, r)
+	if !ok {
 		return
 	}
 	c, err := s.classes.Get(id)
@@ -73,41 +65,26 @@ func (s *Server) handleGetClass(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleUpdateClass(w http.ResponseWriter, r *http.Request) {
-	u := currentUser(r)
-	id := pathID(r, "id")
-	if !s.canManageClass(u, id) {
-		writeErr(w, 403, "forbidden", "not your class")
+	_, id, ok := s.managedClass(w, r)
+	if !ok {
 		return
 	}
-	var in struct {
-		Name        *string `json:"name"`
-		Description *string `json:"description"`
-		Archived    *bool   `json:"archived"`
-	}
+	var in ClassChange
 	if err := readJSON(r, &in); err != nil {
 		writeErr(w, 400, "bad_request", err.Error())
 		return
 	}
-	p := domain.ClassPatch{Archived: in.Archived}
-	if in.Name != nil && strings.TrimSpace(*in.Name) != "" {
-		p.Name = ptr(strings.TrimSpace(*in.Name))
-	}
-	if in.Description != nil {
-		p.Description = ptr(strings.TrimSpace(*in.Description))
-	}
-	if err := s.classes.Update(id, p); err != nil {
+	c, err := s.classSvc.Update(id, in)
+	if err != nil {
 		writeErr(w, 500, "internal", err.Error())
 		return
 	}
-	c, _ := s.classes.Get(id)
 	writeJSON(w, 200, c)
 }
 
 func (s *Server) handleDeleteClass(w http.ResponseWriter, r *http.Request) {
-	u := currentUser(r)
-	id := pathID(r, "id")
-	if !s.canManageClass(u, id) {
-		writeErr(w, 403, "forbidden", "not your class")
+	_, id, ok := s.managedClass(w, r)
+	if !ok {
 		return
 	}
 	if err := s.classes.Delete(id); err != nil {
@@ -118,14 +95,12 @@ func (s *Server) handleDeleteClass(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleRegenerateCode(w http.ResponseWriter, r *http.Request) {
-	u := currentUser(r)
-	id := pathID(r, "id")
-	if !s.canManageClass(u, id) {
-		writeErr(w, 403, "forbidden", "not your class")
+	_, id, ok := s.managedClass(w, r)
+	if !ok {
 		return
 	}
-	code := domain.NewJoinCode()
-	if err := s.classes.SetJoinCode(id, code); err != nil {
+	code, err := s.classSvc.RegenerateCode(id)
+	if err != nil {
 		writeErr(w, 500, "internal", err.Error())
 		return
 	}
@@ -135,84 +110,30 @@ func (s *Server) handleRegenerateCode(w http.ResponseWriter, r *http.Request) {
 // handleClassInvite invites a list of e-mails. Existing users are added to the
 // class immediately (and notified); new addresses receive a registration link.
 func (s *Server) handleClassInvite(w http.ResponseWriter, r *http.Request) {
-	u := currentUser(r)
-	id := pathID(r, "id")
-	if !s.canManageClass(u, id) {
-		writeErr(w, 403, "forbidden", "not your class")
+	u, id, ok := s.managedClass(w, r)
+	if !ok {
 		return
 	}
-	var in struct {
-		Emails []string `json:"emails"`
-		Role   string   `json:"role"`
-		Locale string   `json:"locale"`
-	}
+	var in MemberInvitation
 	if err := readJSON(r, &in); err != nil {
 		writeErr(w, 400, "bad_request", err.Error())
 		return
 	}
-	if in.Role == "" {
-		in.Role = "student"
-	}
-	if in.Role != "student" && in.Role != "teacher" {
-		writeErr(w, 400, "bad_role", "role must be student or teacher")
+	results, err := s.classSvc.Invite(u, id, in, s.baseURL(r))
+	switch {
+	case errors.Is(err, errBadMemberRole):
+		writeErr(w, 400, "bad_role", err.Error())
 		return
-	}
-	if in.Role == domain.RoleTeacher && u.Role != domain.RoleAdmin && !s.classes.IsOwner(id, u.ID) {
-		writeErr(w, 403, "forbidden", "only the class owner can add co-teachers")
+	case errors.Is(err, errOnlyOwner):
+		writeErr(w, 403, "forbidden", err.Error())
 		return
-	}
-	locale := in.Locale
-	if locale == "" {
-		locale = u.Locale
-	}
-	className := s.classes.Name(id)
-
-	results := []inviteResult{}
-	for _, raw := range splitEmails(in.Emails) {
-		if existing, err := s.getUserByEmail(raw); err == nil {
-			memberRole := "student"
-			if existing.Role != "student" && in.Role == "teacher" {
-				memberRole = "teacher"
-			}
-			if err := s.classes.AddMember(id, existing.ID, memberRole); err != nil {
-				results = append(results, inviteResult{Email: existing.Email, Status: "error", EmailSent: boolPtr(false), Error: err.Error()})
-				continue
-			}
-			subj, body := renderMail("added", existing.Locale, map[string]string{"site": s.general().SiteName, "name": existing.Name, "inviter": u.Name, "class": className, "link": s.baseURL(r) + "/dashboard"})
-			s.sendMailAsync(existing.Email, subj, body)
-			results = append(results, inviteResult{Email: existing.Email, Status: "added", EmailSent: boolPtr(s.smtp().Host != "")})
-			continue
-		}
-		inv, err := s.accounts.CreateInvite(Invitation{Inviter: u, Email: raw, Role: in.Role, ClassID: &id, ClassName: className, Locale: locale}, s.baseURL(r))
-		if err != nil {
-			results = append(results, inviteResult{Email: raw, Status: "error", EmailSent: boolPtr(false), Error: err.Error()})
-			continue
-		}
-		results = append(results, invitedResult(inv))
 	}
 	writeJSON(w, 200, inviteResultsResponse{Results: results})
 }
 
-func splitEmails(in []string) []string {
-	seen := map[string]bool{}
-	out := []string{}
-	for _, chunk := range in {
-		for _, e := range strings.FieldsFunc(chunk, func(r rune) bool { return r == ',' || r == ';' || r == '\n' || r == ' ' || r == '\t' }) {
-			e = strings.ToLower(strings.Trim(strings.TrimSpace(e), "<>\""))
-			if e != "" && !seen[e] {
-				seen[e] = true
-				out = append(out, e)
-			}
-		}
-	}
-	return out
-}
-
 func (s *Server) handleRemoveMember(w http.ResponseWriter, r *http.Request) {
-	u := currentUser(r)
-	id := pathID(r, "id")
-	if !s.canManageClass(u, id) {
-		writeErr(w, 403, "forbidden", "not your class")
+	_, id, ok := s.managedClass(w, r)
+	if !ok {
 		return
 	}
 	if err := s.classes.RemoveMember(id, pathID(r, "userId")); err != nil {
@@ -223,8 +144,7 @@ func (s *Server) handleRemoveMember(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleTeacherInvites(w http.ResponseWriter, r *http.Request) {
-	u := currentUser(r)
-	writeJSON(w, 200, s.invites.ListByInviter(u.ID, maxListedTeacherInvites))
+	writeJSON(w, 200, s.invites.ListByInviter(currentUser(r).ID, maxListedTeacherInvites))
 }
 
 // ---------- student side ----------
@@ -244,12 +164,12 @@ func (s *Server) handleJoinClass(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 400, "bad_request", err.Error())
 		return
 	}
-	c, err := s.classes.FindByJoinCode(domain.NormalizeJoinCode(in.Code))
-	if err != nil {
-		writeErr(w, 404, "invalid_code", "class code not found")
+	c, err := s.classSvc.Join(u, in.Code)
+	switch {
+	case errors.Is(err, errInvalidCode):
+		writeErr(w, 404, "invalid_code", err.Error())
 		return
-	}
-	if err := s.classes.AddMember(c.ID, u.ID, domain.RoleStudent); err != nil {
+	case err != nil:
 		writeErr(w, 500, "internal", err.Error())
 		return
 	}
@@ -257,14 +177,10 @@ func (s *Server) handleJoinClass(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleMyClasses(w http.ResponseWriter, r *http.Request) {
-	u := currentUser(r)
-	out, err := s.classes.ListJoinedBy(u.ID)
+	out, err := s.classSvc.Joined(currentUser(r))
 	if err != nil {
 		writeErr(w, 500, "internal", err.Error())
 		return
-	}
-	for _, c := range out {
-		c.JoinCode = "" // students do not need it
 	}
 	writeJSON(w, 200, out)
 }
