@@ -141,7 +141,7 @@ func TestResponseShapes(t *testing.T) {
 	call(admin, "usage summary", "GET", "/api/admin/usage?days=1", nil)
 	upstream := mockAI(t)
 	defer upstream.Close()
-	var llm, jev providerRow
+	var llm, jev ProviderView
 	admin.do("POST", "/api/admin/providers", map[string]string{"name": "Mock", "kind": "openai", "baseUrl": upstream.URL + "/v1", "apiKey": "k"}, &llm)
 	admin.do("POST", "/api/admin/providers", map[string]string{"name": "Jev", "kind": "jev", "baseUrl": upstream.URL + "/systemone", "apiKey": "k"}, &jev)
 	call(admin, "test provider (llm)", "POST", fmtPath("/api/admin/providers/%d/test", llm.ID), map[string]string{"model": "paid-model"})

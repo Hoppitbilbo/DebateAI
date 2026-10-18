@@ -78,23 +78,13 @@ func (sv *Services) Bootstrap(cfg Config) {
 	// Same path as adding a provider in the admin panel: list models, import
 	// prices, then let autoRoute pick sensible defaults per task.
 	add := func(name, kind, baseURL, key string) int64 {
-		id, err := sv.Gateway.insertProvider(name, kind, baseURL, key)
+		p, err := sv.Gateway.AddProvider(context.Background(), NewProvider{Name: name, Kind: kind, BaseURL: baseURL, APIKey: key})
 		if err != nil {
 			log.Printf("bootstrap %s: %v", name, err)
 			return 0
 		}
-		if cp, err := sv.Gateway.provider(id); err == nil {
-			ctx, cancel := context.WithTimeout(context.Background(), modelListTimeout)
-			if models, err := cp.p.ListModels(ctx); err == nil && len(models) > 0 {
-				sv.Gateway.storeModels(id, models)
-			} else if err != nil {
-				log.Printf("bootstrap %s: listing models failed: %v", name, err)
-			}
-			cancel()
-		}
-		sv.Gateway.autoRoute(id, kind)
 		log.Printf("configured %s from environment", name)
-		return id
+		return p.ID
 	}
 	if cfg.OpenRouterKey != "" {
 		if id := add("OpenRouter", "openai", "https://openrouter.ai/api/v1", cfg.OpenRouterKey); id != 0 {

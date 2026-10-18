@@ -3,7 +3,6 @@ package app
 import (
 	"net/http"
 
-	"github.com/Hoppitbilbo/DebateAI/server/internal/ai"
 	"github.com/Hoppitbilbo/DebateAI/server/internal/domain"
 )
 
@@ -134,14 +133,6 @@ type (
 	}
 )
 
-type liveTokenResponse struct {
-	Token      string `json:"token"`
-	Model      string `json:"model"`
-	ProviderID int64  `json:"providerId"`
-	ExpiresAt  string `json:"expiresAt"`
-	VoiceName  string `json:"voiceName"`
-}
-
 type liveUsageResponse struct {
 	OK      bool    `json:"ok"`
 	CostUSD float64 `json:"costUsd"`
@@ -180,14 +171,6 @@ type settingsResponse struct {
 	Routing         RoutingSettings `json:"routing"`
 	Jev             JevSettings     `json:"jev"`
 	Tasks           []string        `json:"tasks"`
-}
-
-// providerTestResponse: Usage is reported for text models only.
-type providerTestResponse struct {
-	OK        bool      `json:"ok"`
-	LatencyMs int64     `json:"latencyMs"`
-	Output    string    `json:"output"`
-	Usage     *ai.Usage `json:"usage,omitempty"`
 }
 
 type usageSummaryResponse struct {

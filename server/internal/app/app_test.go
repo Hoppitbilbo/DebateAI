@@ -186,12 +186,12 @@ func TestEndToEndAssignmentWithJev(t *testing.T) {
 	}
 
 	// providers: an OpenAI-compatible one (models + prices imported) and Jev
-	var prov providerRow
+	var prov ProviderView
 	admin.do("POST", "/api/admin/providers", map[string]string{"name": "Mock", "kind": "openai", "baseUrl": ai.URL + "/v1", "apiKey": "k"}, &prov)
 	if len(prov.Models) != 2 {
 		t.Fatalf("models not imported: %+v", prov)
 	}
-	var jev providerRow
+	var jev ProviderView
 	admin.do("POST", "/api/admin/providers", map[string]string{"name": "Jev", "kind": "jev", "baseUrl": ai.URL + "/systemone", "apiKey": "k"}, &jev)
 
 	// routing: broken model first to exercise fallback; Jev as judge
@@ -360,7 +360,7 @@ func TestStreamFallsBackWhenFirstTokenIsLate(t *testing.T) {
 	defer srv.Close()
 	admin := newClient(t, srv.URL)
 	admin.do("POST", "/api/setup", map[string]string{"name": "Admin", "email": "admin@test.it", "password": "password123"}, nil)
-	var prov providerRow
+	var prov ProviderView
 	admin.do("POST", "/api/admin/providers", map[string]string{"name": "Up", "kind": "openai", "baseUrl": up.URL + "/v1", "apiKey": "k"}, &prov)
 	admin.do("PUT", "/api/admin/settings/routing", map[string]any{"strategy": "ordered", "tasks": map[string]any{
 		"chat": []map[string]any{{"providerId": prov.ID, "model": "slow"}, {"providerId": prov.ID, "model": "fast"}},

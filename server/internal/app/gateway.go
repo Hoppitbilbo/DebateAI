@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
 	"net/http"
 	"strings"
 	"sync"
@@ -17,18 +16,6 @@ import (
 )
 
 // ---------- provider registry ----------
-
-type providerRow struct {
-	ID        int64          `json:"id"`
-	Name      string         `json:"name"`
-	Kind      string         `json:"kind"`
-	BaseURL   string         `json:"baseUrl"`
-	HasKey    bool           `json:"hasKey"`
-	KeyHint   string         `json:"keyHint,omitempty"`
-	Models    []ai.ModelInfo `json:"models"`
-	Enabled   bool           `json:"enabled"`
-	CreatedAt string         `json:"createdAt"`
-}
 
 // aiGateway is the AI side of the platform: it builds provider adapters
 // (cached), prices and meters every call, enforces the budget, orders the
@@ -401,28 +388,12 @@ func (s *Server) handleLiveToken(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 409, "session_ended", "this activity has ended")
 		return
 	}
-	voice := in.VoiceName
-	if voice == "" {
-		voice = s.Settings.Routing().DefaultVoice
-	}
-	var lastErr error = errNoTargets
-	for _, t := range s.Gateway.targets(TaskLive) {
-		cp, err := s.Gateway.provider(t.ProviderID)
-		if err != nil || cp.cfg.Kind != ai.KindGemini {
-			continue
-		}
-		ctx, cancel := context.WithTimeout(r.Context(), liveTokenTimeout)
-		tok, exp, err := ai.CreateLiveToken(ctx, cp.cfg, ai.LiveTokenOptions{Model: t.Model, SystemInstruction: in.SystemInstruction, VoiceName: voice})
-		cancel()
-		if err != nil {
-			lastErr = err
-			log.Printf("live token via %s/%s: %v", cp.name, t.Model, err)
-			continue
-		}
-		writeJSON(w, 200, liveTokenResponse{Token: tok, Model: t.Model, ProviderID: t.ProviderID, ExpiresAt: exp.UTC().Format(time.RFC3339), VoiceName: voice})
+	tok, err := s.Gateway.LiveToken(r.Context(), in.SystemInstruction, in.VoiceName)
+	if err != nil {
+		writeErr(w, 502, "live_unavailable", err.Error())
 		return
 	}
-	writeErr(w, 502, "live_unavailable", lastErr.Error())
+	writeJSON(w, 200, tok)
 }
 
 // handleLiveUsage records token usage reported by the browser at the end of a
@@ -452,7 +423,7 @@ func (s *Server) handleLiveUsage(w http.ResponseWriter, r *http.Request) {
 		userID = &u.ID
 	}
 	sessionID, _, _ := s.sessionFor(u, in.SessionID)
-	cost := s.Gateway.logUsage(usageEntry{UserID: userID, SessionID: sessionID, ProviderID: in.ProviderID, Provider: s.Providers.Name(in.ProviderID), Model: in.Model, Task: TaskLive,
-		Usage: ai.Usage{InputTokens: in.InputTokens, OutputTokens: in.OutputTokens}, OK: true, Latency: time.Duration(in.Seconds) * time.Second})
+	cost := s.Gateway.RecordLiveUsage(LiveUsage{UserID: userID, SessionID: sessionID, ProviderID: in.ProviderID, Model: in.Model,
+		InputTokens: in.InputTokens, OutputTokens: in.OutputTokens, Seconds: in.Seconds})
 	writeJSON(w, 200, liveUsageResponse{OK: true, CostUSD: cost})
 }

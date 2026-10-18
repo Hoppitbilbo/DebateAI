@@ -1,13 +1,12 @@
 package app
 
 import (
-	"context"
+	"errors"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
 
-	"github.com/Hoppitbilbo/DebateAI/server/internal/ai"
 	"github.com/Hoppitbilbo/DebateAI/server/internal/domain"
 )
 
@@ -304,135 +303,61 @@ func (s *Server) handleSMTPTest(w http.ResponseWriter, r *http.Request) {
 
 // ---------- providers ----------
 
-func (s *Server) loadProviders() []providerRow {
-	out := []providerRow{}
-	for _, rec := range s.Providers.List() {
-		p := providerRow{ID: rec.ID, Name: rec.Name, Kind: rec.Kind, BaseURL: rec.BaseURL, Models: rec.Models, Enabled: rec.Enabled, CreatedAt: rec.CreatedAt}
-		// Never send the key: only whether it is set and a hint to recognise it.
-		if key, err := s.Crypto.Decrypt(rec.APIKeyEnc); err == nil && key != "" {
-			p.HasKey = true
-			if len(key) > 8 {
-				p.KeyHint = key[:3] + "…" + key[len(key)-4:]
-			}
-		}
-		out = append(out, p)
+// writeProviderErr: setup problems are the admin's to fix (400), failures of
+// the upstream call are the provider's (502).
+func writeProviderErr(w http.ResponseWriter, err error) {
+	switch {
+	case errors.Is(err, ErrProviderNotFound):
+		writeErr(w, 404, "not_found", err.Error())
+	case errors.Is(err, ErrProviderSetup):
+		writeErr(w, 400, "provider_error", err.Error())
+	default:
+		writeErr(w, 502, "provider_error", err.Error())
 	}
-	return out
 }
 
 func (s *Server) handleListProviders(w http.ResponseWriter, r *http.Request) {
-	writeJSON(w, 200, s.loadProviders())
+	writeJSON(w, 200, s.Gateway.ProviderViews())
 }
 
 func (s *Server) handleCreateProvider(w http.ResponseWriter, r *http.Request) {
-	var in struct {
-		Name, Kind, BaseURL, APIKey string
-		Models                      []ai.ModelInfo `json:"models"`
-	}
+	var in NewProvider
 	if err := readJSON(r, &in); err != nil {
 		writeErr(w, 400, "bad_request", err.Error())
 		return
 	}
-	if strings.TrimSpace(in.Name) == "" || !ai.KnownKind(in.Kind) {
-		writeErr(w, 400, "bad_request", "name and a valid kind are required")
+	p, err := s.Gateway.AddProvider(r.Context(), in)
+	switch {
+	case errors.Is(err, ErrBadProvider):
+		writeErr(w, 400, "bad_request", err.Error())
 		return
-	}
-	id, err := s.Gateway.insertProvider(strings.TrimSpace(in.Name), in.Kind, in.BaseURL, in.APIKey)
-	if err != nil {
+	case err != nil:
 		writeErr(w, 500, "internal", err.Error())
 		return
 	}
-	// Fetch the full model list right away (OpenRouter, OpenCode, Gemini,
-	// Ollama…); the preset list is only a fallback when listing fails.
-	fetched := false
-	ctx, cancel := context.WithTimeout(r.Context(), modelListTimeout)
-	if cp, err := s.Gateway.provider(id); err == nil {
-		if models, err := cp.p.ListModels(ctx); err == nil && len(models) > 0 {
-			s.Gateway.storeModels(id, models)
-			fetched = true
-		}
-	}
-	cancel()
-	if !fetched && len(in.Models) > 0 {
-		s.Gateway.storeModels(id, in.Models)
-	}
-	s.Gateway.autoRoute(id, in.Kind)
-	for _, p := range s.loadProviders() {
-		if p.ID == id {
-			writeJSON(w, 201, p)
-			return
-		}
-	}
-}
-
-// storeModels saves the model list of a provider and imports the prices it
-// publishes (e.g. OpenRouter), unless the admin has set them manually.
-func (g *aiGateway) storeModels(providerID int64, models []ai.ModelInfo) {
-	logIfErr("store models", g.providers.SetModels(providerID, models))
-	for _, m := range models {
-		if m.InputPerM != nil && m.OutputPerM != nil {
-			logIfErr("import price", g.prices.Import(providerID, m.ID, *m.InputPerM, *m.OutputPerM))
-		} else if m.Free {
-			logIfErr("import price", g.prices.Import(providerID, m.ID, 0, 0))
-		}
-	}
+	writeJSON(w, 201, p)
 }
 
 func (s *Server) handleUpdateProvider(w http.ResponseWriter, r *http.Request) {
-	id := pathID(r, "id")
-	var in struct {
-		Name    *string `json:"name"`
-		BaseURL *string `json:"baseUrl"`
-		APIKey  *string `json:"apiKey"`
-		Enabled *bool   `json:"enabled"`
-	}
+	var in ProviderChange
 	if err := readJSON(r, &in); err != nil {
 		writeErr(w, 400, "bad_request", err.Error())
 		return
 	}
-	p := domain.ProviderPatch{Enabled: in.Enabled}
-	if in.Name != nil && strings.TrimSpace(*in.Name) != "" {
-		p.Name = ptr(strings.TrimSpace(*in.Name))
-	}
-	if in.BaseURL != nil {
-		p.BaseURL = ptr(strings.TrimSpace(*in.BaseURL))
-	}
-	if in.APIKey != nil && *in.APIKey != "" {
-		p.APIKeyEnc = ptr(s.Crypto.Encrypt(strings.TrimSpace(*in.APIKey)))
-	}
-	err := s.Providers.Update(id, p)
-	s.Gateway.invalidateProvider(id)
-	if err != nil {
+	p, err := s.Gateway.UpdateProvider(pathID(r, "id"), in)
+	switch {
+	case errors.Is(err, ErrProviderNotFound):
+		writeErr(w, 404, "not_found", err.Error())
+		return
+	case err != nil:
 		writeErr(w, 500, "internal", err.Error())
 		return
 	}
-	for _, p := range s.loadProviders() {
-		if p.ID == id {
-			writeJSON(w, 200, p)
-			return
-		}
-	}
-	writeErr(w, 404, "not_found", "provider not found")
+	writeJSON(w, 200, p)
 }
 
 func (s *Server) handleDeleteProvider(w http.ResponseWriter, r *http.Request) {
-	id := pathID(r, "id")
-	if err := s.Providers.Delete(id); err != nil {
-		writeErr(w, 500, "internal", err.Error())
-		return
-	}
-	s.Gateway.invalidateProvider(id)
-	rt := s.Settings.Routing()
-	for task, list := range rt.Tasks {
-		kept := list[:0:0]
-		for _, t := range list {
-			if t.ProviderID != id {
-				kept = append(kept, t)
-			}
-		}
-		rt.Tasks[task] = kept
-	}
-	if err := s.Settings.SaveRouting(rt); err != nil {
+	if err := s.Gateway.DeleteProvider(pathID(r, "id")); err != nil {
 		writeErr(w, 500, "internal", err.Error())
 		return
 	}
@@ -440,74 +365,26 @@ func (s *Server) handleDeleteProvider(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleRefreshModels(w http.ResponseWriter, r *http.Request) {
-	id := pathID(r, "id")
-	s.Gateway.invalidateProvider(id)
-	cp, err := s.Gateway.provider(id)
+	models, err := s.Gateway.RefreshModels(r.Context(), pathID(r, "id"))
 	if err != nil {
-		writeErr(w, 400, "provider_error", err.Error())
+		writeProviderErr(w, err)
 		return
 	}
-	ctx, cancel := context.WithTimeout(r.Context(), modelRefreshTimeout)
-	defer cancel()
-	models, err := cp.p.ListModels(ctx)
-	if err != nil {
-		writeErr(w, 502, "provider_error", err.Error())
-		return
-	}
-	s.Gateway.storeModels(id, models)
 	writeJSON(w, 200, models)
 }
 
 func (s *Server) handleTestProvider(w http.ResponseWriter, r *http.Request) {
-	id := pathID(r, "id")
 	var in struct{ Model string }
 	if err := readJSON(r, &in); err != nil || in.Model == "" {
 		writeErr(w, 400, "bad_request", "model required")
 		return
 	}
-	s.Gateway.invalidateProvider(id)
-	cp, err := s.Gateway.provider(id)
+	res, err := s.Gateway.TestProvider(r.Context(), pathID(r, "id"), in.Model, currentUser(r).ID)
 	if err != nil {
-		writeErr(w, 400, "provider_error", err.Error())
+		writeProviderErr(w, err)
 		return
 	}
-	ctx, cancel := context.WithTimeout(r.Context(), providerTestTimeout)
-	defer cancel()
-	start := time.Now()
-	u := currentUser(r)
-	entry := usageEntry{UserID: &u.ID, ProviderID: id, Provider: cp.name, Model: in.Model, Task: "test"}
-	if d, ok := cp.p.(ai.Decider); ok {
-		state := map[string]any{"conversation": []map[string]string{
-			{"from": "student", "text": "Why did you invade Russia?"},
-			{"from": "Napoleon", "text": "The Tsar broke the Continental System."},
-		}}
-		res, err := s.Gateway.meterDecider(d, entry).Decide(ctx, in.Model, state,
-			map[string]ai.JevQuestion{"asked": {Type: "noul", Instructions: "In `conversation`, did the student ask about the invasion of Russia?"}})
-		if err != nil {
-			writeErr(w, 502, "provider_error", err.Error())
-			return
-		}
-		writeJSON(w, 200, providerTestResponse{OK: true, LatencyMs: time.Since(start).Milliseconds(), Output: mustJSON(res.Answers)})
-		return
-	}
-	tm, ok := cp.p.(ai.TextModel)
-	if !ok {
-		writeErr(w, 400, "provider_error", "provider cannot generate text")
-		return
-	}
-	res, err := s.Gateway.meterText(tm, entry).Generate(ctx, ai.Request{Model: in.Model, Messages: []ai.Message{{Role: "user", Content: "Reply with the single word: ok"}}, MaxTokens: 50})
-	if err != nil {
-		writeErr(w, 502, "provider_error", err.Error())
-		return
-	}
-	writeJSON(w, 200, providerTestResponse{OK: true, LatencyMs: time.Since(start).Milliseconds(), Output: res.Text, Usage: &res.Usage})
-}
-
-func usageOr(r *ai.JevResult) ai.Usage {
-	if r == nil {
-		return ai.Usage{}
-	}
-	return r.Usage
+	writeJSON(w, 200, res)
 }
 
 // ---------- prices ----------
