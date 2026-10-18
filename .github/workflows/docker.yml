@@ -25,12 +25,28 @@ jobs:
         with:
           go-version-file: server/go.mod
           cache-dependency-path: server/go.sum
+      - name: Go vet
+        working-directory: server
+        run: go vet ./...
       - name: Go tests
         working-directory: server
         run: go test ./...
 
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run check:i18n
+      - run: npm test
+
   image:
-    needs: test
+    needs: [test, web]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
