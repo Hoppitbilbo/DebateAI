@@ -218,8 +218,8 @@ func (g *aiGateway) LiveToken(ctx context.Context, systemInstruction, voice stri
 	if voice == "" {
 		voice = g.settings.Routing().DefaultVoice
 	}
-	var lastErr error = errNoTargets
-	for _, t := range g.targets(TaskLive) {
+	var lastErr error = ErrNoTargets
+	for _, t := range g.Targets(TaskLive) {
 		cp, err := g.provider(t.ProviderID)
 		if err != nil || cp.cfg.Kind != ai.KindGemini {
 			continue

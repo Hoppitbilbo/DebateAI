@@ -1,4 +1,4 @@
-package app
+package httpapi
 
 import (
 	"errors"
@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Hoppitbilbo/DebateAI/server/internal/app"
 	"github.com/Hoppitbilbo/DebateAI/server/internal/domain"
 )
 
@@ -14,7 +15,7 @@ import (
 
 func (s *Server) handleAdminOverview(w http.ResponseWriter, r *http.Request) {
 	b := s.Settings.Budget()
-	spend := s.Gateway.monthSpend()
+	spend := s.Gateway.MonthSpend()
 	today := time.Now().UTC().Truncate(24 * time.Hour).Format(time.RFC3339)
 	writeJSON(w, 200, adminOverviewResponse{
 		Users: userCounts{
@@ -30,11 +31,11 @@ func (s *Server) handleAdminOverview(w http.ResponseWriter, r *http.Request) {
 		MonthSpendUSD:   spend,
 		TodaySpendUSD:   s.Usage.SpendSince(today),
 		MonthBudgetUSD:  b.MonthlyUSD,
-		BudgetExceeded:  s.Gateway.budgetExceeded(),
+		BudgetExceeded:  s.Gateway.BudgetExceeded(),
 		RequestsToday:   s.Usage.CountSince(today, false),
 		ErrorsToday:     s.Usage.CountSince(today, true),
 		MailConfigured:  s.Settings.MailConfigured(),
-		RoutingComplete: len(s.Settings.Routing().Tasks[TaskChat]) > 0,
+		RoutingComplete: len(s.Settings.Routing().Tasks[app.TaskChat]) > 0,
 	})
 }
 
@@ -42,7 +43,7 @@ func (s *Server) handleAdminOverview(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) handleListUsers(w http.ResponseWriter, r *http.Request) {
 	role := r.URL.Query().Get("role")
-	if !validRole(role) {
+	if !domain.ValidRole(role) {
 		role = ""
 	}
 	users, err := s.Users.Search(strings.TrimSpace(r.URL.Query().Get("q")), role, maxListedUsers)
@@ -51,7 +52,7 @@ func (s *Server) handleListUsers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	type userOut struct {
-		*User
+		*domain.User
 		Classes int     `json:"classes"`
 		CostUSD float64 `json:"costUsd"`
 	}
@@ -61,7 +62,7 @@ func (s *Server) handleListUsers(w http.ResponseWriter, r *http.Request) {
 	}
 	for i := range out {
 		out[i].Classes = s.Classes.CountMemberships(out[i].ID)
-		out[i].CostUSD = s.Usage.UserSpendSince(out[i].ID, monthStart())
+		out[i].CostUSD = s.Usage.UserSpendSince(out[i].ID, app.MonthStart())
 	}
 	writeJSON(w, 200, out)
 }
@@ -120,11 +121,11 @@ func (s *Server) handleUpdateUser(w http.ResponseWriter, r *http.Request) {
 	if in.Name != nil && strings.TrimSpace(*in.Name) != "" {
 		p.Name = ptr(strings.TrimSpace(*in.Name))
 	}
-	if in.Role != nil && validRole(*in.Role) {
+	if in.Role != nil && domain.ValidRole(*in.Role) {
 		p.Role = in.Role
 	}
 	if in.Locale != nil {
-		p.Locale = ptr(normLocale(*in.Locale))
+		p.Locale = ptr(app.NormLocale(*in.Locale))
 	}
 	err := s.Users.Update(id, p)
 	if err == nil && in.Active != nil && !*in.Active {
@@ -186,18 +187,18 @@ func (s *Server) handleCreateInvites(w http.ResponseWriter, r *http.Request) {
 	if locale == "" {
 		locale = u.Locale
 	}
-	results := []inviteResult{}
-	for _, e := range splitEmails(in.Emails) {
+	results := []app.InviteResult{}
+	for _, e := range app.SplitEmails(in.Emails) {
 		if _, err := s.getUserByEmail(e); err == nil && in.ClassID == nil {
-			results = append(results, inviteResult{Email: e, Status: "error", Error: "already registered"})
+			results = append(results, app.InviteResult{Email: e, Status: "error", Error: "already registered"})
 			continue
 		}
-		inv, err := s.Accounts.CreateInvite(Invitation{Inviter: u, Email: e, Role: in.Role, ClassID: in.ClassID, ClassName: className, Locale: locale}, s.baseURL(r))
+		inv, err := s.Accounts.CreateInvite(app.Invitation{Inviter: u, Email: e, Role: in.Role, ClassID: in.ClassID, ClassName: className, Locale: locale}, s.baseURL(r))
 		if err != nil {
-			results = append(results, inviteResult{Email: e, Status: "error", Error: err.Error()})
+			results = append(results, app.InviteResult{Email: e, Status: "error", Error: err.Error()})
 			continue
 		}
-		results = append(results, invitedResult(inv))
+		results = append(results, app.InvitedResult(inv))
 	}
 	writeJSON(w, 200, inviteResultsResponse{Results: results})
 }
@@ -214,7 +215,7 @@ func (s *Server) handleResendInvite(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 500, "internal", err.Error())
 		return
 	}
-	inv, err := s.Accounts.CreateInvite(Invitation{Inviter: u, Email: old.Email, Role: old.Role, ClassID: old.ClassID, ClassName: old.ClassName, Locale: old.Locale}, s.baseURL(r))
+	inv, err := s.Accounts.CreateInvite(app.Invitation{Inviter: u, Email: old.Email, Role: old.Role, ClassID: old.ClassID, ClassName: old.ClassName, Locale: old.Locale}, s.baseURL(r))
 	if err != nil {
 		writeServiceErr(w, err)
 		return
@@ -243,35 +244,35 @@ func (s *Server) handleGetSettings(w http.ResponseWriter, r *http.Request) {
 		Budget:          s.Settings.Budget(),
 		Routing:         s.Settings.Routing(),
 		Jev:             s.Settings.Jev(),
-		Tasks:           AllTasks,
+		Tasks:           app.AllTasks,
 	})
 }
 
 func (s *Server) handlePutSetting(w http.ResponseWriter, r *http.Request) {
 	var err error
 	switch r.PathValue("key") {
-	case settingGeneral:
-		v := defaultGeneral()
+	case app.SettingGeneral:
+		v := app.DefaultGeneral()
 		if err = readJSON(r, &v); err == nil {
 			err = s.Settings.SaveGeneral(v)
 		}
-	case settingSMTP:
-		var v SMTPSettings
+	case app.SettingSMTP:
+		var v app.SMTPSettings
 		if err = readJSON(r, &v); err == nil {
 			err = s.Settings.SaveSMTP(v)
 		}
-	case settingBudget:
-		var v BudgetSettings
+	case app.SettingBudget:
+		var v app.BudgetSettings
 		if err = readJSON(r, &v); err == nil {
 			err = s.Settings.SaveBudget(v)
 		}
-	case settingRouting:
-		var v RoutingSettings
+	case app.SettingRouting:
+		var v app.RoutingSettings
 		if err = readJSON(r, &v); err == nil {
 			err = s.Settings.SaveRouting(v)
 		}
-	case settingJev:
-		v := defaultJev()
+	case app.SettingJev:
+		v := app.DefaultJev()
 		if err = readJSON(r, &v); err == nil {
 			err = s.Settings.SaveJev(v)
 		}
@@ -293,8 +294,8 @@ func (s *Server) handleSMTPTest(w http.ResponseWriter, r *http.Request) {
 	if in.To == "" {
 		in.To = u.Email
 	}
-	subj, body := renderMail("test", u.Locale, map[string]string{"site": s.Settings.General().SiteName})
-	if err := s.Mailer.sendMail(in.To, subj, body); err != nil {
+	subj, body := app.RenderMail("test", u.Locale, map[string]string{"site": s.Settings.General().SiteName})
+	if err := s.Mailer.SendMail(in.To, subj, body); err != nil {
 		writeErr(w, 502, "smtp_error", err.Error())
 		return
 	}
@@ -307,9 +308,9 @@ func (s *Server) handleSMTPTest(w http.ResponseWriter, r *http.Request) {
 // the upstream call are the provider's (502).
 func writeProviderErr(w http.ResponseWriter, err error) {
 	switch {
-	case errors.Is(err, ErrProviderNotFound):
+	case errors.Is(err, app.ErrProviderNotFound):
 		writeErr(w, 404, "not_found", err.Error())
-	case errors.Is(err, ErrProviderSetup):
+	case errors.Is(err, app.ErrProviderSetup):
 		writeErr(w, 400, "provider_error", err.Error())
 	default:
 		writeErr(w, 502, "provider_error", err.Error())
@@ -321,14 +322,14 @@ func (s *Server) handleListProviders(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleCreateProvider(w http.ResponseWriter, r *http.Request) {
-	var in NewProvider
+	var in app.NewProvider
 	if err := readJSON(r, &in); err != nil {
 		writeErr(w, 400, "bad_request", err.Error())
 		return
 	}
 	p, err := s.Gateway.AddProvider(r.Context(), in)
 	switch {
-	case errors.Is(err, ErrBadProvider):
+	case errors.Is(err, app.ErrBadProvider):
 		writeErr(w, 400, "bad_request", err.Error())
 		return
 	case err != nil:
@@ -339,14 +340,14 @@ func (s *Server) handleCreateProvider(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleUpdateProvider(w http.ResponseWriter, r *http.Request) {
-	var in ProviderChange
+	var in app.ProviderChange
 	if err := readJSON(r, &in); err != nil {
 		writeErr(w, 400, "bad_request", err.Error())
 		return
 	}
 	p, err := s.Gateway.UpdateProvider(pathID(r, "id"), in)
 	switch {
-	case errors.Is(err, ErrProviderNotFound):
+	case errors.Is(err, app.ErrProviderNotFound):
 		writeErr(w, 404, "not_found", err.Error())
 		return
 	case err != nil:
@@ -443,7 +444,7 @@ func (s *Server) handleUsageSummary(w http.ResponseWriter, r *http.Request) {
 		ByProvider:    group(domain.UsageByProvider),
 		ByUser:        group(domain.UsageByUser),
 		ByClass:       group(domain.UsageByClass),
-		MonthSpendUSD: s.Gateway.monthSpend(),
+		MonthSpendUSD: s.Gateway.MonthSpend(),
 		Budget:        s.Settings.Budget(),
 	})
 }

@@ -1,4 +1,4 @@
-package app
+package httpapi
 
 import (
 	"encoding/json"
@@ -8,12 +8,14 @@ import (
 	"testing"
 
 	"github.com/Hoppitbilbo/DebateAI/server/internal/ai"
+	"github.com/Hoppitbilbo/DebateAI/server/internal/app"
+	"github.com/Hoppitbilbo/DebateAI/server/internal/domain"
 )
 
 // Characterization tests for PUT /api/sessions/{id}/transcript (refactoring task 0.3).
 
 type transcriptFixture struct {
-	s       *Server
+	s       *testAPI
 	owner   *client
 	session int64
 	judge   *fakeDecider
@@ -24,7 +26,7 @@ type transcriptFixture struct {
 // fake Jev that scores goal_0 with goalScore.
 func newTranscriptFixture(t *testing.T, assignment map[string]any, goalScore float64) *transcriptFixture {
 	t.Helper()
-	s := newTestServer(t)
+	s := newTestAPI(t)
 	srv := httptest.NewServer(s.Handler())
 	t.Cleanup(srv.Close)
 
@@ -33,18 +35,20 @@ func newTranscriptFixture(t *testing.T, assignment map[string]any, goalScore flo
 		t.Fatalf("setup %d", code)
 	}
 	d := &fakeDecider{scores: map[string]float64{"goal_0": goalScore}}
-	useProvider(s, 99, ai.KindJev, d)
-	setJudgeRoute(t, s, RouteTarget{99, "jev"})
+	jevID := s.addFake(t, "fake-jev", ai.KindJev, d)
+	if err := s.Settings.SaveRouting(app.RoutingSettings{Strategy: "ordered", Tasks: map[string][]app.RouteTarget{app.TaskJudge: {{ProviderID: jevID, Model: "jev"}}}}); err != nil {
+		t.Fatal(err)
+	}
 
-	var cls Class
+	var cls domain.Class
 	owner.do("POST", "/api/classes", map[string]string{"name": "3A"}, &cls)
 	fields := map[string]any{"title": "Napoleone", "appType": "wiki-chatbot", "instructions": "Intervista Napoleone", "goals": []string{"Chiede della Russia"}}
 	for k, v := range assignment {
 		fields[k] = v
 	}
-	var a Assignment
+	var a domain.Assignment
 	owner.do("POST", fmtPath("/api/classes/%d/assignments", cls.ID), fields, &a)
-	var sess SessionSummary
+	var sess domain.SessionSummary
 	if code := owner.do("POST", "/api/sessions", map[string]any{"appType": "wiki-chatbot", "assignmentId": a.ID}, &sess); code != 201 {
 		t.Fatalf("create session %d", code)
 	}
@@ -99,7 +103,7 @@ func TestSaveTranscriptCountsOnlyNonEmptyStudentMessages(t *testing.T) {
 
 func TestSaveTranscriptFreeSessionIsNotJudged(t *testing.T) {
 	f := newTranscriptFixture(t, nil, 1)
-	var sess SessionSummary
+	var sess domain.SessionSummary
 	f.owner.do("POST", "/api/sessions", map[string]any{"appType": "wiki-chatbot"}, &sess)
 	f.session = sess.ID
 
@@ -135,7 +139,7 @@ func TestSaveTranscriptWithoutAutoEndStaysActive(t *testing.T) {
 	if out["status"] != "active" || out["progress"] != 100.0 {
 		t.Fatalf("expected active with full progress: %v", out)
 	}
-	var d SessionDetail
+	var d domain.SessionDetail
 	f.owner.do("GET", fmtPath("/api/sessions/%d", f.session), nil, &d)
 	if d.Progress != 100 || !strings.Contains(string(d.Jev), `"engine":"jev"`) {
 		t.Fatalf("judgement not stored: %+v %s", d.SessionSummary, d.Jev)
@@ -155,7 +159,7 @@ func TestSaveTranscriptTurnLimit(t *testing.T) {
 
 func TestSaveTranscriptEvaluateEvery(t *testing.T) {
 	f := newTranscriptFixture(t, map[string]any{"maxTurns": 3, "autoEnd": false}, 0.1)
-	if err := f.s.Settings.SaveJev(JevSettings{Enabled: true, Threshold: 0.7, EvaluateEvery: 2, MaxStateChars: 24000}); err != nil {
+	if err := f.s.Settings.SaveJev(app.JevSettings{Enabled: true, Threshold: 0.7, EvaluateEvery: 2, MaxStateChars: 24000}); err != nil {
 		t.Fatal(err)
 	}
 	f.save(t, map[string]any{"messages": userTurns(1)})
@@ -177,7 +181,7 @@ func TestSaveTranscriptJudgeFlagOverridesSchedule(t *testing.T) {
 	if out := f.save(t, map[string]any{"messages": userTurns(1), "judge": false}); out["jev"] != nil || f.judge.decisions != 0 {
 		t.Fatalf("judge:false must skip judging: %v", out)
 	}
-	if err := f.s.Settings.SaveJev(JevSettings{Enabled: true, Threshold: 0.7, EvaluateEvery: 5, MaxStateChars: 24000}); err != nil {
+	if err := f.s.Settings.SaveJev(app.JevSettings{Enabled: true, Threshold: 0.7, EvaluateEvery: 5, MaxStateChars: 24000}); err != nil {
 		t.Fatal(err)
 	}
 	f.save(t, map[string]any{"messages": userTurns(1), "judge": true})
@@ -194,7 +198,7 @@ func TestSaveTranscriptStoresContextAndPassesItToJudge(t *testing.T) {
 	f := newTranscriptFixture(t, map[string]any{"autoEnd": false}, 0.1)
 	f.save(t, map[string]any{"messages": userTurns(1), "context": map[string]string{"character": "Napoleone"}})
 
-	var d SessionDetail
+	var d domain.SessionDetail
 	f.owner.do("GET", fmtPath("/api/sessions/%d", f.session), nil, &d)
 	if !strings.Contains(string(d.Context), "Napoleone") {
 		t.Fatalf("context not stored: %s", d.Context)
@@ -213,9 +217,9 @@ func TestSaveTranscriptKeepsLast1000Messages(t *testing.T) {
 	if out := f.save(t, map[string]any{"messages": msgs, "judge": false}); out["turns"] != 500.0 {
 		t.Fatalf("turns counted after truncation = %v", out["turns"])
 	}
-	var d SessionDetail
+	var d domain.SessionDetail
 	f.owner.do("GET", fmtPath("/api/sessions/%d", f.session), nil, &d)
-	var stored []transcriptMsg
+	var stored []app.TranscriptMessage
 	_ = json.Unmarshal(d.Transcript, &stored)
 	if len(stored) != 1000 {
 		t.Fatalf("stored %d messages", len(stored))

@@ -1,8 +1,9 @@
-package app
+package httpapi
 
 import (
 	"net/http"
 
+	"github.com/Hoppitbilbo/DebateAI/server/internal/app"
 	"github.com/Hoppitbilbo/DebateAI/server/internal/domain"
 )
 
@@ -29,7 +30,7 @@ type publicConfigResponse struct {
 }
 
 type meResponse struct {
-	User *User `json:"user"`
+	User *domain.User `json:"user"`
 }
 
 type inviteInfoResponse struct {
@@ -41,24 +42,8 @@ type inviteInfoResponse struct {
 	UserExists bool   `json:"userExists"`
 }
 
-// inviteResult is one row of a bulk invite. EmailSent is omitted for the
-// admin's error rows, which never had it.
-type inviteResult struct {
-	Email     string `json:"email"`
-	Status    string `json:"status"` // added | invited | error
-	EmailSent *bool  `json:"emailSent,omitempty"`
-	Link      string `json:"link,omitempty"`
-	Error     string `json:"error,omitempty"`
-}
-
 type inviteResultsResponse struct {
-	Results []inviteResult `json:"results"`
-}
-
-func boolPtr(b bool) *bool { return &b }
-
-func invitedResult(inv *inviteRow) inviteResult {
-	return inviteResult{Email: inv.Email, Status: "invited", EmailSent: boolPtr(inv.EmailSent), Link: inv.Link}
+	Results []app.InviteResult `json:"results"`
 }
 
 // ---------- classes ----------
@@ -68,9 +53,9 @@ type classProgressResponse struct {
 }
 
 type classDetailResponse struct {
-	Class   *Class      `json:"class"`
-	Members []Member    `json:"members"`
-	Invites []inviteRow `json:"invites"`
+	Class   *domain.Class   `json:"class"`
+	Members []domain.Member `json:"members"`
+	Invites []domain.Invite `json:"invites"`
 }
 
 type joinCodeResponse struct {
@@ -85,21 +70,8 @@ type joinClassResponse struct {
 // ---------- assignments & sessions ----------
 
 type assignmentProgressResponse struct {
-	Assignment *Assignment       `json:"assignment"`
-	Students   []StudentProgress `json:"students"`
-}
-
-// transcriptSyncResponse answers PUT /api/sessions/{id}/transcript. Free or
-// already ended sessions only carry the first four fields; active assignment
-// sessions add maxTurns and reason, and jev when the judge ran.
-type transcriptSyncResponse struct {
-	Status   string       `json:"status"`
-	Turns    int          `json:"turns"`
-	Progress int          `json:"progress"`
-	Ended    bool         `json:"ended"`
-	MaxTurns *int         `json:"maxTurns,omitempty"`
-	Reason   *string      `json:"reason,omitempty"`
-	Jev      *JudgeResult `json:"jev,omitempty"`
+	Assignment *domain.Assignment    `json:"assignment"`
+	Students   []app.StudentProgress `json:"students"`
 }
 
 // ---------- AI gateway ----------
@@ -164,13 +136,13 @@ type adminOverviewResponse struct {
 }
 
 type settingsResponse struct {
-	General         GeneralSettings `json:"general"`
-	SMTP            SMTPSettings    `json:"smtp"`
-	SMTPHasPassword bool            `json:"smtpHasPassword"`
-	Budget          BudgetSettings  `json:"budget"`
-	Routing         RoutingSettings `json:"routing"`
-	Jev             JevSettings     `json:"jev"`
-	Tasks           []string        `json:"tasks"`
+	General         app.GeneralSettings `json:"general"`
+	SMTP            app.SMTPSettings    `json:"smtp"`
+	SMTPHasPassword bool                `json:"smtpHasPassword"`
+	Budget          app.BudgetSettings  `json:"budget"`
+	Routing         app.RoutingSettings `json:"routing"`
+	Jev             app.JevSettings     `json:"jev"`
+	Tasks           []string            `json:"tasks"`
 }
 
 type usageSummaryResponse struct {
@@ -182,5 +154,5 @@ type usageSummaryResponse struct {
 	ByUser        []domain.UsageAggregate `json:"byUser"`
 	ByClass       []domain.UsageAggregate `json:"byClass"`
 	MonthSpendUSD float64                 `json:"monthSpendUsd"`
-	Budget        BudgetSettings          `json:"budget"`
+	Budget        app.BudgetSettings      `json:"budget"`
 }

@@ -1,4 +1,4 @@
-package app
+package httpapi
 
 import (
 	"errors"
@@ -6,11 +6,14 @@ import (
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/Hoppitbilbo/DebateAI/server/internal/app"
+	"github.com/Hoppitbilbo/DebateAI/server/internal/domain"
 )
 
 // managedClass returns the {id} of the path when the current user may
 // manage that class; otherwise it answers 403 and ok is false.
-func (s *Server) managedClass(w http.ResponseWriter, r *http.Request) (u *User, id int64, ok bool) {
+func (s *Server) managedClass(w http.ResponseWriter, r *http.Request) (u *domain.User, id int64, ok bool) {
 	u, id = currentUser(r), pathID(r, "id")
 	if !s.ClassSvc.CanManage(u, id) {
 		writeErr(w, 403, "forbidden", "not your class")
@@ -63,7 +66,7 @@ func (s *Server) handleUpdateClass(w http.ResponseWriter, r *http.Request) {
 	if !ok {
 		return
 	}
-	var in ClassChange
+	var in app.ClassChange
 	if err := readJSON(r, &in); err != nil {
 		writeErr(w, 400, "bad_request", err.Error())
 		return
@@ -108,17 +111,17 @@ func (s *Server) handleClassInvite(w http.ResponseWriter, r *http.Request) {
 	if !ok {
 		return
 	}
-	var in MemberInvitation
+	var in app.MemberInvitation
 	if err := readJSON(r, &in); err != nil {
 		writeErr(w, 400, "bad_request", err.Error())
 		return
 	}
 	results, err := s.ClassSvc.Invite(u, id, in, s.baseURL(r))
 	switch {
-	case errors.Is(err, errBadMemberRole):
+	case errors.Is(err, app.ErrBadMemberRole):
 		writeErr(w, 400, "bad_role", err.Error())
 		return
-	case errors.Is(err, errOnlyOwner):
+	case errors.Is(err, app.ErrOnlyOwner):
 		writeErr(w, 403, "forbidden", err.Error())
 		return
 	}
@@ -160,7 +163,7 @@ func (s *Server) handleJoinClass(w http.ResponseWriter, r *http.Request) {
 	}
 	c, err := s.ClassSvc.Join(u, in.Code)
 	switch {
-	case errors.Is(err, errInvalidCode):
+	case errors.Is(err, app.ErrInvalidCode):
 		writeErr(w, 404, "invalid_code", err.Error())
 		return
 	case err != nil:

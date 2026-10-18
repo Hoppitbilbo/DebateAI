@@ -19,18 +19,18 @@ type classService struct {
 }
 
 var (
-	errBadMemberRole = errors.New("role must be student or teacher")
-	errOnlyOwner     = errors.New("only the class owner can add co-teachers")
-	errInvalidCode   = errors.New("class code not found")
+	ErrBadMemberRole = errors.New("role must be student or teacher")
+	ErrOnlyOwner     = errors.New("only the class owner can add co-teachers")
+	ErrInvalidCode   = errors.New("class code not found")
 )
 
 // CanManage: admins, the owner, or co-teachers.
-func (c *classService) CanManage(u *User, classID int64) bool {
+func (c *classService) CanManage(u *domain.User, classID int64) bool {
 	return u.Role == domain.RoleAdmin || c.classes.Teaches(classID, u.ID)
 }
 
 // List returns the classes u teaches; admins see every class unless onlyMine.
-func (c *classService) List(u *User, onlyMine bool) ([]*Class, error) {
+func (c *classService) List(u *domain.User, onlyMine bool) ([]*domain.Class, error) {
 	if u.Role == domain.RoleAdmin && !onlyMine {
 		return c.classes.ListAll()
 	}
@@ -38,7 +38,7 @@ func (c *classService) List(u *User, onlyMine bool) ([]*Class, error) {
 }
 
 // Create makes a class owned by u; an admin may create it for another teacher.
-func (c *classService) Create(u *User, name, description string, ownerID *int64) (*Class, error) {
+func (c *classService) Create(u *domain.User, name, description string, ownerID *int64) (*domain.Class, error) {
 	owner := u.ID
 	if u.Role == domain.RoleAdmin && ownerID != nil {
 		owner = *ownerID
@@ -57,7 +57,7 @@ type ClassChange struct {
 	Archived    *bool   `json:"archived"`
 }
 
-func (c *classService) Update(id int64, ch ClassChange) (*Class, error) {
+func (c *classService) Update(id int64, ch ClassChange) (*domain.Class, error) {
 	p := domain.ClassPatch{Archived: ch.Archived}
 	if ch.Name != nil && strings.TrimSpace(*ch.Name) != "" {
 		p.Name = ptr(strings.TrimSpace(*ch.Name))
@@ -87,64 +87,64 @@ type MemberInvitation struct {
 // Invite brings people into a class: existing accounts are added at once
 // (and notified), new addresses receive a registration link. Only the owner
 // (or an admin) may add co-teachers.
-func (c *classService) Invite(u *User, classID int64, in MemberInvitation, baseURL string) ([]inviteResult, error) {
+func (c *classService) Invite(u *domain.User, classID int64, in MemberInvitation, baseURL string) ([]InviteResult, error) {
 	role := in.Role
 	if role == "" {
 		role = domain.RoleStudent
 	}
 	if role != domain.RoleStudent && role != domain.RoleTeacher {
-		return nil, errBadMemberRole
+		return nil, ErrBadMemberRole
 	}
 	if role == domain.RoleTeacher && u.Role != domain.RoleAdmin && !c.classes.IsOwner(classID, u.ID) {
-		return nil, errOnlyOwner
+		return nil, ErrOnlyOwner
 	}
 	locale := in.Locale
 	if locale == "" {
 		locale = u.Locale
 	}
 	className := c.classes.Name(classID)
-	results := []inviteResult{}
-	for _, email := range splitEmails(in.Emails) {
+	results := []InviteResult{}
+	for _, email := range SplitEmails(in.Emails) {
 		if existing, err := c.users.GetByEmail(email); err == nil {
 			results = append(results, c.addExisting(u, existing, classID, className, role, baseURL))
 			continue
 		}
 		inv, err := c.accounts.CreateInvite(Invitation{Inviter: u, Email: email, Role: role, ClassID: &classID, ClassName: className, Locale: locale}, baseURL)
 		if err != nil {
-			results = append(results, inviteResult{Email: email, Status: "error", EmailSent: boolPtr(false), Error: err.Error()})
+			results = append(results, InviteResult{Email: email, Status: "error", EmailSent: boolPtr(false), Error: err.Error()})
 			continue
 		}
-		results = append(results, invitedResult(inv))
+		results = append(results, InvitedResult(inv))
 	}
 	return results, nil
 }
 
 // addExisting adds an account to the class; students stay students even
 // when invited as teachers.
-func (c *classService) addExisting(inviter, existing *User, classID int64, className, role, baseURL string) inviteResult {
+func (c *classService) addExisting(inviter, existing *domain.User, classID int64, className, role, baseURL string) InviteResult {
 	memberRole := domain.RoleStudent
 	if existing.Role != domain.RoleStudent && role == domain.RoleTeacher {
 		memberRole = domain.RoleTeacher
 	}
 	if err := c.classes.AddMember(classID, existing.ID, memberRole); err != nil {
-		return inviteResult{Email: existing.Email, Status: "error", EmailSent: boolPtr(false), Error: err.Error()}
+		return InviteResult{Email: existing.Email, Status: "error", EmailSent: boolPtr(false), Error: err.Error()}
 	}
-	subj, body := renderMail("added", existing.Locale, map[string]string{"site": c.siteName(), "name": existing.Name, "inviter": inviter.Name, "class": className, "link": baseURL + "/dashboard"})
-	c.mail.sendMailAsync(existing.Email, subj, body)
-	return inviteResult{Email: existing.Email, Status: "added", EmailSent: boolPtr(c.mailOn())}
+	subj, body := RenderMail("added", existing.Locale, map[string]string{"site": c.siteName(), "name": existing.Name, "inviter": inviter.Name, "class": className, "link": baseURL + "/dashboard"})
+	c.mail.SendMailAsync(existing.Email, subj, body)
+	return InviteResult{Email: existing.Email, Status: "added", EmailSent: boolPtr(c.mailOn())}
 }
 
 // Join adds u as a student of the active class with this code.
-func (c *classService) Join(u *User, code string) (*Class, error) {
+func (c *classService) Join(u *domain.User, code string) (*domain.Class, error) {
 	cl, err := c.classes.FindByJoinCode(domain.NormalizeJoinCode(code))
 	if err != nil {
-		return nil, errInvalidCode
+		return nil, ErrInvalidCode
 	}
 	return cl, c.classes.AddMember(cl.ID, u.ID, domain.RoleStudent)
 }
 
 // Joined lists the active classes of a student, without their join codes.
-func (c *classService) Joined(u *User) ([]*Class, error) {
+func (c *classService) Joined(u *domain.User) ([]*domain.Class, error) {
 	out, err := c.classes.ListJoinedBy(u.ID)
 	for _, cl := range out {
 		cl.JoinCode = "" // students do not need it
@@ -152,9 +152,9 @@ func (c *classService) Joined(u *User) ([]*Class, error) {
 	return out, err
 }
 
-// splitEmails reads addresses separated by commas, semicolons, spaces or
+// SplitEmails reads addresses separated by commas, semicolons, spaces or
 // new lines (also "<a@b.it>"), lower-cased and without duplicates.
-func splitEmails(in []string) []string {
+func SplitEmails(in []string) []string {
 	seen := map[string]bool{}
 	out := []string{}
 	for _, chunk := range in {

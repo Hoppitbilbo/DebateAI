@@ -3,6 +3,8 @@ package app
 import (
 	"fmt"
 	"time"
+
+	"github.com/Hoppitbilbo/DebateAI/server/internal/domain"
 )
 
 // Assignment events (Observer pattern): assignmentService announces what
@@ -12,7 +14,7 @@ import (
 type assignmentListener interface {
 	// AssignmentPublished is called when students should hear about a
 	// published assignment (the teacher asked to notify them).
-	AssignmentPublished(a *Assignment, baseURL string)
+	AssignmentPublished(a *domain.Assignment, baseURL string)
 }
 
 // mailNotifier e-mails the active students of the class.
@@ -22,7 +24,7 @@ type mailNotifier struct {
 	siteName func() string
 }
 
-func (n mailNotifier) AssignmentPublished(a *Assignment, baseURL string) {
+func (n mailNotifier) AssignmentPublished(a *domain.Assignment, baseURL string) {
 	students, err := n.classes.Students(a.ClassID)
 	if err != nil {
 		return
@@ -31,9 +33,9 @@ func (n mailNotifier) AssignmentPublished(a *Assignment, baseURL string) {
 		if !st.Active {
 			continue
 		}
-		subj, body := renderMail("assignment", st.Locale, map[string]string{"site": n.siteName(), "name": st.Name, "class": a.ClassName,
+		subj, body := RenderMail("assignment", st.Locale, map[string]string{"site": n.siteName(), "name": st.Name, "class": a.ClassName,
 			"title": a.Title, "due": dueText(a.DueAt, st.Locale), "link": baseURL + "/dashboard"})
-		n.mail.sendMailAsync(st.Email, subj, body)
+		n.mail.SendMailAsync(st.Email, subj, body)
 	}
 }
 
@@ -46,5 +48,5 @@ func dueText(dueAt *string, locale string) string {
 	if t, err := time.Parse(time.RFC3339, when); err == nil {
 		when = t.Format("02/01/2006 15:04")
 	}
-	return fmt.Sprintf(duePhrase[normLocale(locale)], when)
+	return fmt.Sprintf(duePhrase[NormLocale(locale)], when)
 }

@@ -48,7 +48,7 @@ func (p *scriptedLLM) Generate(ctx context.Context, req ai.Request) (*ai.Respons
 	return &ai.Response{Text: p.text}, nil
 }
 
-func setJudgeRoute(t *testing.T, s *Server, targets ...RouteTarget) {
+func setJudgeRoute(t *testing.T, s *Services, targets ...RouteTarget) {
 	t.Helper()
 	if err := s.Settings.SaveRouting(RoutingSettings{Strategy: "ordered", Tasks: map[string][]RouteTarget{TaskJudge: targets}}); err != nil {
 		t.Fatal(err)
@@ -59,7 +59,7 @@ func judgeIn(goals ...string) judgeInput {
 	return judgeInput{
 		Instructions: "Intervista Napoleone",
 		Goals:        goals,
-		Transcript:   []transcriptMsg{{Role: "user", Content: "Perché la Russia?"}, {Role: "assistant", Name: "Napoleone", Content: "Per l'Inghilterra."}},
+		Transcript:   []TranscriptMessage{{Role: "user", Content: "Perché la Russia?"}, {Role: "assistant", Name: "Napoleone", Content: "Per l'Inghilterra."}},
 		Locale:       "it",
 		Turns:        1,
 	}

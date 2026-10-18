@@ -1,4 +1,4 @@
-package app
+package httpapi
 
 import (
 	"context"
@@ -13,17 +13,20 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/Hoppitbilbo/DebateAI/server/internal/app"
+	"github.com/Hoppitbilbo/DebateAI/server/internal/domain"
 )
 
 // Server is the HTTP side: routes, middleware and handlers over Services.
 type Server struct {
-	cfg Config
-	*Services
+	cfg app.Config
+	*app.Services
 	static  fs.FS
 	limiter *rateLimiter
 }
 
-func NewServer(cfg Config, services *Services, static fs.FS) *Server {
+func NewServer(cfg app.Config, services *app.Services, static fs.FS) *Server {
 	return &Server{cfg: cfg, Services: services, static: static, limiter: newRateLimiter()}
 }
 
@@ -195,8 +198,8 @@ type ctxKey int
 
 const userKey ctxKey = 1
 
-func currentUser(r *http.Request) *User {
-	u, _ := r.Context().Value(userKey).(*User)
+func currentUser(r *http.Request) *domain.User {
+	u, _ := r.Context().Value(userKey).(*domain.User)
 	return u
 }
 
@@ -335,3 +338,5 @@ func (rl *rateLimiter) allow(key string, limit int, window time.Duration) bool {
 	b.count++
 	return true
 }
+
+func ptr[T any](v T) *T { return &v }

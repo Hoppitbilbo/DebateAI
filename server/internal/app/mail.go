@@ -79,7 +79,7 @@ var duePhrase = map[string]string{
 	"it": " (scadenza %s)", "en": " (due %s)", "es": " (vence %s)", "fr": " (à rendre le %s)", "de": " (fällig am %s)",
 }
 
-func normLocale(l string) string {
+func NormLocale(l string) string {
 	l = strings.ToLower(strings.TrimSpace(l))
 	if len(l) > 2 {
 		l = l[:2]
@@ -91,8 +91,8 @@ func normLocale(l string) string {
 	return "it"
 }
 
-func renderMail(kind, locale string, vars map[string]string) (string, string) {
-	t := mailTexts[kind][normLocale(locale)]
+func RenderMail(kind, locale string, vars map[string]string) (string, string) {
+	t := mailTexts[kind][NormLocale(locale)]
 	subject, body := t[0], t[1]
 	for k, v := range vars {
 		subject = strings.ReplaceAll(subject, "{"+k+"}", v)
@@ -103,12 +103,12 @@ func renderMail(kind, locale string, vars map[string]string) (string, string) {
 
 var errSMTPNotConfigured = errors.New("SMTP is not configured")
 
-// sendMail delivers a plain-text + HTML e-mail. When SMTP is not configured the
+// SendMail delivers a plain-text + HTML e-mail. When SMTP is not configured the
 // message is logged so admins can still copy the links from the dashboard.
 // smtpMailer sends mail with the SMTP settings of the admin panel.
 type smtpMailer struct{ settings *settingsService }
 
-func (m smtpMailer) sendMail(to, subject, body string) error {
+func (m smtpMailer) SendMail(to, subject, body string) error {
 	cfg := m.settings.SMTP()
 	if cfg.Host == "" {
 		log.Printf("[mail disabled] to=%s subject=%q\n%s", to, subject, body)
@@ -198,10 +198,10 @@ func (m smtpMailer) sendMail(to, subject, body string) error {
 	return c.Quit()
 }
 
-// sendMailAsync is used for bulk notifications so HTTP handlers stay fast.
-func (m smtpMailer) sendMailAsync(to, subject, body string) {
+// SendMailAsync is used for bulk notifications so HTTP handlers stay fast.
+func (m smtpMailer) SendMailAsync(to, subject, body string) {
 	go func() {
-		if err := m.sendMail(to, subject, body); err != nil && !errors.Is(err, errSMTPNotConfigured) {
+		if err := m.SendMail(to, subject, body); err != nil && !errors.Is(err, errSMTPNotConfigured) {
 			log.Printf("mail to %s failed: %v", to, err)
 		}
 	}()

@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/Hoppitbilbo/DebateAI/server/internal/app"
+	"github.com/Hoppitbilbo/DebateAI/server/internal/httpapi"
 	"github.com/Hoppitbilbo/DebateAI/server/webui"
 )
 
@@ -27,7 +28,7 @@ func main() {
 	// Composition root: repositories and services, then the HTTP server on top.
 	services := app.NewServices(cfg, db)
 	services.Bootstrap(cfg)
-	srv := app.NewServer(cfg, services, webui.FS())
+	srv := httpapi.NewServer(cfg, services, webui.FS())
 	httpSrv := &http.Server{
 		Addr:              ":" + cfg.Port,
 		Handler:           srv.Handler(),

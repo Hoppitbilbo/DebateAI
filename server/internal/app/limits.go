@@ -13,15 +13,6 @@ const (
 	maxEvaluationChars    = 40000
 )
 
-// List sizes of the admin and teacher pages.
-const (
-	maxListedUsers          = 500
-	maxListedInvites        = 500
-	maxListedTeacherInvites = 200
-	maxListedSessions       = 100 // a student's own attempts
-	maxUsageGroups          = 400 // rows per grouping in the cost report
-)
-
 // JEV judge.
 const (
 	judgeRequestTimeout  = 90 * time.Second // whole judgement, all targets
@@ -36,25 +27,16 @@ const (
 
 // AI gateway and providers.
 const (
-	maxChatHistoryMessages = 200 // messages forwarded to the model per request
-	modelListTimeout       = 20 * time.Second
-	modelRefreshTimeout    = 30 * time.Second
-	providerTestTimeout    = 60 * time.Second
-	liveTokenTimeout       = 20 * time.Second
+	modelListTimeout    = 20 * time.Second
+	modelRefreshTimeout = 30 * time.Second
+	providerTestTimeout = 60 * time.Second
+	liveTokenTimeout    = 20 * time.Second
 )
 
-// Authentication, invites and rate limits.
+// Authentication and invites.
 const (
 	resetLinkTTL = 2 * time.Hour
 	inviteTTL    = 14 * 24 * time.Hour
-
-	loginAttemptsLimit  = 20
-	loginAttemptsWindow = 15 * time.Minute
-	forgotRequestsLimit = 5  // per hour and IP
-	joinAttemptsLimit   = 20 // per hour and user
-	liveTokensLimit     = 30 // per hour, IP and login state
-
-	rateLimiterSweepEvery = 10 * time.Minute
 )
 
 // smtpDialTimeout bounds the connection to the mail server.

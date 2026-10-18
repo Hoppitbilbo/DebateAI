@@ -1,34 +1,37 @@
-package app
+package httpapi
 
 import (
 	"errors"
 	"net/http"
+
+	"github.com/Hoppitbilbo/DebateAI/server/internal/app"
+	"github.com/Hoppitbilbo/DebateAI/server/internal/domain"
 )
 
 // ownSession returns the {id} session of the path when the current user
 // owns it; otherwise it answers 404.
-func (s *Server) ownSession(w http.ResponseWriter, r *http.Request) (*User, *SessionDetail, bool) {
+func (s *Server) ownSession(w http.ResponseWriter, r *http.Request) (*domain.User, *domain.SessionDetail, bool) {
 	u := currentUser(r)
 	d, owner, err := s.SessionSvc.Load(u, pathID(r, "id"))
 	if err != nil || !owner {
-		writeErr(w, 404, "not_found", errSessionNotFound.Error())
+		writeErr(w, 404, "not_found", app.ErrSessionNotFound.Error())
 		return nil, nil, false
 	}
 	return u, d, true
 }
 
 func (s *Server) handleCreateSession(w http.ResponseWriter, r *http.Request) {
-	var in NewAttempt
+	var in app.NewAttempt
 	if err := readJSON(r, &in); err != nil {
 		writeErr(w, 400, "bad_request", err.Error())
 		return
 	}
 	ss, err := s.SessionSvc.Start(currentUser(r), in)
 	switch {
-	case errors.Is(err, errInvalidApp), errors.Is(err, errOtherApp):
+	case errors.Is(err, app.ErrInvalidApp), errors.Is(err, app.ErrOtherApp):
 		writeErr(w, 400, "bad_request", err.Error())
 		return
-	case errors.Is(err, errAssignmentForbidden):
+	case errors.Is(err, app.ErrAssignmentForbidden):
 		writeErr(w, 403, "forbidden", err.Error())
 		return
 	case err != nil:
@@ -64,7 +67,7 @@ func (s *Server) handleSaveTranscript(w http.ResponseWriter, r *http.Request) {
 	if !ok {
 		return
 	}
-	var in transcriptUpdate
+	var in app.TranscriptUpdate
 	if err := readJSON(r, &in); err != nil {
 		writeErr(w, 400, "bad_request", err.Error())
 		return
@@ -82,7 +85,7 @@ func (s *Server) handleCompleteSession(w http.ResponseWriter, r *http.Request) {
 	if !ok {
 		return
 	}
-	var in Completion
+	var in app.Completion
 	if err := readJSON(r, &in); err != nil {
 		writeErr(w, 400, "bad_request", err.Error())
 		return

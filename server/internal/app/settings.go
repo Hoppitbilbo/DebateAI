@@ -34,7 +34,7 @@ type GeneralSettings struct {
 	LiveEnabled           bool   `json:"liveEnabled"`
 }
 
-func defaultGeneral() GeneralSettings {
+func DefaultGeneral() GeneralSettings {
 	return GeneralSettings{
 		SiteName:              "AiDebate.tech",
 		DefaultLocale:         "it",
@@ -83,7 +83,7 @@ type JevSettings struct {
 	MaxStateChars int     `json:"maxStateChars"`
 }
 
-func defaultJev() JevSettings {
+func DefaultJev() JevSettings {
 	return JevSettings{Enabled: true, Threshold: defaultJudgeThreshold, EvaluateEvery: 1, MaxStateChars: 24000}
 }
 
@@ -97,23 +97,23 @@ type settingsService struct {
 
 // Setting keys.
 const (
-	settingGeneral = "general"
-	settingSMTP    = "smtp"
-	settingBudget  = "budget"
-	settingRouting = "routing"
-	settingJev     = "jev"
+	SettingGeneral = "general"
+	SettingSMTP    = "smtp"
+	SettingBudget  = "budget"
+	SettingRouting = "routing"
+	SettingJev     = "jev"
 )
 
 func (c *settingsService) General() GeneralSettings {
-	return loadSetting(c.store, settingGeneral, defaultGeneral())
+	return loadSetting(c.store, SettingGeneral, DefaultGeneral())
 }
 
 func (c *settingsService) Budget() BudgetSettings {
-	return loadSetting(c.store, settingBudget, BudgetSettings{MonthlyUSD: 0, WarnPercent: 80, BlockPaidWhenExceeded: true})
+	return loadSetting(c.store, SettingBudget, BudgetSettings{MonthlyUSD: 0, WarnPercent: 80, BlockPaidWhenExceeded: true})
 }
 
 func (c *settingsService) Routing() RoutingSettings {
-	r := loadSetting(c.store, settingRouting, RoutingSettings{Strategy: StrategyOrdered, Tasks: map[string][]RouteTarget{}, DefaultVoice: "Aoede"})
+	r := loadSetting(c.store, SettingRouting, RoutingSettings{Strategy: StrategyOrdered, Tasks: map[string][]RouteTarget{}, DefaultVoice: "Aoede"})
 	if r.Tasks == nil {
 		r.Tasks = map[string][]RouteTarget{}
 	}
@@ -121,13 +121,13 @@ func (c *settingsService) Routing() RoutingSettings {
 }
 
 func (c *settingsService) Jev() JevSettings {
-	return loadSetting(c.store, settingJev, defaultJev())
+	return loadSetting(c.store, SettingJev, DefaultJev())
 }
 
 // SMTP returns the mail settings with the password decrypted; without a
 // configured host the environment defaults apply.
 func (c *settingsService) SMTP() SMTPSettings {
-	st := loadSetting(c.store, settingSMTP, c.smtpDefaults)
+	st := loadSetting(c.store, SettingSMTP, c.smtpDefaults)
 	if st.Host == "" {
 		return c.smtpDefaults
 	}
@@ -141,30 +141,30 @@ func (c *settingsService) SMTP() SMTPSettings {
 func (c *settingsService) MailConfigured() bool { return c.SMTP().Host != "" }
 
 func (c *settingsService) SaveGeneral(v GeneralSettings) error {
-	v.DefaultLocale = normLocale(v.DefaultLocale)
-	return c.store.Save(settingGeneral, v)
+	v.DefaultLocale = NormLocale(v.DefaultLocale)
+	return c.store.Save(SettingGeneral, v)
 }
 
 // SaveSMTP encrypts a new password; an empty one keeps the stored password.
 func (c *settingsService) SaveSMTP(v SMTPSettings) error {
 	if v.Password == "" {
-		v.Password = loadSetting(c.store, settingSMTP, SMTPSettings{}).Password
+		v.Password = loadSetting(c.store, SettingSMTP, SMTPSettings{}).Password
 	} else {
 		v.Password = c.crypto.Encrypt(v.Password)
 	}
 	if v.Port == 0 {
 		v.Port = 587
 	}
-	return c.store.Save(settingSMTP, v)
+	return c.store.Save(SettingSMTP, v)
 }
 
-func (c *settingsService) SaveBudget(v BudgetSettings) error { return c.store.Save(settingBudget, v) }
+func (c *settingsService) SaveBudget(v BudgetSettings) error { return c.store.Save(SettingBudget, v) }
 
 func (c *settingsService) SaveRouting(v RoutingSettings) error {
 	if v.Tasks == nil {
 		v.Tasks = map[string][]RouteTarget{}
 	}
-	return c.store.Save(settingRouting, v)
+	return c.store.Save(SettingRouting, v)
 }
 
-func (c *settingsService) SaveJev(v JevSettings) error { return c.store.Save(settingJev, v) }
+func (c *settingsService) SaveJev(v JevSettings) error { return c.store.Save(SettingJev, v) }

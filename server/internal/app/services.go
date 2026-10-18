@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"log"
 
+	"github.com/Hoppitbilbo/DebateAI/server/internal/ai"
 	"github.com/Hoppitbilbo/DebateAI/server/internal/domain"
 	"github.com/Hoppitbilbo/DebateAI/server/internal/store"
 )
@@ -33,8 +34,17 @@ type Services struct {
 	SessionSvc    *sessionService
 }
 
+// Option changes how NewServices builds the application.
+type Option func(*Services)
+
+// WithProviderFactory replaces ai.New for building AI provider adapters
+// (e.g. to talk to fake models in tests).
+func WithProviderFactory(f func(ai.Config) (ai.Provider, error)) Option {
+	return func(sv *Services) { sv.Gateway.newProvider = f }
+}
+
 // NewServices builds every repository on db and every service on them.
-func NewServices(cfg Config, db *sql.DB) *Services {
+func NewServices(cfg Config, db *sql.DB, opts ...Option) *Services {
 	sv := &Services{
 		SettingsStore: store.NewSettings(db),
 		Users:         store.NewUsers(db),
@@ -59,6 +69,9 @@ func NewServices(cfg Config, db *sql.DB) *Services {
 		listeners: []assignmentListener{mailNotifier{classes: sv.Classes, mail: sv.Mailer, siteName: siteName}}}
 	sv.SessionSvc = &sessionService{sessions: sv.Sessions, assignments: sv.Assignments, classes: sv.Classes, classSvc: sv.ClassSvc,
 		judge: sv.Gateway, jevSettings: sv.Settings.Jev}
+	for _, opt := range opts {
+		opt(sv)
+	}
 	return sv
 }
 

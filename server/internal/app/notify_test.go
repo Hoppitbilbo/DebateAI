@@ -10,7 +10,7 @@ import (
 // recordingListener remembers the published assignments.
 type recordingListener struct{ titles []string }
 
-func (l *recordingListener) AssignmentPublished(a *Assignment, baseURL string) {
+func (l *recordingListener) AssignmentPublished(a *domain.Assignment, baseURL string) {
 	l.titles = append(l.titles, a.Title)
 }
 

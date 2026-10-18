@@ -22,10 +22,10 @@ type sessionService struct {
 }
 
 var (
-	errInvalidApp          = errors.New("invalid appType")
-	errAssignmentForbidden = errors.New("assignment not available")
-	errOtherApp            = errors.New("assignment is for another app")
-	errSessionNotFound     = errors.New("session not found")
+	ErrInvalidApp          = errors.New("invalid appType")
+	ErrAssignmentForbidden = errors.New("assignment not available")
+	ErrOtherApp            = errors.New("assignment is for another app")
+	ErrSessionNotFound     = errors.New("session not found")
 )
 
 // NewAttempt is what the client sends to start an activity.
@@ -38,18 +38,18 @@ type NewAttempt struct {
 
 // Start opens a new attempt; for an assignment it also closes the
 // student's previous attempts that never got a turn.
-func (svc *sessionService) Start(u *User, in NewAttempt) (*SessionSummary, error) {
+func (svc *sessionService) Start(u *domain.User, in NewAttempt) (*domain.SessionSummary, error) {
 	if !domain.AppTypes[in.AppType] {
-		return nil, errInvalidApp
+		return nil, ErrInvalidApp
 	}
 	n := domain.NewSession{UserID: u.ID, AppType: in.AppType, Title: truncate(in.Title, maxSessionTitleChars), Context: "{}"}
 	if in.AssignmentID > 0 {
 		a, err := svc.assignments.Get(in.AssignmentID)
 		if err != nil || (!svc.classSvc.CanManage(u, a.ClassID) && (!svc.classes.IsMember(a.ClassID, u.ID) || !a.Published)) {
-			return nil, errAssignmentForbidden
+			return nil, ErrAssignmentForbidden
 		}
 		if a.AppType != in.AppType {
-			return nil, errOtherApp
+			return nil, ErrOtherApp
 		}
 		n.AssignmentID = &a.ID
 		logIfErr("abandon empty sessions", svc.sessions.AbandonEmpty(u.ID, a.ID))
@@ -67,10 +67,10 @@ func (svc *sessionService) Start(u *User, in NewAttempt) (*SessionSummary, error
 // Load returns a session u may see and whether u is its owner. Admins see
 // every session; teachers those of their classes' assignments and the free
 // practice of their students.
-func (svc *sessionService) Load(u *User, id int64) (*SessionDetail, bool, error) {
+func (svc *sessionService) Load(u *domain.User, id int64) (*domain.SessionDetail, bool, error) {
 	d, err := svc.sessions.Detail(id)
 	if err != nil {
-		return nil, false, errSessionNotFound
+		return nil, false, ErrSessionNotFound
 	}
 	owner := d.UserID != nil && *d.UserID == u.ID
 	if owner || u.Role == domain.RoleAdmin {
@@ -84,7 +84,7 @@ func (svc *sessionService) Load(u *User, id int64) (*SessionDetail, bool, error)
 	if u.Role == domain.RoleTeacher && d.UserID != nil && svc.classes.TeachesStudent(u.ID, *d.UserID) {
 		return d, false, nil
 	}
-	return nil, false, errSessionNotFound
+	return nil, false, ErrSessionNotFound
 }
 
 // Completion is what the student hands in after the activity.
@@ -96,7 +96,7 @@ type Completion struct {
 }
 
 // Complete closes the attempt with the student's reflection and evaluation.
-func (svc *sessionService) Complete(d *SessionDetail, c Completion) error {
+func (svc *sessionService) Complete(d *domain.SessionDetail, c Completion) error {
 	return svc.sessions.Complete(d.ID, domain.SessionCompletion{
 		Reflection: truncate(c.Reflection, maxReflectionChars), Evaluation: truncate(c.Evaluation, maxEvaluationChars),
 		ScoreConversation: c.ScoreConversation, ScoreReflection: c.ScoreReflection,
@@ -109,16 +109,16 @@ type goalEvaluator interface {
 	judge(ctx context.Context, in judgeInput, userID, sessionID *int64) JudgeResult
 }
 
-// transcriptUpdate is what the client sends after each turn.
-type transcriptUpdate struct {
-	Messages []transcriptMsg `json:"messages"`
-	Context  json.RawMessage `json:"context"`
-	Judge    *bool           `json:"judge"` // force (true) or skip (false) judging
+// TranscriptUpdate is what the client sends after each turn.
+type TranscriptUpdate struct {
+	Messages []TranscriptMessage `json:"messages"`
+	Context  json.RawMessage     `json:"context"`
+	Judge    *bool               `json:"judge"` // force (true) or skip (false) judging
 }
 
 // SaveTranscript stores the conversation of session d, owned by u, and for
 // an active assignment judges it and applies the resulting state change.
-func (svc *sessionService) SaveTranscript(ctx context.Context, u *User, d *SessionDetail, in transcriptUpdate) (transcriptSyncResponse, error) {
+func (svc *sessionService) SaveTranscript(ctx context.Context, u *domain.User, d *domain.SessionDetail, in TranscriptUpdate) (TranscriptSync, error) {
 	msgs := lastMessages(in.Messages, maxTranscriptMessages)
 	turns := countStudentTurns(msgs)
 	var newContext *string
@@ -126,11 +126,11 @@ func (svc *sessionService) SaveTranscript(ctx context.Context, u *User, d *Sessi
 		newContext = ptr(string(in.Context))
 	}
 	if err := svc.sessions.SaveTranscript(d.ID, mustJSON(msgs), turns, newContext); err != nil {
-		return transcriptSyncResponse{}, err
+		return TranscriptSync{}, err
 	}
 
 	state := domain.StateOf(d.Status)
-	resp := transcriptSyncResponse{Status: state.Status(), Turns: turns, Progress: d.Progress, Ended: state.Ended()}
+	resp := TranscriptSync{Status: state.Status(), Turns: turns, Progress: d.Progress, Ended: state.Ended()}
 	if d.AssignmentID == nil || state.Ended() {
 		return resp, nil
 	}
@@ -176,7 +176,7 @@ func (svc *sessionService) shouldJudge(turns, maxTurns int, force *bool) bool {
 	return turns%every == 0 || (maxTurns > 0 && turns >= maxTurns)
 }
 
-func (svc *sessionService) evaluate(ctx context.Context, u *User, d *SessionDetail, a *Assignment, msgs []transcriptMsg, activity json.RawMessage, turns int) JudgeResult {
+func (svc *sessionService) evaluate(ctx context.Context, u *domain.User, d *domain.SessionDetail, a *domain.Assignment, msgs []TranscriptMessage, activity json.RawMessage, turns int) JudgeResult {
 	ctx, cancel := context.WithTimeout(ctx, judgeRequestTimeout)
 	defer cancel()
 	return svc.judge.judge(ctx, judgeInput{
@@ -187,7 +187,7 @@ func (svc *sessionService) evaluate(ctx context.Context, u *User, d *SessionDeta
 }
 
 // lastMessages keeps the newest n messages.
-func lastMessages(msgs []transcriptMsg, n int) []transcriptMsg {
+func lastMessages(msgs []TranscriptMessage, n int) []TranscriptMessage {
 	if len(msgs) > n {
 		return msgs[len(msgs)-n:]
 	}
@@ -195,7 +195,7 @@ func lastMessages(msgs []transcriptMsg, n int) []transcriptMsg {
 }
 
 // countStudentTurns counts the non-empty messages written by the student.
-func countStudentTurns(msgs []transcriptMsg) int {
+func countStudentTurns(msgs []TranscriptMessage) int {
 	turns := 0
 	for _, m := range msgs {
 		if m.Role == "user" && strings.TrimSpace(m.Content) != "" {

@@ -9,18 +9,6 @@ import (
 // interfaces are defined here, by their consumer, and implemented by the
 // types in package store. Tests may substitute any of them.
 
-// Transitional aliases while handlers move to the domain types.
-type (
-	User           = domain.User
-	inviteRow      = domain.Invite
-	Class          = domain.Class
-	Member         = domain.Member
-	Assignment     = domain.Assignment
-	AssignStats    = domain.AssignStats
-	SessionSummary = domain.SessionSummary
-	SessionDetail  = domain.SessionDetail
-)
-
 // settingsStore persists the settings documents.
 type settingsStore interface {
 	Load(key string, dst any) bool

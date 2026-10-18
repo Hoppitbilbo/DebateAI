@@ -93,14 +93,14 @@ func (f freeOnly) order(list []RouteTarget, prices priceBook) []RouteTarget {
 
 // targets returns the candidate list for a task according to the routing
 // strategy and the budget state. This is the "decide which API" half of JEV.
-func (g *aiGateway) targets(task string) []RouteTarget {
+func (g *aiGateway) Targets(task string) []RouteTarget {
 	rt := g.settings.Routing()
 	list := rt.Tasks[task]
 	if len(list) == 0 && task != TaskChat && task != TaskLive {
 		list = rt.Tasks[TaskChat] // sensible fallback
 	}
 	strategy := strategyFor(rt.Strategy)
-	if g.budgetExceeded() {
+	if g.BudgetExceeded() {
 		strategy = freeOnly{strategy}
 	}
 	return strategy.order(list, g)

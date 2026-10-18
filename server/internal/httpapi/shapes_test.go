@@ -1,4 +1,4 @@
-package app
+package httpapi
 
 import (
 	"bytes"
@@ -14,6 +14,7 @@ import (
 	"testing"
 
 	"github.com/Hoppitbilbo/DebateAI/server/internal/ai"
+	"github.com/Hoppitbilbo/DebateAI/server/internal/app"
 )
 
 // TestResponseShapes pins the JSON shape (keys and value types, recursively)
@@ -60,13 +61,13 @@ func shapeOf(v any) string {
 }
 
 func TestResponseShapes(t *testing.T) {
-	s := newTestServer(t)
+	s := newTestAPI(t)
 	srv := httptest.NewServer(s.Handler())
 	defer srv.Close()
-	useProvider(s, 90, ai.KindOpenAI, &fakeProvider{})
-	useProvider(s, 91, ai.KindJev, &fakeDecider{scores: map[string]float64{"goal_0": 0.9}})
-	if err := s.Settings.SaveRouting(RoutingSettings{Strategy: "ordered", Tasks: map[string][]RouteTarget{
-		TaskChat: {{90, "m"}}, TaskJudge: {{91, "jev"}},
+	chatID := s.addFake(t, "fake-chat", ai.KindOpenAI, fakeProvider{})
+	jevID := s.addFake(t, "fake-jev", ai.KindJev, &fakeDecider{scores: map[string]float64{"goal_0": 0.9}})
+	if err := s.Settings.SaveRouting(app.RoutingSettings{Strategy: "ordered", Tasks: map[string][]app.RouteTarget{
+		app.TaskChat: {{ProviderID: chatID, Model: "m"}}, app.TaskJudge: {{ProviderID: jevID, Model: "jev"}},
 	}}); err != nil {
 		t.Fatal(err)
 	}
@@ -131,7 +132,7 @@ func TestResponseShapes(t *testing.T) {
 	sess := call(stud, "create session", "POST", "/api/sessions", map[string]any{"appType": "wiki-chatbot", "assignmentId": assignmentID})
 	sessionID := int64(sess["id"].(float64))
 	call(stud, "generate", "POST", "/api/ai/generate", map[string]any{"sessionId": sessionID, "messages": []map[string]string{{"role": "user", "content": "ciao"}}})
-	call(stud, "live usage", "POST", "/api/ai/live/usage", map[string]any{"providerId": 90, "model": "m", "inputTokens": 10, "outputTokens": 5, "seconds": 3})
+	call(stud, "live usage", "POST", "/api/ai/live/usage", map[string]any{"providerId": chatID, "model": "m", "inputTokens": 10, "outputTokens": 5, "seconds": 3})
 	call(stud, "transcript (judged)", "PUT", fmtPath("/api/sessions/%d/transcript", sessionID), map[string]any{"messages": userTurns(1)})
 	call(stud, "transcript (ended)", "PUT", fmtPath("/api/sessions/%d/transcript", sessionID), map[string]any{"messages": userTurns(2)})
 	call(stud, "complete session", "POST", fmtPath("/api/sessions/%d/complete", sessionID), map[string]any{"reflection": "r"})
@@ -141,7 +142,7 @@ func TestResponseShapes(t *testing.T) {
 	call(admin, "usage summary", "GET", "/api/admin/usage?days=1", nil)
 	upstream := mockAI(t)
 	defer upstream.Close()
-	var llm, jev ProviderView
+	var llm, jev app.ProviderView
 	admin.do("POST", "/api/admin/providers", map[string]string{"name": "Mock", "kind": "openai", "baseUrl": upstream.URL + "/v1", "apiKey": "k"}, &llm)
 	admin.do("POST", "/api/admin/providers", map[string]string{"name": "Jev", "kind": "jev", "baseUrl": upstream.URL + "/systemone", "apiKey": "k"}, &jev)
 	call(admin, "test provider (llm)", "POST", fmtPath("/api/admin/providers/%d/test", llm.ID), map[string]string{"model": "paid-model"})

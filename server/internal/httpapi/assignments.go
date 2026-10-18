@@ -1,17 +1,20 @@
-package app
+package httpapi
 
 import (
 	"errors"
 	"net/http"
+
+	"github.com/Hoppitbilbo/DebateAI/server/internal/app"
+	"github.com/Hoppitbilbo/DebateAI/server/internal/domain"
 )
 
 // managedAssignment returns the {id} assignment of the path when the
 // current user may manage it; otherwise it answers 404 or 403.
-func (s *Server) managedAssignment(w http.ResponseWriter, r *http.Request) (*User, *Assignment, bool) {
+func (s *Server) managedAssignment(w http.ResponseWriter, r *http.Request) (*domain.User, *domain.Assignment, bool) {
 	u := currentUser(r)
 	a, err := s.AssignmentSvc.Managed(u, pathID(r, "id"))
 	switch {
-	case errors.Is(err, errAssignmentNotFound):
+	case errors.Is(err, app.ErrAssignmentNotFound):
 		writeErr(w, 404, "not_found", err.Error())
 		return nil, nil, false
 	case err != nil:
@@ -39,14 +42,14 @@ func (s *Server) handleCreateAssignment(w http.ResponseWriter, r *http.Request) 
 	if !ok {
 		return
 	}
-	var in AssignmentInput
+	var in app.AssignmentInput
 	if err := readJSON(r, &in); err != nil {
 		writeErr(w, 400, "bad_request", err.Error())
 		return
 	}
 	a, err := s.AssignmentSvc.Create(u, classID, in, s.baseURL(r))
 	switch {
-	case errors.Is(err, errAssignmentInvalid):
+	case errors.Is(err, app.ErrAssignmentInvalid):
 		writeErr(w, 400, "bad_request", err.Error())
 		return
 	case err != nil:
@@ -61,7 +64,7 @@ func (s *Server) handleUpdateAssignment(w http.ResponseWriter, r *http.Request) 
 	if !ok {
 		return
 	}
-	var in AssignmentInput
+	var in app.AssignmentInput
 	if err := readJSON(r, &in); err != nil {
 		writeErr(w, 400, "bad_request", err.Error())
 		return
@@ -89,7 +92,7 @@ func (s *Server) handleDeleteAssignment(w http.ResponseWriter, r *http.Request) 
 func (s *Server) handleGetAssignment(w http.ResponseWriter, r *http.Request) {
 	a, err := s.AssignmentSvc.Visible(currentUser(r), pathID(r, "id"))
 	switch {
-	case errors.Is(err, errAssignmentNotFound):
+	case errors.Is(err, app.ErrAssignmentNotFound):
 		writeErr(w, 404, "not_found", err.Error())
 		return
 	case err != nil:

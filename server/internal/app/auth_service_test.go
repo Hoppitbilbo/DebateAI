@@ -15,14 +15,14 @@ type captureMailer struct {
 	bodies []string
 }
 
-func (m *captureMailer) sendMail(to, subject, body string) error {
+func (m *captureMailer) SendMail(to, subject, body string) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	m.bodies = append(m.bodies, body)
 	return nil
 }
 
-func (m *captureMailer) sendMailAsync(to, subject, body string) { _ = m.sendMail(to, subject, body) }
+func (m *captureMailer) SendMailAsync(to, subject, body string) { _ = m.SendMail(to, subject, body) }
 
 func (m *captureMailer) lastToken(t *testing.T) string {
 	t.Helper()
@@ -55,15 +55,15 @@ func TestLoginErrors(t *testing.T) {
 	if u, err := a.Login("anna@x.it", "password123"); err != nil || u.ID != id || u.Name != "anna" {
 		t.Fatalf("login: %v %+v", err, u)
 	}
-	if _, err := a.Login("anna@x.it", "wrong"); !errors.Is(err, errInvalidCredentials) {
+	if _, err := a.Login("anna@x.it", "wrong"); !errors.Is(err, ErrInvalidCredentials) {
 		t.Fatalf("wrong password: %v", err)
 	}
-	if _, err := a.Login("nobody@x.it", "password123"); !errors.Is(err, errInvalidCredentials) {
+	if _, err := a.Login("nobody@x.it", "password123"); !errors.Is(err, ErrInvalidCredentials) {
 		t.Fatalf("unknown user: %v", err)
 	}
 	off := false
 	a.users.Update(id, domain.UserPatch{Active: &off})
-	if _, err := a.Login("anna@x.it", "password123"); !errors.Is(err, errAccountDisabled) {
+	if _, err := a.Login("anna@x.it", "password123"); !errors.Is(err, ErrAccountDisabled) {
 		t.Fatalf("disabled: %v", err)
 	}
 }
@@ -75,12 +75,12 @@ func TestCreateUserValidation(t *testing.T) {
 		{"a@x.it", "short", domain.RoleStudent},
 		{"a@x.it", "password123", "boss"},
 	} {
-		if _, err := a.CreateUser(c.email, "", c.password, c.role, "it"); !isInvalid(err) {
+		if _, err := a.CreateUser(c.email, "", c.password, c.role, "it"); !IsInvalid(err) {
 			t.Errorf("%+v: expected invalid input, got %v", c, err)
 		}
 	}
 	a.CreateUser("a@x.it", "", "", domain.RoleStudent, "it")
-	if _, err := a.CreateUser("A@x.it", "", "", domain.RoleStudent, "it"); !isInvalid(err) || !errors.Is(err, domain.ErrEmailTaken) {
+	if _, err := a.CreateUser("A@x.it", "", "", domain.RoleStudent, "it"); !IsInvalid(err) || !errors.Is(err, domain.ErrEmailTaken) {
 		t.Fatalf("duplicate: %v", err)
 	}
 }
@@ -97,13 +97,13 @@ func TestPasswordResetFlow(t *testing.T) {
 	a.RequestReset("a@x.it", "http://site")
 	reset := m.lastToken(t)
 
-	if _, err := a.ResetPassword(reset, "short"); !isInvalid(err) {
+	if _, err := a.ResetPassword(reset, "short"); !IsInvalid(err) {
 		t.Fatalf("weak password: %v", err)
 	}
 	if _, err := a.ResetPassword(reset, "newpassword1"); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := a.ResetPassword(reset, "another-pass"); !errors.Is(err, errInvalidInvite) {
+	if _, err := a.ResetPassword(reset, "another-pass"); !errors.Is(err, ErrInvalidInvite) {
 		t.Fatalf("link must be single use: %v", err)
 	}
 	if a.UserForToken(tok) != nil {
@@ -119,7 +119,7 @@ func TestUpdateProfilePassword(t *testing.T) {
 	id, _ := a.CreateUser("a@x.it", "Anna", "password123", domain.RoleStudent, "it")
 	u, _ := a.users.Get(id)
 	name := "Anna B"
-	if _, err := a.UpdateProfile(u, ProfileChange{Name: &name, CurrentPassword: "nope", NewPassword: "newpassword1"}); !errors.Is(err, errWrongPassword) {
+	if _, err := a.UpdateProfile(u, ProfileChange{Name: &name, CurrentPassword: "nope", NewPassword: "newpassword1"}); !errors.Is(err, ErrWrongPassword) {
 		t.Fatalf("wrong current password: %v", err)
 	}
 	got, err := a.UpdateProfile(u, ProfileChange{CurrentPassword: "password123", NewPassword: "newpassword1"})
@@ -142,7 +142,7 @@ func TestRegisterExistingAccountNeedsPassword(t *testing.T) {
 		t.Fatal(err)
 	}
 	tok := m.lastToken(t)
-	if _, err := a.Register(Registration{Token: tok, Password: "wrong"}, "http://site"); !errors.Is(err, errInvalidCredentials) {
+	if _, err := a.Register(Registration{Token: tok, Password: "wrong"}, "http://site"); !errors.Is(err, ErrInvalidCredentials) {
 		t.Fatalf("existing account, wrong password: %v", err)
 	}
 	if uid, err := a.Register(Registration{Token: tok, Password: "password123"}, "http://site"); err != nil || uid != studID {
@@ -151,7 +151,7 @@ func TestRegisterExistingAccountNeedsPassword(t *testing.T) {
 	if !a.classes.IsMember(classID, studID) {
 		t.Fatal("invite must add the class")
 	}
-	if _, err := a.Register(Registration{Token: tok, Password: "password123"}, "http://site"); !errors.Is(err, errInvalidInvite) {
+	if _, err := a.Register(Registration{Token: tok, Password: "password123"}, "http://site"); !errors.Is(err, ErrInvalidInvite) {
 		t.Fatalf("invite must be single use: %v", err)
 	}
 }

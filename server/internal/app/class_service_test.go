@@ -16,7 +16,7 @@ func TestClassInviteRules(t *testing.T) {
 	acc.mail = m
 	svc.accounts = &acc
 
-	newUser := func(email, role string) *User {
+	newUser := func(email, role string) *domain.User {
 		id, err := acc.CreateUser(email, "", "", role, "it")
 		if err != nil {
 			t.Fatal(err)
@@ -31,7 +31,7 @@ func TestClassInviteRules(t *testing.T) {
 	if svc.CanManage(other, class.ID) {
 		t.Fatal("a teacher of another class must not manage it")
 	}
-	if _, err := svc.Invite(owner, class.ID, MemberInvitation{Emails: []string{"y@x.it"}, Role: domain.RoleAdmin}, "http://site"); !errors.Is(err, errBadMemberRole) {
+	if _, err := svc.Invite(owner, class.ID, MemberInvitation{Emails: []string{"y@x.it"}, Role: domain.RoleAdmin}, "http://site"); !errors.Is(err, ErrBadMemberRole) {
 		t.Fatalf("bad role: %v", err)
 	}
 	res, err := svc.Invite(owner, class.ID, MemberInvitation{Emails: []string{"c@x.it, s@x.it", "new@x.it"}, Role: domain.RoleTeacher}, "http://site")
@@ -41,7 +41,7 @@ func TestClassInviteRules(t *testing.T) {
 	if !svc.CanManage(co, class.ID) || svc.CanManage(stud, class.ID) {
 		t.Fatal("teachers become co-teachers, students stay students")
 	}
-	if _, err := svc.Invite(co, class.ID, MemberInvitation{Emails: []string{"z@x.it"}, Role: domain.RoleTeacher}, "http://site"); !errors.Is(err, errOnlyOwner) {
+	if _, err := svc.Invite(co, class.ID, MemberInvitation{Emails: []string{"z@x.it"}, Role: domain.RoleTeacher}, "http://site"); !errors.Is(err, ErrOnlyOwner) {
 		t.Fatalf("co-teachers cannot add co-teachers: %v", err)
 	}
 }
@@ -54,7 +54,7 @@ func TestJoinByCode(t *testing.T) {
 	stud, _ := s.Users.Get(sid)
 	class, _ := s.ClassSvc.Create(teacher, "3A", "", nil)
 
-	if _, err := s.ClassSvc.Join(stud, "nope"); !errors.Is(err, errInvalidCode) {
+	if _, err := s.ClassSvc.Join(stud, "nope"); !errors.Is(err, ErrInvalidCode) {
 		t.Fatalf("invalid code: %v", err)
 	}
 	if c, err := s.ClassSvc.Join(stud, " "+class.JoinCode+" "); err != nil || c.ID != class.ID {

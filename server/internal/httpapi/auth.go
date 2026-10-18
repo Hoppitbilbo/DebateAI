@@ -1,4 +1,4 @@
-package app
+package httpapi
 
 import (
 	"errors"
@@ -6,15 +6,15 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/Hoppitbilbo/DebateAI/server/internal/app"
 	"github.com/Hoppitbilbo/DebateAI/server/internal/domain"
 )
 
 const sessionCookie = "debateai_session"
-const sessionTTL = 30 * 24 * time.Hour
 
-func (s *Server) getUser(id int64) (*User, error) { return s.Users.Get(id) }
+func (s *Server) getUser(id int64) (*domain.User, error) { return s.Users.Get(id) }
 
-func (s *Server) getUserByEmail(email string) (*User, error) { return s.Users.GetByEmail(email) }
+func (s *Server) getUserByEmail(email string) (*domain.User, error) { return s.Users.GetByEmail(email) }
 
 // startSession logs the user in and sets the session cookie.
 func (s *Server) startSession(w http.ResponseWriter, r *http.Request, userID int64) error {
@@ -31,7 +31,7 @@ func (s *Server) startSession(w http.ResponseWriter, r *http.Request, userID int
 }
 
 // userFromRequest returns the logged-in user of the request, or nil.
-func (s *Server) userFromRequest(r *http.Request) *User {
+func (s *Server) userFromRequest(r *http.Request) *domain.User {
 	c, err := r.Cookie(sessionCookie)
 	if err != nil || c.Value == "" {
 		return nil
@@ -41,7 +41,7 @@ func (s *Server) userFromRequest(r *http.Request) *User {
 
 // writeServiceErr answers with 400 for invalid input and 500 otherwise.
 func writeServiceErr(w http.ResponseWriter, err error) {
-	if isInvalid(err) {
+	if app.IsInvalid(err) {
 		writeErr(w, 400, "invalid", err.Error())
 		return
 	}
@@ -81,7 +81,7 @@ func (s *Server) handleSetup(w http.ResponseWriter, r *http.Request) {
 	}
 	if in.Locale != "" {
 		g := s.Settings.General()
-		g.DefaultLocale = normLocale(in.Locale)
+		g.DefaultLocale = app.NormLocale(in.Locale)
 		if err := s.Settings.SaveGeneral(g); err != nil {
 			log.Printf("setup: default locale: %v", err)
 		}
@@ -103,11 +103,11 @@ func (s *Server) handleLogin(w http.ResponseWriter, r *http.Request) {
 	}
 	u, err := s.Accounts.Login(in.Email, in.Password)
 	switch {
-	case errors.Is(err, errAccountDisabled):
+	case errors.Is(err, app.ErrAccountDisabled):
 		writeErr(w, 403, "disabled", err.Error())
 		return
 	case err != nil:
-		writeErr(w, 401, "invalid_credentials", errInvalidCredentials.Error())
+		writeErr(w, 401, "invalid_credentials", app.ErrInvalidCredentials.Error())
 		return
 	}
 	if err := s.startSession(w, r, u.ID); err != nil {
@@ -141,9 +141,9 @@ func (s *Server) handleUpdateMe(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 400, "bad_request", err.Error())
 		return
 	}
-	u, err := s.Accounts.UpdateProfile(currentUser(r), ProfileChange(in))
+	u, err := s.Accounts.UpdateProfile(currentUser(r), app.ProfileChange(in))
 	switch {
-	case errors.Is(err, errWrongPassword):
+	case errors.Is(err, app.ErrWrongPassword):
 		writeErr(w, 400, "wrong_password", err.Error())
 		return
 	case err != nil:
@@ -167,17 +167,17 @@ func (s *Server) handleInviteInfo(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleRegister(w http.ResponseWriter, r *http.Request) {
-	var in Registration
+	var in app.Registration
 	if err := readJSON(r, &in); err != nil {
 		writeErr(w, 400, "bad_request", err.Error())
 		return
 	}
 	uid, err := s.Accounts.Register(in, s.baseURL(r))
 	switch {
-	case errors.Is(err, errInvalidInvite):
+	case errors.Is(err, app.ErrInvalidInvite):
 		writeErr(w, 404, "invalid_invite", err.Error())
 		return
-	case errors.Is(err, errInvalidCredentials):
+	case errors.Is(err, app.ErrInvalidCredentials):
 		writeErr(w, 401, "invalid_credentials", "wrong password for the existing account")
 		return
 	case err != nil:
@@ -211,10 +211,10 @@ func (s *Server) handleReset(w http.ResponseWriter, r *http.Request) {
 	}
 	u, err := s.Accounts.ResetPassword(in.Token, in.Password)
 	switch {
-	case errors.Is(err, errInvalidInvite):
+	case errors.Is(err, app.ErrInvalidInvite):
 		writeErr(w, 404, "invalid_token", "link expired or already used")
 		return
-	case errors.Is(err, errUserNotFound):
+	case errors.Is(err, app.ErrUserNotFound):
 		writeErr(w, 404, "invalid_token", err.Error())
 		return
 	case err != nil:
