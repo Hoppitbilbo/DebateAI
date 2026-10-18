@@ -11,6 +11,19 @@ import (
 // usage log (and added to the session cost), whatever its outcome. entry
 // carries who asked, for which task and with which provider/model.
 
+// recordUsage completes entry with the outcome of a call that started at
+// start and writes it to the usage log.
+func (s *Server) recordUsage(entry usageEntry, start time.Time, usage ai.Usage, err error) {
+	entry.Latency = time.Since(start)
+	entry.Usage = usage
+	if err != nil {
+		entry.Err = err.Error()
+	} else {
+		entry.OK = true
+	}
+	s.logUsage(entry)
+}
+
 type meteredTextModel struct {
 	ai.TextModel
 	s     *Server
@@ -36,15 +49,11 @@ func (m meteredTextModel) Stream(ctx context.Context, req ai.Request, onDelta fu
 }
 
 func (m meteredTextModel) record(start time.Time, res *ai.Response, err error) {
-	e := m.entry
-	e.Latency = time.Since(start)
-	if err != nil {
-		e.Err = err.Error()
-	} else {
-		e.OK = true
-		e.Usage = res.Usage
+	var usage ai.Usage
+	if res != nil {
+		usage = res.Usage
 	}
-	m.s.logUsage(e)
+	m.s.recordUsage(m.entry, start, usage, err)
 }
 
 type meteredDecider struct {
@@ -60,14 +69,6 @@ func (s *Server) meterDecider(d ai.Decider, entry usageEntry) ai.Decider {
 func (m meteredDecider) Decide(ctx context.Context, model string, state any, qs map[string]ai.JevQuestion) (*ai.JevResult, error) {
 	start := time.Now()
 	res, err := m.Decider.Decide(ctx, model, state, qs)
-	e := m.entry
-	e.Latency = time.Since(start)
-	e.Usage = usageOr(res)
-	if err != nil {
-		e.Err = err.Error()
-	} else {
-		e.OK = true
-	}
-	m.s.logUsage(e)
+	m.s.recordUsage(m.entry, start, usageOr(res), err)
 	return res, err
 }

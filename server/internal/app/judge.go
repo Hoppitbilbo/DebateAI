@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
 	"strings"
 	"time"
 
@@ -34,8 +33,6 @@ type JudgeResult struct {
 	EvaluatedAt string       `json:"evaluatedAt"`
 	Error       string       `json:"error,omitempty"`
 }
-
-var errCannotJudge = errors.New("provider can neither decide nor generate text")
 
 type judgeInput struct {
 	Instructions string
@@ -148,44 +145,40 @@ func (s *Server) judge(ctx context.Context, in judgeInput, userID, sessionID *in
 		threshold = defaultJudgeThreshold
 	}
 
-	var lastErr error
-	for _, t := range s.targets(TaskJudge) {
-		cp, err := s.provider(t.ProviderID)
-		if err != nil {
-			lastErr = err
-			continue
-		}
-		cctx, cancel := context.WithTimeout(ctx, judgeTargetTimeout)
-		var r *JudgeResult
+	var verdict *JudgeResult
+	err := s.runFallbackChain("judge", s.targets(TaskJudge), func(t RouteTarget, cp *cachedProvider) error {
+		ctx, cancel := context.WithTimeout(ctx, judgeTargetTimeout)
+		defer cancel()
 		start := time.Now()
+		var r *JudgeResult
 		var usage ai.Usage
+		var err error
 		switch p := cp.p.(type) {
 		case ai.Decider:
-			r, usage, err = s.judgeWithJev(cctx, p, t.Model, jevState(in, goals, js.MaxStateChars), goals)
+			r, usage, err = s.judgeWithJev(ctx, p, t.Model, jevState(in, goals, js.MaxStateChars), goals)
 		case ai.Generator:
-			r, usage, err = s.judgeWithLLM(cctx, p, t.Model, state, goals, in.Locale)
+			r, usage, err = s.judgeWithLLM(ctx, p, t.Model, state, goals, in.Locale)
 		default:
-			err = errCannotJudge
+			return errSkipTarget
 		}
-		cancel()
-		entry := usageEntry{UserID: userID, SessionID: sessionID, ProviderID: t.ProviderID, Provider: cp.name, Model: t.Model, Task: TaskJudge, Usage: usage, Latency: time.Since(start), OK: err == nil}
+		// An unusable answer (e.g. invalid JSON) is logged as a failed attempt.
+		s.recordUsage(usageEntry{UserID: userID, SessionID: sessionID, ProviderID: t.ProviderID, Provider: cp.name, Model: t.Model, Task: TaskJudge}, start, usage, err)
 		if err != nil {
-			entry.Err = err.Error()
-			s.logUsage(entry)
-			lastErr = err
-			log.Printf("judge via %s/%s failed: %v", cp.name, t.Model, err)
-			continue
+			return err
 		}
-		s.logUsage(entry)
 		r.Model = t.Model
-		r.EvaluatedAt = now()
-		finalize(r, goals, threshold, in.MinTurns, in.Turns)
-		return *r
+		verdict = r
+		return nil
+	}, nil)
+	if err != nil {
+		if !errors.Is(err, errNoTargets) {
+			res.Error = err.Error()
+		}
+		return res
 	}
-	if lastErr != nil {
-		res.Error = lastErr.Error()
-	}
-	return res
+	verdict.EvaluatedAt = now()
+	finalize(verdict, goals, threshold, in.MinTurns, in.Turns)
+	return *verdict
 }
 
 func finalize(r *JudgeResult, goals []string, threshold float64, minTurns, turns int) {
