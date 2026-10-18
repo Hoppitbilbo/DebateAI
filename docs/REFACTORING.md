@@ -37,7 +37,7 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto · `[-]` scartato (spieg
 ## Stato attuale
 
 - **Fase in corso:** 2 (livello AI, backend)
-- **Prossimo task:** 2.5
+- **Prossimo task:** 2.6
 - **Lavoro a metà:** nessuno
 - **Test:** Go 33 test nuovi + quelli esistenti verdi; Vitest 18 test verdi; lint 0 errori (18 warning preesistenti)
 
@@ -158,7 +158,7 @@ main.go        composition root (costruisce e inietta le dipendenze)
 - [x] **2.2** (`bc06137`) Decorator per log dell'uso e timeout del primo token.
 - [x] **2.3** (`4343cf9`) `FallbackChain` unica, usata da `generate` e da `judge`.
 - [x] **2.4** (`45ea18c`) `RoutingStrategy` e filtro budget.
-- [ ] **2.5** Registro dei provider con `DefaultRoutePolicy` per tipo (sostituisce lo `switch` di `autoRoute`).
+- [x] **2.5** (`be3d935`) Registro dei provider con `DefaultRoutePolicy` per tipo (sostituisce lo `switch` di `autoRoute`).
 - [ ] **2.6** `Judge` come Strategy (`JevJudge`, `LLMJudge`).
 
 ### Fase 3: repository (backend)
@@ -222,3 +222,4 @@ Un'area per task, spostando l'SQL in `internal/store`:
 | 2026-10-18 | 2.2 | `bc06137` | Claude Code | `server/internal/ai/decorators.go` (`WithFirstTokenTimeout`, `ErrFirstTokenTimeout`) e `server/internal/app/metering.go` (`meterText`, `meterDecider`). Usati in `generate` e nel test dei provider. Il giudice registra ancora l'uso a mano: lì un JSON non valido conta come chiamata fallita, quindi si sistema con la `FallbackChain` (2.3). Piccola differenza: il test di un provider Jev fallito ora salva anche il messaggio d'errore nel log. `go test -race` verde. |
 | 2026-10-18 | 2.3 | `4343cf9` | Claude Code | `server/internal/app/fallback.go`: `runFallbackChain` + `errSkipTarget` + `stopFallback`; `recordUsage` in `metering.go`. `generate` e `judge` non hanno più il ciclo a mano. Differenze minime: `jev.error` ora ha il prefisso `provider/modello:` come la chat; un provider che non sa giudicare viene saltato senza scrivere nel log invece di contare come errore. |
 | 2026-10-18 | 2.4 | `45ea18c` | Claude Code | `server/internal/app/routing.go`: interfaccia `routingStrategy` (`asConfigured`, `freeFirst`, `cheapest`) registrata in `routingStrategies`, Decorator `freeOnly` per il budget, interfaccia `priceBook` (la implementa `Server`). `targets()` spostato qui. Nuova strategia = nuovo tipo + una riga nella mappa. |
+| 2026-10-18 | 2.5 | `be3d935` | Claude Code | `ai.New` usa la mappa `factories` e `ai.KnownKind` sostituisce `validKind`. `server/internal/app/route_policies.go`: `routePolicy` per tipo (`jevRoutes`, `geminiRoutes`, `firstModelRoutes`) in `defaultRoutes`; `autoRoute`, `newestFlash`, `pickModel` e `geminiVersion` spostati lì. Nuovo tipo di provider = adapter + factory + (opzionale) policy. Test `TestDefaultRoutePolicies`. |
