@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"sort"
 	"strings"
 	"sync/atomic"
 	"time"
@@ -101,11 +100,6 @@ func (s *Server) priceFor(providerID int64, model string) price {
 	return price{}
 }
 
-func (s *Server) isFree(t RouteTarget) bool {
-	p := s.priceFor(t.ProviderID, t.Model)
-	return p.Known && p.In == 0 && p.Out == 0
-}
-
 func monthStart() string {
 	n := time.Now().UTC()
 	return time.Date(n.Year(), n.Month(), 1, 0, 0, 0, 0, time.UTC).Format(time.RFC3339)
@@ -122,40 +116,7 @@ func (s *Server) budgetExceeded() bool {
 	return b.MonthlyUSD > 0 && b.BlockPaidWhenExceeded && s.monthSpend() >= b.MonthlyUSD
 }
 
-// ---------- JEV router: choose provider/model per task ----------
-
-// targets returns the candidate list for a task according to the routing
-// strategy and the budget state. This is the "decide which API" half of JEV.
-func (s *Server) targets(task string) []RouteTarget {
-	rt := s.routing()
-	list := append([]RouteTarget(nil), rt.Tasks[task]...)
-	if len(list) == 0 && task != TaskChat && task != TaskLive {
-		list = append(list, rt.Tasks[TaskChat]...) // sensible fallback
-	}
-	switch rt.Strategy {
-	case "free_first":
-		sort.SliceStable(list, func(i, j int) bool { return s.isFree(list[i]) && !s.isFree(list[j]) })
-	case "cheapest":
-		cost := func(t RouteTarget) float64 {
-			p := s.priceFor(t.ProviderID, t.Model)
-			if !p.Known {
-				return 1e9
-			}
-			return p.In + p.Out
-		}
-		sort.SliceStable(list, func(i, j int) bool { return cost(list[i]) < cost(list[j]) })
-	}
-	if s.budgetExceeded() {
-		free := list[:0:0]
-		for _, t := range list {
-			if s.isFree(t) {
-				free = append(free, t)
-			}
-		}
-		list = free
-	}
-	return list
-}
+// ---------- usage log ----------
 
 type usageEntry struct {
 	UserID     *int64

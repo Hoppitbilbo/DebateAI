@@ -89,7 +89,7 @@ func (s *Server) budget() BudgetSettings {
 }
 
 func (s *Server) routing() RoutingSettings {
-	r := getSetting(s.db, "routing", RoutingSettings{Strategy: "ordered", Tasks: map[string][]RouteTarget{}, DefaultVoice: "Aoede"})
+	r := getSetting(s.db, "routing", RoutingSettings{Strategy: StrategyOrdered, Tasks: map[string][]RouteTarget{}, DefaultVoice: "Aoede"})
 	if r.Tasks == nil {
 		r.Tasks = map[string][]RouteTarget{}
 	}

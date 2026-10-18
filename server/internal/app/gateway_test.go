@@ -293,3 +293,18 @@ func TestMeteredModelLogsEveryCall(t *testing.T) {
 		t.Fatal("failed call must log its error")
 	}
 }
+
+func TestStrategiesDoNotModifyConfiguredList(t *testing.T) {
+	s := newTestServer(t)
+	list := []RouteTarget{{1, "paid"}, {1, "cheap:free"}}
+	for name, st := range routingStrategies {
+		st.order(list, s)
+		freeOnly{st}.order(list, s)
+		if list[0].Model != "paid" {
+			t.Fatalf("%s reordered the configured list in place", name)
+		}
+	}
+	if _, ok := strategyFor("unknown").(asConfigured); !ok {
+		t.Fatal("unknown strategy must keep the configured order")
+	}
+}
