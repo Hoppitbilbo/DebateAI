@@ -51,6 +51,18 @@ docker compose start
 
 Update to a new version with `git pull && docker compose up -d --build` (the data volume is kept). The container runs as a non-root user and reports its health at `/api/health`.
 
+### Prebuilt image (no build needed)
+
+Every push is built by GitHub Actions and published to GitHub Packages for `linux/amd64` and `linux/arm64`:
+
+```sh
+docker run -d --name debateai --restart unless-stopped -p 8080:8080 \
+  -v debateai-data:/data --env-file .env -e DATA_DIR=/data \
+  ghcr.io/hoppitbilbo/debateai:latest      # or :go, or a version tag such as :1.0.0
+```
+
+Tags: `latest` (master), branch names (e.g. `go`), versions from `v*` git tags, and `sha-<commit>`.
+
 > **Hosting note:** SQLite needs a persistent disk. Use a VPS/droplet with Docker, or any host with persistent volumes. Platforms with an ephemeral filesystem would lose the data on every deploy.
 
 ## Without Docker

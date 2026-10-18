@@ -1,5 +1,7 @@
 # --- 1. frontend ---
-FROM node:22-alpine AS web
+# Build stages run on the build machine's platform; only the final stage is
+# per target, so multi-arch builds (amd64 + arm64) need no emulation.
+FROM --platform=$BUILDPLATFORM node:22-alpine AS web
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --no-audit --no-fund
@@ -7,13 +9,14 @@ COPY . .
 RUN npm run build
 
 # --- 2. server (embeds the frontend) ---
-FROM golang:1.26-alpine AS server
+FROM --platform=$BUILDPLATFORM golang:1.26-alpine AS server
+ARG TARGETOS TARGETARCH
 WORKDIR /src
 COPY server/go.mod server/go.sum ./
 RUN go mod download
 COPY server/ ./
 COPY --from=web /app/server/webui/dist ./webui/dist
-RUN CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /debateai .
+RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -trimpath -ldflags="-s -w" -o /debateai .
 
 # --- 3. runtime ---
 FROM alpine:3.22
