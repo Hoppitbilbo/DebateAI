@@ -38,7 +38,7 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto · `[-]` scartato (spieg
 ## Stato attuale
 
 - **Fase in corso:** 3 (repository, backend)
-- **Prossimo task:** 3.5
+- **Prossimo task:** 3.6
 - **Lavoro a metà:** nessuno
 - **Test:** Go 33 test nuovi + quelli esistenti verdi; Vitest 18 test verdi; lint 0 errori (18 warning preesistenti)
 
@@ -170,7 +170,7 @@ Un'area per task, spostando l'SQL in `internal/store`:
 - [x] **3.2** (`8403969`) users e invites
 - [x] **3.3** (`2a5f8ca`) classes
 - [x] **3.4** (`6dd6bca`) assignments
-- [ ] **3.5** sessions
+- [x] **3.5** (`0f55532`) sessions
 - [ ] **3.6** usage e prices
 
 ### Fase 4: service, State, Observer (backend)
@@ -232,3 +232,4 @@ Un'area per task, spostando l'SQL in `internal/store`:
 | 2026-10-18 | 3.2 | `8403969` | Claude Code | `store.Users`, `store.AuthSessions`, `store.Invites` (+ test sullo schema vero) e pacchetto `domain`. `app` non contiene più SQL su users, auth_sessions e invites; restano gli inserimenti in `class_members` e le letture del nome classe (task 3.3) e i conteggi su `usage_log` della lista utenti (3.6). `Users.Update` usa una transazione; `domain.Invite.Usable` contiene la regola "non usato e non scaduto". Nuove costanti `maxListedUsers`, `maxListedInvites`, `maxListedTeacherInvites`. |
 | 2026-10-18 | 3.3 | `2a5f8ca` | Claude Code | `store.Classes` (classi + membri) + test; `domain.Class`, `Member`, `ClassPatch`, `NewJoinCode`, `NormalizeJoinCode`. `app` non tocca più `classes` e `class_members`, salvo la sottoquery nell'elenco compiti dello studente (passa al 3.4). La creazione della classe e l'iscrizione del proprietario come docente ora sono un'unica transazione. |
 | 2026-10-18 | 3.4 | `6dd6bca` | Claude Code | `store.Assignments` + test; `domain.Assignment`, `NewAssignment`, `AssignmentPatch`, `AppTypes`, `CleanGoals`, `MaxAssignmentGoals` e (anticipati, perché `Assignment` li usa) `SessionSummary`/`SessionDetail` con le costanti di stato in `domain/session.go`. Update in transazione. Helper `valueOr[T]`. |
+| 2026-10-18 | 3.5 | `0f55532` | Claude Code | `store.ActivitySessions` + test; `domain.NewSession`, `SessionCompletion`, `ProgressCell` e costanti di stato. Transcript e contesto salvati in un'unica transazione. Formattato `domain/session.go` (era sfuggito nel 3.4). Costante `maxListedSessions`. |
