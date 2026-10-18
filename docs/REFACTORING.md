@@ -37,8 +37,8 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto · `[-]` scartato (spieg
 
 ## Stato attuale
 
-- **Fase in corso:** 5 (attività, frontend)
-- **Prossimo task:** 5.4
+- **Fase in corso:** 6 (resto del frontend)
+- **Prossimo task:** 6.1
 - **Lavoro a metà:** nessuno
 - **Test:** Go 33 test nuovi + quelli esistenti verdi; Vitest 18 test verdi; lint 0 errori (18 warning preesistenti)
 
@@ -196,7 +196,7 @@ Un'area per task, spostando l'SQL in `internal/store`:
 - [x] **5.1** (`2381ff4`) `useActivityFlow` + `ActivityRunner`; migrata ConvinciTu.
 - [x] **5.2** (`b708914`) Migrare ImpersonaTu e WikiChatbot.
 - [x] **5.3** (`7d1e0f4`) Migrare DoppiaIntervista, PersonaggioMisterioso e YouModerate.
-- [ ] **5.4** `AiClient` (Adapter) usato dagli hook.
+- [x] **5.4** (`cb060a2`) `AiClient` (Adapter) usato dagli hook.
 
 ### Fase 6: resto del frontend
 
@@ -260,3 +260,4 @@ Un'area per task, spostando l'SQL in `internal/store`:
 | 2026-10-18 | 5.1 | `2381ff4` | Claude Code | `src/features/activity/useActivityFlow.ts` (`begin`, `finishChat`, `submitReflection`, `restart`, `preset`, `minTurns`; `live(phase, assignment)`) e `components/ActivityRunner.tsx` (props `setup`, `chat` con `ready`/`replacement`, `reflection` con `brief`/`showEndReason`, `feedback`). Al posto di un oggetto `ActivityDefinition` statico si usa la composizione hook + componente, più naturale in React perché le parti variabili dipendono dallo stato della pagina. ConvinciTu: da 157 a 103 righe. Attenzione: la callback `live` riceve l'assignment, così il prompt si costruisce con una funzione (una costante dichiarata dopo l'hook darebbe un ReferenceError a runtime). Test: `useActivityFlow.test.tsx` (5) e `pages/ConvinciTuPage.test.tsx` (render della pagina vera fino alla chat). |
 | 2026-10-18 | 5.2 | `b708914` | Claude Code | ImpersonaTu da 161 a 111 righe, WikiChatbot da 135 a 82. I test delle pagine sono ora in `src/pages/activityPages.test.tsx` (mock condivisi, `cleanup` esplicito perché Vitest gira senza globals). Vitest: 26 test. |
 | 2026-10-18 | 5.3 | `7d1e0f4` | Claude Code | DoppiaIntervista 175 → 129 righe, YouModerate 214 → 166, PersonaggioMisterioso 268 → 215 (+ `src/features/activity/mystery.ts` con `isCorrectGuess` e `RANDOM_CHARACTERS`, test `mystery.test.ts`). Il personaggio misterioso usa `chat.replacement` per il tentativo finale, `onEnded` personalizzato e `showEndReason: false`. Le sei pagine attività ora usano tutte `ActivityRunner`. Test delle pagine estesi alle tre app (stub di `ResizeObserver` per lo slider Radix). Vitest: 31 test; lint 17 avvisi (uno in meno). |
+| 2026-10-18 | 5.4 | `cb060a2` | Claude Code | `src/services/aiClient.ts` (interfaccia `AiClient`, `httpAiClient`, `AiClientContext`, `useAiClient`) e `src/services/AiClientProvider.tsx`. Usato da `useChatEngine`, `useEvaluationFlow` (che lo passa a `evaluateActivity`) e `ActivityShell`; il default è il client HTTP, quindi l'app non ha bisogno del provider. I test iniettano un client finto invece di `vi.mock` sul modulo. Il Live vocale (`liveConversationService`, WebSocket diretto a Google) resta fuori dall'interfaccia. Fase 5 completata. |
