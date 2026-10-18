@@ -12,10 +12,18 @@ import teacherGuide from './teacherGuide.json';
 import aboutPage from './aboutPage.json';
 import footer from './footer.json';
 import tutorialsPage from './tutorialsPage.json';
+import platform from './platform.json';
+import homepage from './homepage.json';
+import teacherGuidePage from './teacherGuidePage.json';
+import notFound from './notFound.json';
 
 // AI and evaluation sections would need to be extracted from the original file
 // For now, we'll create a combined export
 export default {
+  platform,
+  homepage,
+  teacherGuidePage,
+  notFound,
   common,
   navigation,
   hero,

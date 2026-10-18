@@ -1,318 +1,90 @@
+import i18n from "@/i18n";
+import type { Assignment, JudgeResult } from "@/lib/api";
+import { generateStream } from "@/services/aiService";
+import type { ActivityMessage } from "@/features/activity/types";
 
-import { Message } from "@/types/conversation";
-import { aiFacade } from "@/services/aiFacade";
-import { getTranslatedSystemInstruction, getTranslatedPrompt } from "./aiPromptUtils";
-
-export interface ConversationData {
-  character: string;
-  topic: string;
-  messages: Message[];
-  characterSnippet?: string;
+export interface EvaluationInput {
+  activity: string; // e.g. "Convince YOU: persuade Napoleon about ..."
+  characters: string; // AI characters involved
+  studentRole?: string; // who the student plays, if any
+  topic?: string;
+  messages: ActivityMessage[];
+  reflection: string;
+  extraFacts?: string[]; // e.g. "Final guess: Cleopatra (correct)"
+  assignment?: Assignment | null;
+  jev?: JudgeResult | null;
+  sessionId?: number | null;
 }
 
-export interface AIScoreEvaluation {
-  textualFeedback: string;
-  conversationScore?: number;
-  conversationRationale?: string;
-  reflectionScore?: number;
-  reflectionRationale?: string;
+export interface EvaluationResult {
+  markdown: string;
+  scoreConversation?: number;
+  scoreReflection?: number;
 }
 
-interface ReflectionPromptArgs {
-  sessionData: {
-    characterName: string;
-    topic: string;
-  };
-  userReflection: string;
-}
+const LANGUAGES: Record<string, string> = { it: "Italian", en: "English", es: "Spanish", fr: "French", de: "German" };
 
-const parseAIScoreResponse = (responseText: string): AIScoreEvaluation => {
-  const evaluation: AIScoreEvaluation = { textualFeedback: responseText };
+const SCORE_RE = /SCORE_(CONVERSATION|REFLECTION)\s*[:=]\s*(\d{1,2})(?:\s*\/\s*10)?/gi;
 
-  const extractValue = (regex: RegExp): string | undefined => {
-    const match = responseText.match(regex);
-    return match?.[1]?.trim();
-  };
-
-  const conversationScoreStr = extractValue(/PUNTEGGIO_CONVERSAZIONE:\s*(\d+)/);
-  if (conversationScoreStr) {
-    evaluation.conversationScore = parseInt(conversationScoreStr, 10);
+export const parseEvaluation = (text: string): EvaluationResult => {
+  const res: EvaluationResult = { markdown: text };
+  for (const m of text.matchAll(SCORE_RE)) {
+    const v = Math.max(0, Math.min(10, parseInt(m[2], 10)));
+    if (m[1].toUpperCase() === "CONVERSATION") res.scoreConversation = v;
+    else res.scoreReflection = v;
   }
+  res.markdown = text.replace(SCORE_RE, "").replace(/\n{3,}/g, "\n\n").trim();
+  return res;
+};
 
-  evaluation.conversationRationale = extractValue(
-    /MOTIVAZIONE_CONVERSAZIONE:\s*([\s\S]*?)(?:PUNTEGGIO_RIFLESSIONE:|MOTIVAZIONE_RIFLESSIONE:|$)/
+const buildPrompt = (input: EvaluationInput) => {
+  const lang = LANGUAGES[(i18n.language || "it").slice(0, 2)] ?? "Italian";
+  const student = i18n.t("platform.common.student");
+  const transcript = input.messages
+    .filter((m) => m.content.trim() && !m.error)
+    .map((m) => `${m.role === "user" ? (input.studentRole ? `${student} (${input.studentRole})` : student) : m.role === "system" ? "SYSTEM" : m.name || "AI"}: ${m.content}`)
+    .join("\n");
+
+  const system = `You are an experienced, encouraging teacher evaluating a learning activity in which a student talked with AI characters, followed by a written self-reflection.
+Write the whole evaluation in ${lang}, in Markdown, addressed directly to the student ("you").
+Structure:
+## <a short title>
+A 2-3 sentence overall judgement.
+### ${lang === "Italian" ? "Punti di forza" : "Strengths"} (bullet list, quote concrete moments of the conversation)
+### ${lang === "Italian" ? "Cosa migliorare" : "What to improve"} (bullet list, concrete and actionable)
+### ${lang === "Italian" ? "Sulla tua riflessione" : "About your reflection"}
+If a teacher assignment is given, add a section that checks each goal explicitly (✅ / ⚠️).
+Optionally a small Markdown table summarising the criteria.
+Finish with EXACTLY these two lines (integers from 0 to 10, no other text on them):
+SCORE_CONVERSATION: <n>
+SCORE_REFLECTION: <n>
+Be fair: short or superficial work gets low scores; never invent things the student did not do.`;
+
+  const parts: string[] = [`ACTIVITY: ${input.activity}`, `AI CHARACTERS: ${input.characters}`];
+  if (input.studentRole) parts.push(`STUDENT ROLE: ${input.studentRole}`);
+  if (input.topic) parts.push(`TOPIC: ${input.topic}`);
+  if (input.assignment) {
+    parts.push(`TEACHER ASSIGNMENT: ${input.assignment.title}\n${input.assignment.instructions}`);
+    if (input.assignment.goals.length) parts.push(`GOALS:\n${input.assignment.goals.map((g, i) => `${i + 1}. ${g}`).join("\n")}`);
+  }
+  if (input.jev?.goals?.length) {
+    parts.push(`AUTOMATIC JUDGE (JEV) RESULT: progress ${input.jev.progress}%\n${input.jev.goals.map((g) => `- ${g.met ? "met" : "not met"} (${Math.round(g.score * 100)}%): ${g.text}`).join("\n")}`);
+  }
+  for (const f of input.extraFacts ?? []) parts.push(f);
+  parts.push(`CONVERSATION:\n${transcript || "(empty)"}`);
+  parts.push(`STUDENT SELF-REFLECTION:\n${input.reflection || "(none)"}`);
+  return { system, prompt: parts.join("\n\n") };
+};
+
+/** Streams the final evaluation through the gateway ("evaluation" task). */
+export const evaluateActivity = async (
+  input: EvaluationInput,
+  onPartial?: (markdown: string) => void,
+): Promise<EvaluationResult> => {
+  const { system, prompt } = buildPrompt(input);
+  const text = await generateStream(
+    { task: "evaluation", system, messages: [{ role: "user", content: prompt }], sessionId: input.sessionId, maxTokens: 2500 },
+    (_d, full) => onPartial?.(parseEvaluation(full).markdown),
   );
-
-  const reflectionScoreStr = extractValue(/PUNTEGGIO_RIFLESSIONE:\s*(\d+)/);
-  if (reflectionScoreStr) {
-    evaluation.reflectionScore = parseInt(reflectionScoreStr, 10);
-  }
-
-  evaluation.reflectionRationale = extractValue(
-    /MOTIVAZIONE_RIFLESSIONE:\s*([\s\S]*?)(?:PUNTEGGIO_CONVERSAZIONE:|MOTIVAZIONE_CONVERSAZIONE:|$)/
-  );
-  
-  // Clean the textual feedback by removing score and rationale sections
-  let cleanedText = responseText;
-  const patternsToRemove = [
-    /PUNTEGGIO_CONVERSAZIONE:\s*\d+\s*/gi,
-    /MOTIVAZIONE_CONVERSAZIONE:\s*[\s\S]*?(?:PUNTEGGIO_RIFLESSIONE:|MOTIVAZIONE_RIFLESSIONE:|$)/gi,
-    /PUNTEGGIO_RIFLESSIONE:\s*\d+\s*/gi,
-    /MOTIVAZIONE_RIFLESSIONE:\s*[\s\S]*?(?:PUNTEGGIO_CONVERSAZIONE:|MOTIVAZIONE_CONVERSAZIONE:|$)/gi,
-  ];
-
-  patternsToRemove.forEach(pattern => {
-    cleanedText = cleanedText.replace(pattern, '');
-  });
-
-  evaluation.textualFeedback = cleanedText.replace(/\n+/g, '\n').trim();
-
-
-  // If rationales were inadvertently included in textualFeedback due to overlapping regex from above, remove known prefixes.
-  if (evaluation.textualFeedback.startsWith("PUNTEGGIO_RIFLESSIONE:")) {
-      evaluation.textualFeedback = ""; // Or handle more gracefully
-  }
-   if (evaluation.textualFeedback.startsWith("MOTIVAZIONE_RIFLESSIONE:")) {
-      evaluation.textualFeedback = evaluation.textualFeedback.substring("MOTIVAZIONE_RIFLESSIONE:".length).trim();
-  }
-
-
-  // Final check to ensure no score/rationale text remains if it was the only content
-  if (evaluation.textualFeedback.match(/^(PUNTEGGIO_|MOTIVAZIONE_)(CONVERSAZIONE|RIFLESSIONE):/i)) {
-    evaluation.textualFeedback = ""; // Or a default message like "No additional feedback provided."
-  }
-
-  // If textual feedback is just a number (e.g., a stray score), blank it to trigger fallback display
-  if (/^\d+$/.test(evaluation.textualFeedback)) {
-    evaluation.textualFeedback = ""; 
-  }
-
-  return evaluation;
-};
-
-const buildSystemInstruction = (conversationData: ConversationData): string => {
-  return getTranslatedSystemInstruction('evaluation', {
-    character: conversationData.character,
-    snippet: conversationData.characterSnippet || '',
-    topic: conversationData.topic
-  });
-};
-
-export const getAIGameAndReflectionEvaluationStream = async function* (
-  conversationData: ConversationData,
-  userReflection: string
-): AsyncGenerator<{ partial: string; complete?: AIScoreEvaluation }, void, unknown> {
-  try {
-    const conversationText = conversationData.messages
-      .map((msg) => {
-        const speaker = msg.role === "user" ? getTranslatedPrompt('studentLabel', {}) : conversationData.character;
-        return `${speaker}: ${msg.content}`;
-      })
-      .join("\n\n");
-    
-    const systemInstruction = buildSystemInstruction(conversationData);
-    
-    const dataPrompt = getTranslatedPrompt('evaluation', {
-      conversationText,
-      userReflection
-    });
-
-    
-    let accumulatedText = "";
-    
-    for await (const chunk of aiFacade.text.generateContentStream({
-      contents: [{ role: "user", parts: [{ text: dataPrompt }] }],
-      systemInstruction: { role: "system", parts: [{ text: systemInstruction }] },
-      generationConfig: {
-        // temperature: 0.5,
-        // maxOutputTokens: 800,
-      },
-    })) {
-      accumulatedText += chunk;
-      yield { partial: accumulatedText };
-    }
-    
-    // Parse the final result
-    const evaluationOutput = parseAIScoreResponse(accumulatedText);
-    
-    // Ensure textualFeedback is always present and formatted
-    if (!evaluationOutput.textualFeedback || typeof evaluationOutput.textualFeedback !== 'string' || evaluationOutput.textualFeedback.trim() === '') {
-      const conversationScore = evaluationOutput.conversationScore || 'N/A';
-      const reflectionScore = evaluationOutput.reflectionScore || 'N/A';
-      const conversationRationale = evaluationOutput.conversationRationale || getTranslatedPrompt('noRationale', {});
-      const reflectionRationale = evaluationOutput.reflectionRationale || getTranslatedPrompt('noRationale', {});
-      
-      const fallbackMarkdown = getTranslatedPrompt('evaluationFallback', {
-        conversationScore: conversationScore.toString(),
-        reflectionScore: reflectionScore.toString(),
-        conversationRationale,
-        reflectionRationale
-      });
-      
-      const aiProvidedTextualFeedback = evaluationOutput.textualFeedback.trim();
-      
-      evaluationOutput.textualFeedback = fallbackMarkdown + 
-        (aiProvidedTextualFeedback ? `\n${getTranslatedPrompt('overallFeedback', {})}\n\n${aiProvidedTextualFeedback}` : `\n${getTranslatedPrompt('overallFeedback', {})}\n\n${getTranslatedPrompt('defaultFeedback', {})}`);
-    }
-    
-    yield { partial: accumulatedText, complete: evaluationOutput };
-  } catch (error) {
-    console.error("Error in getAIGameAndReflectionEvaluationStream:", error);
-    const errorEvaluation: AIScoreEvaluation = {
-      conversationScore: 0,
-      reflectionScore: 0,
-      textualFeedback: getTranslatedPrompt('error', { error: 'Evaluation error occurred' }),
-      conversationRationale: getTranslatedPrompt('evaluationError', {}),
-      reflectionRationale: getTranslatedPrompt('evaluationError', {})
-    };
-    yield { partial: errorEvaluation.textualFeedback, complete: errorEvaluation };
-  }
-};
-
-export const getAIGameAndReflectionEvaluation = async (
-  conversationData: ConversationData,
-  userReflection: string
-): Promise<AIScoreEvaluation> => {
-  try {
-    const conversationText = conversationData.messages
-      .map((msg) => {
-        const speaker = msg.role === "user" ? getTranslatedPrompt('studentLabel', {}) : conversationData.character;
-        return `${speaker}: ${msg.content}`;
-      })
-      .join("\n\n"); // Doppio newline per separazione chiara
-    
-    const systemInstruction = buildSystemInstruction(conversationData);
-    
-    const dataPrompt = getTranslatedPrompt('evaluation', {
-      conversationText,
-      userReflection
-    });
-
-    
-    const result = await aiFacade.text.generateContent({
-      contents: [{ role: "user", parts: [{ text: dataPrompt }] }],
-      systemInstruction: { role: "system", parts: [{ text: systemInstruction }] },
-      generationConfig: {
-        // temperature: 0.5,
-        // maxOutputTokens: 800,
-      },
-    });
-    
-    // ⚠️ Se .text() è asincrona, sostituire con: const rawResponse = await result.response.text();
-    let evaluationOutput: AIScoreEvaluation;
-
-    if (result.response && typeof result.response.text === 'function') {
-      const rawResponse = result.response.text();
-      if (typeof rawResponse === 'string') {
-        evaluationOutput = parseAIScoreResponse(rawResponse);
-      } else {
-        console.error("Error in getAIGameAndReflectionEvaluation: AI response text is not a string.");
-        evaluationOutput = {
-          textualFeedback: getTranslatedPrompt('error', { error: 'Invalid response from model' }),
-        };
-      }
-    } else {
-      console.error("Error in getAIGameAndReflectionEvaluation: AI response structure is invalid.");
-      evaluationOutput = {
-        textualFeedback: getTranslatedPrompt('error', { error: 'Invalid response structure from model' }),
-      };
-    }
-    
-    // Ensure textualFeedback is always present and formatted, using the parsed evaluationOutput
-    if (!evaluationOutput.textualFeedback || typeof evaluationOutput.textualFeedback !== 'string' || evaluationOutput.textualFeedback.trim() === '') {
-      const conversationScore = evaluationOutput.conversationScore || 'N/A';
-      const reflectionScore = evaluationOutput.reflectionScore || 'N/A';
-      const conversationRationale = evaluationOutput.conversationRationale || getTranslatedPrompt('noRationale', {});
-      const reflectionRationale = evaluationOutput.reflectionRationale || getTranslatedPrompt('noRationale', {});
-      
-      // Ensure the fallback is Markdown
-      const fallbackMarkdown = getTranslatedPrompt('evaluationFallback', {
-        conversationScore: conversationScore.toString(),
-        reflectionScore: reflectionScore.toString(),
-        conversationRationale,
-        reflectionRationale
-      });
-      
-      // Append the original textual feedback from AI if it exists (even if it was just whitespace before trim), 
-      // or a default message if it was truly empty.
-      const aiProvidedTextualFeedback = evaluationOutput.textualFeedback.trim(); // Use the already trimmed version
-      
-      evaluationOutput.textualFeedback = fallbackMarkdown + 
-        (aiProvidedTextualFeedback ? `\n${getTranslatedPrompt('overallFeedback', {})}\n\n${aiProvidedTextualFeedback}` : `\n${getTranslatedPrompt('overallFeedback', {})}\n\n${getTranslatedPrompt('defaultFeedback', {})}`);
-    }
-    
-    return evaluationOutput;
-  } catch (error) {
-    console.error("Error in getAIGameAndReflectionEvaluation:", error);
-    return {
-      conversationScore: 0,
-      reflectionScore: 0,
-      textualFeedback: getTranslatedPrompt('error', { error: 'Evaluation error occurred' }),
-      conversationRationale: getTranslatedPrompt('evaluationError', {}),
-      reflectionRationale: getTranslatedPrompt('evaluationError', {})
-    };
-  }
-};
-
-export const evaluateReflection = async (
-  conversationData: ConversationData,
-  userReflection: string,
-  characterSnippet?: string
-): Promise<string> => {
-  console.warn(getTranslatedPrompt('deprecatedFunction', {}));
-
-  const mockPrepareReflectionEvaluationPrompt = (args: ReflectionPromptArgs): { systemInstruction: string, dataPrompt: string } => {
-    return {
-      systemInstruction: "Mock system instruction per evaluateReflection (deprecata)",
-      dataPrompt: `Mock data prompt per evaluateReflection (deprecata):
-        Personaggio: ${args.sessionData.characterName}
-        Topic: ${args.sessionData.topic}
-        Riflessione: ${args.userReflection}`
-    };
-  };
-
-  const { systemInstruction: oldSystemInstruction, dataPrompt: oldDataPrompt } = mockPrepareReflectionEvaluationPrompt({
-    sessionData: {
-      characterName: conversationData.character,
-      topic: conversationData.topic,
-      messages: conversationData.messages,
-      objective: `Convincere ${conversationData.character} riguardo ${conversationData.topic}`,
-      characterSnippet: characterSnippet,
-    },
-    userReflection
-  });
-
-  try {
-    const result = await aiFacade.text.generateContent({
-      contents: [{ role: "user", parts: [{ text: oldDataPrompt }] }],
-      systemInstruction: {
-        role: "system",
-        parts: [{ text: oldSystemInstruction }]
-      },
-    });
-
-    // ⚠️ Se .text() è asincrona, sostituire con: const evaluation = await result.response.text();
-    if (result.response && typeof result.response.text === 'function') {
-      const evaluation = result.response.text();
-      if (typeof evaluation === 'string' && evaluation.trim() !== "") {
-        return evaluation.trim();
-      }
-      return getTranslatedPrompt('deprecatedNoResult', {});
-    }
-    return getTranslatedPrompt('deprecatedInvalidResponse', {});
-
-  } catch (error) {
-    console.error("Error in DEPRECATED evaluateReflection:", error);
-    const errorMessage = error instanceof Error ? error.message : getTranslatedPrompt('unknownError', {});
-    return getTranslatedPrompt('deprecatedError', { error: errorMessage });
-  }
-};
-
-export const getAICombinedEvaluation = async (
-  conversationData: ConversationData,
-  userReflection: string
-): Promise<string> => {
-  console.warn(getTranslatedPrompt('obsoleteFunction', {}));
-
-  return getTranslatedPrompt('obsoleteFunctionMessage', {});
+  return parseEvaluation(text);
 };

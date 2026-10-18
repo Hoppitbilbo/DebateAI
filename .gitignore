@@ -91,3 +91,14 @@ temp/
 firebase.json
 apphosting.yaml
 .idx/integrations.json
+
+# DebateAI server
+/bin/
+/data/
+server/data/
+*.db
+*.db-wal
+*.db-shm
+!server/webui/dist/
+server/webui/dist/*
+!server/webui/dist/.keep

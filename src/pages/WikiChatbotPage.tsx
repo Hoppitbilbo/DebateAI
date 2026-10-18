@@ -1,149 +1,135 @@
-
-import { useState } from "react";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import WikiSearchSelect from "@/components/WikiSearchSelect";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowRight } from "lucide-react";
-import WikiChatInterface from "@/components/WikiChatInterface";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-// Removed imports for WikiChatbotReflection, WikiChatbotFeedback, ConversationData, getAIGameAndReflectionEvaluation, AIScoreEvaluation, Message
-// as their responsibilities are now encapsulated in WikiChatInterface or not needed at this level.
+import { toast } from "sonner";
+import type { WikiRef } from "@/lib/api";
+import ActivityShell from "@/features/activity/components/ActivityShell";
+import ChatPanel from "@/features/activity/components/ChatPanel";
+import ReflectionStep from "@/features/activity/components/ReflectionStep";
+import FeedbackStep from "@/features/activity/components/FeedbackStep";
+import { CharacterPicker, SetupCard } from "@/features/activity/components/SetupCard";
+import { useActivitySession, EndReason } from "@/features/activity/useActivitySession";
+import { useChatEngine } from "@/features/activity/useChatEngine";
+import { useEvaluationFlow } from "@/features/activity/useEvaluationFlow";
+import { bioOf, useWikiSummaries } from "@/features/activity/wiki";
+import { prompts } from "@/features/activity/prompts";
+import { APPS, ActivityPhase } from "@/features/activity/types";
 
-interface WikiSearchResult {
-  title: string;
-  snippet: string;
-  pageid: number;
-}
+const app = APPS["wiki-chatbot"];
 
 const WikiChatbotPage = () => {
-  const { t, i18n } = useTranslation();
-  const [selectedWiki, setSelectedWiki] = useState<WikiSearchResult | null>(null);
-  const [wikiSummary, setWikiSummary] = useState<string>("");
-  const [activityPhase, setActivityPhase] = useState<"selecting" | "chatting">("selecting"); // Simplified activity phases
+  const { t } = useTranslation();
+  const session = useActivitySession(app.type);
+  const preset = session.assignment?.config ?? {};
+  const [phase, setPhase] = useState<ActivityPhase>("setup");
+  const [page, setPage] = useState<WikiRef | null>(null);
 
-  const getWikipediaLanguageCode = () => {
-    const langMap: { [key: string]: string } = {
-      'it': 'it',
-      'en': 'en', 
-      'es': 'es',
-      'fr': 'fr',
-      'de': 'de'
-    };
-    return langMap[i18n.language] || 'it';
+  useEffect(() => {
+    if (preset.character) setPage(preset.character);
+  }, [preset.character]);
+
+  const { summaries, loading } = useWikiSummaries([page]);
+  const summary = bioOf(page, summaries);
+  const system = page ? prompts.wikiChat(page.title, summary, session.assignment) : "";
+
+  const onEnded = useCallback((reason: EndReason) => {
+    toast.success(reason === "goal_reached" ? t("platform.activity.goalReachedToast") : t("platform.activity.turnLimitToast"));
+    setPhase("reflection");
+  }, [t]);
+
+  const engine = useChatEngine({
+    session,
+    live: phase === "chat" && page ? { systemInstruction: system, characterName: page.title, characterBio: summary } : null,
+    context: { page: page?.title },
+    onEnded,
+  });
+  const evaluation = useEvaluationFlow(session);
+
+  const start = async () => {
+    if (!page) return;
+    await session.begin(page.title, { page });
+    engine.reset([{ id: "welcome", role: "assistant", name: page.title, content: t("platform.apps.wikiChatbot.welcome", { title: page.title }) }]);
+    setPhase("chat");
   };
 
-  // Removed userReflection, aiEvaluation, isEvaluating, messages states
+  const send = (text: string) => engine.runTurn(text, () => engine.respond({ system, name: page?.title }));
 
-  const handleWikiSelect = (result: WikiSearchResult) => {
-    setSelectedWiki(result);
-    // When a wiki is selected, get its full summary
-    fetchWikiSummary(result.title);
+  const restart = () => {
+    engine.reset();
+    evaluation.reset();
+    if (!preset.character) setPage(null);
+    setPhase("setup");
   };
 
-  const fetchWikiSummary = async (title: string) => {
-    try {
-      const wikiLang = getWikipediaLanguageCode();
-      const endpoint = `https://${wikiLang}.wikipedia.org/w/api.php?action=query&prop=extracts&exintro&explaintext&titles=${encodeURIComponent(title)}&format=json&origin=*&redirects=1`;
-      const response = await fetch(endpoint);
-      if (!response.ok) throw new Error(t('apps.wikiChatbot.errors.fetchError'));
-      const data = await response.json();
-      const pages = data.query.pages;
-      const pageId = Object.keys(pages)[0];
-      const extract = pages[pageId].extract || "";
-      setWikiSummary(extract);
-    } catch (error) {
-      console.error("Errore:", error);
-      setWikiSummary(t('apps.wikiChatbot.errors.summaryError'));
-    }
-  };
+  const minTurns = Math.max(2, session.minTurns);
 
-  // Removed handleMessagesUpdate
+  return (
+    <ActivityShell app={app} phase={phase} session={session} onReset={restart}>
+      {phase === "setup" && (
+        <SetupCard
+          title={t("platform.apps.wikiChatbot.setupTitle")}
+          description={t("platform.apps.wikiChatbot.setupDescription")}
+          onStart={start}
+          canStart={!!page && !loading}
+          starting={loading}
+        >
+          <CharacterPicker label={t("platform.apps.wikiChatbot.topicLabel")} value={page} onChange={setPage} locked={!!preset.character} />
+          {page && summary && <p className="line-clamp-6 rounded-md bg-background/50 p-3 text-sm text-muted-foreground">{summary}</p>}
+        </SetupCard>
+      )}
 
-  const handleStartChat = () => {
-    if (selectedWiki && wikiSummary) {
-      setActivityPhase("chatting");
-    }
-  };
+      {phase === "chat" && page && (
+        <ChatPanel
+          messages={engine.messages}
+          onSend={send}
+          busy={engine.busy}
+          disabled={engine.ended}
+          disabledReason={t("platform.activity.ended")}
+          placeholder={t("platform.apps.wikiChatbot.placeholder", { title: page.title })}
+          live={engine.live}
+          onEnd={() => {
+            session.markManualEnd();
+            engine.live.stopLive();
+            setPhase("reflection");
+          }}
+          canEnd={session.turns >= minTurns}
+          footerNote={session.turns < minTurns ? t("platform.activity.minTurnsNote", { count: minTurns - session.turns }) : null}
+        />
+      )}
 
-  // Removed handleEndChatInPage, handleSubmitReflection, evaluateReflection
+      {phase === "reflection" && (
+        <ReflectionStep
+          prompt={t("platform.apps.wikiChatbot.reflectionPrompt", { title: page?.title })}
+          onSubmit={(reflection) => {
+            setPhase("feedback");
+            void evaluation.run({
+              activity: `${t("apps.wikiChatbot.title")}: ${page?.title}`,
+              characters: page?.title ?? "",
+              topic: page?.title,
+              messages: engine.messagesRef.current,
+              reflection,
+            });
+          }}
+          optional={!session.requireReflection}
+          endReason={session.endReason}
+        />
+      )}
 
-  const handleStartNewChat = () => { // This function is now called by onSessionComplete from WikiChatInterface
-    setSelectedWiki(null);
-    setWikiSummary("");
-    setActivityPhase("selecting");
-    // No need to reset userReflection, aiEvaluation, messages as they are not here anymore
-  };
-
-  return <div className="flex flex-col min-h-screen">
-      <Navbar />
-      
-      <main className="flex-1 py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-extrabold text-education-light sm:text-4xl">
-              {t('apps.wikiChatbot.title')}
-            </h1>
-            <p className="mt-3 text-xl text-gray-200 dark:text-gray-400">
-              {t('apps.wikiChatbot.description')}
-            </p>
-          </div>
-          
-          {/* Conditionally render content based on activity phase */}
-          {activityPhase === "selecting" && (
-            <div className="max-w-2xl mx-auto">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>{t('apps.wikiChatbot.setup.chooseWikiTopic')}</CardTitle>
-                    <CardDescription className="text-education">
-                      {t('apps.wikiChatbot.setup.selectDescription')}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4 mb-6">
-                      <div>
-                        <label className="block text-sm font-medium text-education mb-2">
-                          {t('apps.wikiChatbot.setup.wikiTopicLabel')}
-                        </label>
-                        <WikiSearchSelect onSelect={handleWikiSelect} />
-                      </div>
-
-                      {selectedWiki && <div className="mt-4 p-4 bg-gray-50 rounded-md">
-                          <h3 className="font-medium">{selectedWiki.title}</h3>
-                          <p className="text-sm text-gray-600 mt-1">{selectedWiki.snippet.replace(/<\/?[^>]+(>|$)/g, "")}</p>
-                        </div>}
-                    </div>
-
-                    <Button onClick={handleStartChat} disabled={!selectedWiki || !wikiSummary} className="w-full bg-education hover:bg-education-dark">
-                      {t('apps.wikiChatbot.setup.startChatButton')} <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  </CardContent>
-                </Card>
-              </div>
-            )}
-
-            {activityPhase === "chatting" && selectedWiki && (
-                <div className="max-w-4xl mx-auto">
-                  <div className="mb-4 flex justify-between items-center">
-                    <h2 className="text-xl font-bold">
-                      {t('apps.wikiChatbot.chat.chatWithTitle', { title: selectedWiki?.title || '' })}
-                    </h2>
-                    {/* You might want to keep the 'Cambia Argomento' button here or move it */}
-                  </div>
-                  <WikiChatInterface 
-                    wikiTitle={selectedWiki.title} 
-                    wikiSummary={wikiSummary} 
-                    onSessionComplete={handleStartNewChat} 
-                  />
-                </div>
-            )}
-
-            {/* Removed reflecting, evaluating, and feedback phases rendering as they are handled by WikiChatInterface */}
-        </div>
-      </main>
-      <Footer />
-    </div>;
+      {phase === "feedback" && (
+        <FeedbackStep
+          title={`${t("apps.wikiChatbot.title")} - ${page?.title ?? ""}`}
+          evaluation={evaluation.evaluation}
+          partial={evaluation.partial}
+          loading={evaluation.loading}
+          error={evaluation.error}
+          reflection={evaluation.reflection}
+          messages={engine.messages}
+          facts={[{ label: t("platform.apps.wikiChatbot.topicLabel"), value: page?.title }]}
+          onRestart={restart}
+          isAssignment={!!session.assignment}
+        />
+      )}
+    </ActivityShell>
+  );
 };
 
 export default WikiChatbotPage;

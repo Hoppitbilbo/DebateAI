@@ -1,191 +1,146 @@
-import {
-  ChatSession,
-  GenerateContentRequest,
-  GenerateContentResult,
-  GenerativeModel,
-  GoogleGenerativeAI,
-  Part,
-} from "@google/generative-ai";
+// Client for the server-side AI gateway. The browser never sees provider API
+// keys: every request goes through /api/ai/*, where the JEV router picks the
+// provider/model configured by the administrator (Gemini, OpenCode, OpenRouter,
+// Groq, Ollama, ...), applies budgets and records costs.
+import { api, ApiError } from "@/lib/api";
+import i18n from "@/i18n";
 
-const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-const textModelName = import.meta.env.VITE_GEMINI_TEXT_MODEL || "gemini-3-flash-preview";
+export type AiTask = "chat" | "evaluation" | "utility";
 
-let genAI: GoogleGenerativeAI;
-let model: GenerativeModel;
-
-const extractRetryDelay = (errorMessage: string): string | null => {
-  const match = errorMessage.match(/Please retry in\s+([\d.]+)s/i) || errorMessage.match(/retryDelay":"([^"]+)"/i);
-  return match?.[1] ?? null;
-};
-
-export const formatAiServiceError = (error: unknown): string => {
-  const fallbackMessage = "Si è verificato un errore durante la comunicazione con Gemini.";
-
-  if (!(error instanceof Error) || !error.message) {
-    return fallbackMessage;
-  }
-
-  const message = error.message;
-  const isQuotaError =
-    message.includes("429") ||
-    message.toLowerCase().includes("quota exceeded") ||
-    message.toLowerCase().includes("rate limit");
-
-  if (!isQuotaError) {
-    return message;
-  }
-
-  const retryDelay = extractRetryDelay(message);
-  const retryText = retryDelay ? ` Riprova tra circa ${retryDelay} secondi.` : " Riprova più tardi.";
-
-  return `La quota Gemini per il modello ${textModelName} è stata superata o non è disponibile per questa API key.${retryText} Se vuoi continuare subito, controlla billing/piano oppure imposta un modello diverso tramite VITE_GEMINI_TEXT_MODEL.`;
-};
-
-if (apiKey && apiKey !== "your_api_key_here") {
-  try {
-    genAI = new GoogleGenerativeAI(apiKey);
-    model = genAI.getGenerativeModel({ model: textModelName });
-    console.log(`Google AI service initialized successfully with model ${textModelName}`);
-  } catch (error) {
-    console.error("Error initializing GoogleGenerativeAI:", error);
-    console.warn("AI Service initialization failed. Please check your API key.");
-  }
-} else {
-  console.warn("Gemini API key is not configured. AI Service will be disabled.");
-  console.info("Please add your API key to the .env file as VITE_GEMINI_API_KEY");
+export interface ChatMessage {
+  role: "user" | "assistant";
+  content: string;
 }
 
-export const isAiServiceAvailable = (): boolean => {
-  return !!model;
+export interface GenerateOptions {
+  task?: AiTask;
+  system?: string;
+  messages: ChatMessage[];
+  sessionId?: number | null;
+  json?: boolean;
+  temperature?: number;
+  maxTokens?: number;
+  signal?: AbortSignal;
+}
+
+export interface AiStatus {
+  text: boolean;
+  live: boolean;
+  judge: boolean;
+  loggedIn: boolean;
+  guestAccess: boolean;
+}
+
+let statusCache: Promise<AiStatus> | null = null;
+
+export const getAiStatus = (force = false): Promise<AiStatus> => {
+  if (!statusCache || force) {
+    statusCache = api.get<AiStatus>("/api/ai/status").catch(() => ({
+      text: false, live: false, judge: false, loggedIn: false, guestAccess: false,
+    }));
+  }
+  return statusCache;
 };
 
-export const startChat = (
-  history: { role: "user" | "model"; parts: Part[] }[] = [],
-  systemInstructionText?: string,
-): ChatSession => {
-  if (!isAiServiceAvailable()) {
-    throw new Error("AI Service is not configured. Cannot start chat. Please check your VITE_GEMINI_API_KEY in the .env file.");
-  }
-
-  if (!model) {
-    throw new Error("AI model is not initialized. This should not happen if isAiServiceAvailable() returns true.");
-  }
-
-  const chatOptions: {
-    history: { role: "user" | "model"; parts: Part[] }[];
-    systemInstruction?: { role: string; parts: Part[] };
-  } = { history };
-
-  if (systemInstructionText) {
-    chatOptions.systemInstruction = {
-      role: "system",
-      parts: [{ text: systemInstructionText }],
-    };
-  }
-
-  return model.startChat(chatOptions);
+export const resetAiStatus = () => {
+  statusCache = null;
 };
 
-export const sendMessage = async (chat: ChatSession, message: string): Promise<string> => {
-  if (!isAiServiceAvailable()) {
-    console.warn("AI Service not available. Returning mock response.");
-    return "Mock response: AI service is not available.";
+/** Translates gateway errors into a message for the student. */
+export const formatAiError = (error: unknown): string => {
+  if (error instanceof ApiError) {
+    const key = `platform.aiErrors.${error.code}`;
+    if (i18n.exists(key)) return i18n.t(key);
+    return error.message;
   }
-
-  try {
-    const result = await chat.sendMessage(message);
-    const response = await result.response;
-    return response.text();
-  } catch (error) {
-    console.error("Error sending message to AI service:", error);
-    throw new Error(formatAiServiceError(error));
-  }
+  if (error instanceof Error) return error.message;
+  return i18n.t("platform.aiErrors.generic");
 };
 
-export const generateContent = async (request: GenerateContentRequest): Promise<GenerateContentResult> => {
-  if (!isAiServiceAvailable()) {
-    throw new Error("AI Service is not configured. Cannot generate content.");
-  }
+const body = (o: GenerateOptions, stream: boolean) => ({
+  task: o.task ?? "chat",
+  system: o.system ?? "",
+  messages: mergeConsecutive(o.messages.filter((m) => m.content.trim() !== "")),
+  sessionId: o.sessionId ?? 0,
+  json: o.json ?? false,
+  temperature: o.temperature,
+  maxTokens: o.maxTokens,
+  stream,
+});
 
-  try {
-    return await model.generateContent(request);
-  } catch (error) {
-    console.error("Error generating content:", error);
-    throw new Error(formatAiServiceError(error));
+/** Most providers reject two consecutive turns with the same role. */
+const mergeConsecutive = (messages: ChatMessage[]): ChatMessage[] => {
+  const out: ChatMessage[] = [];
+  for (const m of messages) {
+    const last = out[out.length - 1];
+    if (last && last.role === m.role) {
+      last.content = `${last.content}\n\n${m.content}`;
+    } else {
+      out.push({ ...m });
+    }
   }
+  if (out.length === 0 || out[0].role !== "user") {
+    out.unshift({ role: "user", content: "(start)" });
+  }
+  return out;
 };
 
-export const getResponse = async (prompt: string, systemInstructionText?: string): Promise<string> => {
-  if (!isAiServiceAvailable()) {
-    console.warn("AI Service not available. Returning mock response.");
-    return "Mock response: AI service is not available.";
-  }
-
-  try {
-    const systemInstruction: { role: "system"; parts: Part[] } | undefined = systemInstructionText
-      ? { role: "system", parts: [{ text: systemInstructionText }] }
-      : undefined;
-
-    const result = await model.generateContent({
-      contents: [{ role: "user", parts: [{ text: prompt }] }],
-      systemInstruction,
-    });
-
-    const response = result.response;
-    return response.text();
-  } catch (error) {
-    console.error("Error getting response from AI service:", error);
-    throw new Error(formatAiServiceError(error));
-  }
+export const generate = async (o: GenerateOptions): Promise<string> => {
+  const res = await api.post<{ text: string }>("/api/ai/generate", body(o, false));
+  return res.text.trim();
 };
 
-export const generateContentStream = async function* (
-  request: GenerateContentRequest,
-): AsyncGenerator<string, void, unknown> {
-  if (!isAiServiceAvailable()) {
-    throw new Error("AI Service is not configured. Cannot generate streaming content.");
+/** Streams the answer; onDelta receives each chunk. Resolves with the full text. */
+export const generateStream = async (o: GenerateOptions, onDelta: (chunk: string, full: string) => void): Promise<string> => {
+  const res = await fetch("/api/ai/generate", {
+    method: "POST",
+    credentials: "same-origin",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body(o, true)),
+    signal: o.signal,
+  });
+  if (!res.ok || !res.body) {
+    let data: { error?: string; message?: string } = {};
+    try {
+      data = await res.json();
+    } catch {
+      /* ignore */
+    }
+    throw new ApiError(res.status, data.error || "ai_error", data.message || res.statusText);
   }
-
-  try {
-    const result = await model.generateContentStream(request);
-
-    for await (const chunk of result.stream) {
-      const text = chunk.text();
-      if (text) {
-        yield text;
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+  let full = "";
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    let idx: number;
+    while ((idx = buffer.indexOf("\n\n")) >= 0) {
+      const line = buffer.slice(0, idx).trim();
+      buffer = buffer.slice(idx + 2);
+      if (!line.startsWith("data:")) continue;
+      const evt = JSON.parse(line.slice(5).trim()) as { delta?: string; error?: string; done?: boolean };
+      if (evt.error) throw new ApiError(502, "ai_error", evt.error);
+      if (evt.delta) {
+        full += evt.delta;
+        onDelta(evt.delta, full);
       }
     }
-  } catch (error) {
-    console.error("Error generating streaming content:", error);
-    throw new Error(formatAiServiceError(error));
   }
+  return full.trim();
 };
 
-export const getResponseStream = async function* (
-  prompt: string,
-  systemInstructionText?: string,
-): AsyncGenerator<string, void, unknown> {
-  if (!isAiServiceAvailable()) {
-    console.warn("AI Service not available. Returning mock response.");
-    yield "Mock response: AI service is not available.";
-    return;
-  }
+/** One-shot helper: single prompt with optional system instruction. */
+export const complete = (prompt: string, system?: string, task: AiTask = "utility", sessionId?: number | null) =>
+  generate({ task, system, messages: [{ role: "user", content: prompt }], sessionId });
 
-  try {
-    const systemInstruction: { role: "system"; parts: Part[] } | undefined = systemInstructionText
-      ? { role: "system", parts: [{ text: systemInstructionText }] }
-      : undefined;
-
-    const request: GenerateContentRequest = {
-      contents: [{ role: "user", parts: [{ text: prompt }] }],
-      systemInstruction,
-    };
-
-    yield* generateContentStream(request);
-  } catch (error) {
-    console.error("Error getting streaming response from AI service:", error);
-    throw new Error(formatAiServiceError(error));
-  }
+/** Asks for JSON and parses it leniently (handles ```json fences). */
+export const generateJSON = async <T>(o: GenerateOptions): Promise<T> => {
+  const text = await generate({ ...o, json: true });
+  const cleaned = text.replace(/^```(?:json)?/i, "").replace(/```$/, "").trim();
+  const start = cleaned.indexOf("{");
+  const end = cleaned.lastIndexOf("}");
+  return JSON.parse(start >= 0 && end > start ? cleaned.slice(start, end + 1) : cleaned) as T;
 };
-
-export { model, textModelName };

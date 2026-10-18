@@ -24,5 +24,22 @@
     "title": "Un Futuro de Aprendizaje Colaborativo e Inclusivo",
     "content": "Nuestro propósito social es construir un futuro en el que la IA sea un poderoso aliado para estudiantes y profesores, haciendo del aprendizaje una aventura emocionante, personalizada y, sobre todo, accesible para todos."
   },
-  "supportButton": "Apóyanos"
+  "supportButton": "Apóyanos",
+  "section7": {
+    "title": "De la teoría a la práctica: nuestro marco educativo",
+    "paragraph1": "La rápida difusión de la inteligencia artificial generativa ha situado a la educación en una encrucijada, con oportunidades pero también con desafíos. Aunque se reconoce ampliamente el potencial de la IA generativa para mejorar el diseño del aprendizaje y ofrecer retroalimentación personalizada, existe una brecha crítica entre los modelos teóricos y las herramientas prácticas, diseñadas éticamente, para el aula.",
+    "paragraph2": "AIDebate.Tech es un paso importante para cerrar esta brecha entre teoría y práctica. Al convertir teorías del aprendizaje consolidadas, como el aprendizaje situado y el razonamiento de doble proceso, en un conjunto de herramientas transparente y guiado por el docente, nuestra plataforma ofrece un modelo para usar la IA generativa no como simple dispensador de información, sino como catalizador de habilidades de pensamiento de orden superior.",
+    "paragraph3": "Aplicaciones como 'Convénceme TÚ' e 'Interpreta TÚ' sumergen al alumnado en una práctica auténtica, que exige aplicar conocimientos en contextos históricos y culturales concretos. El estudiante deja de ser un receptor pasivo de datos y se convierte en un agente activo que debe encarnar otras visiones del mundo para construir argumentos persuasivos.",
+    "paragraph4": "La plataforma está pensada para fomentar un pensamiento crítico complejo que el uso no guiado de la IA puede inhibir. Actividades como 'Modera TÚ' y 'Doble Entrevista' crean situaciones de fricción intelectual que obligan a mediar debates o comparar perspectivas divergentes, activando un razonamiento deliberado y analítico.",
+    "paragraph5": "Cada actividad culmina en una fase estructurada de metarreflexión crítica, clave para transformar la experiencia en conocimiento duradero. Los estudiantes evalúan el desempeño de la IA con preguntas como '¿Interpretó bien la IA al personaje?' o '¿Qué aspectos de su argumento no fueron convincentes?'.",
+    "paragraph6": "La flexibilidad de la plataforma, basada en la integración con la API de Wikipedia, la hace independiente de la materia. Se pueden interpretar personajes literarios, comparar perspectivas geográficas o moderar debates científicos: su valor está en el proceso de indagación crítica que promueve.",
+    "paragraph7": "Como proyecto de código abierto que puede instalarse en los servidores del centro sin recopilar el historial de los chats, ofrecemos una alternativa segura a las plataformas comerciales y un espacio donde el profesorado puede compartir experiencias y críticas para construir juntos un uso eficaz y ético de la IA en la educación."
+  },
+  "helpDevelopment": {
+    "title": "Ayúdanos a desarrollar AIDebate.Tech",
+    "description": "Únete a nuestra comunidad para ayudar a añadir modelos locales, nuevos idiomas, mejorar la documentación y compartir experiencias de aula. Tu contribución hace que la educación con IA sea más accesible para todos.",
+    "redditButton": "Únete a la comunidad de Reddit",
+    "githubButton": "Contribuye en GitHub",
+    "linkedinButton": "Conecta en LinkedIn"
+  }
 }

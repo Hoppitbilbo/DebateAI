@@ -1,19 +1,24 @@
 {
-  "name": "vite_react_shadcn_ts",
+  "name": "debateai",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --host 127.0.0.1",
-    "build": "vite build",
+    "dev": "concurrently -k -n web,api -c green,cyan \"vite --host 127.0.0.1\" \"npm:dev:server\"",
+    "dev:web": "vite --host 127.0.0.1",
+    "dev:server": "cd server && go run . ",
+    "build": "vite build && node scripts/copy-dist.mjs",
+    "build:web": "vite build",
+    "build:server": "npm run build && cd server && CGO_ENABLED=0 go build -trimpath -ldflags=\"-s -w\" -o ../bin/debateai .",
     "build:dev": "vite build --mode development",
+    "start": "./bin/debateai",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "start": "vite preview --host 0.0.0.0 --port 8080"
+    "check:i18n": "node scripts/check-i18n.mjs",
+    "test:server": "cd server && go test ./...",
+    "preview": "vite preview"
   },
   "dependencies": {
     "@google/genai": "^1.16.0",
-    "@google/generative-ai": "^0.24.1",
     "@hookform/resolvers": "^3.9.0",
     "@radix-ui/react-accordion": "^1.2.0",
     "@radix-ui/react-alert-dialog": "^1.1.1",
@@ -90,6 +95,7 @@
     "tailwindcss": "^3.4.11",
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.0.1",
-    "vite": "^5.4.1"
+    "vite": "^5.4.1",
+    "concurrently": "^9.1.2"
   }
 }

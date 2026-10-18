@@ -5,6 +5,7 @@ import personaggioMisterioso from './apps/personaggioMisterioso.json';
 import wikiChat from './apps/wikiChat.json';
 import wikiChatbot from './apps/wikiChatbot.json';
 import wikiInterview from './apps/wikiInterview.json';
+import youModerate from './apps/youModerate.json';
 
 const apps = {
   convinciTu,
@@ -14,6 +15,7 @@ const apps = {
   wikiChat,
   wikiChatbot,
   wikiInterview,
+  youModerate,
 };
 
 export default apps;

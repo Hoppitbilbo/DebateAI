@@ -1,147 +1,160 @@
-
-import { useState } from "react";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { ArrowRight, BookOpen } from "lucide-react";
-import { Link } from "react-router-dom";
-import WikiSearchSelect from "@/components/WikiSearchSelect";
-import ImpersonaTuChat from "@/components/ImpersonaTuChat";
-import { Input } from "@/components/ui/input";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import type { WikiRef } from "@/lib/api";
+import ActivityShell from "@/features/activity/components/ActivityShell";
+import ChatPanel from "@/features/activity/components/ChatPanel";
+import ReflectionStep from "@/features/activity/components/ReflectionStep";
+import FeedbackStep from "@/features/activity/components/FeedbackStep";
+import { CharacterPicker, SetupCard } from "@/features/activity/components/SetupCard";
+import { useActivitySession, EndReason } from "@/features/activity/useActivitySession";
+import { useChatEngine } from "@/features/activity/useChatEngine";
+import { useEvaluationFlow } from "@/features/activity/useEvaluationFlow";
+import { bioOf, useWikiSummaries } from "@/features/activity/wiki";
+import { prompts } from "@/features/activity/prompts";
+import { APPS, ActivityPhase } from "@/features/activity/types";
 
-interface WikiSearchResult {
-  title: string;
-  snippet: string;
-  pageid: number;
-}
+const app = APPS["impersona-tu"];
 
 const ImpersonaTuPage = () => {
   const { t } = useTranslation();
-  const [aiCharacter, setAiCharacter] = useState<WikiSearchResult | null>(null);
-  const [userCharacter, setUserCharacter] = useState<WikiSearchResult | null>(null);
+  const session = useActivitySession(app.type);
+  const preset = session.assignment?.config ?? {};
+  const [phase, setPhase] = useState<ActivityPhase>("setup");
+  const [aiChar, setAiChar] = useState<WikiRef | null>(null);
+  const [userChar, setUserChar] = useState<WikiRef | null>(null);
   const [topic, setTopic] = useState("");
-  const [showChat, setShowChat] = useState(false);
 
-  const handleStartChat = () => {
-    if (aiCharacter && userCharacter && topic) {
-      setShowChat(true);
-    }
+  useEffect(() => {
+    if (preset.aiCharacter) setAiChar(preset.aiCharacter);
+    if (preset.userCharacter) setUserChar(preset.userCharacter);
+    if (preset.topic) setTopic(preset.topic);
+  }, [preset.aiCharacter, preset.userCharacter, preset.topic]);
+
+  const { summaries, loading } = useWikiSummaries([aiChar, userChar]);
+  const aiBio = bioOf(aiChar, summaries);
+  const system = aiChar && userChar ? prompts.impersona(aiChar.title, aiBio, userChar.title, bioOf(userChar, summaries), topic, session.assignment) : "";
+
+  const onEnded = useCallback((reason: EndReason) => {
+    toast.success(reason === "goal_reached" ? t("platform.activity.goalReachedToast") : t("platform.activity.turnLimitToast"));
+    setPhase("reflection");
+  }, [t]);
+
+  const engine = useChatEngine({
+    session,
+    live: phase === "chat" && aiChar ? { systemInstruction: system, characterName: aiChar.title, characterBio: aiBio } : null,
+    context: { aiCharacter: aiChar?.title, userCharacter: userChar?.title, topic },
+    onEnded,
+  });
+  const evaluation = useEvaluationFlow(session);
+
+  const canStart = !!aiChar && !!userChar && aiChar.title !== userChar.title && !!topic.trim() && !loading;
+
+  const start = async () => {
+    if (!aiChar || !userChar) return;
+    await session.begin(`${userChar.title} ↔ ${aiChar.title}`, { aiCharacter: aiChar, userCharacter: userChar, topic });
+    engine.reset([
+      { id: "role", role: "system", content: t("platform.apps.impersonaTu.roleNotice", { user: userChar.title, ai: aiChar.title, topic }) },
+      { id: "greet", role: "assistant", name: aiChar.title, content: t("platform.apps.impersonaTu.greeting", { ai: aiChar.title, user: userChar.title, topic }) },
+    ]);
+    setPhase("chat");
   };
 
+  const send = (text: string) => engine.runTurn(text, () => engine.respond({ system, name: aiChar?.title }), userChar?.title);
+
+  const restart = () => {
+    engine.reset();
+    evaluation.reset();
+    if (!preset.aiCharacter) setAiChar(null);
+    if (!preset.userCharacter) setUserChar(null);
+    if (!preset.topic) setTopic("");
+    setPhase("setup");
+  };
+
+  const minTurns = Math.max(2, session.minTurns);
+
   return (
-    <div className="flex flex-col min-h-screen bg-background">
-      <Navbar />
-      
-      <main className="flex-1 py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-extrabold text-education-light sm:text-4xl">
-              {t('apps.impersonaTu.page.title')}
-            </h1>
-            <p className="mt-3 text-xl text-foreground">
-              {t('apps.impersonaTu.page.subtitle')}
-            </p>
-            <div className="mt-6">
-              <Link to="/apps/impersona-tu/tutorial">
-                <Button variant="outline" className="border-education text-education hover:bg-education hover:text-white">
-                  <BookOpen className="w-4 h-4 mr-2" />
-                  {t('common.viewTutorial')}
-                </Button>
-              </Link>
-            </div>
+    <ActivityShell app={app} phase={phase} session={session} onReset={restart}>
+      {phase === "setup" && (
+        <SetupCard
+          title={t("platform.apps.impersonaTu.setupTitle")}
+          description={t("platform.apps.impersonaTu.setupDescription")}
+          onStart={start}
+          canStart={canStart}
+          starting={loading}
+        >
+          <div className="grid gap-4 md:grid-cols-2">
+            <CharacterPicker label={t("platform.apps.impersonaTu.yourCharacter")} value={userChar} onChange={setUserChar} locked={!!preset.userCharacter} />
+            <CharacterPicker label={t("platform.apps.impersonaTu.aiCharacter")} value={aiChar} onChange={setAiChar} locked={!!preset.aiCharacter} />
           </div>
-          
-          {!showChat ? (
-            <div className="max-w-2xl mx-auto">
-              <Card className="bg-card text-card-foreground">
-                <CardHeader>
-                  <CardTitle className="text-education-light">{t('apps.impersonaTu.page.setup.title')}</CardTitle>
-                  <CardDescription className="text-muted-foreground">
-                    {t('apps.impersonaTu.page.setup.description')}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-6">
-                    <div className="space-y-2">
-                      <label className="block text-sm font-medium text-education-light">
-                        {t('apps.impersonaTu.page.setup.aiCharacterLabel')}
-                      </label>
-                      <WikiSearchSelect onSelect={setAiCharacter} />
-                      {aiCharacter && (
-                        <div className="mt-2 p-3 bg-muted rounded-md">
-                          <p className="text-sm text-muted-foreground">{aiCharacter.title}</p>
-                        </div>
-                      )}
-                    </div>
+          {aiChar && userChar && aiChar.title === userChar.title && <p className="text-sm text-destructive">{t("platform.apps.common.differentCharacters")}</p>}
+          <div className="space-y-2">
+            <Label htmlFor="topic">{t("platform.apps.impersonaTu.topicLabel")}</Label>
+            <Input id="topic" value={topic} onChange={(e) => setTopic(e.target.value)} placeholder={t("platform.apps.impersonaTu.topicPlaceholder")} disabled={!!preset.topic} />
+          </div>
+        </SetupCard>
+      )}
 
-                    <div className="space-y-2">
-                      <label className="block text-sm font-medium text-education-light">
-                        {t('apps.impersonaTu.page.setup.yourCharacterLabel')}
-                      </label>
-                      <WikiSearchSelect onSelect={setUserCharacter} />
-                      {userCharacter && (
-                        <div className="mt-2 p-3 bg-muted rounded-md">
-                          <p className="text-sm text-muted-foreground">{userCharacter.title}</p>
-                        </div>
-                      )}
-                    </div>
+      {phase === "chat" && aiChar && userChar && (
+        <ChatPanel
+          messages={engine.messages}
+          onSend={send}
+          busy={engine.busy}
+          disabled={engine.ended}
+          disabledReason={t("platform.activity.ended")}
+          userLabel={userChar.title}
+          placeholder={t("platform.apps.impersonaTu.placeholder", { name: userChar.title })}
+          live={engine.live}
+          onEnd={() => {
+            session.markManualEnd();
+            engine.live.stopLive();
+            setPhase("reflection");
+          }}
+          canEnd={session.turns >= minTurns}
+          footerNote={session.turns < minTurns ? t("platform.activity.minTurnsNote", { count: minTurns - session.turns }) : null}
+        />
+      )}
 
-                    <div className="space-y-2">
-                      <label className="block text-sm font-medium text-education-light">
-                        {t('apps.impersonaTu.page.setup.topicLabel')}
-                      </label>
-                      <Input
-                        placeholder={t('apps.impersonaTu.page.setup.topicPlaceholder')}
-                        value={topic}
-                        onChange={(e) => setTopic(e.target.value)}
-                      />
-                    </div>
+      {phase === "reflection" && (
+        <ReflectionStep
+          prompt={t("platform.apps.impersonaTu.reflectionPrompt", { user: userChar?.title, ai: aiChar?.title })}
+          onSubmit={(reflection) => {
+            setPhase("feedback");
+            void evaluation.run({
+              activity: `${t("apps.impersonaTu.title")}: ${t("platform.apps.impersonaTu.evalActivity", { user: userChar?.title, ai: aiChar?.title })}`,
+              characters: aiChar?.title ?? "",
+              studentRole: userChar?.title,
+              topic,
+              messages: engine.messagesRef.current,
+              reflection,
+            });
+          }}
+          optional={!session.requireReflection}
+          endReason={session.endReason}
+        />
+      )}
 
-                    <Button 
-                      onClick={handleStartChat}
-                      disabled={!aiCharacter || !userCharacter || !topic.trim()}
-                      className="w-full bg-education hover:bg-education-dark"
-                    >
-                      {t('apps.impersonaTu.page.setup.startConversationButton')} <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          ) : (
-            <div className="max-w-4xl mx-auto">
-              <div className="mb-4 flex justify-between items-center">
-                <h2 className="text-xl font-bold text-education-light">
-                  {t('apps.impersonaTu.page.chat.conversationTitle', { user: userCharacter?.title, ai: aiCharacter?.title })}
-                </h2>
-                <Button 
-                  variant="outline" 
-                  onClick={() => setShowChat(false)}
-                  className="border-education text-education hover:bg-education hover:text-white"
-                >
-                  {t('apps.impersonaTu.page.chat.changeCharacters')}
-                </Button>
-              </div>
-              <ImpersonaTuChat
-                aiCharacter={{
-                  name: aiCharacter?.title || "",
-                  bio: aiCharacter?.snippet || "",
-                }}
-                userCharacter={{
-                  name: userCharacter?.title || "",
-                  bio: userCharacter?.snippet || "",
-                }}
-                topic={topic}
-              />
-            </div>
-          )}
-        </div>
-      </main>
-      
-      <Footer />
-    </div>
+      {phase === "feedback" && (
+        <FeedbackStep
+          title={`${t("apps.impersonaTu.title")} - ${userChar?.title ?? ""}`}
+          evaluation={evaluation.evaluation}
+          partial={evaluation.partial}
+          loading={evaluation.loading}
+          error={evaluation.error}
+          reflection={evaluation.reflection}
+          messages={engine.messages}
+          facts={[
+            { label: t("platform.apps.impersonaTu.yourCharacter"), value: userChar?.title },
+            { label: t("platform.apps.impersonaTu.aiCharacter"), value: aiChar?.title },
+            { label: t("platform.apps.impersonaTu.topicLabel"), value: topic },
+          ]}
+          onRestart={restart}
+          isAssignment={!!session.assignment}
+        />
+      )}
+    </ActivityShell>
   );
 };
 

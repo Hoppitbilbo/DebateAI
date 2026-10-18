@@ -19,8 +19,10 @@ import reflection from './reflection.json';
 import teacherGuidePage from './teacherGuidePage.json';
 import tutorialsPage from './tutorialsPage.json';
 import apps from './apps';
+import platform from './platform.json';
 
 export default {
+  platform,
   common,
   navigation,
   hero,

@@ -1,0 +1,28 @@
+# Quick start:  cp .env.example .env  &&  docker compose up -d
+# Then open http://localhost:8080 (or your domain) and create the admin account.
+services:
+  debateai:
+    build: .
+    image: debateai:latest
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    env_file: .env
+    volumes:
+      - debateai-data:/data
+    # Lets the server reach Ollama / LM Studio running on the host machine
+    # (use http://host.docker.internal:11434/v1 as base URL in the admin panel).
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  # Optional: local models with Ollama. Uncomment, then add the provider
+  # "Ollama" with base URL http://ollama:11434/v1 in Admin → AI.
+  # ollama:
+  #   image: ollama/ollama:latest
+  #   restart: unless-stopped
+  #   volumes:
+  #     - ollama-data:/root/.ollama
+
+volumes:
+  debateai-data:
+  # ollama-data:

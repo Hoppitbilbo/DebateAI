@@ -18,8 +18,10 @@ import prompts from './prompts.json';
 import teacherGuide from './teacherGuide.json';
 import teacherGuidePage from './teacherGuidePage.json';
 import tutorialsPage from './tutorialsPage.json';
+import platform from './platform.json';
 
 const de = {
+  platform,
   aboutPage,
   ai,
   apps,
