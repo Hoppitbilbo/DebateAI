@@ -37,12 +37,11 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto · `[-]` scartato (spieg
 
 ## Stato attuale
 
-- **Fase in corso:** 8 (punti aperti e funzioni docente)
-- **Prossimo task:** 8.5
+- **Piano completato** (fasi 0-8) il 2026-10-18 sul branch `go`, in revisione nella PR #9.
 - **Lavoro a metà:** nessuno
-- **Test:** Go (pacchetti `ai`, `app`, `domain`, `httpapi`, `store`) verdi anche con `-race`; Vitest 48 test verdi; lint 0 errori e 0 avvisi.
+- **Test:** Go (pacchetti `ai`, `app`, `domain`, `httpapi`, `store`) verdi anche con `-race`; Vitest 52 test verdi; lint 0 errori e 0 avvisi.
 - **Punti aperti (non refactoring, da decidere):**
-  4. Unire `go` in `master` (nessuna pull request aperta).
+  - Unire la PR #9 in `master` dopo la revisione.
 
 ---
 
@@ -217,7 +216,7 @@ Un'area per task, spostando l'SQL in `internal/store`:
 - [x] **8.2** (`a25b47a`) Personaggio misterioso: confronto del tentativo severo; la partita termina quando JEV giudica raggiunto l'obiettivo, con un messaggio.
 - [x] **8.3** (`6c65719`) Eliminare gli avvisi `react-refresh/only-export-components`.
 - [x] **8.4** (`7567de7`, `a734dc0`, `4250894`) Docente: stampa/PDF della chat, feedback scritto a mano (visibile allo studente), export dei voti in Excel. Voti in dashboard e revisione della chat in qualsiasi momento esistono già (pagina di avanzamento del compito e `/sessions/{id}`).
-- [ ] **8.5** Pull request da `go` a `master`.
+- [x] **8.5** Pull request da `go` a `master`: esisteva già la #9 (https://github.com/Hoppitbilbo/DebateAI/pull/9), che include tutti i commit; aggiunto un commento con il riepilogo del refactoring e delle nuove funzioni.
 
 ---
 
@@ -290,3 +289,4 @@ Un'area per task, spostando l'SQL in `internal/store`:
 | 2026-10-18 | 8.4a | `7567de7` | Claude Code | Feedback del docente: colonne `teacher_feedback`, `teacher_score` (0-10), `teacher_feedback_at`; prima migrazione del progetto (`migrations` in `store/schema.go`, solo aggiunte, idempotente). `SessionService.GiveFeedback` (docente della classe o admin, mai il proprietario), evento `feedbackListener` → `feedbackMailer` (mail "feedback" in 5 lingue), `PUT /api/sessions/{id}/feedback`. Test di migrazione su DB vecchio e delle regole. |
 | 2026-10-18 | 8.4c | `a734dc0` | Claude Code | Export Excel con `github.com/xuri/excelize/v2`: `GET /api/classes/{id}/grades.xlsx` e `GET /api/assignments/{id}/grades.xlsx`, una riga per studente e compito (stato, progresso, voti IA, voto docente, tentativi), intestazioni nella lingua del docente. `AssignmentService.Grades`. Test che scarica e rilegge il file. |
 | 2026-10-18 | 8.4b | `4250894` | Claude Code | Pagina sessione: pulsante Stampa / PDF (`window.print`, stili `print:` e `@media print` in `index.css`), `TeacherFeedbackForm` per il docente e `TeacherFeedbackView` per lo studente (e nella stampa). Pulsanti "Esporta voti (Excel)" in classe e compito; colonna voto docente e voto docente nella matrice. Voti in dashboard e revisione della chat in qualsiasi momento esistevano già. Test `sessionFeedback.test.tsx` (3). Vitest 52 test. |
+| 2026-10-18 | 8.5 | — | Claude Code | La PR #9 (`go` → `master`, aperta in precedenza) contiene tutto il lavoro; commento di riepilogo: https://github.com/Hoppitbilbo/DebateAI/pull/9#issuecomment-6254869651 |
