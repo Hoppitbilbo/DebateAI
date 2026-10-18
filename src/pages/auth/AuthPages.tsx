@@ -9,7 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { api, ApiError, User } from "@/lib/api";
+import { ApiError } from "@/lib/api";
+import { authApi, InviteInfo, ProfileChange } from "@/features/auth/authApi";
 import { dashboardPath, useAuth } from "@/context/AuthContext";
 import i18n from "@/i18n";
 
@@ -101,7 +102,7 @@ export const RegisterPage = () => {
   const [params] = useSearchParams();
   const navigate = useNavigate();
   const token = params.get("token") || "";
-  const [info, setInfo] = useState<{ email: string; role: string; className: string; invitedBy: string; locale: string; userExists: boolean } | null>(null);
+  const [info, setInfo] = useState<InviteInfo | null>(null);
   const [invalid, setInvalid] = useState(false);
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
@@ -114,7 +115,7 @@ export const RegisterPage = () => {
       setInvalid(true);
       return;
     }
-    api.get<typeof info>(`/api/auth/invite/${encodeURIComponent(token)}`)
+    authApi.inviteInfo(token)
       .then((i) => {
         setInfo(i);
         if (i?.locale) {
@@ -133,7 +134,7 @@ export const RegisterPage = () => {
     }
     setBusy(true);
     try {
-      const u = await api.post<User>("/api/auth/register", { token, name, password, locale });
+      const u = await authApi.register({ token, name, password, locale });
       setUser(u);
       toast.success(t("platform.auth.registered"));
       navigate(dashboardPath(u), { replace: true });
@@ -203,7 +204,7 @@ export const ForgotPasswordPage = () => {
           className="space-y-4"
           onSubmit={async (e) => {
             e.preventDefault();
-            await api.post("/api/auth/forgot", { email }).catch(() => undefined);
+            await authApi.forgotPassword(email);
             setSent(true);
           }}
         >
@@ -233,7 +234,7 @@ export const ResetPasswordPage = () => {
           if (password !== password2) return toast.error(t("platform.auth.passwordMismatch"));
           setBusy(true);
           try {
-            const u = await api.post<User>("/api/auth/reset", { token: params.get("token"), password });
+            const u = await authApi.resetPassword(params.get("token"), password);
             setUser(u);
             toast.success(t("platform.auth.passwordChanged"));
             navigate(dashboardPath(u), { replace: true });
@@ -270,7 +271,7 @@ export const SetupPage = () => {
           e.preventDefault();
           setBusy(true);
           try {
-            const u = await api.post<User>("/api/setup", { name, email, password, locale: i18n.language.slice(0, 2) });
+            const u = await authApi.setup({ name, email, password, locale: i18n.language.slice(0, 2) });
             setUser(u);
             await refresh();
             navigate("/admin?tab=ai", { replace: true });
@@ -298,9 +299,9 @@ export const AccountPage = () => {
   const [next, setNext] = useState("");
   if (!user) return <Navigate to="/login?next=/account" replace />;
 
-  const save = async (body: Record<string, unknown>, msg: string) => {
+  const save = async (change: ProfileChange, msg: string) => {
     try {
-      const u = await api.patch<User>("/api/auth/me", body);
+      const u = await authApi.updateProfile(change);
       setUser(u);
       toast.success(msg);
       setCurrent("");

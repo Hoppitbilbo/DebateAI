@@ -1,6 +1,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import i18n from "@/i18n";
-import { api, PublicConfig, User } from "@/lib/api";
+import type { PublicConfig, User } from "@/lib/api";
+import { authApi } from "@/features/auth/authApi";
 
 interface AuthState {
   user: User | null;
@@ -32,8 +33,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const refresh = useCallback(async () => {
     try {
       const [cfg, me] = await Promise.all([
-        api.get<PublicConfig>("/api/public/config"),
-        api.get<{ user: User | null }>("/api/auth/me"),
+        authApi.publicConfig(),
+        authApi.me(),
       ]);
       setConfig(cfg);
       setUser(me.user);
@@ -50,13 +51,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, [refresh]);
 
   const login = useCallback(async (email: string, password: string) => {
-    const u = await api.post<User>("/api/auth/login", { email, password });
+    const u = await authApi.login(email, password);
     setUser(u);
     return u;
   }, [setUser]);
 
   const logout = useCallback(async () => {
-    await api.post("/api/auth/logout");
+    await authApi.logout();
     setUserState(null);
   }, []);
 
