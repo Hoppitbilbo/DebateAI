@@ -20,10 +20,10 @@ type stopFallback func(err error) bool
 // runFallbackChain calls attempt for each target until one succeeds. It
 // returns nil on success, otherwise the last failure prefixed with the
 // provider and model, or errNoTargets when no target was tried.
-func (s *Server) runFallbackChain(label string, targets []RouteTarget, attempt func(t RouteTarget, cp *cachedProvider) error, stop stopFallback) error {
+func (g *aiGateway) runFallbackChain(label string, targets []RouteTarget, attempt func(t RouteTarget, cp *cachedProvider) error, stop stopFallback) error {
 	var lastErr error
 	for _, t := range targets {
-		cp, err := s.provider(t.ProviderID)
+		cp, err := g.provider(t.ProviderID)
 		if err != nil {
 			lastErr = err
 			continue

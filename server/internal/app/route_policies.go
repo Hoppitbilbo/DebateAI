@@ -31,14 +31,14 @@ func routePolicyFor(kind string) routePolicy {
 }
 
 // autoRoute applies the default policy of a newly added provider.
-func (s *Server) autoRoute(providerID int64, kind string) {
+func (g *aiGateway) autoRoute(providerID int64, kind string) {
 	var models []ai.ModelInfo
-	if p, err := s.providers.Get(providerID); err == nil {
+	if p, err := g.providers.Get(providerID); err == nil {
 		models = p.Models
 	}
-	rt := s.settingsSvc.Routing()
+	rt := g.settings.Routing()
 	routePolicyFor(kind)(&rt, providerID, models)
-	if err := s.settingsSvc.SaveRouting(rt); err != nil {
+	if err := g.settings.SaveRouting(rt); err != nil {
 		log.Printf("auto-route provider %d: %v", providerID, err)
 	}
 }

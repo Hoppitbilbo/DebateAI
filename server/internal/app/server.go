@@ -42,8 +42,7 @@ type Server struct {
 	static        fs.FS
 
 	limiter *rateLimiter
-	provMu  sync.Mutex
-	provs   map[int64]cachedProvider
+	gateway *aiGateway
 }
 
 func NewServer(cfg Config, db *sql.DB, static fs.FS) *Server {
@@ -62,9 +61,9 @@ func NewServer(cfg Config, db *sql.DB, static fs.FS) *Server {
 		crypto:      NewCrypto(cfg.Secret),
 		static:      static,
 		limiter:     newRateLimiter(),
-		provs:       map[int64]cachedProvider{},
 	}
 	s.settingsSvc = &settingsService{store: s.settings, crypto: s.crypto, smtpDefaults: cfg.SMTP}
+	s.gateway = newAIGateway(s.providers, s.prices, s.usage, s.sessions, s.settingsSvc, s.crypto)
 	s.accounts = &authService{users: s.users, logins: s.logins, invites: s.invites, classes: s.classes, mail: s,
 		siteName: func() string { return s.settingsSvc.General().SiteName }}
 	s.classSvc = &classService{classes: s.classes, users: s.users, accounts: s.accounts, mail: s,
@@ -72,7 +71,7 @@ func NewServer(cfg Config, db *sql.DB, static fs.FS) *Server {
 	s.assignmentSvc = &assignmentService{assignments: s.assignments, classes: s.classes, sessions: s.sessions, classSvc: s.classSvc,
 		listeners: []assignmentListener{mailNotifier{classes: s.classes, mail: s, siteName: func() string { return s.settingsSvc.General().SiteName }}}}
 	s.sessionSvc = &sessionService{sessions: s.sessions, assignments: s.assignments, classes: s.classes, classSvc: s.classSvc,
-		judge: s, jevSettings: s.settingsSvc.Jev}
+		judge: s.gateway, jevSettings: s.settingsSvc.Jev}
 	s.bootstrap()
 	return s
 }
@@ -93,21 +92,21 @@ func (s *Server) bootstrap() {
 	// Same path as adding a provider in the admin panel: list models, import
 	// prices, then let autoRoute pick sensible defaults per task.
 	add := func(name, kind, baseURL, key string) int64 {
-		id, err := s.insertProvider(name, kind, baseURL, key)
+		id, err := s.gateway.insertProvider(name, kind, baseURL, key)
 		if err != nil {
 			log.Printf("bootstrap %s: %v", name, err)
 			return 0
 		}
-		if cp, err := s.provider(id); err == nil {
+		if cp, err := s.gateway.provider(id); err == nil {
 			ctx, cancel := context.WithTimeout(context.Background(), modelListTimeout)
 			if models, err := cp.p.ListModels(ctx); err == nil && len(models) > 0 {
-				s.storeModels(id, models)
+				s.gateway.storeModels(id, models)
 			} else if err != nil {
 				log.Printf("bootstrap %s: listing models failed: %v", name, err)
 			}
 			cancel()
 		}
-		s.autoRoute(id, kind)
+		s.gateway.autoRoute(id, kind)
 		log.Printf("configured %s from environment", name)
 		return id
 	}

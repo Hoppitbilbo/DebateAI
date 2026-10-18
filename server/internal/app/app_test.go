@@ -368,7 +368,7 @@ func TestStreamFallsBackWhenFirstTokenIsLate(t *testing.T) {
 
 	start := time.Now()
 	var got strings.Builder
-	res, err := s.generate(context.Background(), TaskChat, ai.Request{Messages: []ai.Message{{Role: "user", Content: "hi"}}}, nil, nil, func(d string) error {
+	res, err := s.gateway.generate(context.Background(), TaskChat, ai.Request{Messages: []ai.Message{{Role: "user", Content: "hi"}}}, nil, nil, func(d string) error {
 		got.WriteString(d)
 		return nil
 	})

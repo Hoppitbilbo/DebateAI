@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"sync"
 	"sync/atomic"
 	"time"
 
@@ -29,37 +30,57 @@ type providerRow struct {
 	CreatedAt string         `json:"createdAt"`
 }
 
+// aiGateway is the AI side of the platform: it builds provider adapters
+// (cached), prices and meters every call, enforces the budget, orders the
+// route targets of a task and runs the fallback chain for chat and judging.
+type aiGateway struct {
+	providers providerStore
+	prices    priceStore
+	usage     usageStore
+	sessions  sessionStore // to add the cost of a call to its session
+	settings  *settingsService
+	crypto    *Crypto
+
+	provMu sync.Mutex
+	provs  map[int64]cachedProvider
+}
+
+func newAIGateway(providers providerStore, prices priceStore, usage usageStore, sessions sessionStore, settings *settingsService, crypto *Crypto) *aiGateway {
+	return &aiGateway{providers: providers, prices: prices, usage: usage, sessions: sessions, settings: settings, crypto: crypto,
+		provs: map[int64]cachedProvider{}}
+}
+
 type cachedProvider struct {
 	p    ai.Provider
 	cfg  ai.Config
 	name string
 }
 
-func (s *Server) insertProvider(name, kind, baseURL, apiKey string) (int64, error) {
-	return s.providers.Create(name, kind, strings.TrimSpace(baseURL), s.crypto.Encrypt(strings.TrimSpace(apiKey)))
+func (g *aiGateway) insertProvider(name, kind, baseURL, apiKey string) (int64, error) {
+	return g.providers.Create(name, kind, strings.TrimSpace(baseURL), g.crypto.Encrypt(strings.TrimSpace(apiKey)))
 }
 
-func (s *Server) invalidateProvider(id int64) {
-	s.provMu.Lock()
-	delete(s.provs, id)
-	s.provMu.Unlock()
+func (g *aiGateway) invalidateProvider(id int64) {
+	g.provMu.Lock()
+	delete(g.provs, id)
+	g.provMu.Unlock()
 }
 
 // provider returns a ready adapter for an enabled provider.
-func (s *Server) provider(id int64) (*cachedProvider, error) {
-	s.provMu.Lock()
-	defer s.provMu.Unlock()
-	if cp, ok := s.provs[id]; ok {
+func (g *aiGateway) provider(id int64) (*cachedProvider, error) {
+	g.provMu.Lock()
+	defer g.provMu.Unlock()
+	if cp, ok := g.provs[id]; ok {
 		return &cp, nil
 	}
-	rec, err := s.providers.Get(id)
+	rec, err := g.providers.Get(id)
 	if err != nil {
 		return nil, fmt.Errorf("provider %d not found", id)
 	}
 	if !rec.Enabled {
 		return nil, fmt.Errorf("provider %s is disabled", rec.Name)
 	}
-	key, err := s.crypto.Decrypt(rec.APIKeyEnc)
+	key, err := g.crypto.Decrypt(rec.APIKeyEnc)
 	if err != nil {
 		return nil, err
 	}
@@ -69,7 +90,7 @@ func (s *Server) provider(id int64) (*cachedProvider, error) {
 		return nil, err
 	}
 	cp := cachedProvider{p: p, cfg: cfg, name: rec.Name}
-	s.provs[id] = cp
+	g.provs[id] = cp
 	return &cp, nil
 }
 
@@ -80,11 +101,11 @@ type price struct {
 	Known   bool
 }
 
-func (s *Server) priceFor(providerID int64, model string) price {
-	if in, out, ok := s.prices.Get(providerID, model); ok {
+func (g *aiGateway) priceFor(providerID int64, model string) price {
+	if in, out, ok := g.prices.Get(providerID, model); ok {
 		return price{in, out, true}
 	}
-	if ai.IsLikelyFree(s.providers.BaseURL(providerID), model) {
+	if ai.IsLikelyFree(g.providers.BaseURL(providerID), model) {
 		return price{0, 0, true}
 	}
 	return price{}
@@ -95,13 +116,13 @@ func monthStart() string {
 	return time.Date(n.Year(), n.Month(), 1, 0, 0, 0, 0, time.UTC).Format(time.RFC3339)
 }
 
-func (s *Server) monthSpend() float64 {
-	return s.usage.SpendSince(monthStart())
+func (g *aiGateway) monthSpend() float64 {
+	return g.usage.SpendSince(monthStart())
 }
 
-func (s *Server) budgetExceeded() bool {
-	b := s.settingsSvc.Budget()
-	return b.MonthlyUSD > 0 && b.BlockPaidWhenExceeded && s.monthSpend() >= b.MonthlyUSD
+func (g *aiGateway) budgetExceeded() bool {
+	b := g.settings.Budget()
+	return b.MonthlyUSD > 0 && b.BlockPaidWhenExceeded && g.monthSpend() >= b.MonthlyUSD
 }
 
 // ---------- usage log ----------
@@ -119,21 +140,21 @@ type usageEntry struct {
 	Err        string
 }
 
-func (s *Server) logUsage(e usageEntry) float64 {
+func (g *aiGateway) logUsage(e usageEntry) float64 {
 	var cost float64
 	if e.Usage.CostUSD != nil && *e.Usage.CostUSD >= 0 {
 		cost = *e.Usage.CostUSD
 	} else {
-		p := s.priceFor(e.ProviderID, e.Model)
+		p := g.priceFor(e.ProviderID, e.Model)
 		cost = (float64(e.Usage.InputTokens)*p.In + float64(e.Usage.OutputTokens)*p.Out) / 1e6
 	}
-	logIfErr("usage log", s.usage.Insert(domain.UsageRecord{
+	logIfErr("usage log", g.usage.Insert(domain.UsageRecord{
 		UserID: e.UserID, SessionID: e.SessionID, ProviderID: e.ProviderID, Provider: e.Provider, Model: e.Model, Task: e.Task,
 		InputTokens: e.Usage.InputTokens, OutputTokens: e.Usage.OutputTokens, CostUSD: cost, OK: e.OK,
 		LatencyMs: e.Latency.Milliseconds(), Error: e.Err,
 	}))
 	if e.SessionID != nil && cost > 0 {
-		logIfErr("add session cost", s.sessions.AddCost(*e.SessionID, cost))
+		logIfErr("add session cost", g.sessions.AddCost(*e.SessionID, cost))
 	}
 	return cost
 }
@@ -162,17 +183,17 @@ var errNoTargets = errors.New("no AI model is configured for this task (ask the 
 
 // generate runs a request through the fallback chain. When onDelta is non-nil
 // the response is streamed; fallback only happens before the first delta.
-func (s *Server) generate(ctx context.Context, task string, req ai.Request, userID, sessionID *int64, onDelta func(string) error) (*genResult, error) {
-	targets := s.targets(task)
+func (g *aiGateway) generate(ctx context.Context, task string, req ai.Request, userID, sessionID *int64, onDelta func(string) error) (*genResult, error) {
+	targets := g.targets(task)
 	if len(targets) == 0 {
-		if s.budgetExceeded() {
+		if g.budgetExceeded() {
 			return nil, errors.New("monthly AI budget exhausted and no free model is configured")
 		}
 		return nil, errNoTargets
 	}
 	var out *genResult
 	var started atomic.Bool
-	err := s.runFallbackChain("ai "+task, targets, func(t RouteTarget, cp *cachedProvider) error {
+	err := g.runFallbackChain("ai "+task, targets, func(t RouteTarget, cp *cachedProvider) error {
 		tm, ok := cp.p.(ai.TextModel)
 		if !ok {
 			return errSkipTarget // e.g. Jev only answers structured questions (see judge.go)
@@ -182,7 +203,7 @@ func (s *Server) generate(ctx context.Context, task string, req ai.Request, user
 		if r.ReasoningEffort == "" && (task == TaskChat || task == TaskUtility) {
 			r.ReasoningEffort = "low" // characters must answer quickly
 		}
-		model := s.meterText(ai.WithFirstTokenTimeout(tm, firstTokenTimeout),
+		model := g.meterText(ai.WithFirstTokenTimeout(tm, firstTokenTimeout),
 			usageEntry{UserID: userID, SessionID: sessionID, ProviderID: t.ProviderID, Provider: cp.name, Model: t.Model, Task: task})
 		var res *ai.Response
 		var err error
@@ -256,11 +277,11 @@ func (s *Server) sessionFor(u *User, sessionID int64) (*int64, string, error) {
 func (s *Server) handleAIStatus(w http.ResponseWriter, r *http.Request) {
 	u := s.userFromRequest(r)
 	g := s.settingsSvc.General()
-	live := g.LiveEnabled && len(s.targets(TaskLive)) > 0 && (u != nil || g.GuestLive)
+	live := g.LiveEnabled && len(s.gateway.targets(TaskLive)) > 0 && (u != nil || g.GuestLive)
 	writeJSON(w, 200, aiStatusResponse{
-		Text:        len(s.targets(TaskChat)) > 0 && (u != nil || g.GuestAccess),
+		Text:        len(s.gateway.targets(TaskChat)) > 0 && (u != nil || g.GuestAccess),
 		Live:        live,
-		Judge:       s.settingsSvc.Jev().Enabled && len(s.targets(TaskJudge)) > 0,
+		Judge:       s.settingsSvc.Jev().Enabled && len(s.gateway.targets(TaskJudge)) > 0,
 		LoggedIn:    u != nil,
 		GuestAccess: g.GuestAccess,
 	})
@@ -318,7 +339,7 @@ func (s *Server) handleGenerate(w http.ResponseWriter, r *http.Request) {
 	req := ai.Request{System: in.System, Messages: in.Messages, JSON: in.JSON, Temperature: in.Temperature, MaxTokens: in.MaxTokens}
 
 	if !in.Stream {
-		res, err := s.generate(r.Context(), in.Task, req, userID, sessionID, nil)
+		res, err := s.gateway.generate(r.Context(), in.Task, req, userID, sessionID, nil)
 		if err != nil {
 			writeErr(w, 502, "ai_error", err.Error())
 			return
@@ -342,7 +363,7 @@ func (s *Server) handleGenerate(w http.ResponseWriter, r *http.Request) {
 		}
 		return nil
 	}
-	res, err := s.generate(r.Context(), in.Task, req, userID, sessionID, func(d string) error { return send(streamDelta{Delta: d}) })
+	res, err := s.gateway.generate(r.Context(), in.Task, req, userID, sessionID, func(d string) error { return send(streamDelta{Delta: d}) })
 	if err != nil {
 		_ = send(streamError{Error: err.Error()})
 		return
@@ -385,8 +406,8 @@ func (s *Server) handleLiveToken(w http.ResponseWriter, r *http.Request) {
 		voice = s.settingsSvc.Routing().DefaultVoice
 	}
 	var lastErr error = errNoTargets
-	for _, t := range s.targets(TaskLive) {
-		cp, err := s.provider(t.ProviderID)
+	for _, t := range s.gateway.targets(TaskLive) {
+		cp, err := s.gateway.provider(t.ProviderID)
 		if err != nil || cp.cfg.Kind != ai.KindGemini {
 			continue
 		}
@@ -431,7 +452,7 @@ func (s *Server) handleLiveUsage(w http.ResponseWriter, r *http.Request) {
 		userID = &u.ID
 	}
 	sessionID, _, _ := s.sessionFor(u, in.SessionID)
-	cost := s.logUsage(usageEntry{UserID: userID, SessionID: sessionID, ProviderID: in.ProviderID, Provider: s.providers.Name(in.ProviderID), Model: in.Model, Task: TaskLive,
+	cost := s.gateway.logUsage(usageEntry{UserID: userID, SessionID: sessionID, ProviderID: in.ProviderID, Provider: s.providers.Name(in.ProviderID), Model: in.Model, Task: TaskLive,
 		Usage: ai.Usage{InputTokens: in.InputTokens, OutputTokens: in.OutputTokens}, OK: true, Latency: time.Duration(in.Seconds) * time.Second})
 	writeJSON(w, 200, liveUsageResponse{OK: true, CostUSD: cost})
 }

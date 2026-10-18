@@ -129,8 +129,8 @@ func jevState(in judgeInput, goals []string, maxChars int) map[string]any {
 	return state
 }
 
-func (s *Server) judge(ctx context.Context, in judgeInput, userID, sessionID *int64) JudgeResult {
-	js := s.settingsSvc.Jev()
+func (g *aiGateway) judge(ctx context.Context, in judgeInput, userID, sessionID *int64) JudgeResult {
+	js := g.settings.Jev()
 	res := JudgeResult{Engine: "none", EvaluatedAt: now()}
 	goals := in.Goals
 	if len(goals) == 0 && strings.TrimSpace(in.Instructions) != "" {
@@ -146,7 +146,7 @@ func (s *Server) judge(ctx context.Context, in judgeInput, userID, sessionID *in
 	}
 
 	var verdict *JudgeResult
-	err := s.runFallbackChain("judge", s.targets(TaskJudge), func(t RouteTarget, cp *cachedProvider) error {
+	err := g.runFallbackChain("judge", g.targets(TaskJudge), func(t RouteTarget, cp *cachedProvider) error {
 		ctx, cancel := context.WithTimeout(ctx, judgeTargetTimeout)
 		defer cancel()
 		engine, ok := judgeFor(cp.p)
@@ -156,7 +156,7 @@ func (s *Server) judge(ctx context.Context, in judgeInput, userID, sessionID *in
 		start := time.Now()
 		r, usage, err := engine.evaluate(ctx, t.Model, in, js.MaxStateChars)
 		// An unusable answer (e.g. invalid JSON) is logged as a failed attempt.
-		s.recordUsage(usageEntry{UserID: userID, SessionID: sessionID, ProviderID: t.ProviderID, Provider: cp.name, Model: t.Model, Task: TaskJudge}, start, usage, err)
+		g.recordUsage(usageEntry{UserID: userID, SessionID: sessionID, ProviderID: t.ProviderID, Provider: cp.name, Model: t.Model, Task: TaskJudge}, start, usage, err)
 		if err != nil {
 			return err
 		}

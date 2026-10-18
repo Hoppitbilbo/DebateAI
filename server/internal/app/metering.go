@@ -13,7 +13,7 @@ import (
 
 // recordUsage completes entry with the outcome of a call that started at
 // start and writes it to the usage log.
-func (s *Server) recordUsage(entry usageEntry, start time.Time, usage ai.Usage, err error) {
+func (g *aiGateway) recordUsage(entry usageEntry, start time.Time, usage ai.Usage, err error) {
 	entry.Latency = time.Since(start)
 	entry.Usage = usage
 	if err != nil {
@@ -21,17 +21,17 @@ func (s *Server) recordUsage(entry usageEntry, start time.Time, usage ai.Usage, 
 	} else {
 		entry.OK = true
 	}
-	s.logUsage(entry)
+	g.logUsage(entry)
 }
 
 type meteredTextModel struct {
 	ai.TextModel
-	s     *Server
+	gw    *aiGateway
 	entry usageEntry
 }
 
-func (s *Server) meterText(m ai.TextModel, entry usageEntry) ai.TextModel {
-	return meteredTextModel{TextModel: m, s: s, entry: entry}
+func (g *aiGateway) meterText(m ai.TextModel, entry usageEntry) ai.TextModel {
+	return meteredTextModel{TextModel: m, gw: g, entry: entry}
 }
 
 func (m meteredTextModel) Generate(ctx context.Context, req ai.Request) (*ai.Response, error) {
@@ -53,22 +53,22 @@ func (m meteredTextModel) record(start time.Time, res *ai.Response, err error) {
 	if res != nil {
 		usage = res.Usage
 	}
-	m.s.recordUsage(m.entry, start, usage, err)
+	m.gw.recordUsage(m.entry, start, usage, err)
 }
 
 type meteredDecider struct {
 	ai.Decider
-	s     *Server
+	gw    *aiGateway
 	entry usageEntry
 }
 
-func (s *Server) meterDecider(d ai.Decider, entry usageEntry) ai.Decider {
-	return meteredDecider{Decider: d, s: s, entry: entry}
+func (g *aiGateway) meterDecider(d ai.Decider, entry usageEntry) ai.Decider {
+	return meteredDecider{Decider: d, gw: g, entry: entry}
 }
 
 func (m meteredDecider) Decide(ctx context.Context, model string, state any, qs map[string]ai.JevQuestion) (*ai.JevResult, error) {
 	start := time.Now()
 	res, err := m.Decider.Decide(ctx, model, state, qs)
-	m.s.recordUsage(m.entry, start, usageOr(res), err)
+	m.gw.recordUsage(m.entry, start, usageOr(res), err)
 	return res, err
 }

@@ -69,7 +69,7 @@ func TestJudgeWithoutGoalsOrInstructionsDoesNothing(t *testing.T) {
 	s := newTestServer(t)
 	in := judgeIn()
 	in.Instructions = "  "
-	if r := s.judge(context.Background(), in, nil, nil); r.Engine != "none" || r.Error != "" {
+	if r := s.gateway.judge(context.Background(), in, nil, nil); r.Engine != "none" || r.Error != "" {
 		t.Fatalf("expected no evaluation: %+v", r)
 	}
 }
@@ -82,7 +82,7 @@ func TestJudgeDisabledDoesNothing(t *testing.T) {
 	d := &fakeDecider{}
 	useProvider(s, 1, ai.KindJev, d)
 	setJudgeRoute(t, s, RouteTarget{1, "jev"})
-	if r := s.judge(context.Background(), judgeIn("g"), nil, nil); r.Engine != "none" || d.questions != nil {
+	if r := s.gateway.judge(context.Background(), judgeIn("g"), nil, nil); r.Engine != "none" || d.questions != nil {
 		t.Fatalf("disabled judge must not run: %+v", r)
 	}
 }
@@ -93,7 +93,7 @@ func TestJudgeWithJevAsksOneQuestionPerGoal(t *testing.T) {
 	useProvider(s, 1, ai.KindJev, d)
 	setJudgeRoute(t, s, RouteTarget{1, "jev-latest"})
 
-	r := s.judge(context.Background(), judgeIn("chiedere della Russia", "chiedere di Mosca"), nil, nil)
+	r := s.gateway.judge(context.Background(), judgeIn("chiedere della Russia", "chiedere di Mosca"), nil, nil)
 	if r.Engine != "jev" || r.Model != "jev-latest" || r.Progress != 50 || r.Completed || !r.OffTopic {
 		t.Fatalf("unexpected result: %+v", r)
 	}
@@ -119,7 +119,7 @@ func TestJudgeUsesInstructionsAsGoalWhenNoGoals(t *testing.T) {
 	useProvider(s, 1, ai.KindJev, d)
 	setJudgeRoute(t, s, RouteTarget{1, "jev"})
 
-	r := s.judge(context.Background(), judgeIn(), nil, nil)
+	r := s.gateway.judge(context.Background(), judgeIn(), nil, nil)
 	if len(r.Goals) != 1 || !strings.Contains(r.Goals[0].Text, "Intervista Napoleone") || !r.Completed || r.Progress != 100 {
 		t.Fatalf("instructions should become the only goal: %+v", r)
 	}
@@ -133,7 +133,7 @@ func TestJudgeWithLLMParsesFencedJSON(t *testing.T) {
 	useProvider(s, 1, ai.KindOpenAI, llm)
 	setJudgeRoute(t, s, RouteTarget{1, "judge-model"})
 
-	r := s.judge(context.Background(), judgeIn("a", "b"), nil, nil)
+	r := s.gateway.judge(context.Background(), judgeIn("a", "b"), nil, nil)
 	if r.Engine != "llm" || r.Hint != "Chiedi di Mosca" || r.Progress != 50 {
 		t.Fatalf("unexpected result: %+v", r)
 	}
@@ -151,11 +151,11 @@ func TestJudgeLLMCompletedIsBlockedByMinTurns(t *testing.T) {
 	setJudgeRoute(t, s, RouteTarget{1, "m"})
 
 	in := judgeIn("a")
-	if r := s.judge(context.Background(), in, nil, nil); !r.Completed || r.Progress != 100 {
+	if r := s.gateway.judge(context.Background(), in, nil, nil); !r.Completed || r.Progress != 100 {
 		t.Fatalf("model-declared completion should be kept: %+v", r)
 	}
 	in.MinTurns, in.Turns = 3, 1
-	if r := s.judge(context.Background(), in, nil, nil); r.Completed {
+	if r := s.gateway.judge(context.Background(), in, nil, nil); r.Completed {
 		t.Fatalf("completion before MinTurns: %+v", r)
 	}
 }
@@ -166,7 +166,7 @@ func TestJudgeFallsBackToNextTarget(t *testing.T) {
 	useProvider(s, 2, ai.KindJev, &fakeDecider{scores: map[string]float64{"goal_0": 0.8}})
 	setJudgeRoute(t, s, RouteTarget{1, "bad"}, RouteTarget{2, "jev"})
 
-	r := s.judge(context.Background(), judgeIn("a"), nil, nil)
+	r := s.gateway.judge(context.Background(), judgeIn("a"), nil, nil)
 	if r.Engine != "jev" || !r.Completed {
 		t.Fatalf("expected fallback to jev: %+v", r)
 	}
@@ -180,7 +180,7 @@ func TestJudgeAllTargetsFailing(t *testing.T) {
 	useProvider(s, 1, ai.KindJev, &fakeDecider{err: &ai.HTTPError{Status: 500, Body: "down"}})
 	setJudgeRoute(t, s, RouteTarget{1, "jev"})
 
-	r := s.judge(context.Background(), judgeIn("a"), nil, nil)
+	r := s.gateway.judge(context.Background(), judgeIn("a"), nil, nil)
 	if r.Engine != "none" || !strings.Contains(r.Error, "down") {
 		t.Fatalf("expected error result: %+v", r)
 	}
@@ -194,7 +194,7 @@ func TestJudgeInvalidThresholdFallsBackToDefault(t *testing.T) {
 	useProvider(s, 1, ai.KindJev, &fakeDecider{scores: map[string]float64{"goal_0": 0.75}})
 	setJudgeRoute(t, s, RouteTarget{1, "jev"})
 
-	if r := s.judge(context.Background(), judgeIn("a"), nil, nil); !r.Goals[0].Met {
+	if r := s.gateway.judge(context.Background(), judgeIn("a"), nil, nil); !r.Goals[0].Met {
 		t.Fatalf("0.75 must pass the default 0.7 threshold: %+v", r)
 	}
 }

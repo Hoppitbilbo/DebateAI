@@ -15,7 +15,7 @@ import (
 
 func (s *Server) handleAdminOverview(w http.ResponseWriter, r *http.Request) {
 	b := s.settingsSvc.Budget()
-	spend := s.monthSpend()
+	spend := s.gateway.monthSpend()
 	today := time.Now().UTC().Truncate(24 * time.Hour).Format(time.RFC3339)
 	writeJSON(w, 200, adminOverviewResponse{
 		Users: userCounts{
@@ -31,7 +31,7 @@ func (s *Server) handleAdminOverview(w http.ResponseWriter, r *http.Request) {
 		MonthSpendUSD:   spend,
 		TodaySpendUSD:   s.usage.SpendSince(today),
 		MonthBudgetUSD:  b.MonthlyUSD,
-		BudgetExceeded:  s.budgetExceeded(),
+		BudgetExceeded:  s.gateway.budgetExceeded(),
 		RequestsToday:   s.usage.CountSince(today, false),
 		ErrorsToday:     s.usage.CountSince(today, true),
 		MailConfigured:  s.settingsSvc.MailConfigured(),
@@ -337,7 +337,7 @@ func (s *Server) handleCreateProvider(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 400, "bad_request", "name and a valid kind are required")
 		return
 	}
-	id, err := s.insertProvider(strings.TrimSpace(in.Name), in.Kind, in.BaseURL, in.APIKey)
+	id, err := s.gateway.insertProvider(strings.TrimSpace(in.Name), in.Kind, in.BaseURL, in.APIKey)
 	if err != nil {
 		writeErr(w, 500, "internal", err.Error())
 		return
@@ -346,17 +346,17 @@ func (s *Server) handleCreateProvider(w http.ResponseWriter, r *http.Request) {
 	// Ollama…); the preset list is only a fallback when listing fails.
 	fetched := false
 	ctx, cancel := context.WithTimeout(r.Context(), modelListTimeout)
-	if cp, err := s.provider(id); err == nil {
+	if cp, err := s.gateway.provider(id); err == nil {
 		if models, err := cp.p.ListModels(ctx); err == nil && len(models) > 0 {
-			s.storeModels(id, models)
+			s.gateway.storeModels(id, models)
 			fetched = true
 		}
 	}
 	cancel()
 	if !fetched && len(in.Models) > 0 {
-		s.storeModels(id, in.Models)
+		s.gateway.storeModels(id, in.Models)
 	}
-	s.autoRoute(id, in.Kind)
+	s.gateway.autoRoute(id, in.Kind)
 	for _, p := range s.loadProviders() {
 		if p.ID == id {
 			writeJSON(w, 201, p)
@@ -367,13 +367,13 @@ func (s *Server) handleCreateProvider(w http.ResponseWriter, r *http.Request) {
 
 // storeModels saves the model list of a provider and imports the prices it
 // publishes (e.g. OpenRouter), unless the admin has set them manually.
-func (s *Server) storeModels(providerID int64, models []ai.ModelInfo) {
-	logIfErr("store models", s.providers.SetModels(providerID, models))
+func (g *aiGateway) storeModels(providerID int64, models []ai.ModelInfo) {
+	logIfErr("store models", g.providers.SetModels(providerID, models))
 	for _, m := range models {
 		if m.InputPerM != nil && m.OutputPerM != nil {
-			logIfErr("import price", s.prices.Import(providerID, m.ID, *m.InputPerM, *m.OutputPerM))
+			logIfErr("import price", g.prices.Import(providerID, m.ID, *m.InputPerM, *m.OutputPerM))
 		} else if m.Free {
-			logIfErr("import price", s.prices.Import(providerID, m.ID, 0, 0))
+			logIfErr("import price", g.prices.Import(providerID, m.ID, 0, 0))
 		}
 	}
 }
@@ -401,7 +401,7 @@ func (s *Server) handleUpdateProvider(w http.ResponseWriter, r *http.Request) {
 		p.APIKeyEnc = ptr(s.crypto.Encrypt(strings.TrimSpace(*in.APIKey)))
 	}
 	err := s.providers.Update(id, p)
-	s.invalidateProvider(id)
+	s.gateway.invalidateProvider(id)
 	if err != nil {
 		writeErr(w, 500, "internal", err.Error())
 		return
@@ -421,7 +421,7 @@ func (s *Server) handleDeleteProvider(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 500, "internal", err.Error())
 		return
 	}
-	s.invalidateProvider(id)
+	s.gateway.invalidateProvider(id)
 	rt := s.settingsSvc.Routing()
 	for task, list := range rt.Tasks {
 		kept := list[:0:0]
@@ -441,8 +441,8 @@ func (s *Server) handleDeleteProvider(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) handleRefreshModels(w http.ResponseWriter, r *http.Request) {
 	id := pathID(r, "id")
-	s.invalidateProvider(id)
-	cp, err := s.provider(id)
+	s.gateway.invalidateProvider(id)
+	cp, err := s.gateway.provider(id)
 	if err != nil {
 		writeErr(w, 400, "provider_error", err.Error())
 		return
@@ -454,7 +454,7 @@ func (s *Server) handleRefreshModels(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 502, "provider_error", err.Error())
 		return
 	}
-	s.storeModels(id, models)
+	s.gateway.storeModels(id, models)
 	writeJSON(w, 200, models)
 }
 
@@ -465,8 +465,8 @@ func (s *Server) handleTestProvider(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 400, "bad_request", "model required")
 		return
 	}
-	s.invalidateProvider(id)
-	cp, err := s.provider(id)
+	s.gateway.invalidateProvider(id)
+	cp, err := s.gateway.provider(id)
 	if err != nil {
 		writeErr(w, 400, "provider_error", err.Error())
 		return
@@ -481,7 +481,7 @@ func (s *Server) handleTestProvider(w http.ResponseWriter, r *http.Request) {
 			{"from": "student", "text": "Why did you invade Russia?"},
 			{"from": "Napoleon", "text": "The Tsar broke the Continental System."},
 		}}
-		res, err := s.meterDecider(d, entry).Decide(ctx, in.Model, state,
+		res, err := s.gateway.meterDecider(d, entry).Decide(ctx, in.Model, state,
 			map[string]ai.JevQuestion{"asked": {Type: "noul", Instructions: "In `conversation`, did the student ask about the invasion of Russia?"}})
 		if err != nil {
 			writeErr(w, 502, "provider_error", err.Error())
@@ -495,7 +495,7 @@ func (s *Server) handleTestProvider(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 400, "provider_error", "provider cannot generate text")
 		return
 	}
-	res, err := s.meterText(tm, entry).Generate(ctx, ai.Request{Model: in.Model, Messages: []ai.Message{{Role: "user", Content: "Reply with the single word: ok"}}, MaxTokens: 50})
+	res, err := s.gateway.meterText(tm, entry).Generate(ctx, ai.Request{Model: in.Model, Messages: []ai.Message{{Role: "user", Content: "Reply with the single word: ok"}}, MaxTokens: 50})
 	if err != nil {
 		writeErr(w, 502, "provider_error", err.Error())
 		return
@@ -566,7 +566,7 @@ func (s *Server) handleUsageSummary(w http.ResponseWriter, r *http.Request) {
 		ByProvider:    group(domain.UsageByProvider),
 		ByUser:        group(domain.UsageByUser),
 		ByClass:       group(domain.UsageByClass),
-		MonthSpendUSD: s.monthSpend(),
+		MonthSpendUSD: s.gateway.monthSpend(),
 		Budget:        s.settingsSvc.Budget(),
 	})
 }

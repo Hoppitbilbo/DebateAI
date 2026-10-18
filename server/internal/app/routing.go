@@ -7,7 +7,7 @@ import "sort"
 // strategy is a new type registered in routingStrategies; targets() does not
 // change.
 
-// priceBook answers what a provider/model costs; Server implements it.
+// priceBook answers what a provider/model costs; aiGateway implements it.
 type priceBook interface {
 	priceFor(providerID int64, model string) price
 }
@@ -93,15 +93,15 @@ func (f freeOnly) order(list []RouteTarget, prices priceBook) []RouteTarget {
 
 // targets returns the candidate list for a task according to the routing
 // strategy and the budget state. This is the "decide which API" half of JEV.
-func (s *Server) targets(task string) []RouteTarget {
-	rt := s.settingsSvc.Routing()
+func (g *aiGateway) targets(task string) []RouteTarget {
+	rt := g.settings.Routing()
 	list := rt.Tasks[task]
 	if len(list) == 0 && task != TaskChat && task != TaskLive {
 		list = rt.Tasks[TaskChat] // sensible fallback
 	}
 	strategy := strategyFor(rt.Strategy)
-	if s.budgetExceeded() {
+	if g.budgetExceeded() {
 		strategy = freeOnly{strategy}
 	}
-	return strategy.order(list, s)
+	return strategy.order(list, g)
 }
