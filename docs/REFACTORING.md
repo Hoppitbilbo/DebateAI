@@ -28,7 +28,8 @@ Chi riprende il lavoro legge prima la sezione *Stato attuale*, poi esegue il pri
    - frontend: `npm run lint && npm test && npm run build`
    - traduzioni: `npm run check:i18n`
    - contratto API: `TestResponseShapes` confronta la forma JSON di 27 risposte con `server/internal/app/testdata/shapes.json`. Se un cambio è voluto, rigenerare con `UPDATE_SHAPES=1 go test ./internal/app -run ResponseShapes` e spiegarlo nel Registro.
-6. **Se ti fermi a metà**, lascia il task `[~]` e scrivi in *Stato attuale* cosa manca, quali file sono toccati e cosa non funziona.
+6. **Hash dei commit:** nei riepiloghi e nel Registro copiali sempre da `git log`, mai a memoria.
+7. **Se ti fermi a metà**, lascia il task `[~]` e scrivi in *Stato attuale* cosa manca, quali file sono toccati e cosa non funziona.
 
 Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto · `[-]` scartato (spiegare perché)
 
@@ -224,3 +225,4 @@ Un'area per task, spostando l'SQL in `internal/store`:
 | 2026-10-18 | 2.4 | `45ea18c` | Claude Code | `server/internal/app/routing.go`: interfaccia `routingStrategy` (`asConfigured`, `freeFirst`, `cheapest`) registrata in `routingStrategies`, Decorator `freeOnly` per il budget, interfaccia `priceBook` (la implementa `Server`). `targets()` spostato qui. Nuova strategia = nuovo tipo + una riga nella mappa. |
 | 2026-10-18 | 2.5 | `be3d935` | Claude Code | `ai.New` usa la mappa `factories` e `ai.KnownKind` sostituisce `validKind`. `server/internal/app/route_policies.go`: `routePolicy` per tipo (`jevRoutes`, `geminiRoutes`, `firstModelRoutes`) in `defaultRoutes`; `autoRoute`, `newestFlash`, `pickModel` e `geminiVersion` spostati lì. Nuovo tipo di provider = adapter + factory + (opzionale) policy. Test `TestDefaultRoutePolicies`. |
 | 2026-10-18 | 2.6 | `07d78a1` | Claude Code | `judge.go`: interfaccia `goalJudge`, `jevJudge` (Decider) e `llmJudge` (Generator), scelta con `judgeFor`. Ogni motore costruisce il proprio state (`jevState` / `buildState`). `finalize` resta una funzione pura. Fase 2 completata, push su GitHub. |
+| 2026-10-18 | — | — | Claude Code | CI GitHub verde su `938e472` (fine fase 2: `test`, `web`, `image`). Corretti in chat gli hash della fase 2, riportati a memoria in modo sbagliato; quelli in questo documento erano già giusti. Aggiunta la regola 6. |
