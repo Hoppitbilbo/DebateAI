@@ -38,7 +38,7 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto · `[-]` scartato (spieg
 ## Stato attuale
 
 - **Fase in corso:** 8 (punti aperti e funzioni docente)
-- **Prossimo task:** 8.4
+- **Prossimo task:** 8.5
 - **Lavoro a metà:** nessuno
 - **Test:** Go (pacchetti `ai`, `app`, `domain`, `httpapi`, `store`) verdi anche con `-race`; Vitest 48 test verdi; lint 0 errori e 0 avvisi.
 - **Punti aperti (non refactoring, da decidere):**
@@ -216,7 +216,7 @@ Un'area per task, spostando l'SQL in `internal/store`:
 - [x] **8.1** (`8f788ea`) Tutorial: allineare gli id delle slide ai testi esistenti, tenere il necessario, migliorare i testi poco chiari.
 - [x] **8.2** (`a25b47a`) Personaggio misterioso: confronto del tentativo severo; la partita termina quando JEV giudica raggiunto l'obiettivo, con un messaggio.
 - [x] **8.3** (`6c65719`) Eliminare gli avvisi `react-refresh/only-export-components`.
-- [ ] **8.4** Docente: stampa/PDF della chat, feedback scritto a mano (visibile allo studente), export dei voti in Excel. Voti in dashboard e revisione della chat in qualsiasi momento esistono già (pagina di avanzamento del compito e `/sessions/{id}`).
+- [x] **8.4** (`7567de7`, `a734dc0`, `4250894`) Docente: stampa/PDF della chat, feedback scritto a mano (visibile allo studente), export dei voti in Excel. Voti in dashboard e revisione della chat in qualsiasi momento esistono già (pagina di avanzamento del compito e `/sessions/{id}`).
 - [ ] **8.5** Pull request da `go` a `master`.
 
 ---
@@ -287,3 +287,6 @@ Un'area per task, spostando l'SQL in `internal/store`:
 | 2026-10-18 | 8.1 | `8f788ea` | Claude Code | Riscritti i tutorial di ImpersonaTu e DoppiaIntervista: 6 slide brevi ciascuno (benvenuto, come funziona, consigli, cosa si impara/confronto, riflessione e valutazione, in classe) aderenti a cosa fa l'app, in it/en/es/fr/de; prima descrivevano sessioni con facilitatori tra pari inesistenti e 30 testi mostravano la chiave. Aggiunti i 3 punti mancanti di YouModerate in en/fr. `tutorials.test.tsx` ora richiede ogni testo in ogni lingua. |
 | 2026-10-18 | 8.2 | `a25b47a` | Claude Code | `isCorrectGuess` severo: giusto solo con il nome completo o con una parola intera del nome di almeno 4 lettere ("Vinci", "Leonardo"); frammenti, particelle e errori di battitura sono sbagliati. Quando JEV giudica raggiunto l'obiettivo del compito (`goal_reached`, serve `autoEnd`), le domande si fermano, compare il messaggio `apps.personaggioMisterioso.judgeEnded` (5 lingue) e si passa alla risposta finale. Test in `mystery.test.ts` e `activityPages.test.tsx`. |
 | 2026-10-18 | 8.3 | `6c65719` | Claude Code | Lint a 0 avvisi. `useAuth`/`dashboardPath` in `context/auth.ts` e `useAnimation` in `context/animation.ts` (i provider restano nei `.tsx`; i test mockano `@/context/auth`); `formatDate`/`usd` in `lib/format.ts`; `copy` in `lib/clipboard.ts`; `LOCALES` in `i18n/languages.ts`; `APP_ICONS`/`APP_TYPES` in `features/activity/appCatalog.ts`. In `eslint.config.js` la regola è spenta solo per `src/components/ui` (componenti shadcn generati). |
+| 2026-10-18 | 8.4a | `7567de7` | Claude Code | Feedback del docente: colonne `teacher_feedback`, `teacher_score` (0-10), `teacher_feedback_at`; prima migrazione del progetto (`migrations` in `store/schema.go`, solo aggiunte, idempotente). `SessionService.GiveFeedback` (docente della classe o admin, mai il proprietario), evento `feedbackListener` → `feedbackMailer` (mail "feedback" in 5 lingue), `PUT /api/sessions/{id}/feedback`. Test di migrazione su DB vecchio e delle regole. |
+| 2026-10-18 | 8.4c | `a734dc0` | Claude Code | Export Excel con `github.com/xuri/excelize/v2`: `GET /api/classes/{id}/grades.xlsx` e `GET /api/assignments/{id}/grades.xlsx`, una riga per studente e compito (stato, progresso, voti IA, voto docente, tentativi), intestazioni nella lingua del docente. `AssignmentService.Grades`. Test che scarica e rilegge il file. |
+| 2026-10-18 | 8.4b | `4250894` | Claude Code | Pagina sessione: pulsante Stampa / PDF (`window.print`, stili `print:` e `@media print` in `index.css`), `TeacherFeedbackForm` per il docente e `TeacherFeedbackView` per lo studente (e nella stampa). Pulsanti "Esporta voti (Excel)" in classe e compito; colonna voto docente e voto docente nella matrice. Voti in dashboard e revisione della chat in qualsiasi momento esistevano già. Test `sessionFeedback.test.tsx` (3). Vitest 52 test. |
