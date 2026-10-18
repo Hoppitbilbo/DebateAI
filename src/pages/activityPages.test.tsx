@@ -4,10 +4,20 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import ConvinciTuPage from "./ConvinciTuPage";
 import ImpersonaTuPage from "./ImpersonaTuPage";
 import WikiChatbotPage from "./WikiChatbotPage";
+import DoppiaIntervistaPage from "./DoppiaIntervistaPage";
+import PersonaggioMisteriosoPage from "./PersonaggioMisteriosoPage";
+import YouModeratePage from "./YouModeratePage";
 
 // Renders the migrated activity pages on the real ActivityRunner and
 // useActivityFlow (refactoring phase 5): setup → start → chat. Only the
 // server, the AI, Wikipedia and the page frame are fakes.
+
+// jsdom has no ResizeObserver; Radix (the slider) needs one.
+globalThis.ResizeObserver ??= class {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+};
 
 const mocks = vi.hoisted(() => ({
   begin: vi.fn().mockResolvedValue(7),
@@ -43,7 +53,10 @@ vi.mock("@/hooks/useLiveAi", () => ({
 }));
 vi.mock("@/services/aiService", () => ({ generateStream: mocks.generateStream, formatAiError: String }));
 
-beforeEach(() => vi.clearAllMocks());
+beforeEach(() => {
+  vi.clearAllMocks();
+  mocks.generateStream.mockResolvedValue("risposta");
+});
 afterEach(cleanup);
 
 const startButton = () => screen.getByRole("button", { name: "Start" }) as HTMLButtonElement;
@@ -91,5 +104,39 @@ describe("WikiChatbotPage", () => {
     pickAll();
     await start();
     expect(mocks.begin).toHaveBeenCalledWith(expect.stringMatching(/^Person /), expect.objectContaining({ page: expect.anything() }));
+  });
+});
+
+describe("DoppiaIntervistaPage", () => {
+  it("greets with both characters", async () => {
+    render(<DoppiaIntervistaPage />);
+    pickAll();
+    await start();
+    expect(mocks.begin).toHaveBeenCalledWith("Person Character 1 & Person Character 2", {
+      characters: [{ title: "Person Character 1" }, { title: "Person Character 2" }],
+    });
+    expect(screen.getAllByText(/Person Character 2/).length).toBeGreaterThan(0);
+  });
+});
+
+describe("YouModeratePage", () => {
+  it("opens the debate with the first character speaking", async () => {
+    render(<YouModeratePage />);
+    pickAll();
+    typeTopic("il potere");
+    await start();
+    expect(mocks.begin).toHaveBeenCalledWith("Person Character 1 vs Person Character 2: il potere", expect.anything());
+    expect(mocks.generateStream).toHaveBeenCalledTimes(1); // the opening statement
+    expect(screen.getByText("risposta")).toBeTruthy();
+  });
+});
+
+describe("PersonaggioMisteriosoPage", () => {
+  it("starts the game without revealing the character", async () => {
+    render(<PersonaggioMisteriosoPage />);
+    pickAll();
+    await start();
+    expect(mocks.begin).toHaveBeenCalledWith(expect.any(String), { character: expect.stringMatching(/^Person /), questions: 7 });
+    expect(screen.getByText(/7 questions/)).toBeTruthy(); // the intro
   });
 });
