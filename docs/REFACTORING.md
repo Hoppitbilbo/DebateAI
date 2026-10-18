@@ -7,6 +7,13 @@ Chi riprende il lavoro legge prima la sezione *Stato attuale*, poi esegue il pri
 
 ---
 
+## Punti di ripristino
+
+- Tag `pre-refactoring` (`e4c0fb9`) su GitHub: stato del codice prima di qualsiasi refactoring.
+- Il branch `go` va pushato su `origin` alla fine di ogni fase.
+
+---
+
 ## Regole per chi lavora qui
 
 1. **Mai cambiare il comportamento.** Ogni task è un refactoring puro. Se serve una modifica funzionale, va annotata in *Note e decisioni* e fatta a parte.
@@ -29,7 +36,7 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto · `[-]` scartato (spieg
 ## Stato attuale
 
 - **Fase in corso:** 1 (interventi veloci)
-- **Prossimo task:** 1.1
+- **Prossimo task:** 1.2
 - **Lavoro a metà:** nessuno
 - **Test:** Go 33 test nuovi + quelli esistenti verdi; Vitest 18 test verdi; lint 0 errori (18 warning preesistenti)
 
@@ -139,7 +146,7 @@ main.go        composition root (costruisce e inietta le dipendenze)
 
 ### Fase 1: interventi veloci
 
-- [ ] **1.1** Rimuovere il codice morto del debug i18n (verificare prima con grep che nulla lo importi).
+- [x] **1.1** (`585116c`) Rimuovere il codice morto del debug i18n (verificare prima con grep che nulla lo importi).
 - [ ] **1.2** Gestire gli errori oggi ignorati (`_, _ =`): restituirli o loggarli con contesto.
 - [ ] **1.3** Sostituire i numeri magici con costanti nominate.
 - [ ] **1.4** DTO tipizzati al posto di `map[string]any` nelle risposte (stesso JSON).
@@ -204,3 +211,5 @@ Un'area per task, spostando l'SQL in `internal/store`:
 | 2026-10-18 | 0.3 | `bc8e02f` | Claude Code | `server/internal/app/transcript_test.go`: 11 test HTTP (forma della risposta, turni, `autoEnd`, `maxTurns`, `evaluateEvery`, flag `judge`, contesto, troncamento a 1000, solo proprietario). Fixture: `newTranscriptFixture`. |
 | 2026-10-18 | 0.4 | `eb85be2` | Claude Code | Vitest 2.1.9 + jsdom + Testing Library; `vitest.config.ts`, script `npm test`. Test in `src/features/activity/*.test.tsx` (18): API, auth, `useLiveAi`, `aiService` sostituiti con `vi.mock`. |
 | 2026-10-18 | 0.5 | `c1b591b` | Claude Code | `.github/workflows/docker.yml`: `go vet` nel job `test`, nuovo job `web` (lint, i18n, Vitest, Node 22 come nel Dockerfile); `image` dipende da entrambi. Non ancora verificato su GitHub (nessun push). |
+| 2026-10-18 | — | — | Claude Code | Push di `go` su GitHub e tag `pre-refactoring`. |
+| 2026-10-18 | 1.1 | `585116c` | Claude Code | Rimossi 7 file, 2.441 righe: `src/utils/i18nDebugger.ts`, `visualErrorDetector.ts`, `i18nAnalyzer.ts`, `src/components/debug/*`, `src/hooks/useTranslationWithDebug.tsx`. |
