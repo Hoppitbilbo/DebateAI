@@ -38,7 +38,7 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto · `[-]` scartato (spieg
 ## Stato attuale
 
 - **Fase in corso:** 5 (attività, frontend)
-- **Prossimo task:** 5.1
+- **Prossimo task:** 5.2
 - **Lavoro a metà:** nessuno
 - **Test:** Go 33 test nuovi + quelli esistenti verdi; Vitest 18 test verdi; lint 0 errori (18 warning preesistenti)
 
@@ -133,7 +133,7 @@ server/
 
 | Pattern | Applicazione |
 |---|---|
-| Template Method (via composizione) + Strategy | `ActivityDefinition` per app + `<ActivityRunner>` generico che gestisce le fasi |
+| Template Method (via composizione) | hook `useActivityFlow` (fasi, sessione, engine, valutazione) + `<ActivityRunner>` che disegna i 4 step; la pagina passa solo setup, chat e testi |
 | Data-driven | tutorial come array di step + `TutorialRenderer` |
 | Adapter / Facade | `AiClient` sopra `aiService` e `liveConversationService` |
 | Container / Presentational | hook dati (`useProviders`, `useUsageSummary`, …) separati dai componenti visuali |
@@ -193,7 +193,7 @@ Un'area per task, spostando l'SQL in `internal/store`:
 
 ### Fase 5: attività (frontend)
 
-- [ ] **5.1** `ActivityDefinition` + `ActivityRunner`; migrare ConvinciTu.
+- [x] **5.1** (`2381ff4`) `useActivityFlow` + `ActivityRunner`; migrata ConvinciTu.
 - [ ] **5.2** Migrare ImpersonaTu e WikiChatbot.
 - [ ] **5.3** Migrare DoppiaIntervista, PersonaggioMisterioso e YouModerate.
 - [ ] **5.4** `AiClient` (Adapter) usato dagli hook.
@@ -256,3 +256,4 @@ Un'area per task, spostando l'SQL in `internal/store`:
 | 2026-10-18 | 4.4c | `c924d7c` | Claude Code | `server/internal/app/services.go`: struct `Services` (repository e service con campi esportati) e `NewServices(cfg, db)`; `Bootstrap(cfg)` spostato lì e chiamato da `main.go`. `Server` = `cfg` + `*Services` incorporato + `static` + `limiter`. `smtpMailer` in `mail.go` sostituisce `Server` come mailer. Campi rinominati (`s.users` → `s.Users`, `s.settingsSvc` → `s.Settings`, `s.gateway` → `s.Gateway`, ...). Avviato il binario vero: health e public config ok, admin creato dal bootstrap. |
 | 2026-10-18 | 4.4d | `d9ca955`, `b00ca5a` | Claude Code | (1/2) `gateway_admin.go`: `AddProvider`, `UpdateProvider`, `DeleteProvider`, `RefreshModels`, `TestProvider`, `LiveToken`, `RecordLiveUsage`, `ProviderView`; il bootstrap usa `AddProvider`. (2/2) Nuovo pacchetto `server/internal/httpapi` (server, middleware, handler, DTO, limiti HTTP); `app` esporta service, errori (`ErrX`) e input. Opzione `app.WithProviderFactory` (DI della factory dei provider) usata dai test HTTP per i modelli finti. Rimossi gli alias temporanei: si usano i tipi di `domain`. Test spostati senza perderne nessuno (55 prima, 55 dopo); `TestResponseShapes` e il suo golden ora in `httpapi`. `httpapi` non importa `store` né `database/sql`. Verificato con il binario vero (login, overview admin). **Fase 4 completata: il backend è finito.** |
 | 2026-10-18 | — | — | Claude Code | CI GitHub verde su `9c73d83` (fine fase 4: `test`, `web`, `image`). |
+| 2026-10-18 | 5.1 | `2381ff4` | Claude Code | `src/features/activity/useActivityFlow.ts` (`begin`, `finishChat`, `submitReflection`, `restart`, `preset`, `minTurns`; `live(phase, assignment)`) e `components/ActivityRunner.tsx` (props `setup`, `chat` con `ready`/`replacement`, `reflection` con `brief`/`showEndReason`, `feedback`). Al posto di un oggetto `ActivityDefinition` statico si usa la composizione hook + componente, più naturale in React perché le parti variabili dipendono dallo stato della pagina. ConvinciTu: da 157 a 103 righe. Attenzione: la callback `live` riceve l'assignment, così il prompt si costruisce con una funzione (una costante dichiarata dopo l'hook darebbe un ReferenceError a runtime). Test: `useActivityFlow.test.tsx` (5) e `pages/ConvinciTuPage.test.tsx` (render della pagina vera fino alla chat). |
