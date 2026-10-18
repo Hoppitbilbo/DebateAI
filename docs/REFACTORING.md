@@ -27,6 +27,7 @@ Chi riprende il lavoro legge prima la sezione *Stato attuale*, poi esegue il pri
    - backend: `cd server && go vet ./... && go test ./...`
    - frontend: `npm run lint && npm test && npm run build`
    - traduzioni: `npm run check:i18n`
+   - contratto API: `TestResponseShapes` confronta la forma JSON di 27 risposte con `server/internal/app/testdata/shapes.json`. Se un cambio è voluto, rigenerare con `UPDATE_SHAPES=1 go test ./internal/app -run ResponseShapes` e spiegarlo nel Registro.
 6. **Se ti fermi a metà**, lascia il task `[~]` e scrivi in *Stato attuale* cosa manca, quali file sono toccati e cosa non funziona.
 
 Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto · `[-]` scartato (spiegare perché)
@@ -35,8 +36,8 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto · `[-]` scartato (spieg
 
 ## Stato attuale
 
-- **Fase in corso:** 1 (interventi veloci)
-- **Prossimo task:** 1.4
+- **Fase in corso:** 2 (livello AI, backend)
+- **Prossimo task:** 2.1
 - **Lavoro a metà:** nessuno
 - **Test:** Go 33 test nuovi + quelli esistenti verdi; Vitest 18 test verdi; lint 0 errori (18 warning preesistenti)
 
@@ -149,7 +150,7 @@ main.go        composition root (costruisce e inietta le dipendenze)
 - [x] **1.1** (`585116c`) Rimuovere il codice morto del debug i18n (verificare prima con grep che nulla lo importi).
 - [x] **1.2** (`999aa75`) Gestire gli errori oggi ignorati (`_, _ =`): restituirli o loggarli con contesto.
 - [x] **1.3** (`923bd09`) Sostituire i numeri magici con costanti nominate.
-- [ ] **1.4** DTO tipizzati al posto di `map[string]any` nelle risposte (stesso JSON).
+- [x] **1.4** (`4a1c582`, `a625ad9`) DTO tipizzati al posto di `map[string]any` nelle risposte (stesso JSON).
 
 ### Fase 2: livello AI (backend)
 
@@ -216,3 +217,4 @@ Un'area per task, spostando l'SQL in `internal/store`:
 | 2026-10-18 | 1.1 | `585116c` | Claude Code | Rimossi 7 file, 2.441 righe: `src/utils/i18nDebugger.ts`, `visualErrorDetector.ts`, `i18nAnalyzer.ts`, `src/components/debug/*`, `src/hooks/useTranslationWithDebug.tsx`. |
 | 2026-10-18 | 1.2 | `999aa75` | Claude Code | Helper `execOrLog` e `sqlBatch` in `server/internal/app/db.go`. Corretti due bug: reset password (link riutilizzabile se l'update falliva) e forgot (mail con token non salvato). |
 | 2026-10-18 | 1.3 | `923bd09` | Claude Code | Nuovo `server/internal/app/limits.go` con limiti, timeout e soglie (valori invariati). Restano inline i `LIMIT` delle query di lista (verranno spostati nei repository, fase 3). Le costanti del frontend vengono rivedute nella fase 5. |
+| 2026-10-18 | 1.4 | `4a1c582`, `a625ad9` | Claude Code | Test golden `TestResponseShapes` (prima del refactoring), poi `server/internal/app/dto.go` con tutti i corpi delle risposte; `writeOK` per `{"ok":true}`. Forma JSON invariata. Restano mappe solo nello *state* inviato a Jev (`jevState`, test del provider), che è un input del modello e non una risposta API. |
