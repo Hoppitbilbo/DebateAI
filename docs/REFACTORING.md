@@ -37,11 +37,10 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto · `[-]` scartato (spieg
 
 ## Stato attuale
 
-- **Piano completato** (fasi 0-8) il 2026-10-18 sul branch `go`, in revisione nella PR #9.
+- **Piano completato** (fasi 0-8) il 2026-10-18 e unito in `master` (PR #9, merge `c0246a3`).
 - **Lavoro a metà:** nessuno
 - **Test:** Go (pacchetti `ai`, `app`, `domain`, `httpapi`, `store`) verdi anche con `-race`; Vitest 52 test verdi; lint 0 errori e 0 avvisi.
-- **Punti aperti (non refactoring, da decidere):**
-  - Unire la PR #9 in `master` dopo la revisione.
+- **Punti aperti:** nessuno.
 
 ---
 
@@ -291,3 +290,4 @@ Un'area per task, spostando l'SQL in `internal/store`:
 | 2026-10-18 | 8.4b | `4250894` | Claude Code | Pagina sessione: pulsante Stampa / PDF (`window.print`, stili `print:` e `@media print` in `index.css`), `TeacherFeedbackForm` per il docente e `TeacherFeedbackView` per lo studente (e nella stampa). Pulsanti "Esporta voti (Excel)" in classe e compito; colonna voto docente e voto docente nella matrice. Voti in dashboard e revisione della chat in qualsiasi momento esistevano già. Test `sessionFeedback.test.tsx` (3). Vitest 52 test. |
 | 2026-10-18 | 8.5 | — | Claude Code | La PR #9 (`go` → `master`, aperta in precedenza) contiene tutto il lavoro; commento di riepilogo: https://github.com/Hoppitbilbo/DebateAI/pull/9#issuecomment-6254869651 |
 | 2026-10-18 | — | — | Claude Code | CI GitHub verde su `4abb18e` (fine fase 8: `test`, `web`, `image`). |
+| 2026-10-18 | — | `c0246a3` | Claude Code | PR #9 unita in `master` (merge commit, su richiesta). |
