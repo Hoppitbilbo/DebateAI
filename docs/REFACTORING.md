@@ -38,8 +38,8 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto · `[-]` scartato (spieg
 ## Stato attuale
 
 - **Fase in corso:** 4 (service, State, Observer, backend)
-- **Prossimo task:** 4.2
-- **Lavoro a metà:** nessuno
+- **Prossimo task:** 4.2b
+- **Lavoro a metà:** 4.2 (fatto 4.2a, restano 4.2b e 4.2c)
 - **Test:** Go 33 test nuovi + quelli esistenti verdi; Vitest 18 test verdi; lint 0 errori (18 warning preesistenti)
 
 ---
@@ -176,9 +176,12 @@ Un'area per task, spostando l'SQL in `internal/store`:
 ### Fase 4: service, State, Observer (backend)
 
 - [x] **4.1** (`07e38cf`) `SessionService` con macchina a stati della sessione; `handleSaveTranscript` sotto le 20 righe.
-- [ ] **4.2** Service per auth, classes e assignments; handler sottili in `httpapi/`.
+- [~] **4.2** Service per auth, classes e assignments con handler sottili (lo spostamento in `httpapi/` passa al 4.4, quando `Server` diventa solo router).
+  - [x] **4.2a** (`08ed03b`) `authService`
+  - [ ] **4.2b** `classService`
+  - [ ] **4.2c** `assignmentService`
 - [ ] **4.3** Observer per le notifiche mail.
-- [ ] **4.4** `main.go` come composition root; `Server` ridotto a router e middleware.
+- [ ] **4.4** `main.go` come composition root; `Server` ridotto a router e middleware; handler spostati in `httpapi/`.
 
 ### Fase 5: attività (frontend)
 
@@ -236,3 +239,4 @@ Un'area per task, spostando l'SQL in `internal/store`:
 | 2026-10-18 | 3.6 | `d44f124` | Claude Code | `store.Providers`, `store.Prices`, `store.Usage` + test; `domain.Provider`, `ProviderPatch`, `ModelPrice`, `UsageRecord`, `UsageLogRow`, `UsageAggregate`, `UsageGrouping`. Esteso ai provider, che non erano nel piano originale. **`app` non contiene più SQL**: `Server` ha un repository per tabella e nessun `*sql.DB`. Rimossi `sqlBatch`, `execOrLog`, `countRows`, `boolInt`. Nota: nel report costi le chiamate degli ospiti hanno chiave `0` ed etichetta vuota (comportamento preesistente, ora fissato da un test). Fase 3 completata. |
 | 2026-10-18 | — | — | Claude Code | CI GitHub verde su `ee90557` (fine fase 3: `test`, `web`, `image`). |
 | 2026-10-18 | 4.1 | `07e38cf` | Claude Code | `server/internal/domain/session_state.go` (State: `activeState`, `endedState`, `StateOf`, `TurnOutcome`) + test della tabella delle transizioni. `server/internal/app/session_service.go`: `sessionService.SaveTranscript` con `shouldJudge`, `evaluate`, `lastMessages`, `countStudentTurns`; dipende da `sessionStore`, `assignmentStore` e dall'interfaccia `goalEvaluator` (oggi implementata da `Server.judge`). `handleSaveTranscript` = 19 righe. Il service è costruito in `NewServer` (passa a `main.go` nel 4.4). |
+| 2026-10-18 | 4.2a | `08ed03b` | Claude Code | `server/internal/app/auth_service.go`: `CreateUser`, `SetPassword`, `StartSession`, `UserForToken`, `Logout`, `Login`, `UpdateProfile`, `FindInvite`, `Register`, `RequestReset`, `ResetPassword`, `CreateInvite`. Errori tipizzati (`errInvalidCredentials`, `errAccountDisabled`, `errWrongPassword`, `errInvalidInvite`, `errUserNotFound`) e `invalid(err)` per gli input non validi; `writeServiceErr` risponde 400 o 500. Interfaccia `mailer`. Campo `Server.accounts` (il nome `auth` era già del middleware). Nuovi test in `auth_service_test.go`. Differenza: un errore del DB in creazione utente ora dà 500 invece di 400. |
