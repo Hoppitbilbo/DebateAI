@@ -11,6 +11,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"strconv"
 	"time"
 
@@ -252,6 +253,27 @@ func putSetting(db *sql.DB, key string, v any) error {
 	}
 	_, err = db.Exec(`INSERT INTO settings(key, value) VALUES(?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value`, key, string(b))
 	return err
+}
+
+// execOrLog runs a statement whose failure must not fail the request
+// (housekeeping, counters, best-effort caches); the error is logged.
+func execOrLog(db *sql.DB, what, query string, args ...any) {
+	if _, err := db.Exec(query, args...); err != nil {
+		log.Printf("%s: %v", what, err)
+	}
+}
+
+// sqlBatch runs statements until the first failure, so a handler applying
+// several optional updates checks for an error once.
+type sqlBatch struct {
+	db  *sql.DB
+	err error
+}
+
+func (b *sqlBatch) exec(query string, args ...any) {
+	if b.err == nil {
+		_, b.err = b.db.Exec(query, args...)
+	}
 }
 
 func mustJSON(v any) string {

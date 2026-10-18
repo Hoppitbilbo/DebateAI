@@ -189,7 +189,7 @@ func (s *Server) logUsage(e usageEntry) float64 {
 		log.Printf("usage log: %v", err)
 	}
 	if e.SessionID != nil && cost > 0 {
-		_, _ = s.db.Exec(`UPDATE activity_sessions SET cost_usd = cost_usd + ? WHERE id = ?`, cost, *e.SessionID)
+		execOrLog(s.db, "add session cost", `UPDATE activity_sessions SET cost_usd = cost_usd + ? WHERE id = ?`, cost, *e.SessionID)
 	}
 	return cost
 }

@@ -83,7 +83,9 @@ func (s *Server) bootstrap() {
 			for _, task := range []string{TaskChat, TaskEvaluation, TaskUtility, TaskJudge} {
 				rt.Tasks[task] = []RouteTarget{{id, "openrouter/free"}}
 			}
-			_ = putSetting(s.db, "routing", rt)
+			if err := putSetting(s.db, "routing", rt); err != nil {
+				log.Printf("bootstrap OpenRouter routing: %v", err)
+			}
 		}
 	}
 	if s.cfg.GeminiAPIKey != "" {

@@ -261,3 +261,17 @@ func TestRetryable(t *testing.T) {
 		}
 	}
 }
+
+func TestSQLBatchStopsAtFirstError(t *testing.T) {
+	s := newTestServer(t)
+	b := sqlBatch{db: s.db}
+	b.exec(`INSERT INTO settings(key, value) VALUES('a', '1')`)
+	b.exec(`INSERT INTO no_such_table VALUES(1)`)
+	b.exec(`INSERT INTO settings(key, value) VALUES('b', '2')`)
+	if b.err == nil {
+		t.Fatal("expected the error of the second statement")
+	}
+	if countRows(s.db, `SELECT COUNT(*) FROM settings WHERE key IN ('a', 'b')`) != 1 {
+		t.Fatal("statements after the failure must not run")
+	}
+}

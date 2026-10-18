@@ -125,7 +125,10 @@ func (s *Server) handleCreateClass(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 500, "internal", "could not create class")
 		return
 	}
-	_, _ = s.db.Exec(`INSERT OR IGNORE INTO class_members(class_id, user_id, role, joined_at) VALUES(?,?,?,?)`, id, owner, "teacher", now())
+	if _, err := s.db.Exec(`INSERT OR IGNORE INTO class_members(class_id, user_id, role, joined_at) VALUES(?,?,?,?)`, id, owner, "teacher", now()); err != nil {
+		writeErr(w, 500, "internal", err.Error())
+		return
+	}
 	c, _ := scanClass(s.db.QueryRow(classSelect+` WHERE c.id = ?`, id))
 	writeJSON(w, 201, c)
 }
@@ -177,14 +180,19 @@ func (s *Server) handleUpdateClass(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 400, "bad_request", err.Error())
 		return
 	}
+	b := sqlBatch{db: s.db}
 	if in.Name != nil && strings.TrimSpace(*in.Name) != "" {
-		_, _ = s.db.Exec(`UPDATE classes SET name = ? WHERE id = ?`, strings.TrimSpace(*in.Name), id)
+		b.exec(`UPDATE classes SET name = ? WHERE id = ?`, strings.TrimSpace(*in.Name), id)
 	}
 	if in.Description != nil {
-		_, _ = s.db.Exec(`UPDATE classes SET description = ? WHERE id = ?`, strings.TrimSpace(*in.Description), id)
+		b.exec(`UPDATE classes SET description = ? WHERE id = ?`, strings.TrimSpace(*in.Description), id)
 	}
 	if in.Archived != nil {
-		_, _ = s.db.Exec(`UPDATE classes SET archived = ? WHERE id = ?`, boolInt(*in.Archived), id)
+		b.exec(`UPDATE classes SET archived = ? WHERE id = ?`, boolInt(*in.Archived), id)
+	}
+	if err := b.err; err != nil {
+		writeErr(w, 500, "internal", err.Error())
+		return
 	}
 	c, _ := scanClass(s.db.QueryRow(classSelect+` WHERE c.id = ?`, id))
 	writeJSON(w, 200, c)
@@ -197,7 +205,10 @@ func (s *Server) handleDeleteClass(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 403, "forbidden", "not your class")
 		return
 	}
-	_, _ = s.db.Exec(`DELETE FROM classes WHERE id = ?`, id)
+	if _, err := s.db.Exec(`DELETE FROM classes WHERE id = ?`, id); err != nil {
+		writeErr(w, 500, "internal", err.Error())
+		return
+	}
 	writeJSON(w, 200, map[string]bool{"ok": true})
 }
 
@@ -266,7 +277,10 @@ func (s *Server) handleClassInvite(w http.ResponseWriter, r *http.Request) {
 			if existing.Role != "student" && in.Role == "teacher" {
 				memberRole = "teacher"
 			}
-			_, _ = s.db.Exec(`INSERT OR IGNORE INTO class_members(class_id, user_id, role, joined_at) VALUES(?,?,?,?)`, id, existing.ID, memberRole, now())
+			if _, err := s.db.Exec(`INSERT OR IGNORE INTO class_members(class_id, user_id, role, joined_at) VALUES(?,?,?,?)`, id, existing.ID, memberRole, now()); err != nil {
+				results = append(results, result{Email: existing.Email, Status: "error", Error: err.Error()})
+				continue
+			}
 			subj, body := renderMail("added", existing.Locale, map[string]string{"site": s.general().SiteName, "name": existing.Name, "inviter": u.Name, "class": className, "link": s.baseURL(r) + "/dashboard"})
 			s.sendMailAsync(existing.Email, subj, body)
 			results = append(results, result{Email: existing.Email, Status: "added", EmailSent: s.smtp().Host != ""})
@@ -304,7 +318,10 @@ func (s *Server) handleRemoveMember(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 403, "forbidden", "not your class")
 		return
 	}
-	_, _ = s.db.Exec(`DELETE FROM class_members WHERE class_id = ? AND user_id = ?`, id, pathID(r, "userId"))
+	if _, err := s.db.Exec(`DELETE FROM class_members WHERE class_id = ? AND user_id = ?`, id, pathID(r, "userId")); err != nil {
+		writeErr(w, 500, "internal", err.Error())
+		return
+	}
 	writeJSON(w, 200, map[string]bool{"ok": true})
 }
 
@@ -336,7 +353,10 @@ func (s *Server) handleJoinClass(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 404, "invalid_code", "class code not found")
 		return
 	}
-	_, _ = s.db.Exec(`INSERT OR IGNORE INTO class_members(class_id, user_id, role, joined_at) VALUES(?,?,?,?)`, id, u.ID, "student", now())
+	if _, err := s.db.Exec(`INSERT OR IGNORE INTO class_members(class_id, user_id, role, joined_at) VALUES(?,?,?,?)`, id, u.ID, "student", now()); err != nil {
+		writeErr(w, 500, "internal", err.Error())
+		return
+	}
 	writeJSON(w, 200, map[string]any{"classId": id, "name": name})
 }
 

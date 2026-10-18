@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"net/mail"
 	"strings"
@@ -109,8 +110,8 @@ func (s *Server) startSession(w http.ResponseWriter, r *http.Request, userID int
 		hashToken(tok), userID, now(), exp.UTC().Format(time.RFC3339)); err != nil {
 		return err
 	}
-	_, _ = s.db.Exec(`UPDATE users SET last_login_at = ? WHERE id = ?`, now(), userID)
-	_, _ = s.db.Exec(`DELETE FROM auth_sessions WHERE expires_at < ?`, now())
+	execOrLog(s.db, "record last login", `UPDATE users SET last_login_at = ? WHERE id = ?`, now(), userID)
+	execOrLog(s.db, "purge expired sessions", `DELETE FROM auth_sessions WHERE expires_at < ?`, now())
 	http.SetCookie(w, &http.Cookie{
 		Name: sessionCookie, Value: tok, Path: "/", HttpOnly: true,
 		Secure:   r.TLS != nil || r.Header.Get("X-Forwarded-Proto") == "https",
@@ -173,7 +174,9 @@ func (s *Server) handleSetup(w http.ResponseWriter, r *http.Request) {
 	if in.Locale != "" {
 		g := s.general()
 		g.DefaultLocale = normLocale(in.Locale)
-		_ = putSetting(s.db, "general", g)
+		if err := putSetting(s.db, "general", g); err != nil {
+			log.Printf("setup: default locale: %v", err)
+		}
 	}
 	_ = s.startSession(w, r, id)
 	u, _ := s.getUser(id)
@@ -212,7 +215,7 @@ func (s *Server) handleLogin(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) handleLogout(w http.ResponseWriter, r *http.Request) {
 	if c, err := r.Cookie(sessionCookie); err == nil {
-		_, _ = s.db.Exec(`DELETE FROM auth_sessions WHERE token_hash = ?`, hashToken(c.Value))
+		execOrLog(s.db, "logout", `DELETE FROM auth_sessions WHERE token_hash = ?`, hashToken(c.Value))
 	}
 	http.SetCookie(w, &http.Cookie{Name: sessionCookie, Value: "", Path: "/", MaxAge: -1, HttpOnly: true})
 	writeJSON(w, 200, map[string]bool{"ok": true})
@@ -239,11 +242,16 @@ func (s *Server) handleUpdateMe(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 400, "bad_request", err.Error())
 		return
 	}
+	b := sqlBatch{db: s.db}
 	if in.Name != nil && strings.TrimSpace(*in.Name) != "" {
-		_, _ = s.db.Exec(`UPDATE users SET name = ? WHERE id = ?`, strings.TrimSpace(*in.Name), u.ID)
+		b.exec(`UPDATE users SET name = ? WHERE id = ?`, strings.TrimSpace(*in.Name), u.ID)
 	}
 	if in.Locale != nil {
-		_, _ = s.db.Exec(`UPDATE users SET locale = ? WHERE id = ?`, normLocale(*in.Locale), u.ID)
+		b.exec(`UPDATE users SET locale = ? WHERE id = ?`, normLocale(*in.Locale), u.ID)
+	}
+	if err := b.err; err != nil {
+		writeErr(w, 500, "internal", err.Error())
+		return
 	}
 	if in.NewPassword != "" {
 		var hash string
@@ -355,9 +363,15 @@ func (s *Server) handleRegister(w http.ResponseWriter, r *http.Request) {
 		if inv.Role == "teacher" {
 			memberRole = "teacher"
 		}
-		_, _ = s.db.Exec(`INSERT OR IGNORE INTO class_members(class_id, user_id, role, joined_at) VALUES(?,?,?,?)`, *inv.ClassID, uid, memberRole, now())
+		if _, err := s.db.Exec(`INSERT OR IGNORE INTO class_members(class_id, user_id, role, joined_at) VALUES(?,?,?,?)`, *inv.ClassID, uid, memberRole, now()); err != nil {
+			writeErr(w, 500, "internal", err.Error())
+			return
+		}
 	}
-	_, _ = s.db.Exec(`UPDATE invites SET accepted_at = ? WHERE id = ?`, now(), inv.ID)
+	if _, err := s.db.Exec(`UPDATE invites SET accepted_at = ? WHERE id = ?`, now(), inv.ID); err != nil {
+		writeErr(w, 500, "internal", err.Error())
+		return
+	}
 	if err := s.startSession(w, r, uid); err != nil {
 		writeErr(w, 500, "internal", err.Error())
 		return
@@ -376,8 +390,14 @@ func (s *Server) handleForgot(w http.ResponseWriter, r *http.Request) {
 	// Always answer OK so the endpoint cannot be used to enumerate accounts.
 	if u, err := s.getUserByEmail(in.Email); err == nil && u.Active {
 		tok := randomToken(24)
-		_, _ = s.db.Exec(`INSERT INTO invites(token_hash, kind, email, role, locale, created_at, expires_at) VALUES(?,?,?,?,?,?,?)`,
+		// The answer stays OK on failure too (no enumeration); only the mail is skipped.
+		_, err := s.db.Exec(`INSERT INTO invites(token_hash, kind, email, role, locale, created_at, expires_at) VALUES(?,?,?,?,?,?,?)`,
 			hashToken(tok), "reset", u.Email, u.Role, u.Locale, now(), time.Now().Add(2*time.Hour).UTC().Format(time.RFC3339))
+		if err != nil {
+			log.Printf("password reset for user %d: %v", u.ID, err)
+			writeJSON(w, 200, map[string]bool{"ok": true})
+			return
+		}
 		subj, body := renderMail("reset", u.Locale, map[string]string{"site": s.general().SiteName, "name": u.Name, "link": s.baseURL(r) + "/reset-password?token=" + tok})
 		s.sendMailAsync(u.Email, subj, body)
 	}
@@ -404,8 +424,14 @@ func (s *Server) handleReset(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 400, "invalid", err.Error())
 		return
 	}
-	_, _ = s.db.Exec(`UPDATE invites SET accepted_at = ? WHERE id = ?`, now(), inv.ID)
-	_, _ = s.db.Exec(`DELETE FROM auth_sessions WHERE user_id = ?`, u.ID)
+	// The reset link must not stay usable and old sessions must end.
+	b := sqlBatch{db: s.db}
+	b.exec(`UPDATE invites SET accepted_at = ? WHERE id = ?`, now(), inv.ID)
+	b.exec(`DELETE FROM auth_sessions WHERE user_id = ?`, u.ID)
+	if err := b.err; err != nil {
+		writeErr(w, 500, "internal", err.Error())
+		return
+	}
 	_ = s.startSession(w, r, u.ID)
 	writeJSON(w, 200, u)
 }
@@ -439,7 +465,7 @@ func (s *Server) createInvite(r *http.Request, inviter *User, email, role string
 	sent := false
 	if err := s.sendMail(email, subj, body); err == nil {
 		sent = true
-		_, _ = s.db.Exec(`UPDATE invites SET email_sent = 1 WHERE id = ?`, id)
+		execOrLog(s.db, "mark invite sent", `UPDATE invites SET email_sent = 1 WHERE id = ?`, id)
 	}
 	return &inviteRow{ID: id, Kind: "invite", Email: email, Role: role, ClassID: classID, ClassName: className, Locale: normLocale(locale), ExpiresAt: exp, EmailSent: sent, Link: link}, nil
 }

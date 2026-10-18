@@ -234,8 +234,9 @@ func (s *Server) handleUpdateAssignment(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 	wasPublished := a.Published
+	b := sqlBatch{db: s.db}
 	set := func(col string, v any) {
-		_, _ = s.db.Exec(`UPDATE assignments SET `+col+` = ?, updated_at = ? WHERE id = ?`, v, now(), a.ID)
+		b.exec(`UPDATE assignments SET `+col+` = ?, updated_at = ? WHERE id = ?`, v, now(), a.ID)
 	}
 	if in.Title != nil && strings.TrimSpace(*in.Title) != "" {
 		set("title", strings.TrimSpace(*in.Title))
@@ -277,6 +278,10 @@ func (s *Server) handleUpdateAssignment(w http.ResponseWriter, r *http.Request) 
 			set("due_at", *in.DueAt)
 		}
 	}
+	if err := b.err; err != nil {
+		writeErr(w, 500, "internal", err.Error())
+		return
+	}
 	a, _ = s.getAssignment(a.ID)
 	if in.Notify && a.Published && !wasPublished {
 		s.notifyAssignment(r, a)
@@ -295,7 +300,10 @@ func (s *Server) handleDeleteAssignment(w http.ResponseWriter, r *http.Request) 
 		writeErr(w, 403, "forbidden", "not your class")
 		return
 	}
-	_, _ = s.db.Exec(`DELETE FROM assignments WHERE id = ?`, a.ID)
+	if _, err := s.db.Exec(`DELETE FROM assignments WHERE id = ?`, a.ID); err != nil {
+		writeErr(w, 500, "internal", err.Error())
+		return
+	}
 	writeJSON(w, 200, map[string]bool{"ok": true})
 }
 
@@ -537,7 +545,7 @@ func (s *Server) handleCreateSession(w http.ResponseWriter, r *http.Request) {
 		}
 		aid = a.ID
 		// Previous unfinished attempts are closed when a new one starts.
-		_, _ = s.db.Exec(`UPDATE activity_sessions SET status = 'abandoned', updated_at = ? WHERE user_id = ? AND assignment_id = ? AND status = 'active' AND turns = 0`, now(), u.ID, a.ID)
+		execOrLog(s.db, "abandon empty sessions", `UPDATE activity_sessions SET status = 'abandoned', updated_at = ? WHERE user_id = ? AND assignment_id = ? AND status = 'active' AND turns = 0`, now(), u.ID, a.ID)
 	}
 	ctx := "{}"
 	if len(in.Context) > 0 {
@@ -643,9 +651,14 @@ func (s *Server) handleSaveTranscript(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	status := d.Status
-	_, _ = s.db.Exec(`UPDATE activity_sessions SET transcript_json = ?, turns = ?, updated_at = ? WHERE id = ?`, mustJSON(in.Messages), turns, now(), d.ID)
+	b := sqlBatch{db: s.db}
+	b.exec(`UPDATE activity_sessions SET transcript_json = ?, turns = ?, updated_at = ? WHERE id = ?`, mustJSON(in.Messages), turns, now(), d.ID)
 	if len(in.Context) > 0 {
-		_, _ = s.db.Exec(`UPDATE activity_sessions SET context_json = ? WHERE id = ?`, string(in.Context), d.ID)
+		b.exec(`UPDATE activity_sessions SET context_json = ? WHERE id = ?`, string(in.Context), d.ID)
+	}
+	if err := b.err; err != nil {
+		writeErr(w, 500, "internal", err.Error())
+		return
 	}
 
 	resp := map[string]any{"status": status, "turns": turns, "progress": d.Progress, "ended": status != "active"}
@@ -683,7 +696,10 @@ func (s *Server) handleSaveTranscript(w http.ResponseWriter, r *http.Request) {
 		cancel()
 		resp["jev"] = jr
 		if jr.Engine != "none" {
-			_, _ = s.db.Exec(`UPDATE activity_sessions SET jev_json = ?, progress = ? WHERE id = ?`, mustJSON(jr), jr.Progress, d.ID)
+			if _, err := s.db.Exec(`UPDATE activity_sessions SET jev_json = ?, progress = ? WHERE id = ?`, mustJSON(jr), jr.Progress, d.ID); err != nil {
+				writeErr(w, 500, "internal", err.Error())
+				return
+			}
 			resp["progress"] = jr.Progress
 			if jr.Completed && a.AutoEnd {
 				status, reason = "goal_reached", "goal_reached"
@@ -694,7 +710,10 @@ func (s *Server) handleSaveTranscript(w http.ResponseWriter, r *http.Request) {
 		status, reason = "turn_limit", "turn_limit"
 	}
 	if status != "active" {
-		_, _ = s.db.Exec(`UPDATE activity_sessions SET status = ?, updated_at = ? WHERE id = ?`, status, now(), d.ID)
+		if _, err := s.db.Exec(`UPDATE activity_sessions SET status = ?, updated_at = ? WHERE id = ?`, status, now(), d.ID); err != nil {
+			writeErr(w, 500, "internal", err.Error())
+			return
+		}
 	}
 	resp["status"] = status
 	resp["ended"] = status != "active"

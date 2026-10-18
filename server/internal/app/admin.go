@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -103,7 +104,10 @@ func (s *Server) handleCreateUser(w http.ResponseWriter, r *http.Request) {
 		if in.Role != "student" {
 			role = "teacher"
 		}
-		_, _ = s.db.Exec(`INSERT OR IGNORE INTO class_members(class_id, user_id, role, joined_at) VALUES(?,?,?,?)`, *in.ClassID, id, role, now())
+		if _, err := s.db.Exec(`INSERT OR IGNORE INTO class_members(class_id, user_id, role, joined_at) VALUES(?,?,?,?)`, *in.ClassID, id, role, now()); err != nil {
+			writeErr(w, 500, "internal", err.Error())
+			return
+		}
 	}
 	u, _ := s.getUser(id)
 	writeJSON(w, 201, u)
@@ -127,20 +131,25 @@ func (s *Server) handleUpdateUser(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 400, "self_lockout", "you cannot demote or disable yourself")
 		return
 	}
+	b := sqlBatch{db: s.db}
 	if in.Name != nil && strings.TrimSpace(*in.Name) != "" {
-		_, _ = s.db.Exec(`UPDATE users SET name = ? WHERE id = ?`, strings.TrimSpace(*in.Name), id)
+		b.exec(`UPDATE users SET name = ? WHERE id = ?`, strings.TrimSpace(*in.Name), id)
 	}
 	if in.Role != nil && validRole(*in.Role) {
-		_, _ = s.db.Exec(`UPDATE users SET role = ? WHERE id = ?`, *in.Role, id)
+		b.exec(`UPDATE users SET role = ? WHERE id = ?`, *in.Role, id)
 	}
 	if in.Active != nil {
-		_, _ = s.db.Exec(`UPDATE users SET active = ? WHERE id = ?`, boolInt(*in.Active), id)
+		b.exec(`UPDATE users SET active = ? WHERE id = ?`, boolInt(*in.Active), id)
 		if !*in.Active {
-			_, _ = s.db.Exec(`DELETE FROM auth_sessions WHERE user_id = ?`, id)
+			b.exec(`DELETE FROM auth_sessions WHERE user_id = ?`, id)
 		}
 	}
 	if in.Locale != nil {
-		_, _ = s.db.Exec(`UPDATE users SET locale = ? WHERE id = ?`, normLocale(*in.Locale), id)
+		b.exec(`UPDATE users SET locale = ? WHERE id = ?`, normLocale(*in.Locale), id)
+	}
+	if err := b.err; err != nil {
+		writeErr(w, 500, "internal", err.Error())
+		return
 	}
 	if in.Password != nil && *in.Password != "" {
 		if err := s.setPassword(id, *in.Password); err != nil {
@@ -161,7 +170,10 @@ func (s *Server) handleDeleteUser(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 400, "self_delete", "you cannot delete yourself")
 		return
 	}
-	_, _ = s.db.Exec(`DELETE FROM users WHERE id = ?`, pathID(r, "id"))
+	if _, err := s.db.Exec(`DELETE FROM users WHERE id = ?`, pathID(r, "id")); err != nil {
+		writeErr(w, 500, "internal", err.Error())
+		return
+	}
 	writeJSON(w, 200, map[string]bool{"ok": true})
 }
 
@@ -244,7 +256,10 @@ func (s *Server) handleResendInvite(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 404, "not_found", "invite not found")
 		return
 	}
-	_, _ = s.db.Exec(`DELETE FROM invites WHERE id = ?`, id)
+	if _, err := s.db.Exec(`DELETE FROM invites WHERE id = ?`, id); err != nil {
+		writeErr(w, 500, "internal", err.Error())
+		return
+	}
 	var cid *int64
 	className := ""
 	if classID.Valid {
@@ -260,7 +275,10 @@ func (s *Server) handleResendInvite(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleDeleteInvite(w http.ResponseWriter, r *http.Request) {
-	_, _ = s.db.Exec(`DELETE FROM invites WHERE id = ?`, pathID(r, "id"))
+	if _, err := s.db.Exec(`DELETE FROM invites WHERE id = ?`, pathID(r, "id")); err != nil {
+		writeErr(w, 500, "internal", err.Error())
+		return
+	}
 	writeJSON(w, 200, map[string]bool{"ok": true})
 }
 
@@ -515,7 +533,9 @@ func (s *Server) autoRoute(providerID int64, kind string) {
 		add(TaskUtility, first)
 		add(TaskJudge, first)
 	}
-	_ = putSetting(s.db, "routing", rt)
+	if err := putSetting(s.db, "routing", rt); err != nil {
+		log.Printf("auto-route provider %d: %v", providerID, err)
+	}
 }
 
 // geminiVersion extracts the version number from ids such as
@@ -530,14 +550,14 @@ func geminiVersion(id string) float64 {
 }
 
 func (s *Server) storeModels(providerID int64, models []ai.ModelInfo) {
-	_, _ = s.db.Exec(`UPDATE providers SET models_json = ? WHERE id = ?`, mustJSON(models), providerID)
+	execOrLog(s.db, "store models", `UPDATE providers SET models_json = ? WHERE id = ?`, mustJSON(models), providerID)
 	// Import prices published by the upstream (e.g. OpenRouter) when the admin
 	// has not set them manually.
 	for _, m := range models {
 		if m.InputPerM != nil && m.OutputPerM != nil {
-			_, _ = s.db.Exec(`INSERT OR IGNORE INTO model_prices(provider_id, model, input_per_m, output_per_m) VALUES(?,?,?,?)`, providerID, m.ID, *m.InputPerM, *m.OutputPerM)
+			execOrLog(s.db, "import price", `INSERT OR IGNORE INTO model_prices(provider_id, model, input_per_m, output_per_m) VALUES(?,?,?,?)`, providerID, m.ID, *m.InputPerM, *m.OutputPerM)
 		} else if m.Free {
-			_, _ = s.db.Exec(`INSERT OR IGNORE INTO model_prices(provider_id, model, input_per_m, output_per_m) VALUES(?,?,0,0)`, providerID, m.ID)
+			execOrLog(s.db, "import price", `INSERT OR IGNORE INTO model_prices(provider_id, model, input_per_m, output_per_m) VALUES(?,?,0,0)`, providerID, m.ID)
 		}
 	}
 }
@@ -554,19 +574,24 @@ func (s *Server) handleUpdateProvider(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 400, "bad_request", err.Error())
 		return
 	}
+	b := sqlBatch{db: s.db}
 	if in.Name != nil && strings.TrimSpace(*in.Name) != "" {
-		_, _ = s.db.Exec(`UPDATE providers SET name = ? WHERE id = ?`, strings.TrimSpace(*in.Name), id)
+		b.exec(`UPDATE providers SET name = ? WHERE id = ?`, strings.TrimSpace(*in.Name), id)
 	}
 	if in.BaseURL != nil {
-		_, _ = s.db.Exec(`UPDATE providers SET base_url = ? WHERE id = ?`, strings.TrimSpace(*in.BaseURL), id)
+		b.exec(`UPDATE providers SET base_url = ? WHERE id = ?`, strings.TrimSpace(*in.BaseURL), id)
 	}
 	if in.APIKey != nil && *in.APIKey != "" {
-		_, _ = s.db.Exec(`UPDATE providers SET api_key_enc = ? WHERE id = ?`, s.crypto.Encrypt(strings.TrimSpace(*in.APIKey)), id)
+		b.exec(`UPDATE providers SET api_key_enc = ? WHERE id = ?`, s.crypto.Encrypt(strings.TrimSpace(*in.APIKey)), id)
 	}
 	if in.Enabled != nil {
-		_, _ = s.db.Exec(`UPDATE providers SET enabled = ? WHERE id = ?`, boolInt(*in.Enabled), id)
+		b.exec(`UPDATE providers SET enabled = ? WHERE id = ?`, boolInt(*in.Enabled), id)
 	}
 	s.invalidateProvider(id)
+	if err := b.err; err != nil {
+		writeErr(w, 500, "internal", err.Error())
+		return
+	}
 	for _, p := range s.loadProviders() {
 		if p.ID == id {
 			writeJSON(w, 200, p)
@@ -578,7 +603,10 @@ func (s *Server) handleUpdateProvider(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) handleDeleteProvider(w http.ResponseWriter, r *http.Request) {
 	id := pathID(r, "id")
-	_, _ = s.db.Exec(`DELETE FROM providers WHERE id = ?`, id)
+	if _, err := s.db.Exec(`DELETE FROM providers WHERE id = ?`, id); err != nil {
+		writeErr(w, 500, "internal", err.Error())
+		return
+	}
 	s.invalidateProvider(id)
 	rt := s.routing()
 	for task, list := range rt.Tasks {
@@ -590,7 +618,10 @@ func (s *Server) handleDeleteProvider(w http.ResponseWriter, r *http.Request) {
 		}
 		rt.Tasks[task] = kept
 	}
-	_ = putSetting(s.db, "routing", rt)
+	if err := putSetting(s.db, "routing", rt); err != nil {
+		writeErr(w, 500, "internal", err.Error())
+		return
+	}
 	writeJSON(w, 200, map[string]bool{"ok": true})
 }
 
@@ -703,12 +734,17 @@ func (s *Server) handlePutPrice(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 400, "bad_request", "providerId and model required")
 		return
 	}
+	var err error
 	if in.Delete {
-		_, _ = s.db.Exec(`DELETE FROM model_prices WHERE provider_id = ? AND model = ?`, in.ProviderID, in.Model)
+		_, err = s.db.Exec(`DELETE FROM model_prices WHERE provider_id = ? AND model = ?`, in.ProviderID, in.Model)
 	} else {
-		_, _ = s.db.Exec(`INSERT INTO model_prices(provider_id, model, input_per_m, output_per_m) VALUES(?,?,?,?)
+		_, err = s.db.Exec(`INSERT INTO model_prices(provider_id, model, input_per_m, output_per_m) VALUES(?,?,?,?)
 			ON CONFLICT(provider_id, model) DO UPDATE SET input_per_m = excluded.input_per_m, output_per_m = excluded.output_per_m`,
 			in.ProviderID, in.Model, in.InputPerM, in.OutputPerM)
+	}
+	if err != nil {
+		writeErr(w, 500, "internal", err.Error())
+		return
 	}
 	s.handleListPrices(w, r)
 }
