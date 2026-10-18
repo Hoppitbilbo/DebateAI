@@ -38,8 +38,8 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto · `[-]` scartato (spieg
 ## Stato attuale
 
 - **Fase in corso:** 4 (service, State, Observer, backend)
-- **Prossimo task:** 4.2c
-- **Lavoro a metà:** 4.2 (fatti 4.2a e 4.2b, resta 4.2c)
+- **Prossimo task:** 4.3
+- **Lavoro a metà:** nessuno
 - **Test:** Go 33 test nuovi + quelli esistenti verdi; Vitest 18 test verdi; lint 0 errori (18 warning preesistenti)
 
 ---
@@ -176,10 +176,10 @@ Un'area per task, spostando l'SQL in `internal/store`:
 ### Fase 4: service, State, Observer (backend)
 
 - [x] **4.1** (`07e38cf`) `SessionService` con macchina a stati della sessione; `handleSaveTranscript` sotto le 20 righe.
-- [~] **4.2** Service per auth, classes e assignments con handler sottili (lo spostamento in `httpapi/` passa al 4.4, quando `Server` diventa solo router).
+- [x] **4.2** Service per auth, classes e assignments con handler sottili (lo spostamento in `httpapi/` passa al 4.4, quando `Server` diventa solo router).
   - [x] **4.2a** (`08ed03b`) `authService`
   - [x] **4.2b** (`a07cc6a`) `classService`
-  - [ ] **4.2c** `assignmentService`
+  - [x] **4.2c** (`a11df2e`) `assignmentService` (+ `sessionService.Start/Load/Complete`)
 - [ ] **4.3** Observer per le notifiche mail.
 - [ ] **4.4** `main.go` come composition root; `Server` ridotto a router e middleware; handler spostati in `httpapi/`.
 
@@ -241,3 +241,4 @@ Un'area per task, spostando l'SQL in `internal/store`:
 | 2026-10-18 | 4.1 | `07e38cf` | Claude Code | `server/internal/domain/session_state.go` (State: `activeState`, `endedState`, `StateOf`, `TurnOutcome`) + test della tabella delle transizioni. `server/internal/app/session_service.go`: `sessionService.SaveTranscript` con `shouldJudge`, `evaluate`, `lastMessages`, `countStudentTurns`; dipende da `sessionStore`, `assignmentStore` e dall'interfaccia `goalEvaluator` (oggi implementata da `Server.judge`). `handleSaveTranscript` = 19 righe. Il service è costruito in `NewServer` (passa a `main.go` nel 4.4). |
 | 2026-10-18 | 4.2a | `08ed03b` | Claude Code | `server/internal/app/auth_service.go`: `CreateUser`, `SetPassword`, `StartSession`, `UserForToken`, `Logout`, `Login`, `UpdateProfile`, `FindInvite`, `Register`, `RequestReset`, `ResetPassword`, `CreateInvite`. Errori tipizzati (`errInvalidCredentials`, `errAccountDisabled`, `errWrongPassword`, `errInvalidInvite`, `errUserNotFound`) e `invalid(err)` per gli input non validi; `writeServiceErr` risponde 400 o 500. Interfaccia `mailer`. Campo `Server.accounts` (il nome `auth` era già del middleware). Nuovi test in `auth_service_test.go`. Differenza: un errore del DB in creazione utente ora dà 500 invece di 400. |
 | 2026-10-18 | 4.2b | `a07cc6a` | Claude Code | `server/internal/app/class_service.go`: `CanManage`, `List`, `Create`, `Update`, `RegenerateCode`, `Invite` (+ `addExisting`), `Join`, `Joined`, `splitEmails`; errori `errBadMemberRole`, `errOnlyOwner`, `errInvalidCode`. Helper `managedClass` per il controllo 403 ripetuto in 6 handler. Test in `class_service_test.go`. |
+| 2026-10-18 | 4.2c | `a11df2e` | Claude Code | `server/internal/app/assignment_service.go`: `Managed`, `Visible`, `ListForClass`, `ListForStudent`, `Create`, `Update`, `Progress`, `notifyStudents` (da trasformare in Observer nel 4.3), `dueText`. `sessionService` ora ha anche `Start`, `Load` (regole di accesso) e `Complete`; handler delle sessioni spostati in `sessions.go` con helper `ownSession`; helper `managedAssignment`. Rimossi `getAssignment`, `appTypes`, `canManageClass`, `isClassMember`, `latestSession`, `bestSession`. Test in `assignment_service_test.go`. |
