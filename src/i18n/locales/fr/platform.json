@@ -602,5 +602,33 @@
       "sendTest": "Envoyer un test",
       "testSent": "E-mail de test envoyé"
     }
+  },
+  "legal": {
+    "back": "Retour à l'accueil",
+    "note": "Texte de base fourni avec le logiciel. L'établissement qui installe la plateforme doit le compléter avec ses propres informations (responsable du traitement, contacts, DPO) avant de l'utiliser avec des élèves.",
+    "privacy": {
+      "title": "Politique de confidentialité",
+      "s1h": "Qui gère les données",
+      "s1p": "AiDebate.tech est un logiciel open source installé sur le serveur de l'école ou de l'organisme qui l'utilise. Les données restent sur ce serveur et sont gérées par cet établissement, responsable du traitement.",
+      "s2h": "Quelles données sont enregistrées",
+      "s2p": "Pour les comptes : nom, e-mail, rôle et langue préférée ; les mots de passe ne sont enregistrés que sous forme hachée (bcrypt). Pour les activités : classes, devoirs, conversations avec l'IA, réflexions, scores et durées. Pour le suivi des coûts : le modèle utilisé et le nombre de tokens, sans le texte.",
+      "s3h": "Intelligence artificielle",
+      "s3p": "Le texte des conversations est envoyé au fournisseur d'IA choisi par l'administrateur (par exemple Google Gemini, OpenCode, OpenRouter ou un modèle local). Avec un modèle local, les données ne quittent pas le serveur. N'indiquez pas de données personnelles sensibles dans les conversations.",
+      "s4h": "Cookies",
+      "s4p": "Nous utilisons uniquement un cookie technique de session pour rester connecté. Aucun cookie publicitaire ni de profilage.",
+      "s5h": "Vos droits",
+      "s5p": "Vous pouvez demander à l'établissement d'accéder à vos données, de les corriger ou de les supprimer. Sur la page Compte, vous pouvez modifier votre nom, votre langue et votre mot de passe."
+    },
+    "terms": {
+      "title": "Conditions d'utilisation",
+      "s1h": "Usage pédagogique",
+      "s1p": "La plateforme sert à des activités pédagogiques encadrées par des enseignants. Utilisez-la dans le respect du règlement de l'établissement et des autres utilisateurs.",
+      "s2h": "Comptes",
+      "s2p": "Les comptes sont créés sur invitation. Vous êtes responsable de votre mot de passe et de ce que vous faites avec votre compte.",
+      "s3h": "Limites de l'IA",
+      "s3p": "Les réponses de l'IA peuvent contenir des erreurs ou des inexactitudes historiques. Les personnages sont des simulations, pas de vraies citations. Les évaluations et scores automatiques aident l'enseignant ; ce ne sont pas des notes officielles.",
+      "s4h": "Logiciel open source",
+      "s4p": "Le code est publié sur GitHub. Le logiciel est fourni tel quel, sans garantie ; l'établissement qui l'installe est responsable de son exploitation."
+    }
   }
 }

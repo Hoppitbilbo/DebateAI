@@ -602,5 +602,33 @@
       "sendTest": "Test senden",
       "testSent": "Test-E-Mail gesendet"
     }
+  },
+  "legal": {
+    "back": "Zur Startseite",
+    "note": "Basistext, der mit der Software geliefert wird. Die Einrichtung, die die Plattform installiert, muss ihn vor dem Einsatz mit Schülerinnen und Schülern um eigene Angaben ergänzen (Verantwortlicher, Kontakt, Datenschutzbeauftragte).",
+    "privacy": {
+      "title": "Datenschutzerklärung",
+      "s1h": "Wer die Daten verwaltet",
+      "s1p": "AiDebate.tech ist Open-Source-Software, die auf dem Server der nutzenden Schule oder Organisation installiert wird. Die Daten bleiben auf diesem Server und werden von dieser Einrichtung als Verantwortlicher verwaltet.",
+      "s2h": "Welche Daten gespeichert werden",
+      "s2p": "Für Konten: Name, E-Mail, Rolle und bevorzugte Sprache; Passwörter werden nur gehasht gespeichert (bcrypt). Für Aktivitäten: Klassen, Aufgaben, KI-Gespräche, Reflexionen, Punktzahlen und Zeiten. Für die Kostenkontrolle: das verwendete Modell und die Token-Anzahl, ohne den Text.",
+      "s3h": "Künstliche Intelligenz",
+      "s3p": "Der Gesprächstext wird an den vom Administrator gewählten KI-Anbieter gesendet (zum Beispiel Google Gemini, OpenCode, OpenRouter oder ein lokales Modell). Mit einem lokalen Modell verlassen die Daten den Server nicht. Gib keine sensiblen personenbezogenen Daten in Gesprächen ein.",
+      "s4h": "Cookies",
+      "s4p": "Wir verwenden nur ein technisches Sitzungs-Cookie, damit du angemeldet bleibst. Keine Werbe- oder Profiling-Cookies.",
+      "s5h": "Deine Rechte",
+      "s5p": "Du kannst die Einrichtung bitten, deine Daten einzusehen, zu berichtigen oder zu löschen. Auf der Kontoseite kannst du Name, Sprache und Passwort ändern."
+    },
+    "terms": {
+      "title": "Nutzungsbedingungen",
+      "s1h": "Pädagogische Nutzung",
+      "s1p": "Die Plattform dient Lernaktivitäten unter Anleitung von Lehrkräften. Nutze sie gemäß der Ordnung deiner Einrichtung und mit Respekt gegenüber anderen.",
+      "s2h": "Konten",
+      "s2p": "Konten werden per Einladung erstellt. Du bist für dein Passwort und für alles verantwortlich, was du mit deinem Konto tust.",
+      "s3h": "Grenzen der KI",
+      "s3p": "KI-Antworten können Fehler oder historische Ungenauigkeiten enthalten. Die Figuren sind Simulationen, keine echten Zitate. Automatische Bewertungen und Punktzahlen unterstützen die Lehrkraft; sie sind keine offizielle Note.",
+      "s4h": "Open-Source-Software",
+      "s4p": "Der Code ist auf GitHub veröffentlicht. Die Software wird ohne Gewähr bereitgestellt; die installierende Einrichtung ist für den Betrieb verantwortlich."
+    }
   }
 }

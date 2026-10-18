@@ -58,7 +58,7 @@ const HeroSection = () => {
               <div className={`mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start reveal-animation reveal-delay-2 ${isLoaded ? 'revealed' : ''}`}>
                 <div className="rounded-md shadow">
                   <Link to="/apps">
-                    <Button className="w-full flex items-center justify-center px-8 py-3 bg-education hover:bg-education-dark text-white">
+                    <Button className="w-full flex items-center justify-center px-8 py-3 bg-education hover:bg-education/90 text-education-dark">
                       {t('hero.tryApps')}
                     </Button>
                   </Link>

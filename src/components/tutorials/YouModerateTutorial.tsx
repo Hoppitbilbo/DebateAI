@@ -219,7 +219,7 @@ const YouModerateTutorial: React.FC = () => {
         <div className="text-center pt-6">
           <Button
             size="lg"
-            className="bg-education hover:bg-education-dark text-white px-8 py-3"
+            className="bg-education hover:bg-education/90 text-education-dark px-8 py-3"
             onClick={() => window.location.href = '/apps/you-moderate'}
           >
             {t('youModerate.startApp')}

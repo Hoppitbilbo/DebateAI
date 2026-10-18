@@ -110,6 +110,10 @@ export const RegisterPage = () => {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
+    if (!token) {
+      setInvalid(true);
+      return;
+    }
     api.get<typeof info>(`/api/auth/invite/${encodeURIComponent(token)}`)
       .then((i) => {
         setInfo(i);

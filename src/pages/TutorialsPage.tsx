@@ -129,7 +129,7 @@ const TutorialsPage = () => {
                     <p className="text-foreground mb-6">{tutorial.description}</p>
                     <div className="space-y-3">
                       <Link to={tutorial.appLink}>
-                        <Button className="w-full bg-education hover:bg-education-dark text-white">
+                        <Button className="w-full bg-education hover:bg-education/90 text-education-dark">
                           <ExternalLink className="w-4 h-4 mr-2" />
                           {t('sections.availableTutorials.goToAppButton')}
                         </Button>
@@ -197,7 +197,7 @@ const TutorialsPage = () => {
                    {t('sections.additionalResources.teacherGuide.description')}
                  </p>
                 <Link to="/teacher-guide">
-                  <Button className="bg-education hover:bg-education-dark text-white">
+                  <Button className="bg-education hover:bg-education/90 text-education-dark">
                     <BookOpen className="w-4 h-4 mr-2" />
                     {t('sections.additionalResources.teacherGuide.button')}
                   </Button>
@@ -209,7 +209,7 @@ const TutorialsPage = () => {
                    {t('sections.additionalResources.allApps.description')}
                  </p>
                 <Link to="/apps">
-                  <Button className="bg-education hover:bg-education-dark text-white">
+                  <Button className="bg-education hover:bg-education/90 text-education-dark">
                     <ExternalLink className="w-4 h-4 mr-2" />
                     {t('sections.additionalResources.allApps.button')}
                   </Button>

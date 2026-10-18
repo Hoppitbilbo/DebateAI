@@ -602,5 +602,33 @@
       "sendTest": "Invia prova",
       "testSent": "Email di prova inviata"
     }
+  },
+  "legal": {
+    "back": "Torna alla home",
+    "note": "Testo base fornito con il software. L'istituto che installa la piattaforma deve completarlo con i propri dati (titolare del trattamento, contatti, DPO) prima dell'uso con gli studenti.",
+    "privacy": {
+      "title": "Politica sulla privacy",
+      "s1h": "Chi gestisce i dati",
+      "s1p": "AiDebate.tech è un software open source installato sul server della scuola o dell'ente che lo usa. I dati restano su quel server e sono gestiti da quell'istituto, che ne è il titolare.",
+      "s2h": "Quali dati vengono salvati",
+      "s2p": "Per gli account: nome, e-mail, ruolo e lingua preferita; le password sono salvate solo in forma cifrata (bcrypt). Per le attività: classi, compiti, conversazioni con l'IA, riflessioni, punteggi e tempi. Per il controllo dei costi: modello usato e numero di token, senza il testo.",
+      "s3h": "Intelligenza artificiale",
+      "s3p": "Il testo delle conversazioni viene inviato al fornitore di IA scelto dall'amministratore (per esempio Google Gemini, OpenCode, OpenRouter o un modello locale). Con un modello locale i dati non lasciano il server. Non inserire dati personali sensibili nelle conversazioni.",
+      "s4h": "Cookie",
+      "s4p": "Usiamo solo un cookie tecnico di sessione per mantenere l'accesso. Nessun cookie pubblicitario o di profilazione.",
+      "s5h": "I tuoi diritti",
+      "s5p": "Puoi chiedere all'istituto di vedere, correggere o cancellare i tuoi dati. Nella pagina Account puoi modificare nome, lingua e password."
+    },
+    "terms": {
+      "title": "Termini di servizio",
+      "s1h": "Uso educativo",
+      "s1p": "La piattaforma serve ad attività didattiche guidate da docenti. Va usata nel rispetto del regolamento dell'istituto e degli altri utenti.",
+      "s2h": "Account",
+      "s2p": "Gli account vengono creati su invito. Sei responsabile della tua password e di ciò che fai con il tuo account.",
+      "s3h": "Limiti dell'IA",
+      "s3p": "Le risposte dell'IA possono contenere errori o imprecisioni storiche. I personaggi sono simulazioni, non citazioni reali. Valutazioni e punteggi automatici sono un aiuto per il docente, non un voto ufficiale.",
+      "s4h": "Software open source",
+      "s4p": "Il codice è pubblicato su GitHub. Il software è fornito così com'è, senza garanzie; l'istituto che lo installa è responsabile della sua gestione."
+    }
   }
 }

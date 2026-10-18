@@ -61,21 +61,21 @@ const FeaturesSection = () => {
         </div>
 
         <div className="mt-10">
-          <div className="space-y-10 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-8">
+          <div className="space-y-10 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-8">
             {features.map((feature, index) => (
               <a 
                 key={feature.name} 
                 href={feature.link}
-                className={`block group reveal-animation revealed reveal-delay-${index % 3 + 1}`}
+                className={`block h-full group reveal-animation revealed reveal-delay-${index % 3 + 1}`}
               >
-                <div className="flex flex-col items-center p-6 bg-accent rounded-lg transition-all duration-300 hover:shadow-lg hover:scale-105">
+                <div className="flex h-full flex-col items-center p-6 bg-accent rounded-lg transition-all duration-300 hover:shadow-lg hover:scale-105">
                   <div className="flex items-center justify-center h-12 w-12 rounded-md bg-education text-education-dark">
                     {feature.icon}
                   </div>
-                  <h3 className="mt-5 text-lg leading-6 font-medium text-[#0E3542] group-hover:text-education">
+                  <h3 className="mt-5 text-lg leading-6 font-semibold text-education-light group-hover:text-education text-center">
                     {feature.name}
                   </h3>
-                  <p className="mt-2 text-base text-muted-foreground text-center">
+                  <p className="mt-2 text-base text-foreground/80 text-center">
                     {feature.description}
                   </p>
                 </div>

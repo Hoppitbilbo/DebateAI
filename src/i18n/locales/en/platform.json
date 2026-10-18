@@ -602,5 +602,33 @@
       "sendTest": "Send test",
       "testSent": "Test email sent"
     }
+  },
+  "legal": {
+    "back": "Back to home",
+    "note": "Base text shipped with the software. The institution installing the platform must complete it with its own details (data controller, contacts, DPO) before using it with students.",
+    "privacy": {
+      "title": "Privacy policy",
+      "s1h": "Who manages the data",
+      "s1p": "AiDebate.tech is open source software installed on the server of the school or organisation using it. Data stays on that server and is managed by that institution, which is the data controller.",
+      "s2h": "What data is stored",
+      "s2p": "For accounts: name, e-mail, role and preferred language; passwords are stored only in hashed form (bcrypt). For activities: classes, assignments, AI conversations, reflections, scores and timing. For cost tracking: the model used and token counts, without the text.",
+      "s3h": "Artificial intelligence",
+      "s3p": "Conversation text is sent to the AI provider chosen by the administrator (for example Google Gemini, OpenCode, OpenRouter or a local model). With a local model the data never leaves the server. Do not enter sensitive personal data in conversations.",
+      "s4h": "Cookies",
+      "s4p": "We only use a technical session cookie to keep you signed in. No advertising or profiling cookies.",
+      "s5h": "Your rights",
+      "s5p": "You can ask the institution to access, correct or delete your data. On the Account page you can change your name, language and password."
+    },
+    "terms": {
+      "title": "Terms of service",
+      "s1h": "Educational use",
+      "s1p": "The platform is meant for teacher-led learning activities. Use it in line with your institution's rules and with respect for other users.",
+      "s2h": "Accounts",
+      "s2p": "Accounts are created by invitation. You are responsible for your password and for what you do with your account.",
+      "s3h": "AI limitations",
+      "s3p": "AI answers can contain mistakes or historical inaccuracies. Characters are simulations, not real quotes. Automatic evaluations and scores support the teacher; they are not an official grade.",
+      "s4h": "Open source software",
+      "s4p": "The code is published on GitHub. The software is provided as is, without warranty; the institution that installs it is responsible for running it."
+    }
   }
 }

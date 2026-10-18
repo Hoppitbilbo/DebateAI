@@ -602,5 +602,33 @@
       "sendTest": "Enviar prueba",
       "testSent": "Correo de prueba enviado"
     }
+  },
+  "legal": {
+    "back": "Volver al inicio",
+    "note": "Texto base incluido con el software. La institución que instala la plataforma debe completarlo con sus propios datos (responsable del tratamiento, contactos, DPD) antes de usarla con estudiantes.",
+    "privacy": {
+      "title": "Política de privacidad",
+      "s1h": "Quién gestiona los datos",
+      "s1p": "AiDebate.tech es un software de código abierto instalado en el servidor del centro educativo o la entidad que lo usa. Los datos permanecen en ese servidor y los gestiona esa institución, que es la responsable del tratamiento.",
+      "s2h": "Qué datos se guardan",
+      "s2p": "Para las cuentas: nombre, correo electrónico, rol e idioma preferido; las contraseñas solo se guardan cifradas (bcrypt). Para las actividades: clases, tareas, conversaciones con la IA, reflexiones, puntuaciones y tiempos. Para el control de costes: el modelo usado y el número de tokens, sin el texto.",
+      "s3h": "Inteligencia artificial",
+      "s3p": "El texto de las conversaciones se envía al proveedor de IA elegido por el administrador (por ejemplo Google Gemini, OpenCode, OpenRouter o un modelo local). Con un modelo local los datos no salen del servidor. No introduzcas datos personales sensibles en las conversaciones.",
+      "s4h": "Cookies",
+      "s4p": "Solo usamos una cookie técnica de sesión para mantener el acceso. Ninguna cookie publicitaria ni de perfilado.",
+      "s5h": "Tus derechos",
+      "s5p": "Puedes pedir a la institución ver, corregir o borrar tus datos. En la página Cuenta puedes cambiar tu nombre, idioma y contraseña."
+    },
+    "terms": {
+      "title": "Términos de servicio",
+      "s1h": "Uso educativo",
+      "s1p": "La plataforma sirve para actividades didácticas guiadas por docentes. Úsala respetando las normas de tu institución y a los demás usuarios.",
+      "s2h": "Cuentas",
+      "s2p": "Las cuentas se crean por invitación. Eres responsable de tu contraseña y de lo que haces con tu cuenta.",
+      "s3h": "Límites de la IA",
+      "s3p": "Las respuestas de la IA pueden contener errores o imprecisiones históricas. Los personajes son simulaciones, no citas reales. Las evaluaciones y puntuaciones automáticas ayudan al docente; no son una nota oficial.",
+      "s4h": "Software de código abierto",
+      "s4p": "El código está publicado en GitHub. El software se ofrece tal cual, sin garantías; la institución que lo instala es responsable de su gestión."
+    }
   }
 }

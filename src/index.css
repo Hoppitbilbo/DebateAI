@@ -231,6 +231,19 @@
   }
 }
 
+/* Slide-in animations must never create horizontal scroll */
+html, body {
+  overflow-x: clip;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-animation, .reveal-from-left, .reveal-from-right {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
 /* Scroll reveal animations */
 .reveal-animation {
   opacity: 0;

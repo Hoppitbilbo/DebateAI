@@ -42,13 +42,13 @@ const TeacherGuidePage = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-br from-slate-900 to-slate-700 text-white">
+    <div className="flex flex-col min-h-screen bg-background text-foreground">
       <Navbar />
       <main className="flex-1 container mx-auto px-4 py-8 flex flex-col items-center justify-center">
-        <div className="w-full max-w-4xl p-6 md:p-8 bg-slate-800 shadow-2xl rounded-xl">
+        <div className="w-full max-w-4xl p-6 md:p-8 bg-card border border-border shadow-2xl rounded-xl">
           <div className="flex items-center gap-3 mb-6">
-            <School className="h-10 w-10 text-sky-400" />
-            <h1 className="text-3xl md:text-4xl font-bold text-sky-300">
+            <School className="h-10 w-10 text-education" />
+            <h1 className="text-3xl md:text-4xl font-bold text-education-light">
               {t('teacherGuidePage.title')}
             </h1>
           </div>
@@ -61,18 +61,18 @@ const TeacherGuidePage = () => {
             <button
               onClick={goToPreviousSlide}
               disabled={currentSlide === 1}
-              className="px-6 py-3 bg-sky-500 hover:bg-sky-600 text-white font-semibold rounded-lg shadow-md disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-150 ease-in-out flex items-center gap-2"
+              className="px-6 py-3 bg-education hover:bg-education/90 text-education-dark font-semibold rounded-lg shadow-md disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-150 ease-in-out flex items-center gap-2"
             >
               <ArrowLeft size={20} />
               {t('common.back')}
             </button>
-            <span className="text-slate-400">
+            <span className="text-muted-foreground">
               {t('teacherGuidePage.slideCounter', { current: currentSlide, total: TOTAL_SLIDES })}
             </span>
             <button
               onClick={goToNextSlide}
               disabled={currentSlide === TOTAL_SLIDES}
-              className="px-6 py-3 bg-sky-500 hover:bg-sky-600 text-white font-semibold rounded-lg shadow-md disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-150 ease-in-out flex items-center gap-2"
+              className="px-6 py-3 bg-education hover:bg-education/90 text-education-dark font-semibold rounded-lg shadow-md disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-150 ease-in-out flex items-center gap-2"
             >
               {t('common.next')}
               <ArrowRight size={20} />

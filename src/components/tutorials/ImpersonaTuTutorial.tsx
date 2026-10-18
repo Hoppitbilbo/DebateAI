@@ -118,22 +118,23 @@ const ImpersonaTuTutorial = () => {
         </Card>
 
         {/* Navigation */}
-        <div className="flex justify-between items-center mt-8">
+        <div className="flex justify-between items-center gap-2 mt-8">
           <Button
             onClick={prevSlide}
             disabled={currentSlide === 0}
             variant="outline"
-            className="border-education text-education hover:bg-education hover:text-white"
+            className="border-education text-education hover:bg-education hover:text-education-dark"
           >
             <ChevronLeft className="w-4 h-4 mr-2" />
             {t('common.previous')}
           </Button>
 
-          <div className="flex space-x-2">
+          <div className="hidden sm:flex gap-2">
             {Array.from({ length: totalSlides }, (_, i) => (
               <button
                 key={i}
                 onClick={() => setCurrentSlide(i)}
+                aria-label={`${i + 1} / ${totalSlides}`}
                 className={`w-3 h-3 rounded-full transition-colors ${
                   i === currentSlide ? 'bg-education' : 'bg-gray-300'
                 }`}
@@ -144,7 +145,7 @@ const ImpersonaTuTutorial = () => {
           {currentSlide === totalSlides - 1 ? (
             <Button
               onClick={startApp}
-              className="bg-education hover:bg-education-dark text-white"
+              className="bg-education hover:bg-education/90 text-education-dark"
             >
               <Play className="w-4 h-4 mr-2" />
               {t('impersonaTu.startApp')}
@@ -152,7 +153,7 @@ const ImpersonaTuTutorial = () => {
           ) : (
             <Button
               onClick={nextSlide}
-              className="bg-education hover:bg-education-dark text-white"
+              className="bg-education hover:bg-education/90 text-education-dark"
             >
               {t('common.next')}
               <ChevronRight className="w-4 h-4 ml-2" />

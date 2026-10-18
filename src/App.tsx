@@ -17,6 +17,7 @@ const DoppiaIntervistaPage = lazy(() => import("./pages/DoppiaIntervistaPage"));
 const DoppiaIntervistaTutorialPage = lazy(() => import("./pages/DoppiaIntervistaTutorialPage"));
 const AboutPage = lazy(() => import("./pages/AboutPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+const LegalPage = lazy(() => import("./pages/LegalPage"));
 const ConvinciTuPage = lazy(() => import("./pages/ConvinciTuPage"));
 const ConvinciTuTutorialPage = lazy(() => import("./pages/ConvinciTuTutorialPage"));
 const PersonaggioMisteriosoPage = lazy(() => import("./pages/PersonaggioMisteriosoPage"));
@@ -78,6 +79,8 @@ const App = () => (
                 <Route path="/tutorials" element={<TutorialsPage />} />
                 <Route path="/about" element={<AboutPage />} />
                 <Route path="/teacher-guide" element={<TeacherGuidePage />} />
+                <Route path="/privacy" element={<LegalPage kind="privacy" />} />
+                <Route path="/terms" element={<LegalPage kind="terms" />} />
 
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
