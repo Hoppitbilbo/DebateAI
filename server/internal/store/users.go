@@ -141,3 +141,19 @@ func boolInt(b bool) int {
 	}
 	return 0
 }
+
+// count runs a COUNT query; errors count as 0.
+func count(db *sql.DB, query string, args ...any) int {
+	var n int
+	_ = db.QueryRow(query, args...).Scan(&n)
+	return n
+}
+
+// prefixed qualifies a comma-separated column list with a table alias.
+func prefixed(alias, cols string) string {
+	parts := strings.Split(cols, ", ")
+	for i, p := range parts {
+		parts[i] = alias + p
+	}
+	return strings.Join(parts, ", ")
+}

@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/Hoppitbilbo/DebateAI/server/internal/domain"
 )
 
 var appTypes = map[string]bool{
@@ -121,7 +123,7 @@ func (s *Server) handleListAssignments(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	rows.Close()
-	students := countRows(s.db, `SELECT COUNT(*) FROM class_members WHERE class_id = ? AND role = 'student'`, classID)
+	students := s.classes.CountStudents(classID)
 	for _, a := range out {
 		a.Stats = &AssignStats{
 			Students:  students,
@@ -193,17 +195,16 @@ func (s *Server) handleCreateAssignment(w http.ResponseWriter, r *http.Request) 
 }
 
 func (s *Server) notifyAssignment(r *http.Request, a *Assignment) {
-	rows, err := s.db.Query(`SELECT u.email, u.name, u.locale FROM class_members m JOIN users u ON u.id = m.user_id WHERE m.class_id = ? AND m.role = 'student' AND u.active = 1`, a.ClassID)
+	students, err := s.classes.Students(a.ClassID)
 	if err != nil {
 		return
 	}
-	defer rows.Close()
 	link := s.baseURL(r) + "/dashboard"
-	for rows.Next() {
-		var email, name, locale string
-		if rows.Scan(&email, &name, &locale) != nil {
+	for _, st := range students {
+		if !st.Active {
 			continue
 		}
+		email, name, locale := st.Email, st.Name, st.Locale
 		due := ""
 		if a.DueAt != nil {
 			if t, err := time.Parse(time.RFC3339, *a.DueAt); err == nil {
@@ -366,19 +367,15 @@ func (s *Server) handleAssignmentProgress(w http.ResponseWriter, r *http.Request
 		writeErr(w, 403, "forbidden", "not your class")
 		return
 	}
-	rows, err := s.db.Query(`SELECT u.id, u.name, u.email FROM class_members m JOIN users u ON u.id = m.user_id WHERE m.class_id = ? AND m.role = 'student' ORDER BY u.name`, a.ClassID)
+	students, err := s.classes.Students(a.ClassID)
 	if err != nil {
 		writeErr(w, 500, "internal", err.Error())
 		return
 	}
 	var out []StudentProgress
-	for rows.Next() {
-		var p StudentProgress
-		if rows.Scan(&p.UserID, &p.Name, &p.Email) == nil {
-			out = append(out, p)
-		}
+	for _, st := range students {
+		out = append(out, StudentProgress{UserID: st.ID, Name: st.Name, Email: st.Email})
 	}
-	rows.Close()
 	for i := range out {
 		out[i].Session = s.bestSession(out[i].UserID, a.ID)
 		out[i].AttemptCount = countRows(s.db, `SELECT COUNT(*) FROM activity_sessions WHERE user_id = ? AND assignment_id = ?`, out[i].UserID, a.ID)
@@ -580,8 +577,7 @@ func (s *Server) loadSessionForUser(u *User, id int64) (*SessionDetail, bool, er
 		}
 	}
 	// teachers can see free sessions of students in their classes
-	if u.Role == "teacher" && ss.UserID != nil && countRows(s.db, `SELECT COUNT(*) FROM class_members m1 JOIN class_members m2 ON m1.class_id = m2.class_id
-		WHERE m1.user_id = ? AND m1.role = 'teacher' AND m2.user_id = ?`, u.ID, *ss.UserID) > 0 {
+	if u.Role == domain.RoleTeacher && ss.UserID != nil && s.classes.TeachesStudent(u.ID, *ss.UserID) {
 		return &d, false, nil
 	}
 	return nil, false, fmt.Errorf("forbidden")

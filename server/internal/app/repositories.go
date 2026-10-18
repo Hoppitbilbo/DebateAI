@@ -10,6 +10,8 @@ import "github.com/Hoppitbilbo/DebateAI/server/internal/domain"
 type (
 	User      = domain.User
 	inviteRow = domain.Invite
+	Class     = domain.Class
+	Member    = domain.Member
 )
 
 // settingsStore persists the settings documents.
@@ -50,4 +52,29 @@ type inviteStore interface {
 	MarkSent(id int64) error
 	Delete(id int64) error
 	CountPending() int
+}
+
+type classStore interface {
+	Get(id int64) (*domain.Class, error)
+	Name(id int64) string
+	ListAll() ([]*domain.Class, error)
+	ListTaughtBy(userID int64) ([]*domain.Class, error)
+	ListJoinedBy(userID int64) ([]*domain.Class, error)
+	FindByJoinCode(code string) (*domain.Class, error)
+	Create(name, description string, ownerID int64) (int64, error)
+	Update(id int64, p domain.ClassPatch) error
+	Delete(id int64) error
+	SetJoinCode(id int64, code string) error
+	CountActive() int
+
+	Members(classID int64) []domain.Member
+	Students(classID int64) ([]domain.User, error)
+	CountStudents(classID int64) int
+	CountMemberships(userID int64) int
+	AddMember(classID, userID int64, role string) error
+	RemoveMember(classID, userID int64) error
+	IsMember(classID, userID int64) bool
+	IsOwner(classID, userID int64) bool
+	Teaches(classID, userID int64) bool
+	TeachesStudent(teacherID, studentID int64) bool
 }

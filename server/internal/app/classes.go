@@ -1,99 +1,35 @@
 package app
 
 import (
-	"database/sql"
 	"fmt"
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/Hoppitbilbo/DebateAI/server/internal/domain"
 )
-
-type Class struct {
-	ID           int64  `json:"id"`
-	Name         string `json:"name"`
-	Description  string `json:"description"`
-	JoinCode     string `json:"joinCode,omitempty"`
-	OwnerID      *int64 `json:"ownerId,omitempty"`
-	OwnerName    string `json:"ownerName,omitempty"`
-	Archived     bool   `json:"archived"`
-	CreatedAt    string `json:"createdAt"`
-	StudentCount int    `json:"studentCount"`
-	TeacherCount int    `json:"teacherCount"`
-	Assignments  int    `json:"assignmentCount"`
-}
-
-type Member struct {
-	UserID      int64   `json:"userId"`
-	Name        string  `json:"name"`
-	Email       string  `json:"email"`
-	Role        string  `json:"role"`
-	JoinedAt    string  `json:"joinedAt"`
-	LastLoginAt *string `json:"lastLoginAt,omitempty"`
-}
-
-const classSelect = `SELECT c.id, c.name, c.description, c.join_code, c.owner_id, COALESCE(u.name,''), c.archived, c.created_at,
-	(SELECT COUNT(*) FROM class_members m WHERE m.class_id = c.id AND m.role = 'student'),
-	(SELECT COUNT(*) FROM class_members m WHERE m.class_id = c.id AND m.role = 'teacher'),
-	(SELECT COUNT(*) FROM assignments a WHERE a.class_id = c.id)
-	FROM classes c LEFT JOIN users u ON u.id = c.owner_id`
-
-func scanClass(row interface{ Scan(...any) error }) (*Class, error) {
-	var c Class
-	var owner sql.NullInt64
-	var archived int
-	if err := row.Scan(&c.ID, &c.Name, &c.Description, &c.JoinCode, &owner, &c.OwnerName, &archived, &c.CreatedAt, &c.StudentCount, &c.TeacherCount, &c.Assignments); err != nil {
-		return nil, err
-	}
-	if owner.Valid {
-		c.OwnerID = &owner.Int64
-	}
-	c.Archived = archived == 1
-	return &c, nil
-}
-
-// joinCode avoids ambiguous characters (0/O, 1/I/L).
-func newJoinCode() string {
-	const alphabet = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"
-	b := []byte(randomToken(16))
-	out := make([]byte, 6)
-	for i := range out {
-		out[i] = alphabet[int(b[i])%len(alphabet)]
-	}
-	return string(out)
-}
 
 // canManageClass: admins, the owner, or co-teachers.
 func (s *Server) canManageClass(u *User, classID int64) bool {
-	if u.Role == "admin" {
-		return true
-	}
-	return countRows(s.db, `SELECT COUNT(*) FROM classes WHERE id = ? AND owner_id = ?`, classID, u.ID) > 0 ||
-		countRows(s.db, `SELECT COUNT(*) FROM class_members WHERE class_id = ? AND user_id = ? AND role = 'teacher'`, classID, u.ID) > 0
+	return u.Role == domain.RoleAdmin || s.classes.Teaches(classID, u.ID)
 }
 
 func (s *Server) isClassMember(u *User, classID int64) bool {
-	return countRows(s.db, `SELECT COUNT(*) FROM class_members WHERE class_id = ? AND user_id = ?`, classID, u.ID) > 0
+	return s.classes.IsMember(classID, u.ID)
 }
 
 func (s *Server) handleListClasses(w http.ResponseWriter, r *http.Request) {
 	u := currentUser(r)
-	var rows *sql.Rows
+	var out []*Class
 	var err error
-	if u.Role == "admin" && r.URL.Query().Get("mine") != "1" {
-		rows, err = s.db.Query(classSelect + ` ORDER BY c.archived, c.created_at DESC`)
+	if u.Role == domain.RoleAdmin && r.URL.Query().Get("mine") != "1" {
+		out, err = s.classes.ListAll()
 	} else {
-		rows, err = s.db.Query(classSelect+` WHERE c.owner_id = ? OR c.id IN (SELECT class_id FROM class_members WHERE user_id = ? AND role = 'teacher') ORDER BY c.archived, c.created_at DESC`, u.ID, u.ID)
+		out, err = s.classes.ListTaughtBy(u.ID)
 	}
 	if err != nil {
 		writeErr(w, 500, "internal", err.Error())
 		return
-	}
-	defer rows.Close()
-	out := []*Class{}
-	for rows.Next() {
-		if c, err := scanClass(rows); err == nil {
-			out = append(out, c)
-		}
 	}
 	writeJSON(w, 200, out)
 }
@@ -112,24 +48,12 @@ func (s *Server) handleCreateClass(w http.ResponseWriter, r *http.Request) {
 	if u.Role == "admin" && in.OwnerID != nil {
 		owner = *in.OwnerID
 	}
-	var id int64
-	for i := 0; i < 5; i++ {
-		res, err := s.db.Exec(`INSERT INTO classes(name, description, join_code, owner_id, created_at) VALUES(?,?,?,?,?)`,
-			strings.TrimSpace(in.Name), strings.TrimSpace(in.Description), newJoinCode(), owner, now())
-		if err == nil {
-			id, _ = res.LastInsertId()
-			break
-		}
-	}
-	if id == 0 {
-		writeErr(w, 500, "internal", "could not create class")
-		return
-	}
-	if _, err := s.db.Exec(`INSERT OR IGNORE INTO class_members(class_id, user_id, role, joined_at) VALUES(?,?,?,?)`, id, owner, "teacher", now()); err != nil {
+	id, err := s.classes.Create(strings.TrimSpace(in.Name), strings.TrimSpace(in.Description), owner)
+	if err != nil {
 		writeErr(w, 500, "internal", err.Error())
 		return
 	}
-	c, _ := scanClass(s.db.QueryRow(classSelect+` WHERE c.id = ?`, id))
+	c, _ := s.classes.Get(id)
 	writeJSON(w, 201, c)
 }
 
@@ -140,28 +64,12 @@ func (s *Server) handleGetClass(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 403, "forbidden", "not your class")
 		return
 	}
-	c, err := scanClass(s.db.QueryRow(classSelect+` WHERE c.id = ?`, id))
+	c, err := s.classes.Get(id)
 	if err != nil {
 		writeErr(w, 404, "not_found", "class not found")
 		return
 	}
-	rows, err := s.db.Query(`SELECT u.id, u.name, u.email, m.role, m.joined_at, u.last_login_at FROM class_members m JOIN users u ON u.id = m.user_id WHERE m.class_id = ? ORDER BY m.role DESC, u.name`, id)
-	members := []Member{}
-	if err == nil {
-		defer rows.Close()
-		for rows.Next() {
-			var m Member
-			var last sql.NullString
-			if rows.Scan(&m.UserID, &m.Name, &m.Email, &m.Role, &m.JoinedAt, &last) == nil {
-				if last.Valid {
-					m.LastLoginAt = &last.String
-				}
-				members = append(members, m)
-			}
-		}
-	}
-	invites := s.invites.ListPendingForClass(id)
-	writeJSON(w, 200, classDetailResponse{Class: c, Members: members, Invites: invites})
+	writeJSON(w, 200, classDetailResponse{Class: c, Members: s.classes.Members(id), Invites: s.invites.ListPendingForClass(id)})
 }
 
 func (s *Server) handleUpdateClass(w http.ResponseWriter, r *http.Request) {
@@ -180,21 +88,18 @@ func (s *Server) handleUpdateClass(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 400, "bad_request", err.Error())
 		return
 	}
-	b := sqlBatch{db: s.db}
+	p := domain.ClassPatch{Archived: in.Archived}
 	if in.Name != nil && strings.TrimSpace(*in.Name) != "" {
-		b.exec(`UPDATE classes SET name = ? WHERE id = ?`, strings.TrimSpace(*in.Name), id)
+		p.Name = ptr(strings.TrimSpace(*in.Name))
 	}
 	if in.Description != nil {
-		b.exec(`UPDATE classes SET description = ? WHERE id = ?`, strings.TrimSpace(*in.Description), id)
+		p.Description = ptr(strings.TrimSpace(*in.Description))
 	}
-	if in.Archived != nil {
-		b.exec(`UPDATE classes SET archived = ? WHERE id = ?`, boolInt(*in.Archived), id)
-	}
-	if err := b.err; err != nil {
+	if err := s.classes.Update(id, p); err != nil {
 		writeErr(w, 500, "internal", err.Error())
 		return
 	}
-	c, _ := scanClass(s.db.QueryRow(classSelect+` WHERE c.id = ?`, id))
+	c, _ := s.classes.Get(id)
 	writeJSON(w, 200, c)
 }
 
@@ -205,7 +110,7 @@ func (s *Server) handleDeleteClass(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 403, "forbidden", "not your class")
 		return
 	}
-	if _, err := s.db.Exec(`DELETE FROM classes WHERE id = ?`, id); err != nil {
+	if err := s.classes.Delete(id); err != nil {
 		writeErr(w, 500, "internal", err.Error())
 		return
 	}
@@ -219,8 +124,8 @@ func (s *Server) handleRegenerateCode(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 403, "forbidden", "not your class")
 		return
 	}
-	code := newJoinCode()
-	if _, err := s.db.Exec(`UPDATE classes SET join_code = ? WHERE id = ?`, code, id); err != nil {
+	code := domain.NewJoinCode()
+	if err := s.classes.SetJoinCode(id, code); err != nil {
 		writeErr(w, 500, "internal", err.Error())
 		return
 	}
@@ -252,7 +157,7 @@ func (s *Server) handleClassInvite(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 400, "bad_role", "role must be student or teacher")
 		return
 	}
-	if in.Role == "teacher" && u.Role != "admin" && countRows(s.db, `SELECT COUNT(*) FROM classes WHERE id = ? AND owner_id = ?`, id, u.ID) == 0 {
+	if in.Role == domain.RoleTeacher && u.Role != domain.RoleAdmin && !s.classes.IsOwner(id, u.ID) {
 		writeErr(w, 403, "forbidden", "only the class owner can add co-teachers")
 		return
 	}
@@ -260,8 +165,7 @@ func (s *Server) handleClassInvite(w http.ResponseWriter, r *http.Request) {
 	if locale == "" {
 		locale = u.Locale
 	}
-	var className string
-	_ = s.db.QueryRow(`SELECT name FROM classes WHERE id = ?`, id).Scan(&className)
+	className := s.classes.Name(id)
 
 	results := []inviteResult{}
 	for _, raw := range splitEmails(in.Emails) {
@@ -270,7 +174,7 @@ func (s *Server) handleClassInvite(w http.ResponseWriter, r *http.Request) {
 			if existing.Role != "student" && in.Role == "teacher" {
 				memberRole = "teacher"
 			}
-			if _, err := s.db.Exec(`INSERT OR IGNORE INTO class_members(class_id, user_id, role, joined_at) VALUES(?,?,?,?)`, id, existing.ID, memberRole, now()); err != nil {
+			if err := s.classes.AddMember(id, existing.ID, memberRole); err != nil {
 				results = append(results, inviteResult{Email: existing.Email, Status: "error", EmailSent: boolPtr(false), Error: err.Error()})
 				continue
 			}
@@ -311,7 +215,7 @@ func (s *Server) handleRemoveMember(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 403, "forbidden", "not your class")
 		return
 	}
-	if _, err := s.db.Exec(`DELETE FROM class_members WHERE class_id = ? AND user_id = ?`, id, pathID(r, "userId")); err != nil {
+	if err := s.classes.RemoveMember(id, pathID(r, "userId")); err != nil {
 		writeErr(w, 500, "internal", err.Error())
 		return
 	}
@@ -340,33 +244,27 @@ func (s *Server) handleJoinClass(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 400, "bad_request", err.Error())
 		return
 	}
-	var id int64
-	var name string
-	if err := s.db.QueryRow(`SELECT id, name FROM classes WHERE join_code = ? AND archived = 0`, strings.ToUpper(strings.TrimSpace(in.Code))).Scan(&id, &name); err != nil {
+	c, err := s.classes.FindByJoinCode(domain.NormalizeJoinCode(in.Code))
+	if err != nil {
 		writeErr(w, 404, "invalid_code", "class code not found")
 		return
 	}
-	if _, err := s.db.Exec(`INSERT OR IGNORE INTO class_members(class_id, user_id, role, joined_at) VALUES(?,?,?,?)`, id, u.ID, "student", now()); err != nil {
+	if err := s.classes.AddMember(c.ID, u.ID, domain.RoleStudent); err != nil {
 		writeErr(w, 500, "internal", err.Error())
 		return
 	}
-	writeJSON(w, 200, joinClassResponse{ClassID: id, Name: name})
+	writeJSON(w, 200, joinClassResponse{ClassID: c.ID, Name: c.Name})
 }
 
 func (s *Server) handleMyClasses(w http.ResponseWriter, r *http.Request) {
 	u := currentUser(r)
-	rows, err := s.db.Query(classSelect+` WHERE c.id IN (SELECT class_id FROM class_members WHERE user_id = ?) AND c.archived = 0 ORDER BY c.name`, u.ID)
+	out, err := s.classes.ListJoinedBy(u.ID)
 	if err != nil {
 		writeErr(w, 500, "internal", err.Error())
 		return
 	}
-	defer rows.Close()
-	out := []*Class{}
-	for rows.Next() {
-		if c, err := scanClass(rows); err == nil {
-			c.JoinCode = "" // students do not need it
-			out = append(out, c)
-		}
+	for _, c := range out {
+		c.JoinCode = "" // students do not need it
 	}
 	writeJSON(w, 200, out)
 }

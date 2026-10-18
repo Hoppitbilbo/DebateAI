@@ -27,7 +27,7 @@ func (s *Server) handleAdminOverview(w http.ResponseWriter, r *http.Request) {
 			Teacher: s.users.Count(domain.RoleTeacher),
 			Student: s.users.Count(domain.RoleStudent),
 		},
-		Classes:         countRows(s.db, `SELECT COUNT(*) FROM classes WHERE archived = 0`),
+		Classes:         s.classes.CountActive(),
 		Assignments:     countRows(s.db, `SELECT COUNT(*) FROM assignments`),
 		Sessions:        countRows(s.db, `SELECT COUNT(*) FROM activity_sessions WHERE turns > 0`),
 		PendingInvites:  s.invites.CountPending(),
@@ -65,7 +65,7 @@ func (s *Server) handleListUsers(w http.ResponseWriter, r *http.Request) {
 		out = append(out, userOut{User: &users[i]})
 	}
 	for i := range out {
-		out[i].Classes = countRows(s.db, `SELECT COUNT(*) FROM class_members WHERE user_id = ?`, out[i].ID)
+		out[i].Classes = s.classes.CountMemberships(out[i].ID)
 		var c sql.NullFloat64
 		_ = s.db.QueryRow(`SELECT SUM(cost_usd) FROM usage_log WHERE user_id = ? AND created_at >= ?`, out[i].ID, monthStart()).Scan(&c)
 		out[i].CostUSD = c.Float64
@@ -96,7 +96,7 @@ func (s *Server) handleCreateUser(w http.ResponseWriter, r *http.Request) {
 		if in.Role != "student" {
 			role = "teacher"
 		}
-		if _, err := s.db.Exec(`INSERT OR IGNORE INTO class_members(class_id, user_id, role, joined_at) VALUES(?,?,?,?)`, *in.ClassID, id, role, now()); err != nil {
+		if err := s.classes.AddMember(*in.ClassID, id, role); err != nil {
 			writeErr(w, 500, "internal", err.Error())
 			return
 		}
@@ -187,7 +187,7 @@ func (s *Server) handleCreateInvites(w http.ResponseWriter, r *http.Request) {
 	}
 	className := ""
 	if in.ClassID != nil {
-		_ = s.db.QueryRow(`SELECT name FROM classes WHERE id = ?`, *in.ClassID).Scan(&className)
+		className = s.classes.Name(*in.ClassID)
 	}
 	locale := in.Locale
 	if locale == "" {

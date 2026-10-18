@@ -285,7 +285,7 @@ func (s *Server) handleRegister(w http.ResponseWriter, r *http.Request) {
 		if inv.Role == "teacher" {
 			memberRole = "teacher"
 		}
-		if _, err := s.db.Exec(`INSERT OR IGNORE INTO class_members(class_id, user_id, role, joined_at) VALUES(?,?,?,?)`, *inv.ClassID, uid, memberRole, now()); err != nil {
+		if err := s.classes.AddMember(*inv.ClassID, uid, memberRole); err != nil {
 			writeErr(w, 500, "internal", err.Error())
 			return
 		}
