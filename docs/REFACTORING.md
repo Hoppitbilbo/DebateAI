@@ -38,7 +38,7 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto · `[-]` scartato (spieg
 ## Stato attuale
 
 - **Fase in corso:** 3 (repository, backend)
-- **Prossimo task:** 3.1
+- **Prossimo task:** 3.2
 - **Lavoro a metà:** nessuno
 - **Test:** Go 33 test nuovi + quelli esistenti verdi; Vitest 18 test verdi; lint 0 errori (18 warning preesistenti)
 
@@ -166,7 +166,7 @@ main.go        composition root (costruisce e inietta le dipendenze)
 
 Un'area per task, spostando l'SQL in `internal/store`:
 
-- [ ] **3.1** settings
+- [x] **3.1** (`5e7cc2b`) settings
 - [ ] **3.2** users e invites
 - [ ] **3.3** classes
 - [ ] **3.4** assignments
@@ -197,6 +197,7 @@ Un'area per task, spostando l'SQL in `internal/store`:
 
 ## Note e decisioni
 
+- Schema della fase 3: il repository vive in `server/internal/store` (tipo concreto, es. `store.Settings`), mentre l'interfaccia la definisce chi la usa in `app` (es. `settingsStore` in `settings.go`). `Server` ha un campo per repository, inizializzato in `NewServer` (spostato in `main.go` al task 4.4). Ogni repository ha i suoi test in `store` con un DB temporaneo.
 - Go non ha ereditarietà: Template Method si realizza con funzioni o interfacce passate come parametro (composizione).
 - L'API HTTP e lo schema SQLite non cambiano durante il refactoring.
 - Task 1.2: unica eccezione voluta alla regola "nessun cambio di comportamento". Solo quando una scrittura sul DB fallisce: le scritture principali rispondono 500 invece di un falso OK, quelle di contorno (ultimo login, pulizia sessioni, costi, prezzi importati, `email_sent`) vengono loggate con `execOrLog`, e gli handler con più update usano `sqlBatch`. Restano volutamente le letture `_ = ...QueryRow(...).Scan(...)` che hanno un valore di default sensato (nome classe, somme dei costi): verranno riviste nei repository (fase 3).
@@ -226,3 +227,4 @@ Un'area per task, spostando l'SQL in `internal/store`:
 | 2026-10-18 | 2.5 | `be3d935` | Claude Code | `ai.New` usa la mappa `factories` e `ai.KnownKind` sostituisce `validKind`. `server/internal/app/route_policies.go`: `routePolicy` per tipo (`jevRoutes`, `geminiRoutes`, `firstModelRoutes`) in `defaultRoutes`; `autoRoute`, `newestFlash`, `pickModel` e `geminiVersion` spostati lì. Nuovo tipo di provider = adapter + factory + (opzionale) policy. Test `TestDefaultRoutePolicies`. |
 | 2026-10-18 | 2.6 | `07d78a1` | Claude Code | `judge.go`: interfaccia `goalJudge`, `jevJudge` (Decider) e `llmJudge` (Generator), scelta con `judgeFor`. Ogni motore costruisce il proprio state (`jevState` / `buildState`). `finalize` resta una funzione pura. Fase 2 completata, push su GitHub. |
 | 2026-10-18 | — | — | Claude Code | CI GitHub verde su `938e472` (fine fase 2: `test`, `web`, `image`). Corretti in chat gli hash della fase 2, riportati a memoria in modo sbagliato; quelli in questo documento erano già giusti. Aggiunta la regola 6. |
+| 2026-10-18 | 3.1 | `5e7cc2b` | Claude Code | `server/internal/store/settings.go` (`Load`/`Save`) + test; in `app` interfaccia `settingsStore` e helper `loadSetting[T]`; rimossi `getSetting`/`putSetting`. I test usano `s.settings.Save`. |
