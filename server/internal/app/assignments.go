@@ -1,7 +1,6 @@
 package app
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -383,91 +382,16 @@ func (s *Server) handleSaveTranscript(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 404, "not_found", "session not found")
 		return
 	}
-	var in struct {
-		Messages []transcriptMsg `json:"messages"`
-		Context  json.RawMessage `json:"context"`
-		Judge    *bool           `json:"judge"`
-	}
+	var in transcriptUpdate
 	if err := readJSON(r, &in); err != nil {
 		writeErr(w, 400, "bad_request", err.Error())
 		return
 	}
-	if len(in.Messages) > maxTranscriptMessages {
-		in.Messages = in.Messages[len(in.Messages)-maxTranscriptMessages:]
-	}
-	turns := 0
-	for _, m := range in.Messages {
-		if m.Role == "user" && strings.TrimSpace(m.Content) != "" {
-			turns++
-		}
-	}
-	status := d.Status
-	var newContext *string
-	if len(in.Context) > 0 {
-		newContext = ptr(string(in.Context))
-	}
-	if err := s.sessions.SaveTranscript(d.ID, mustJSON(in.Messages), turns, newContext); err != nil {
+	resp, err := s.sessionSvc.SaveTranscript(r.Context(), u, d, in)
+	if err != nil {
 		writeErr(w, 500, "internal", err.Error())
 		return
 	}
-
-	resp := transcriptSyncResponse{Status: status, Turns: turns, Progress: d.Progress, Ended: status != "active"}
-	if d.AssignmentID == nil || status != "active" {
-		writeJSON(w, 200, resp)
-		return
-	}
-	a, err := s.getAssignment(*d.AssignmentID)
-	if err != nil {
-		writeJSON(w, 200, resp)
-		return
-	}
-	resp.MaxTurns = &a.MaxTurns
-	reason := ""
-
-	js := s.jevSettings()
-	every := js.EvaluateEvery
-	if every < 1 {
-		every = 1
-	}
-	shouldJudge := turns > 0 && (turns%every == 0 || (a.MaxTurns > 0 && turns >= a.MaxTurns))
-	if in.Judge != nil {
-		shouldJudge = *in.Judge && turns > 0
-	}
-	if shouldJudge {
-		ctxText := ""
-		if len(in.Context) > 0 {
-			ctxText = string(in.Context)
-		} else {
-			ctxText = string(d.Context)
-		}
-		ctx, cancel := context.WithTimeout(r.Context(), judgeRequestTimeout)
-		jr := s.judge(ctx, judgeInput{Instructions: a.Instructions, Goals: a.Goals, AppType: a.AppType, Context: truncate(ctxText, maxJudgeContextChars),
-			Transcript: in.Messages, Locale: u.Locale, MinTurns: a.MinTurns, Turns: turns}, &u.ID, &d.ID)
-		cancel()
-		resp.Jev = &jr
-		if jr.Engine != "none" {
-			if err := s.sessions.SaveJudgement(d.ID, mustJSON(jr), jr.Progress); err != nil {
-				writeErr(w, 500, "internal", err.Error())
-				return
-			}
-			resp.Progress = jr.Progress
-			if jr.Completed && a.AutoEnd {
-				status, reason = "goal_reached", "goal_reached"
-			}
-		}
-	}
-	if status == "active" && a.MaxTurns > 0 && turns >= a.MaxTurns {
-		status, reason = "turn_limit", "turn_limit"
-	}
-	if status != "active" {
-		if err := s.sessions.SetStatus(d.ID, status); err != nil {
-			writeErr(w, 500, "internal", err.Error())
-			return
-		}
-	}
-	resp.Status = status
-	resp.Ended = status != "active"
-	resp.Reason = &reason
 	writeJSON(w, 200, resp)
 }
 

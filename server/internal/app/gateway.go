@@ -311,7 +311,7 @@ func (s *Server) handleGenerate(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 403, "bad_session", err.Error())
 		return
 	}
-	if sessionID != nil && in.Task == TaskChat && status != "active" {
+	if sessionID != nil && in.Task == TaskChat && status != domain.SessionActive {
 		writeErr(w, 409, "session_ended", "this activity has ended")
 		return
 	}
@@ -376,7 +376,7 @@ func (s *Server) handleLiveToken(w http.ResponseWriter, r *http.Request) {
 	if _, status, err := s.sessionFor(u, in.SessionID); err != nil {
 		writeErr(w, 403, "bad_session", err.Error())
 		return
-	} else if status != "" && status != "active" {
+	} else if status != "" && status != domain.SessionActive {
 		writeErr(w, 409, "session_ended", "this activity has ended")
 		return
 	}

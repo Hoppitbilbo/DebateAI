@@ -31,8 +31,10 @@ type Server struct {
 	providers   providerStore
 	prices      priceStore
 	usage       usageStore
-	crypto      *Crypto
-	static      fs.FS
+
+	sessionSvc *sessionService
+	crypto     *Crypto
+	static     fs.FS
 
 	limiter *rateLimiter
 	provMu  sync.Mutex
@@ -57,6 +59,7 @@ func NewServer(cfg Config, db *sql.DB, static fs.FS) *Server {
 		limiter:     newRateLimiter(),
 		provs:       map[int64]cachedProvider{},
 	}
+	s.sessionSvc = &sessionService{sessions: s.sessions, assignments: s.assignments, judge: s, jevSettings: s.jevSettings}
 	s.bootstrap()
 	return s
 }
