@@ -29,7 +29,7 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto · `[-]` scartato (spieg
 ## Stato attuale
 
 - **Fase in corso:** 0 (rete di sicurezza)
-- **Prossimo task:** 0.1
+- **Prossimo task:** 0.2
 - **Lavoro a metà:** nessuno
 - **Test:** `go test ./...` verde all'inizio del refactoring
 
@@ -131,7 +131,7 @@ main.go        composition root (costruisce e inietta le dipendenze)
 
 ### Fase 0: rete di sicurezza
 
-- [ ] **0.1** Test del gateway `generate`: fallback su errore ritentabile, stop su errore non ritentabile, timeout del primo token, salto di Jev, budget esaurito.
+- [x] **0.1** (`2aae325`) Test del gateway `generate`: fallback su errore ritentabile, stop su errore non ritentabile, timeout del primo token, salto di Jev, budget esaurito.
 - [ ] **0.2** Test del giudice: `finalize` (soglia, `minTurns`, progress) e `judge` con provider finti (Jev e LLM).
 - [ ] **0.3** Test HTTP di `handleSaveTranscript`: conteggio turni, `EvaluateEvery`, `AutoEnd`, `MaxTurns`, risposta JSON (snapshot delle chiavi).
 - [ ] **0.4** Aggiungere Vitest al frontend, con test di `useActivitySession` e `useChatEngine` su un client AI finto.
@@ -197,4 +197,5 @@ Un'area per task, spostando l'SQL in `internal/store`:
 
 | Data | Task | Commit | Chi | Note |
 |---|---|---|---|---|
-| 2026-10-18 | — | — | Claude Code | Creato il documento. Go test verdi. |
+| 2026-10-18 | — | `fb57987` | Claude Code | Creato il documento. Go test verdi. |
+| 2026-10-18 | 0.1 | `2aae325` | Claude Code | `server/internal/app/gateway_test.go`: 11 test. Helper riusabili: `newTestServer`, `useProvider` (inietta un provider finto nella cache), `setChatRoute`, `fakeProvider`. |
