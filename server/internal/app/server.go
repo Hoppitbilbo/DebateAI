@@ -2,11 +2,9 @@ package app
 
 import (
 	"context"
-	"database/sql"
 	"encoding/json"
 	"errors"
 	"io/fs"
-	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -15,124 +13,18 @@ import (
 	"strings"
 	"sync"
 	"time"
-
-	"github.com/Hoppitbilbo/DebateAI/server/internal/domain"
-	"github.com/Hoppitbilbo/DebateAI/server/internal/store"
 )
 
+// Server is the HTTP side: routes, middleware and handlers over Services.
 type Server struct {
-	cfg         Config
-	settings    settingsStore
-	users       userStore
-	logins      authSessionStore
-	invites     inviteStore
-	classes     classStore
-	assignments assignmentStore
-	sessions    sessionStore
-	providers   providerStore
-	prices      priceStore
-	usage       usageStore
-
-	settingsSvc   *settingsService
-	sessionSvc    *sessionService
-	accounts      *authService
-	classSvc      *classService
-	assignmentSvc *assignmentService
-	crypto        *Crypto
-	static        fs.FS
-
+	cfg Config
+	*Services
+	static  fs.FS
 	limiter *rateLimiter
-	gateway *aiGateway
 }
 
-func NewServer(cfg Config, db *sql.DB, static fs.FS) *Server {
-	s := &Server{
-		cfg:         cfg,
-		settings:    store.NewSettings(db),
-		users:       store.NewUsers(db),
-		logins:      store.NewAuthSessions(db),
-		invites:     store.NewInvites(db),
-		classes:     store.NewClasses(db),
-		assignments: store.NewAssignments(db),
-		sessions:    store.NewActivitySessions(db),
-		providers:   store.NewProviders(db),
-		prices:      store.NewPrices(db),
-		usage:       store.NewUsage(db),
-		crypto:      NewCrypto(cfg.Secret),
-		static:      static,
-		limiter:     newRateLimiter(),
-	}
-	s.settingsSvc = &settingsService{store: s.settings, crypto: s.crypto, smtpDefaults: cfg.SMTP}
-	s.gateway = newAIGateway(s.providers, s.prices, s.usage, s.sessions, s.settingsSvc, s.crypto)
-	s.accounts = &authService{users: s.users, logins: s.logins, invites: s.invites, classes: s.classes, mail: s,
-		siteName: func() string { return s.settingsSvc.General().SiteName }}
-	s.classSvc = &classService{classes: s.classes, users: s.users, accounts: s.accounts, mail: s,
-		siteName: func() string { return s.settingsSvc.General().SiteName }, mailOn: func() bool { return s.settingsSvc.MailConfigured() }}
-	s.assignmentSvc = &assignmentService{assignments: s.assignments, classes: s.classes, sessions: s.sessions, classSvc: s.classSvc,
-		listeners: []assignmentListener{mailNotifier{classes: s.classes, mail: s, siteName: func() string { return s.settingsSvc.General().SiteName }}}}
-	s.sessionSvc = &sessionService{sessions: s.sessions, assignments: s.assignments, classes: s.classes, classSvc: s.classSvc,
-		judge: s.gateway, jevSettings: s.settingsSvc.Jev}
-	s.bootstrap()
-	return s
-}
-
-// bootstrap creates the first admin and default providers from environment
-// variables so a fresh server is usable with `ADMIN_EMAIL=... GEMINI_API_KEY=...`.
-func (s *Server) bootstrap() {
-	if s.cfg.AdminEmail != "" && s.cfg.AdminPassword != "" && s.users.Count("") == 0 {
-		if _, err := s.accounts.CreateUser(s.cfg.AdminEmail, s.cfg.AdminName, s.cfg.AdminPassword, domain.RoleAdmin, "it"); err != nil {
-			log.Printf("bootstrap admin: %v", err)
-		} else {
-			log.Printf("created admin user %s", s.cfg.AdminEmail)
-		}
-	}
-	if s.providers.Count(false) > 0 {
-		return
-	}
-	// Same path as adding a provider in the admin panel: list models, import
-	// prices, then let autoRoute pick sensible defaults per task.
-	add := func(name, kind, baseURL, key string) int64 {
-		id, err := s.gateway.insertProvider(name, kind, baseURL, key)
-		if err != nil {
-			log.Printf("bootstrap %s: %v", name, err)
-			return 0
-		}
-		if cp, err := s.gateway.provider(id); err == nil {
-			ctx, cancel := context.WithTimeout(context.Background(), modelListTimeout)
-			if models, err := cp.p.ListModels(ctx); err == nil && len(models) > 0 {
-				s.gateway.storeModels(id, models)
-			} else if err != nil {
-				log.Printf("bootstrap %s: listing models failed: %v", name, err)
-			}
-			cancel()
-		}
-		s.gateway.autoRoute(id, kind)
-		log.Printf("configured %s from environment", name)
-		return id
-	}
-	if s.cfg.OpenRouterKey != "" {
-		if id := add("OpenRouter", "openai", "https://openrouter.ai/api/v1", s.cfg.OpenRouterKey); id != 0 {
-			// openrouter/free is OpenRouter's own router over its free models:
-			// a stable id that keeps working as individual free models change.
-			rt := s.settingsSvc.Routing()
-			for _, task := range []string{TaskChat, TaskEvaluation, TaskUtility, TaskJudge} {
-				rt.Tasks[task] = []RouteTarget{{id, "openrouter/free"}}
-			}
-			if err := s.settingsSvc.SaveRouting(rt); err != nil {
-				log.Printf("bootstrap OpenRouter routing: %v", err)
-			}
-		}
-	}
-	if s.cfg.GeminiAPIKey != "" {
-		add("Google Gemini", "gemini", "", s.cfg.GeminiAPIKey)
-	}
-	if s.cfg.OpencodeKey != "" {
-		add("OpenCode Zen", "openai", "https://opencode.ai/inference/openai/v1", s.cfg.OpencodeKey)
-		add("OpenCode Jev", "jev", "https://opencode.ai/inference/systemone/v1/systemone", s.cfg.OpencodeKey)
-	}
-	if s.cfg.TypeSafeKey != "" {
-		add("TypeSafe Jev", "jev", "https://api.typesafe.ai/v1", s.cfg.TypeSafeKey)
-	}
+func NewServer(cfg Config, services *Services, static fs.FS) *Server {
+	return &Server{cfg: cfg, Services: services, static: static, limiter: newRateLimiter()}
 }
 
 func (s *Server) Handler() http.Handler {
@@ -384,7 +276,7 @@ func clientIP(r *http.Request) string {
 
 // baseURL is used to build links in e-mails.
 func (s *Server) baseURL(r *http.Request) string {
-	if g := s.settingsSvc.General(); g.PublicURL != "" {
+	if g := s.Settings.General(); g.PublicURL != "" {
 		return strings.TrimRight(g.PublicURL, "/")
 	}
 	if s.cfg.PublicURL != "" {

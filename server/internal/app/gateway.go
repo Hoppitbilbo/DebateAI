@@ -235,7 +235,7 @@ func (g *aiGateway) generate(ctx context.Context, task string, req ai.Request, u
 
 func (s *Server) aiAllowed(w http.ResponseWriter, r *http.Request) (*User, bool) {
 	u := s.userFromRequest(r)
-	g := s.settingsSvc.General()
+	g := s.Settings.General()
 	if u == nil {
 		if !g.GuestAccess {
 			writeErr(w, 401, "login_required", "login required to use the AI apps")
@@ -249,7 +249,7 @@ func (s *Server) aiAllowed(w http.ResponseWriter, r *http.Request) (*User, bool)
 	}
 	if u.Role == "student" && g.StudentRequestsPerDay > 0 {
 		since := time.Now().UTC().Add(-24 * time.Hour).Format(time.RFC3339)
-		if s.usage.CountUserRequestsSince(u.ID, since, TaskJudge) >= g.StudentRequestsPerDay {
+		if s.Usage.CountUserRequestsSince(u.ID, since, TaskJudge) >= g.StudentRequestsPerDay {
 			writeErr(w, 429, "daily_limit", "daily AI request limit reached")
 			return nil, false
 		}
@@ -262,7 +262,7 @@ func (s *Server) sessionFor(u *User, sessionID int64) (*int64, string, error) {
 	if sessionID == 0 || u == nil {
 		return nil, "", nil
 	}
-	owner, status, err := s.sessions.Owner(sessionID)
+	owner, status, err := s.Sessions.Owner(sessionID)
 	if err != nil {
 		return nil, "", errors.New("session not found")
 	}
@@ -276,12 +276,12 @@ func (s *Server) sessionFor(u *User, sessionID int64) (*int64, string, error) {
 
 func (s *Server) handleAIStatus(w http.ResponseWriter, r *http.Request) {
 	u := s.userFromRequest(r)
-	g := s.settingsSvc.General()
-	live := g.LiveEnabled && len(s.gateway.targets(TaskLive)) > 0 && (u != nil || g.GuestLive)
+	g := s.Settings.General()
+	live := g.LiveEnabled && len(s.Gateway.targets(TaskLive)) > 0 && (u != nil || g.GuestLive)
 	writeJSON(w, 200, aiStatusResponse{
-		Text:        len(s.gateway.targets(TaskChat)) > 0 && (u != nil || g.GuestAccess),
+		Text:        len(s.Gateway.targets(TaskChat)) > 0 && (u != nil || g.GuestAccess),
 		Live:        live,
-		Judge:       s.settingsSvc.Jev().Enabled && len(s.gateway.targets(TaskJudge)) > 0,
+		Judge:       s.Settings.Jev().Enabled && len(s.Gateway.targets(TaskJudge)) > 0,
 		LoggedIn:    u != nil,
 		GuestAccess: g.GuestAccess,
 	})
@@ -339,7 +339,7 @@ func (s *Server) handleGenerate(w http.ResponseWriter, r *http.Request) {
 	req := ai.Request{System: in.System, Messages: in.Messages, JSON: in.JSON, Temperature: in.Temperature, MaxTokens: in.MaxTokens}
 
 	if !in.Stream {
-		res, err := s.gateway.generate(r.Context(), in.Task, req, userID, sessionID, nil)
+		res, err := s.Gateway.generate(r.Context(), in.Task, req, userID, sessionID, nil)
 		if err != nil {
 			writeErr(w, 502, "ai_error", err.Error())
 			return
@@ -363,7 +363,7 @@ func (s *Server) handleGenerate(w http.ResponseWriter, r *http.Request) {
 		}
 		return nil
 	}
-	res, err := s.gateway.generate(r.Context(), in.Task, req, userID, sessionID, func(d string) error { return send(streamDelta{Delta: d}) })
+	res, err := s.Gateway.generate(r.Context(), in.Task, req, userID, sessionID, func(d string) error { return send(streamDelta{Delta: d}) })
 	if err != nil {
 		_ = send(streamError{Error: err.Error()})
 		return
@@ -373,7 +373,7 @@ func (s *Server) handleGenerate(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) handleLiveToken(w http.ResponseWriter, r *http.Request) {
 	u := s.userFromRequest(r)
-	g := s.settingsSvc.General()
+	g := s.Settings.General()
 	if !g.LiveEnabled || (u == nil && !g.GuestLive) {
 		writeErr(w, 403, "live_disabled", "live conversation is not enabled for this account")
 		return
@@ -403,11 +403,11 @@ func (s *Server) handleLiveToken(w http.ResponseWriter, r *http.Request) {
 	}
 	voice := in.VoiceName
 	if voice == "" {
-		voice = s.settingsSvc.Routing().DefaultVoice
+		voice = s.Settings.Routing().DefaultVoice
 	}
 	var lastErr error = errNoTargets
-	for _, t := range s.gateway.targets(TaskLive) {
-		cp, err := s.gateway.provider(t.ProviderID)
+	for _, t := range s.Gateway.targets(TaskLive) {
+		cp, err := s.Gateway.provider(t.ProviderID)
 		if err != nil || cp.cfg.Kind != ai.KindGemini {
 			continue
 		}
@@ -452,7 +452,7 @@ func (s *Server) handleLiveUsage(w http.ResponseWriter, r *http.Request) {
 		userID = &u.ID
 	}
 	sessionID, _, _ := s.sessionFor(u, in.SessionID)
-	cost := s.gateway.logUsage(usageEntry{UserID: userID, SessionID: sessionID, ProviderID: in.ProviderID, Provider: s.providers.Name(in.ProviderID), Model: in.Model, Task: TaskLive,
+	cost := s.Gateway.logUsage(usageEntry{UserID: userID, SessionID: sessionID, ProviderID: in.ProviderID, Provider: s.Providers.Name(in.ProviderID), Model: in.Model, Task: TaskLive,
 		Usage: ai.Usage{InputTokens: in.InputTokens, OutputTokens: in.OutputTokens}, OK: true, Latency: time.Duration(in.Seconds) * time.Second})
 	writeJSON(w, 200, liveUsageResponse{OK: true, CostUSD: cost})
 }

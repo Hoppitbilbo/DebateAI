@@ -60,17 +60,17 @@ func newTestServer(t *testing.T) *Server {
 		t.Fatal(err)
 	}
 	t.Cleanup(func() { db.Close() })
-	return NewServer(cfg, db, nil)
+	return NewServer(cfg, NewServices(cfg, db), nil)
 }
 
 // useProvider puts a provider straight into the adapter cache, bypassing the DB.
 func useProvider(s *Server, id int64, kind string, p ai.Provider) {
-	s.gateway.provs[id] = cachedProvider{p: p, cfg: ai.Config{ID: id, Kind: kind}, name: "fake" + itoa(id)}
+	s.Gateway.provs[id] = cachedProvider{p: p, cfg: ai.Config{ID: id, Kind: kind}, name: "fake" + itoa(id)}
 }
 
 func setChatRoute(t *testing.T, s *Server, strategy string, targets ...RouteTarget) {
 	t.Helper()
-	if err := s.settingsSvc.SaveRouting(RoutingSettings{Strategy: strategy, Tasks: map[string][]RouteTarget{TaskChat: targets}}); err != nil {
+	if err := s.Settings.SaveRouting(RoutingSettings{Strategy: strategy, Tasks: map[string][]RouteTarget{TaskChat: targets}}); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -81,8 +81,8 @@ func chatRequest() ai.Request {
 
 func usageRows(t *testing.T, s *Server) (ok, failed int) {
 	t.Helper()
-	failed = s.usage.CountSince("", true)
-	return s.usage.CountSince("", false) - failed, failed
+	failed = s.Usage.CountSince("", true)
+	return s.Usage.CountSince("", false) - failed, failed
 }
 
 func TestGenerateFallsBackOnRetryableError(t *testing.T) {
@@ -91,7 +91,7 @@ func TestGenerateFallsBackOnRetryableError(t *testing.T) {
 	useProvider(s, 1, ai.KindOpenAI, fp)
 	setChatRoute(t, s, "ordered", RouteTarget{1, "busy"}, RouteTarget{1, "ok"})
 
-	res, err := s.gateway.generate(context.Background(), TaskChat, chatRequest(), nil, nil, nil)
+	res, err := s.Gateway.generate(context.Background(), TaskChat, chatRequest(), nil, nil, nil)
 	if err != nil || res.Model != "ok" || res.Text != "answer from ok" {
 		t.Fatalf("expected fallback to ok: %v %+v", err, res)
 	}
@@ -106,7 +106,7 @@ func TestGenerateStopsOnCanceledContext(t *testing.T) {
 	useProvider(s, 1, ai.KindOpenAI, fp)
 	setChatRoute(t, s, "ordered", RouteTarget{1, "first"}, RouteTarget{1, "second"})
 
-	if _, err := s.gateway.generate(context.Background(), TaskChat, chatRequest(), nil, nil, nil); err == nil {
+	if _, err := s.Gateway.generate(context.Background(), TaskChat, chatRequest(), nil, nil, nil); err == nil {
 		t.Fatal("expected error")
 	}
 	if strings.Join(fp.calls, ",") != "first" {
@@ -122,7 +122,7 @@ func TestGenerateSkipsProvidersWithoutText(t *testing.T) {
 	useProvider(s, 2, ai.KindOpenAI, llm)
 	setChatRoute(t, s, "ordered", RouteTarget{1, "jev-latest"}, RouteTarget{2, "m"})
 
-	res, err := s.gateway.generate(context.Background(), TaskChat, chatRequest(), nil, nil, nil)
+	res, err := s.Gateway.generate(context.Background(), TaskChat, chatRequest(), nil, nil, nil)
 	if err != nil || res.ProviderID != 2 || jev.decisions != 0 {
 		t.Fatalf("providers without text capability must be skipped: %v %+v", err, res)
 	}
@@ -134,7 +134,7 @@ func TestGenerateSetsLowReasoningForChat(t *testing.T) {
 	useProvider(s, 1, ai.KindOpenAI, recordingProvider{fakeProvider: &fakeProvider{}, effort: &seen})
 	setChatRoute(t, s, "ordered", RouteTarget{1, "m"})
 
-	if _, err := s.gateway.generate(context.Background(), TaskChat, chatRequest(), nil, nil, nil); err != nil {
+	if _, err := s.Gateway.generate(context.Background(), TaskChat, chatRequest(), nil, nil, nil); err != nil {
 		t.Fatal(err)
 	}
 	if seen != "low" {
@@ -163,7 +163,7 @@ func TestGenerateStreamTimesOutSilentModel(t *testing.T) {
 	setChatRoute(t, s, "ordered", RouteTarget{1, "silent"}, RouteTarget{1, "fast"})
 
 	var got strings.Builder
-	res, err := s.gateway.generate(context.Background(), TaskChat, chatRequest(), nil, nil, func(d string) error {
+	res, err := s.Gateway.generate(context.Background(), TaskChat, chatRequest(), nil, nil, func(d string) error {
 		got.WriteString(d)
 		return nil
 	})
@@ -179,7 +179,7 @@ func TestGenerateNoFallbackAfterFirstDelta(t *testing.T) {
 	useProvider(s, 2, ai.KindOpenAI, fp)
 	setChatRoute(t, s, "ordered", RouteTarget{1, "a"}, RouteTarget{2, "b"})
 
-	_, err := s.gateway.generate(context.Background(), TaskChat, chatRequest(), nil, nil, func(string) error { return nil })
+	_, err := s.Gateway.generate(context.Background(), TaskChat, chatRequest(), nil, nil, func(string) error { return nil })
 	if err == nil || len(fp.calls) != 0 {
 		t.Fatalf("must not fall back once streaming started: %v %v", err, fp.calls)
 	}
@@ -194,7 +194,7 @@ func (failAfterDelta) Stream(ctx context.Context, req ai.Request, onDelta func(s
 
 func TestGenerateWithoutTargets(t *testing.T) {
 	s := newTestServer(t)
-	if _, err := s.gateway.generate(context.Background(), TaskChat, chatRequest(), nil, nil, nil); !errors.Is(err, errNoTargets) {
+	if _, err := s.Gateway.generate(context.Background(), TaskChat, chatRequest(), nil, nil, nil); !errors.Is(err, errNoTargets) {
 		t.Fatalf("expected errNoTargets, got %v", err)
 	}
 }
@@ -204,15 +204,15 @@ func TestTargetsStrategies(t *testing.T) {
 	paid, free := RouteTarget{1, "paid"}, RouteTarget{1, "cheap:free"}
 
 	setChatRoute(t, s, "ordered", paid, free)
-	if got := s.gateway.targets(TaskChat); got[0] != paid {
+	if got := s.Gateway.targets(TaskChat); got[0] != paid {
 		t.Fatalf("ordered: %v", got)
 	}
 	setChatRoute(t, s, "free_first", paid, free)
-	if got := s.gateway.targets(TaskChat); got[0] != free {
+	if got := s.Gateway.targets(TaskChat); got[0] != free {
 		t.Fatalf("free_first: %v", got)
 	}
 	setChatRoute(t, s, "cheapest", paid, free)
-	if got := s.gateway.targets(TaskChat); got[0] != free {
+	if got := s.Gateway.targets(TaskChat); got[0] != free {
 		t.Fatalf("cheapest (unknown price sorts last): %v", got)
 	}
 }
@@ -220,29 +220,29 @@ func TestTargetsStrategies(t *testing.T) {
 func TestTargetsFallBackToChatRoute(t *testing.T) {
 	s := newTestServer(t)
 	setChatRoute(t, s, "ordered", RouteTarget{1, "m"})
-	if got := s.gateway.targets(TaskEvaluation); len(got) != 1 || got[0].Model != "m" {
+	if got := s.Gateway.targets(TaskEvaluation); len(got) != 1 || got[0].Model != "m" {
 		t.Fatalf("evaluation should reuse chat targets: %v", got)
 	}
-	if got := s.gateway.targets(TaskLive); len(got) != 0 {
+	if got := s.Gateway.targets(TaskLive); len(got) != 0 {
 		t.Fatalf("live must not reuse chat targets: %v", got)
 	}
 }
 
 func TestBudgetExceededKeepsOnlyFreeTargets(t *testing.T) {
 	s := newTestServer(t)
-	if err := s.settingsSvc.SaveBudget(BudgetSettings{MonthlyUSD: 1, BlockPaidWhenExceeded: true}); err != nil {
+	if err := s.Settings.SaveBudget(BudgetSettings{MonthlyUSD: 1, BlockPaidWhenExceeded: true}); err != nil {
 		t.Fatal(err)
 	}
-	if err := s.usage.Insert(domain.UsageRecord{ProviderID: 1, Provider: "p", Model: "paid", Task: TaskChat, CostUSD: 5, OK: true}); err != nil {
+	if err := s.Usage.Insert(domain.UsageRecord{ProviderID: 1, Provider: "p", Model: "paid", Task: TaskChat, CostUSD: 5, OK: true}); err != nil {
 		t.Fatal(err)
 	}
 	setChatRoute(t, s, "ordered", RouteTarget{1, "paid"}, RouteTarget{1, "cheap:free"})
-	if got := s.gateway.targets(TaskChat); len(got) != 1 || got[0].Model != "cheap:free" {
+	if got := s.Gateway.targets(TaskChat); len(got) != 1 || got[0].Model != "cheap:free" {
 		t.Fatalf("budget filter: %v", got)
 	}
 
 	setChatRoute(t, s, "ordered", RouteTarget{1, "paid"})
-	if _, err := s.gateway.generate(context.Background(), TaskChat, chatRequest(), nil, nil, nil); err == nil || !strings.Contains(err.Error(), "budget") {
+	if _, err := s.Gateway.generate(context.Background(), TaskChat, chatRequest(), nil, nil, nil); err == nil || !strings.Contains(err.Error(), "budget") {
 		t.Fatalf("expected budget error, got %v", err)
 	}
 }
@@ -266,7 +266,7 @@ func TestRetryable(t *testing.T) {
 func TestMeteredModelLogsEveryCall(t *testing.T) {
 	s := newTestServer(t)
 	fp := &fakeProvider{errs: map[string]error{"bad": errors.New("boom")}}
-	m := s.gateway.meterText(fp, usageEntry{ProviderID: 1, Provider: "p", Task: TaskChat})
+	m := s.Gateway.meterText(fp, usageEntry{ProviderID: 1, Provider: "p", Task: TaskChat})
 	if _, err := m.Generate(context.Background(), ai.Request{Model: "ok"}); err != nil {
 		t.Fatal(err)
 	}
@@ -276,7 +276,7 @@ func TestMeteredModelLogsEveryCall(t *testing.T) {
 	if ok, failed := usageRows(t, s); ok != 1 || failed != 1 {
 		t.Fatalf("usage log ok=%d failed=%d", ok, failed)
 	}
-	if rows, _ := s.usage.Recent(1); rows[0].OK || rows[0].Error != "boom" || rows[0].InputTokens != 0 {
+	if rows, _ := s.Usage.Recent(1); rows[0].OK || rows[0].Error != "boom" || rows[0].InputTokens != 0 {
 		t.Fatal("failed call must log its error")
 	}
 }
@@ -285,8 +285,8 @@ func TestStrategiesDoNotModifyConfiguredList(t *testing.T) {
 	s := newTestServer(t)
 	list := []RouteTarget{{1, "paid"}, {1, "cheap:free"}}
 	for name, st := range routingStrategies {
-		st.order(list, s.gateway)
-		freeOnly{st}.order(list, s.gateway)
+		st.order(list, s.Gateway)
+		freeOnly{st}.order(list, s.Gateway)
 		if list[0].Model != "paid" {
 			t.Fatalf("%s reordered the configured list in place", name)
 		}

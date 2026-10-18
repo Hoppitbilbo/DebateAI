@@ -41,7 +41,7 @@ func (m *captureMailer) lastToken(t *testing.T) string {
 func newAuthService(t *testing.T) (*authService, *captureMailer) {
 	s := newTestServer(t)
 	m := &captureMailer{}
-	a := *s.accounts
+	a := *s.Accounts
 	a.mail = m
 	return &a, m
 }

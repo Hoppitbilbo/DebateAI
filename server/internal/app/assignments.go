@@ -9,7 +9,7 @@ import (
 // current user may manage it; otherwise it answers 404 or 403.
 func (s *Server) managedAssignment(w http.ResponseWriter, r *http.Request) (*User, *Assignment, bool) {
 	u := currentUser(r)
-	a, err := s.assignmentSvc.Managed(u, pathID(r, "id"))
+	a, err := s.AssignmentSvc.Managed(u, pathID(r, "id"))
 	switch {
 	case errors.Is(err, errAssignmentNotFound):
 		writeErr(w, 404, "not_found", err.Error())
@@ -26,7 +26,7 @@ func (s *Server) handleListAssignments(w http.ResponseWriter, r *http.Request) {
 	if !ok {
 		return
 	}
-	out, err := s.assignmentSvc.ListForClass(classID)
+	out, err := s.AssignmentSvc.ListForClass(classID)
 	if err != nil {
 		writeErr(w, 500, "internal", err.Error())
 		return
@@ -44,7 +44,7 @@ func (s *Server) handleCreateAssignment(w http.ResponseWriter, r *http.Request) 
 		writeErr(w, 400, "bad_request", err.Error())
 		return
 	}
-	a, err := s.assignmentSvc.Create(u, classID, in, s.baseURL(r))
+	a, err := s.AssignmentSvc.Create(u, classID, in, s.baseURL(r))
 	switch {
 	case errors.Is(err, errAssignmentInvalid):
 		writeErr(w, 400, "bad_request", err.Error())
@@ -66,7 +66,7 @@ func (s *Server) handleUpdateAssignment(w http.ResponseWriter, r *http.Request) 
 		writeErr(w, 400, "bad_request", err.Error())
 		return
 	}
-	a, err := s.assignmentSvc.Update(a, in, s.baseURL(r))
+	a, err := s.AssignmentSvc.Update(a, in, s.baseURL(r))
 	if err != nil {
 		writeErr(w, 500, "internal", err.Error())
 		return
@@ -79,7 +79,7 @@ func (s *Server) handleDeleteAssignment(w http.ResponseWriter, r *http.Request) 
 	if !ok {
 		return
 	}
-	if err := s.assignments.Delete(a.ID); err != nil {
+	if err := s.Assignments.Delete(a.ID); err != nil {
 		writeErr(w, 500, "internal", err.Error())
 		return
 	}
@@ -87,7 +87,7 @@ func (s *Server) handleDeleteAssignment(w http.ResponseWriter, r *http.Request) 
 }
 
 func (s *Server) handleGetAssignment(w http.ResponseWriter, r *http.Request) {
-	a, err := s.assignmentSvc.Visible(currentUser(r), pathID(r, "id"))
+	a, err := s.AssignmentSvc.Visible(currentUser(r), pathID(r, "id"))
 	switch {
 	case errors.Is(err, errAssignmentNotFound):
 		writeErr(w, 404, "not_found", err.Error())
@@ -100,7 +100,7 @@ func (s *Server) handleGetAssignment(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleMyAssignments(w http.ResponseWriter, r *http.Request) {
-	out, err := s.assignmentSvc.ListForStudent(currentUser(r))
+	out, err := s.AssignmentSvc.ListForStudent(currentUser(r))
 	if err != nil {
 		writeErr(w, 500, "internal", err.Error())
 		return
@@ -115,7 +115,7 @@ func (s *Server) handleAssignmentProgress(w http.ResponseWriter, r *http.Request
 	if !ok {
 		return
 	}
-	students, err := s.assignmentSvc.Progress(a)
+	students, err := s.AssignmentSvc.Progress(a)
 	if err != nil {
 		writeErr(w, 500, "internal", err.Error())
 		return
@@ -129,7 +129,7 @@ func (s *Server) handleClassProgress(w http.ResponseWriter, r *http.Request) {
 	if !ok {
 		return
 	}
-	cells, err := s.sessions.BestPerStudent(classID)
+	cells, err := s.Sessions.BestPerStudent(classID)
 	if err != nil {
 		writeErr(w, 500, "internal", err.Error())
 		return

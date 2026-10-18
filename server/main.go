@@ -24,7 +24,10 @@ func main() {
 	}
 	defer db.Close()
 
-	srv := app.NewServer(cfg, db, webui.FS())
+	// Composition root: repositories and services, then the HTTP server on top.
+	services := app.NewServices(cfg, db)
+	services.Bootstrap(cfg)
+	srv := app.NewServer(cfg, services, webui.FS())
 	httpSrv := &http.Server{
 		Addr:              ":" + cfg.Port,
 		Handler:           srv.Handler(),

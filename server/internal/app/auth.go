@@ -12,13 +12,13 @@ import (
 const sessionCookie = "debateai_session"
 const sessionTTL = 30 * 24 * time.Hour
 
-func (s *Server) getUser(id int64) (*User, error) { return s.users.Get(id) }
+func (s *Server) getUser(id int64) (*User, error) { return s.Users.Get(id) }
 
-func (s *Server) getUserByEmail(email string) (*User, error) { return s.users.GetByEmail(email) }
+func (s *Server) getUserByEmail(email string) (*User, error) { return s.Users.GetByEmail(email) }
 
 // startSession logs the user in and sets the session cookie.
 func (s *Server) startSession(w http.ResponseWriter, r *http.Request, userID int64) error {
-	tok, exp, err := s.accounts.StartSession(userID)
+	tok, exp, err := s.Accounts.StartSession(userID)
 	if err != nil {
 		return err
 	}
@@ -36,7 +36,7 @@ func (s *Server) userFromRequest(r *http.Request) *User {
 	if err != nil || c.Value == "" {
 		return nil
 	}
-	return s.accounts.UserForToken(c.Value)
+	return s.Accounts.UserForToken(c.Value)
 }
 
 // writeServiceErr answers with 400 for invalid input and 500 otherwise.
@@ -51,7 +51,7 @@ func writeServiceErr(w http.ResponseWriter, err error) {
 // ---------- handlers ----------
 
 func (s *Server) handlePublicConfig(w http.ResponseWriter, r *http.Request) {
-	g := s.settingsSvc.General()
+	g := s.Settings.General()
 	writeJSON(w, 200, publicConfigResponse{
 		SiteName:        g.SiteName,
 		DefaultLocale:   g.DefaultLocale,
@@ -59,13 +59,13 @@ func (s *Server) handlePublicConfig(w http.ResponseWriter, r *http.Request) {
 		GuestLive:       g.GuestLive,
 		AllowJoinByCode: g.AllowJoinByCode,
 		LiveEnabled:     g.LiveEnabled,
-		SetupRequired:   s.users.Count(domain.RoleAdmin) == 0,
-		MailConfigured:  s.settingsSvc.MailConfigured(),
+		SetupRequired:   s.Users.Count(domain.RoleAdmin) == 0,
+		MailConfigured:  s.Settings.MailConfigured(),
 	})
 }
 
 func (s *Server) handleSetup(w http.ResponseWriter, r *http.Request) {
-	if s.users.Count(domain.RoleAdmin) > 0 {
+	if s.Users.Count(domain.RoleAdmin) > 0 {
 		writeErr(w, 409, "already_setup", "an administrator already exists")
 		return
 	}
@@ -74,15 +74,15 @@ func (s *Server) handleSetup(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 400, "bad_request", err.Error())
 		return
 	}
-	id, err := s.accounts.CreateUser(in.Email, in.Name, in.Password, domain.RoleAdmin, in.Locale)
+	id, err := s.Accounts.CreateUser(in.Email, in.Name, in.Password, domain.RoleAdmin, in.Locale)
 	if err != nil {
 		writeServiceErr(w, err)
 		return
 	}
 	if in.Locale != "" {
-		g := s.settingsSvc.General()
+		g := s.Settings.General()
 		g.DefaultLocale = normLocale(in.Locale)
-		if err := s.settingsSvc.SaveGeneral(g); err != nil {
+		if err := s.Settings.SaveGeneral(g); err != nil {
 			log.Printf("setup: default locale: %v", err)
 		}
 	}
@@ -101,7 +101,7 @@ func (s *Server) handleLogin(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 400, "bad_request", err.Error())
 		return
 	}
-	u, err := s.accounts.Login(in.Email, in.Password)
+	u, err := s.Accounts.Login(in.Email, in.Password)
 	switch {
 	case errors.Is(err, errAccountDisabled):
 		writeErr(w, 403, "disabled", err.Error())
@@ -120,7 +120,7 @@ func (s *Server) handleLogin(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) handleLogout(w http.ResponseWriter, r *http.Request) {
 	if c, err := r.Cookie(sessionCookie); err == nil {
-		s.accounts.Logout(c.Value)
+		s.Accounts.Logout(c.Value)
 	}
 	http.SetCookie(w, &http.Cookie{Name: sessionCookie, Value: "", Path: "/", MaxAge: -1, HttpOnly: true})
 	writeOK(w)
@@ -141,7 +141,7 @@ func (s *Server) handleUpdateMe(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 400, "bad_request", err.Error())
 		return
 	}
-	u, err := s.accounts.UpdateProfile(currentUser(r), ProfileChange(in))
+	u, err := s.Accounts.UpdateProfile(currentUser(r), ProfileChange(in))
 	switch {
 	case errors.Is(err, errWrongPassword):
 		writeErr(w, 400, "wrong_password", err.Error())
@@ -154,7 +154,7 @@ func (s *Server) handleUpdateMe(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleInviteInfo(w http.ResponseWriter, r *http.Request) {
-	inv, err := s.accounts.FindInvite(r.PathValue("token"), domain.InviteKindInvite)
+	inv, err := s.Accounts.FindInvite(r.PathValue("token"), domain.InviteKindInvite)
 	if err != nil {
 		writeErr(w, 404, "invalid_invite", err.Error())
 		return
@@ -172,7 +172,7 @@ func (s *Server) handleRegister(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 400, "bad_request", err.Error())
 		return
 	}
-	uid, err := s.accounts.Register(in, s.baseURL(r))
+	uid, err := s.Accounts.Register(in, s.baseURL(r))
 	switch {
 	case errors.Is(err, errInvalidInvite):
 		writeErr(w, 404, "invalid_invite", err.Error())
@@ -199,7 +199,7 @@ func (s *Server) handleForgot(w http.ResponseWriter, r *http.Request) {
 	}
 	var in struct{ Email string }
 	_ = readJSON(r, &in)
-	s.accounts.RequestReset(in.Email, s.baseURL(r))
+	s.Accounts.RequestReset(in.Email, s.baseURL(r))
 	writeOK(w) // always OK, so the endpoint cannot be used to find accounts
 }
 
@@ -209,7 +209,7 @@ func (s *Server) handleReset(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 400, "bad_request", err.Error())
 		return
 	}
-	u, err := s.accounts.ResetPassword(in.Token, in.Password)
+	u, err := s.Accounts.ResetPassword(in.Token, in.Password)
 	switch {
 	case errors.Is(err, errInvalidInvite):
 		writeErr(w, 404, "invalid_token", "link expired or already used")

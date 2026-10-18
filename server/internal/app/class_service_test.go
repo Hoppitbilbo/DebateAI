@@ -10,9 +10,9 @@ import (
 func TestClassInviteRules(t *testing.T) {
 	s := newTestServer(t)
 	m := &captureMailer{}
-	svc := *s.classSvc
+	svc := *s.ClassSvc
 	svc.mail = m
-	acc := *s.accounts
+	acc := *s.Accounts
 	acc.mail = m
 	svc.accounts = &acc
 
@@ -21,7 +21,7 @@ func TestClassInviteRules(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		u, _ := s.users.Get(id)
+		u, _ := s.Users.Get(id)
 		return u
 	}
 	owner, co, other := newUser("o@x.it", domain.RoleTeacher), newUser("c@x.it", domain.RoleTeacher), newUser("x@x.it", domain.RoleTeacher)
@@ -48,19 +48,19 @@ func TestClassInviteRules(t *testing.T) {
 
 func TestJoinByCode(t *testing.T) {
 	s := newTestServer(t)
-	tid, _ := s.accounts.CreateUser("t@x.it", "", "", domain.RoleTeacher, "it")
-	sid, _ := s.accounts.CreateUser("s@x.it", "", "", domain.RoleStudent, "it")
-	teacher, _ := s.users.Get(tid)
-	stud, _ := s.users.Get(sid)
-	class, _ := s.classSvc.Create(teacher, "3A", "", nil)
+	tid, _ := s.Accounts.CreateUser("t@x.it", "", "", domain.RoleTeacher, "it")
+	sid, _ := s.Accounts.CreateUser("s@x.it", "", "", domain.RoleStudent, "it")
+	teacher, _ := s.Users.Get(tid)
+	stud, _ := s.Users.Get(sid)
+	class, _ := s.ClassSvc.Create(teacher, "3A", "", nil)
 
-	if _, err := s.classSvc.Join(stud, "nope"); !errors.Is(err, errInvalidCode) {
+	if _, err := s.ClassSvc.Join(stud, "nope"); !errors.Is(err, errInvalidCode) {
 		t.Fatalf("invalid code: %v", err)
 	}
-	if c, err := s.classSvc.Join(stud, " "+class.JoinCode+" "); err != nil || c.ID != class.ID {
+	if c, err := s.ClassSvc.Join(stud, " "+class.JoinCode+" "); err != nil || c.ID != class.ID {
 		t.Fatalf("join: %v", err)
 	}
-	if joined, _ := s.classSvc.Joined(stud); len(joined) != 1 || joined[0].JoinCode != "" {
+	if joined, _ := s.ClassSvc.Joined(stud); len(joined) != 1 || joined[0].JoinCode != "" {
 		t.Fatalf("students must not see the join code: %+v", joined)
 	}
 }

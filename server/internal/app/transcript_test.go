@@ -155,7 +155,7 @@ func TestSaveTranscriptTurnLimit(t *testing.T) {
 
 func TestSaveTranscriptEvaluateEvery(t *testing.T) {
 	f := newTranscriptFixture(t, map[string]any{"maxTurns": 3, "autoEnd": false}, 0.1)
-	if err := f.s.settingsSvc.SaveJev(JevSettings{Enabled: true, Threshold: 0.7, EvaluateEvery: 2, MaxStateChars: 24000}); err != nil {
+	if err := f.s.Settings.SaveJev(JevSettings{Enabled: true, Threshold: 0.7, EvaluateEvery: 2, MaxStateChars: 24000}); err != nil {
 		t.Fatal(err)
 	}
 	f.save(t, map[string]any{"messages": userTurns(1)})
@@ -177,7 +177,7 @@ func TestSaveTranscriptJudgeFlagOverridesSchedule(t *testing.T) {
 	if out := f.save(t, map[string]any{"messages": userTurns(1), "judge": false}); out["jev"] != nil || f.judge.decisions != 0 {
 		t.Fatalf("judge:false must skip judging: %v", out)
 	}
-	if err := f.s.settingsSvc.SaveJev(JevSettings{Enabled: true, Threshold: 0.7, EvaluateEvery: 5, MaxStateChars: 24000}); err != nil {
+	if err := f.s.Settings.SaveJev(JevSettings{Enabled: true, Threshold: 0.7, EvaluateEvery: 5, MaxStateChars: 24000}); err != nil {
 		t.Fatal(err)
 	}
 	f.save(t, map[string]any{"messages": userTurns(1), "judge": true})
@@ -224,7 +224,7 @@ func TestSaveTranscriptKeepsLast1000Messages(t *testing.T) {
 
 func TestSaveTranscriptOnlyOwner(t *testing.T) {
 	f := newTranscriptFixture(t, nil, 0)
-	if _, err := f.s.accounts.CreateUser("other@test.it", "Other", "password123", "student", "it"); err != nil {
+	if _, err := f.s.Accounts.CreateUser("other@test.it", "Other", "password123", "student", "it"); err != nil {
 		t.Fatal(err)
 	}
 	other := newClient(t, f.owner.base)

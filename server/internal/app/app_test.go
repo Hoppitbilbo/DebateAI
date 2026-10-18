@@ -174,7 +174,7 @@ func TestEndToEndAssignmentWithJev(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer db.Close()
-	srv := httptest.NewServer(NewServer(cfg, db, nil).Handler())
+	srv := httptest.NewServer(NewServer(cfg, NewServices(cfg, db), nil).Handler())
 	defer srv.Close()
 
 	admin := newClient(t, srv.URL)
@@ -355,7 +355,7 @@ func TestStreamFallsBackWhenFirstTokenIsLate(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer db.Close()
-	s := NewServer(cfg, db, nil)
+	s := NewServer(cfg, NewServices(cfg, db), nil)
 	srv := httptest.NewServer(s.Handler())
 	defer srv.Close()
 	admin := newClient(t, srv.URL)
@@ -368,7 +368,7 @@ func TestStreamFallsBackWhenFirstTokenIsLate(t *testing.T) {
 
 	start := time.Now()
 	var got strings.Builder
-	res, err := s.gateway.generate(context.Background(), TaskChat, ai.Request{Messages: []ai.Message{{Role: "user", Content: "hi"}}}, nil, nil, func(d string) error {
+	res, err := s.Gateway.generate(context.Background(), TaskChat, ai.Request{Messages: []ai.Message{{Role: "user", Content: "hi"}}}, nil, nil, func(d string) error {
 		got.WriteString(d)
 		return nil
 	})

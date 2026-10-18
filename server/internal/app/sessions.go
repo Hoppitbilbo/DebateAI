@@ -9,7 +9,7 @@ import (
 // owns it; otherwise it answers 404.
 func (s *Server) ownSession(w http.ResponseWriter, r *http.Request) (*User, *SessionDetail, bool) {
 	u := currentUser(r)
-	d, owner, err := s.sessionSvc.Load(u, pathID(r, "id"))
+	d, owner, err := s.SessionSvc.Load(u, pathID(r, "id"))
 	if err != nil || !owner {
 		writeErr(w, 404, "not_found", errSessionNotFound.Error())
 		return nil, nil, false
@@ -23,7 +23,7 @@ func (s *Server) handleCreateSession(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 400, "bad_request", err.Error())
 		return
 	}
-	ss, err := s.sessionSvc.Start(currentUser(r), in)
+	ss, err := s.SessionSvc.Start(currentUser(r), in)
 	switch {
 	case errors.Is(err, errInvalidApp), errors.Is(err, errOtherApp):
 		writeErr(w, 400, "bad_request", err.Error())
@@ -39,7 +39,7 @@ func (s *Server) handleCreateSession(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleGetSession(w http.ResponseWriter, r *http.Request) {
-	d, _, err := s.sessionSvc.Load(currentUser(r), pathID(r, "id"))
+	d, _, err := s.SessionSvc.Load(currentUser(r), pathID(r, "id"))
 	if err != nil {
 		writeErr(w, 404, "not_found", err.Error())
 		return
@@ -48,7 +48,7 @@ func (s *Server) handleGetSession(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleMySessions(w http.ResponseWriter, r *http.Request) {
-	out, err := s.sessions.ListForUser(currentUser(r).ID, maxListedSessions)
+	out, err := s.Sessions.ListForUser(currentUser(r).ID, maxListedSessions)
 	if err != nil {
 		writeErr(w, 500, "internal", err.Error())
 		return
@@ -69,7 +69,7 @@ func (s *Server) handleSaveTranscript(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 400, "bad_request", err.Error())
 		return
 	}
-	resp, err := s.sessionSvc.SaveTranscript(r.Context(), u, d, in)
+	resp, err := s.SessionSvc.SaveTranscript(r.Context(), u, d, in)
 	if err != nil {
 		writeErr(w, 500, "internal", err.Error())
 		return
@@ -87,7 +87,7 @@ func (s *Server) handleCompleteSession(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 400, "bad_request", err.Error())
 		return
 	}
-	if err := s.sessionSvc.Complete(d, in); err != nil {
+	if err := s.SessionSvc.Complete(d, in); err != nil {
 		writeErr(w, 500, "internal", err.Error())
 		return
 	}

@@ -105,8 +105,11 @@ var errSMTPNotConfigured = errors.New("SMTP is not configured")
 
 // sendMail delivers a plain-text + HTML e-mail. When SMTP is not configured the
 // message is logged so admins can still copy the links from the dashboard.
-func (s *Server) sendMail(to, subject, body string) error {
-	cfg := s.settingsSvc.SMTP()
+// smtpMailer sends mail with the SMTP settings of the admin panel.
+type smtpMailer struct{ settings *settingsService }
+
+func (m smtpMailer) sendMail(to, subject, body string) error {
+	cfg := m.settings.SMTP()
 	if cfg.Host == "" {
 		log.Printf("[mail disabled] to=%s subject=%q\n%s", to, subject, body)
 		return errSMTPNotConfigured
@@ -196,9 +199,9 @@ func (s *Server) sendMail(to, subject, body string) error {
 }
 
 // sendMailAsync is used for bulk notifications so HTTP handlers stay fast.
-func (s *Server) sendMailAsync(to, subject, body string) {
+func (m smtpMailer) sendMailAsync(to, subject, body string) {
 	go func() {
-		if err := s.sendMail(to, subject, body); err != nil && !errors.Is(err, errSMTPNotConfigured) {
+		if err := m.sendMail(to, subject, body); err != nil && !errors.Is(err, errSMTPNotConfigured) {
 			log.Printf("mail to %s failed: %v", to, err)
 		}
 	}()
