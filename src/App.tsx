@@ -11,21 +11,17 @@ import PageFlipAnimation from "@/components/PageFlipAnimation";
 import Index from "./pages/Index";
 const AppsPage = lazy(() => import("./pages/AppsPage"));
 const YouModeratePage = lazy(() => import("./pages/YouModeratePage"));
-const YouModerateTutorialPage = lazy(() => import("./pages/YouModerateTutorialPage"));
 const WikiChatbotPage = lazy(() => import("./pages/WikiChatbotPage"));
 const DoppiaIntervistaPage = lazy(() => import("./pages/DoppiaIntervistaPage"));
-const DoppiaIntervistaTutorialPage = lazy(() => import("./pages/DoppiaIntervistaTutorialPage"));
 const AboutPage = lazy(() => import("./pages/AboutPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const LegalPage = lazy(() => import("./pages/LegalPage"));
 const ConvinciTuPage = lazy(() => import("./pages/ConvinciTuPage"));
-const ConvinciTuTutorialPage = lazy(() => import("./pages/ConvinciTuTutorialPage"));
 const PersonaggioMisteriosoPage = lazy(() => import("./pages/PersonaggioMisteriosoPage"));
-const PersonaggioMisteriosoTutorialPage = lazy(() => import("./pages/PersonaggioMisteriosoTutorialPage"));
 const TeacherGuidePage = lazy(() => import("./pages/TeacherGuidePage"));
 const ImpersonaTuPage = lazy(() => import("./pages/ImpersonaTuPage"));
-const ImpersonaTuTutorialPage = lazy(() => import("./pages/ImpersonaTuTutorialPage"));
 const TutorialsPage = lazy(() => import("./pages/TutorialsPage"));
+const TutorialPage = lazy(() => import("./pages/TutorialPage"));
 const named = <T extends string>(loader: () => Promise<Record<T, React.ComponentType>>, key: T) => lazy(() => loader().then((m) => ({ default: m[key] })));
 const authPages = () => import("./pages/auth/AuthPages");
 const LoginPage = named(authPages, "LoginPage");
@@ -66,16 +62,16 @@ const App = () => (
                 <Route path="/" element={<Index />} />
                 <Route path="/apps" element={<AppsPage />} />
                 <Route path="/apps/you-moderate" element={<YouModeratePage />} />
-                <Route path="/apps/you-moderate/tutorial" element={<YouModerateTutorialPage />} />
+                <Route path="/apps/you-moderate/tutorial" element={<TutorialPage app="you-moderate" />} />
                 <Route path="/apps/wiki-chatbot" element={<WikiChatbotPage />} />
                 <Route path="/apps/doppia-intervista" element={<DoppiaIntervistaPage />} />
-                <Route path="/apps/doppia-intervista/tutorial" element={<DoppiaIntervistaTutorialPage />} />
+                <Route path="/apps/doppia-intervista/tutorial" element={<TutorialPage app="doppia-intervista" />} />
                 <Route path="/apps/convinci-tu" element={<ConvinciTuPage />} />
-                <Route path="/apps/convinci-tu/tutorial" element={<ConvinciTuTutorialPage />} />
+                <Route path="/apps/convinci-tu/tutorial" element={<TutorialPage app="convinci-tu" />} />
                 <Route path="/apps/personaggio-misterioso" element={<PersonaggioMisteriosoPage />} />
-                <Route path="/apps/personaggio-misterioso/tutorial" element={<PersonaggioMisteriosoTutorialPage />} />
+                <Route path="/apps/personaggio-misterioso/tutorial" element={<TutorialPage app="personaggio-misterioso" />} />
                 <Route path="/apps/impersona-tu" element={<ImpersonaTuPage />} />
-                <Route path="/apps/impersona-tu/tutorial" element={<ImpersonaTuTutorialPage />} />
+                <Route path="/apps/impersona-tu/tutorial" element={<TutorialPage app="impersona-tu" />} />
                 <Route path="/tutorials" element={<TutorialsPage />} />
                 <Route path="/about" element={<AboutPage />} />
                 <Route path="/teacher-guide" element={<TeacherGuidePage />} />
