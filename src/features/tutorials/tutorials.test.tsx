@@ -16,13 +16,9 @@ const lookup = (dict: unknown, path: string) =>
   path.split(".").reduce<unknown>((node, part) => (node as Record<string, unknown> | undefined)?.[part], dict);
 
 describe("tutorial data", () => {
-  // What a reader sees: a text missing in their language falls back to Italian.
-  // Known content gap (documented in docs/REFACTORING.md): the ImpersonaTu
-  // slides use ids that the translations name differently, so 30 texts show
-  // their key in every language. Fixing it is content work, not refactoring.
-  it("shows a translation for every text except the known ImpersonaTu gap", () => {
+  it("has every text it shows in every language", () => {
     const visibleMissing = new Set<string>();
-    for (const dict of [de, en, es, fr, it_]) {
+    for (const [lang, dict] of Object.entries({ de, en, es, fr, it: it_ })) {
       for (const tutorial of Object.values(TUTORIALS)) {
         const keys = [`${tutorial!.ns}.title`, `${tutorial!.ns}.subtitle`, `${tutorial!.ns}.startApp`];
         for (const s of tutorial!.slides) {
@@ -30,12 +26,11 @@ describe("tutorial data", () => {
           keys.push(`${k}.title`, `${k}.content`, ...Array.from({ length: s.bullets }, (_, i) => `${k}.bullet${i + 1}`));
         }
         for (const k of keys) {
-          if (typeof lookup(dict, k) !== "string" && typeof lookup(it_, k) !== "string") visibleMissing.add(k);
+          if (typeof lookup(dict, k) !== "string") visibleMissing.add(`${lang}:${k}`);
         }
       }
     }
-    expect([...visibleMissing].filter((k) => !k.startsWith("impersonaTu."))).toEqual([]);
-    expect(visibleMissing.size).toBe(30);
+    expect([...visibleMissing]).toEqual([]);
   });
 });
 

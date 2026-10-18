@@ -33,8 +33,8 @@ export const TUTORIALS: Partial<Record<AppType, Tutorial>> = {
   "doppia-intervista": {
     ns: "doppiaIntervista",
     slides: [
-      slide("welcome", Play), slide("characterComparison", MessageCircle), slide("strategicQuestioning", Target), slide("collaborativeAnalysis", Users),
-      slide("criticalThinking", Brain), slide("selfEvaluation", Eye), slide("reflection", Lightbulb), slide("examples", BookOpen),
+      slide("welcome", Play, 3), slide("howItWorks", Target), slide("questions", MessageCircle, 3),
+      slide("comparison", Brain, 3), slide("reflection", Lightbulb, 3), slide("classroom", BookOpen),
     ],
   },
   "personaggio-misterioso": {
@@ -54,8 +54,8 @@ export const TUTORIALS: Partial<Record<AppType, Tutorial>> = {
   "impersona-tu": {
     ns: "impersonaTu",
     slides: [
-      slide("welcome", Users), slide("peerLearning", Brain), slide("thinkAloud", MessageSquare), slide("criticalThinking", Eye),
-      slide("collaborativeReview", BookOpen), slide("teacherFacilitation", Target), slide("reflectionAndGrowth", Lightbulb), slide("examples", CheckCircle),
+      slide("welcome", Users, 3), slide("howItWorks", Target), slide("inRole", MessageSquare, 3),
+      slide("skills", Brain, 3), slide("reflection", Lightbulb, 3), slide("classroom", BookOpen),
     ],
   },
 };
