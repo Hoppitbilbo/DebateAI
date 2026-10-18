@@ -80,9 +80,9 @@ func (s *Server) handleCreateUser(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 400, "bad_request", "password required (or use invites)")
 		return
 	}
-	id, err := s.createUser(in.Email, in.Name, in.Password, in.Role, in.Locale)
+	id, err := s.accounts.CreateUser(in.Email, in.Name, in.Password, in.Role, in.Locale)
 	if err != nil {
-		writeErr(w, 400, "invalid", err.Error())
+		writeServiceErr(w, err)
 		return
 	}
 	if in.ClassID != nil {
@@ -136,8 +136,8 @@ func (s *Server) handleUpdateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if in.Password != nil && *in.Password != "" {
-		if err := s.setPassword(id, *in.Password); err != nil {
-			writeErr(w, 400, "invalid", err.Error())
+		if err := s.accounts.SetPassword(id, *in.Password); err != nil {
+			writeServiceErr(w, err)
 			return
 		}
 	}
@@ -193,7 +193,7 @@ func (s *Server) handleCreateInvites(w http.ResponseWriter, r *http.Request) {
 			results = append(results, inviteResult{Email: e, Status: "error", Error: "already registered"})
 			continue
 		}
-		inv, err := s.createInvite(r, u, e, in.Role, in.ClassID, className, locale)
+		inv, err := s.accounts.CreateInvite(Invitation{Inviter: u, Email: e, Role: in.Role, ClassID: in.ClassID, ClassName: className, Locale: locale}, s.baseURL(r))
 		if err != nil {
 			results = append(results, inviteResult{Email: e, Status: "error", Error: err.Error()})
 			continue
@@ -215,9 +215,9 @@ func (s *Server) handleResendInvite(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 500, "internal", err.Error())
 		return
 	}
-	inv, err := s.createInvite(r, u, old.Email, old.Role, old.ClassID, old.ClassName, old.Locale)
+	inv, err := s.accounts.CreateInvite(Invitation{Inviter: u, Email: old.Email, Role: old.Role, ClassID: old.ClassID, ClassName: old.ClassName, Locale: old.Locale}, s.baseURL(r))
 	if err != nil {
-		writeErr(w, 400, "invalid", err.Error())
+		writeServiceErr(w, err)
 		return
 	}
 	writeJSON(w, 200, inv)

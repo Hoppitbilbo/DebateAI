@@ -183,7 +183,7 @@ func (s *Server) handleClassInvite(w http.ResponseWriter, r *http.Request) {
 			results = append(results, inviteResult{Email: existing.Email, Status: "added", EmailSent: boolPtr(s.smtp().Host != "")})
 			continue
 		}
-		inv, err := s.createInvite(r, u, raw, in.Role, &id, className, locale)
+		inv, err := s.accounts.CreateInvite(Invitation{Inviter: u, Email: raw, Role: in.Role, ClassID: &id, ClassName: className, Locale: locale}, s.baseURL(r))
 		if err != nil {
 			results = append(results, inviteResult{Email: raw, Status: "error", EmailSent: boolPtr(false), Error: err.Error()})
 			continue

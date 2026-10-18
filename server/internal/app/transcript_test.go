@@ -224,7 +224,7 @@ func TestSaveTranscriptKeepsLast1000Messages(t *testing.T) {
 
 func TestSaveTranscriptOnlyOwner(t *testing.T) {
 	f := newTranscriptFixture(t, nil, 0)
-	if _, err := f.s.createUser("other@test.it", "Other", "password123", "student", "it"); err != nil {
+	if _, err := f.s.accounts.CreateUser("other@test.it", "Other", "password123", "student", "it"); err != nil {
 		t.Fatal(err)
 	}
 	other := newClient(t, f.owner.base)

@@ -16,6 +16,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/Hoppitbilbo/DebateAI/server/internal/domain"
 	"github.com/Hoppitbilbo/DebateAI/server/internal/store"
 )
 
@@ -33,6 +34,7 @@ type Server struct {
 	usage       usageStore
 
 	sessionSvc *sessionService
+	accounts   *authService
 	crypto     *Crypto
 	static     fs.FS
 
@@ -59,6 +61,8 @@ func NewServer(cfg Config, db *sql.DB, static fs.FS) *Server {
 		limiter:     newRateLimiter(),
 		provs:       map[int64]cachedProvider{},
 	}
+	s.accounts = &authService{users: s.users, logins: s.logins, invites: s.invites, classes: s.classes, mail: s,
+		siteName: func() string { return s.general().SiteName }}
 	s.sessionSvc = &sessionService{sessions: s.sessions, assignments: s.assignments, judge: s, jevSettings: s.jevSettings}
 	s.bootstrap()
 	return s
@@ -68,7 +72,7 @@ func NewServer(cfg Config, db *sql.DB, static fs.FS) *Server {
 // variables so a fresh server is usable with `ADMIN_EMAIL=... GEMINI_API_KEY=...`.
 func (s *Server) bootstrap() {
 	if s.cfg.AdminEmail != "" && s.cfg.AdminPassword != "" && s.users.Count("") == 0 {
-		if _, err := s.createUser(s.cfg.AdminEmail, s.cfg.AdminName, s.cfg.AdminPassword, "admin", "it"); err != nil {
+		if _, err := s.accounts.CreateUser(s.cfg.AdminEmail, s.cfg.AdminName, s.cfg.AdminPassword, domain.RoleAdmin, "it"); err != nil {
 			log.Printf("bootstrap admin: %v", err)
 		} else {
 			log.Printf("created admin user %s", s.cfg.AdminEmail)
