@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"encoding/json"
-	"github.com/Hoppitbilbo/DebateAI/server/internal/ai"
 	"io"
 	"net/http"
 	"net/http/cookiejar"
@@ -16,6 +15,8 @@ import (
 	"regexp"
 	"strings"
 	"testing"
+
+	"github.com/Hoppitbilbo/DebateAI/server/internal/ai"
 )
 
 // ---------- unit tests ----------

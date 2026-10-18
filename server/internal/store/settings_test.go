@@ -4,20 +4,15 @@ import (
 	"database/sql"
 	"path/filepath"
 	"testing"
-
-	_ "modernc.org/sqlite"
 )
 
 func openTestDB(t *testing.T) *sql.DB {
 	t.Helper()
-	db, err := sql.Open("sqlite", "file:"+filepath.Join(t.TempDir(), "t.db"))
+	db, err := Open(filepath.Join(t.TempDir(), "t.db"))
 	if err != nil {
 		t.Fatal(err)
 	}
 	t.Cleanup(func() { db.Close() })
-	if _, err := db.Exec(`CREATE TABLE settings(key TEXT PRIMARY KEY, value TEXT NOT NULL)`); err != nil {
-		t.Fatal(err)
-	}
 	return db
 }
 

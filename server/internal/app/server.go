@@ -23,6 +23,9 @@ type Server struct {
 	cfg      Config
 	db       *sql.DB
 	settings settingsStore
+	users    userStore
+	logins   authSessionStore
+	invites  inviteStore
 	crypto   *Crypto
 	static   fs.FS
 
@@ -36,6 +39,9 @@ func NewServer(cfg Config, db *sql.DB, static fs.FS) *Server {
 		cfg:      cfg,
 		db:       db,
 		settings: store.NewSettings(db),
+		users:    store.NewUsers(db),
+		logins:   store.NewAuthSessions(db),
+		invites:  store.NewInvites(db),
 		crypto:   NewCrypto(cfg.Secret),
 		static:   static,
 		limiter:  newRateLimiter(),
@@ -48,7 +54,7 @@ func NewServer(cfg Config, db *sql.DB, static fs.FS) *Server {
 // bootstrap creates the first admin and default providers from environment
 // variables so a fresh server is usable with `ADMIN_EMAIL=... GEMINI_API_KEY=...`.
 func (s *Server) bootstrap() {
-	if s.cfg.AdminEmail != "" && s.cfg.AdminPassword != "" && countRows(s.db, `SELECT COUNT(*) FROM users`) == 0 {
+	if s.cfg.AdminEmail != "" && s.cfg.AdminPassword != "" && s.users.Count("") == 0 {
 		if _, err := s.createUser(s.cfg.AdminEmail, s.cfg.AdminName, s.cfg.AdminPassword, "admin", "it"); err != nil {
 			log.Printf("bootstrap admin: %v", err)
 		} else {

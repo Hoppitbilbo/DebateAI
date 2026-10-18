@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/Hoppitbilbo/DebateAI/server/internal/ai"
+	"github.com/Hoppitbilbo/DebateAI/server/internal/domain"
 )
 
 // ---------- overview ----------
@@ -22,14 +23,14 @@ func (s *Server) handleAdminOverview(w http.ResponseWriter, r *http.Request) {
 	_ = s.db.QueryRow(`SELECT SUM(cost_usd) FROM usage_log WHERE created_at >= ?`, today).Scan(&todayCost)
 	writeJSON(w, 200, adminOverviewResponse{
 		Users: userCounts{
-			Admin:   countRows(s.db, `SELECT COUNT(*) FROM users WHERE role='admin'`),
-			Teacher: countRows(s.db, `SELECT COUNT(*) FROM users WHERE role='teacher'`),
-			Student: countRows(s.db, `SELECT COUNT(*) FROM users WHERE role='student'`),
+			Admin:   s.users.Count(domain.RoleAdmin),
+			Teacher: s.users.Count(domain.RoleTeacher),
+			Student: s.users.Count(domain.RoleStudent),
 		},
 		Classes:         countRows(s.db, `SELECT COUNT(*) FROM classes WHERE archived = 0`),
 		Assignments:     countRows(s.db, `SELECT COUNT(*) FROM assignments`),
 		Sessions:        countRows(s.db, `SELECT COUNT(*) FROM activity_sessions WHERE turns > 0`),
-		PendingInvites:  countRows(s.db, `SELECT COUNT(*) FROM invites WHERE kind='invite' AND accepted_at IS NULL AND expires_at > ?`, now()),
+		PendingInvites:  s.invites.CountPending(),
 		Providers:       countRows(s.db, `SELECT COUNT(*) FROM providers WHERE enabled = 1`),
 		MonthSpendUSD:   spend,
 		TodaySpendUSD:   todayCost.Float64,
@@ -45,32 +46,24 @@ func (s *Server) handleAdminOverview(w http.ResponseWriter, r *http.Request) {
 // ---------- users ----------
 
 func (s *Server) handleListUsers(w http.ResponseWriter, r *http.Request) {
-	q := "%" + strings.TrimSpace(r.URL.Query().Get("q")) + "%"
 	role := r.URL.Query().Get("role")
-	query := `SELECT ` + userCols + ` FROM users WHERE (name LIKE ? OR email LIKE ?)`
-	args := []any{q, q}
-	if validRole(role) {
-		query += ` AND role = ?`
-		args = append(args, role)
+	if !validRole(role) {
+		role = ""
 	}
-	rows, err := s.db.Query(query+` ORDER BY created_at DESC LIMIT 500`, args...)
+	users, err := s.users.Search(strings.TrimSpace(r.URL.Query().Get("q")), role, maxListedUsers)
 	if err != nil {
 		writeErr(w, 500, "internal", err.Error())
 		return
 	}
-	defer rows.Close()
 	type userOut struct {
 		*User
 		Classes int     `json:"classes"`
 		CostUSD float64 `json:"costUsd"`
 	}
 	out := []userOut{}
-	for rows.Next() {
-		if u, err := scanUser(rows); err == nil {
-			out = append(out, userOut{User: u})
-		}
+	for i := range users {
+		out = append(out, userOut{User: &users[i]})
 	}
-	rows.Close()
 	for i := range out {
 		out[i].Classes = countRows(s.db, `SELECT COUNT(*) FROM class_members WHERE user_id = ?`, out[i].ID)
 		var c sql.NullFloat64
@@ -130,23 +123,21 @@ func (s *Server) handleUpdateUser(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 400, "self_lockout", "you cannot demote or disable yourself")
 		return
 	}
-	b := sqlBatch{db: s.db}
+	p := domain.UserPatch{Active: in.Active}
 	if in.Name != nil && strings.TrimSpace(*in.Name) != "" {
-		b.exec(`UPDATE users SET name = ? WHERE id = ?`, strings.TrimSpace(*in.Name), id)
+		p.Name = ptr(strings.TrimSpace(*in.Name))
 	}
 	if in.Role != nil && validRole(*in.Role) {
-		b.exec(`UPDATE users SET role = ? WHERE id = ?`, *in.Role, id)
-	}
-	if in.Active != nil {
-		b.exec(`UPDATE users SET active = ? WHERE id = ?`, boolInt(*in.Active), id)
-		if !*in.Active {
-			b.exec(`DELETE FROM auth_sessions WHERE user_id = ?`, id)
-		}
+		p.Role = in.Role
 	}
 	if in.Locale != nil {
-		b.exec(`UPDATE users SET locale = ? WHERE id = ?`, normLocale(*in.Locale), id)
+		p.Locale = ptr(normLocale(*in.Locale))
 	}
-	if err := b.err; err != nil {
+	err := s.users.Update(id, p)
+	if err == nil && in.Active != nil && !*in.Active {
+		err = s.logins.DeleteForUser(id) // a disabled account is logged out everywhere
+	}
+	if err != nil {
 		writeErr(w, 500, "internal", err.Error())
 		return
 	}
@@ -169,7 +160,7 @@ func (s *Server) handleDeleteUser(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 400, "self_delete", "you cannot delete yourself")
 		return
 	}
-	if _, err := s.db.Exec(`DELETE FROM users WHERE id = ?`, pathID(r, "id")); err != nil {
+	if err := s.users.Delete(pathID(r, "id")); err != nil {
 		writeErr(w, 500, "internal", err.Error())
 		return
 	}
@@ -178,36 +169,8 @@ func (s *Server) handleDeleteUser(w http.ResponseWriter, r *http.Request) {
 
 // ---------- invites ----------
 
-func (s *Server) listInvites(where string, args ...any) []inviteRow {
-	rows, err := s.db.Query(`SELECT i.id, i.kind, i.email, i.role, i.class_id, COALESCE(c.name,''), COALESCE(u.name,''), i.locale, i.created_at, i.expires_at, i.accepted_at, i.email_sent
-		FROM invites i LEFT JOIN classes c ON c.id = i.class_id LEFT JOIN users u ON u.id = i.invited_by `+where, args...)
-	out := []inviteRow{}
-	if err != nil {
-		return out
-	}
-	defer rows.Close()
-	for rows.Next() {
-		var inv inviteRow
-		var cid sql.NullInt64
-		var acc sql.NullString
-		var sent int
-		if rows.Scan(&inv.ID, &inv.Kind, &inv.Email, &inv.Role, &cid, &inv.ClassName, &inv.InvitedBy, &inv.Locale, &inv.CreatedAt, &inv.ExpiresAt, &acc, &sent) != nil {
-			continue
-		}
-		if cid.Valid {
-			inv.ClassID = &cid.Int64
-		}
-		if acc.Valid {
-			inv.AcceptedAt = &acc.String
-		}
-		inv.EmailSent = sent == 1
-		out = append(out, inv)
-	}
-	return out
-}
-
 func (s *Server) handleListInvites(w http.ResponseWriter, r *http.Request) {
-	writeJSON(w, 200, s.listInvites(`WHERE i.kind = 'invite' ORDER BY i.created_at DESC LIMIT 500`))
+	writeJSON(w, 200, s.invites.ListAll(maxListedInvites))
 }
 
 func (s *Server) handleCreateInvites(w http.ResponseWriter, r *http.Request) {
@@ -249,23 +212,16 @@ func (s *Server) handleCreateInvites(w http.ResponseWriter, r *http.Request) {
 func (s *Server) handleResendInvite(w http.ResponseWriter, r *http.Request) {
 	u := currentUser(r)
 	id := pathID(r, "id")
-	var email, role, locale string
-	var classID sql.NullInt64
-	if err := s.db.QueryRow(`SELECT email, role, class_id, locale FROM invites WHERE id = ? AND kind = 'invite'`, id).Scan(&email, &role, &classID, &locale); err != nil {
+	old, err := s.invites.Get(id)
+	if err != nil {
 		writeErr(w, 404, "not_found", "invite not found")
 		return
 	}
-	if _, err := s.db.Exec(`DELETE FROM invites WHERE id = ?`, id); err != nil {
+	if err := s.invites.Delete(id); err != nil {
 		writeErr(w, 500, "internal", err.Error())
 		return
 	}
-	var cid *int64
-	className := ""
-	if classID.Valid {
-		cid = &classID.Int64
-		_ = s.db.QueryRow(`SELECT name FROM classes WHERE id = ?`, *cid).Scan(&className)
-	}
-	inv, err := s.createInvite(r, u, email, role, cid, className, locale)
+	inv, err := s.createInvite(r, u, old.Email, old.Role, old.ClassID, old.ClassName, old.Locale)
 	if err != nil {
 		writeErr(w, 400, "invalid", err.Error())
 		return
@@ -274,7 +230,7 @@ func (s *Server) handleResendInvite(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleDeleteInvite(w http.ResponseWriter, r *http.Request) {
-	if _, err := s.db.Exec(`DELETE FROM invites WHERE id = ?`, pathID(r, "id")); err != nil {
+	if err := s.invites.Delete(pathID(r, "id")); err != nil {
 		writeErr(w, 500, "internal", err.Error())
 		return
 	}

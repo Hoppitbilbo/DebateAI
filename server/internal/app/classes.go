@@ -160,7 +160,7 @@ func (s *Server) handleGetClass(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
-	invites := s.listInvites(`WHERE i.kind = 'invite' AND i.class_id = ? AND i.accepted_at IS NULL`, id)
+	invites := s.invites.ListPendingForClass(id)
 	writeJSON(w, 200, classDetailResponse{Class: c, Members: members, Invites: invites})
 }
 
@@ -320,7 +320,7 @@ func (s *Server) handleRemoveMember(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) handleTeacherInvites(w http.ResponseWriter, r *http.Request) {
 	u := currentUser(r)
-	writeJSON(w, 200, s.listInvites(`WHERE i.kind = 'invite' AND i.invited_by = ? ORDER BY i.created_at DESC LIMIT 200`, u.ID))
+	writeJSON(w, 200, s.invites.ListByInviter(u.ID, maxListedTeacherInvites))
 }
 
 // ---------- student side ----------

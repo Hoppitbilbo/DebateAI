@@ -2,12 +2,6 @@ package app
 
 import "database/sql"
 
-// settingsStore persists the settings documents (implemented by store.Settings).
-type settingsStore interface {
-	Load(key string, dst any) bool
-	Save(key string, v any) error
-}
-
 // loadSetting returns the stored value of key, or def when it is missing or invalid.
 func loadSetting[T any](st settingsStore, key string, def T) T {
 	out := def

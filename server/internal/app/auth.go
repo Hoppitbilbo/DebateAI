@@ -1,7 +1,6 @@
 package app
 
 import (
-	"database/sql"
 	"errors"
 	"fmt"
 	"log"
@@ -10,53 +9,23 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Hoppitbilbo/DebateAI/server/internal/domain"
 	"golang.org/x/crypto/bcrypt"
 )
 
 const sessionCookie = "debateai_session"
 const sessionTTL = 30 * 24 * time.Hour
 
-type User struct {
-	ID          int64   `json:"id"`
-	Email       string  `json:"email"`
-	Name        string  `json:"name"`
-	Role        string  `json:"role"`
-	Locale      string  `json:"locale"`
-	Active      bool    `json:"active"`
-	CreatedAt   string  `json:"createdAt"`
-	LastLoginAt *string `json:"lastLoginAt,omitempty"`
-}
+func (s *Server) getUser(id int64) (*User, error) { return s.users.Get(id) }
 
-const userCols = `id, email, name, role, locale, active, created_at, last_login_at`
-
-func scanUser(row interface{ Scan(...any) error }) (*User, error) {
-	var u User
-	var active int
-	var last sql.NullString
-	if err := row.Scan(&u.ID, &u.Email, &u.Name, &u.Role, &u.Locale, &active, &u.CreatedAt, &last); err != nil {
-		return nil, err
-	}
-	u.Active = active == 1
-	if last.Valid {
-		u.LastLoginAt = &last.String
-	}
-	return &u, nil
-}
-
-func (s *Server) getUser(id int64) (*User, error) {
-	return scanUser(s.db.QueryRow(`SELECT `+userCols+` FROM users WHERE id = ?`, id))
-}
-
-func (s *Server) getUserByEmail(email string) (*User, error) {
-	return scanUser(s.db.QueryRow(`SELECT `+userCols+` FROM users WHERE email = ?`, strings.TrimSpace(email)))
-}
+func (s *Server) getUserByEmail(email string) (*User, error) { return s.users.GetByEmail(email) }
 
 func validEmail(e string) bool {
 	a, err := mail.ParseAddress(strings.TrimSpace(e))
 	return err == nil && a.Address == strings.TrimSpace(e)
 }
 
-func validRole(r string) bool { return r == "admin" || r == "teacher" || r == "student" }
+func validRole(r string) bool { return domain.ValidRole(r) }
 
 func (s *Server) createUser(email, name, password, role, locale string) (int64, error) {
 	email = strings.TrimSpace(strings.ToLower(email))
@@ -80,15 +49,7 @@ func (s *Server) createUser(email, name, password, role, locale string) (int64, 
 	if strings.TrimSpace(name) == "" {
 		name = strings.Split(email, "@")[0]
 	}
-	res, err := s.db.Exec(`INSERT INTO users(email, name, password_hash, role, locale, created_at) VALUES(?,?,?,?,?,?)`,
-		email, strings.TrimSpace(name), hash, role, normLocale(locale), now())
-	if err != nil {
-		if strings.Contains(err.Error(), "UNIQUE") {
-			return 0, errors.New("email already registered")
-		}
-		return 0, err
-	}
-	return res.LastInsertId()
+	return s.users.Create(email, strings.TrimSpace(name), hash, role, normLocale(locale))
 }
 
 func (s *Server) setPassword(userID int64, password string) error {
@@ -99,19 +60,17 @@ func (s *Server) setPassword(userID int64, password string) error {
 	if err != nil {
 		return err
 	}
-	_, err = s.db.Exec(`UPDATE users SET password_hash = ? WHERE id = ?`, string(h), userID)
-	return err
+	return s.users.SetPasswordHash(userID, string(h))
 }
 
 func (s *Server) startSession(w http.ResponseWriter, r *http.Request, userID int64) error {
 	tok := randomToken(32)
 	exp := time.Now().Add(sessionTTL)
-	if _, err := s.db.Exec(`INSERT INTO auth_sessions(token_hash, user_id, created_at, expires_at) VALUES(?,?,?,?)`,
-		hashToken(tok), userID, now(), exp.UTC().Format(time.RFC3339)); err != nil {
+	if err := s.logins.Create(hashToken(tok), userID, exp.UTC().Format(time.RFC3339)); err != nil {
 		return err
 	}
-	execOrLog(s.db, "record last login", `UPDATE users SET last_login_at = ? WHERE id = ?`, now(), userID)
-	execOrLog(s.db, "purge expired sessions", `DELETE FROM auth_sessions WHERE expires_at < ?`, now())
+	logIfErr("record last login", s.users.RecordLogin(userID))
+	logIfErr("purge expired sessions", s.logins.PurgeExpired())
 	http.SetCookie(w, &http.Cookie{
 		Name: sessionCookie, Value: tok, Path: "/", HttpOnly: true,
 		Secure:   r.TLS != nil || r.Header.Get("X-Forwarded-Proto") == "https",
@@ -125,9 +84,8 @@ func (s *Server) userFromRequest(r *http.Request) *User {
 	if err != nil || c.Value == "" {
 		return nil
 	}
-	var uid int64
-	var exp string
-	if err := s.db.QueryRow(`SELECT user_id, expires_at FROM auth_sessions WHERE token_hash = ?`, hashToken(c.Value)).Scan(&uid, &exp); err != nil {
+	uid, exp, err := s.logins.Lookup(hashToken(c.Value))
+	if err != nil {
 		return nil
 	}
 	if time.Now().After(parseTime(exp)) {
@@ -151,13 +109,13 @@ func (s *Server) handlePublicConfig(w http.ResponseWriter, r *http.Request) {
 		GuestLive:       g.GuestLive,
 		AllowJoinByCode: g.AllowJoinByCode,
 		LiveEnabled:     g.LiveEnabled,
-		SetupRequired:   countRows(s.db, `SELECT COUNT(*) FROM users WHERE role = 'admin'`) == 0,
+		SetupRequired:   s.users.Count(domain.RoleAdmin) == 0,
 		MailConfigured:  s.smtp().Host != "",
 	})
 }
 
 func (s *Server) handleSetup(w http.ResponseWriter, r *http.Request) {
-	if countRows(s.db, `SELECT COUNT(*) FROM users WHERE role = 'admin'`) > 0 {
+	if s.users.Count(domain.RoleAdmin) > 0 {
 		writeErr(w, 409, "already_setup", "an administrator already exists")
 		return
 	}
@@ -193,29 +151,30 @@ func (s *Server) handleLogin(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 400, "bad_request", err.Error())
 		return
 	}
-	var id int64
+	u, err := s.users.GetByEmail(in.Email)
 	var hash string
-	var active int
-	err := s.db.QueryRow(`SELECT id, password_hash, active FROM users WHERE email = ?`, strings.TrimSpace(in.Email)).Scan(&id, &hash, &active)
+	if err == nil {
+		hash, err = s.users.PasswordHash(u.ID)
+	}
 	if err != nil || hash == "" || bcrypt.CompareHashAndPassword([]byte(hash), []byte(in.Password)) != nil {
 		writeErr(w, 401, "invalid_credentials", "invalid email or password")
 		return
 	}
-	if active != 1 {
+	if !u.Active {
 		writeErr(w, 403, "disabled", "account disabled")
 		return
 	}
-	if err := s.startSession(w, r, id); err != nil {
+	if err := s.startSession(w, r, u.ID); err != nil {
 		writeErr(w, 500, "internal", err.Error())
 		return
 	}
-	u, _ := s.getUser(id)
+	u, _ = s.getUser(u.ID) // reload: the login time just changed
 	writeJSON(w, 200, u)
 }
 
 func (s *Server) handleLogout(w http.ResponseWriter, r *http.Request) {
 	if c, err := r.Cookie(sessionCookie); err == nil {
-		execOrLog(s.db, "logout", `DELETE FROM auth_sessions WHERE token_hash = ?`, hashToken(c.Value))
+		logIfErr("logout", s.logins.Delete(hashToken(c.Value)))
 	}
 	http.SetCookie(w, &http.Cookie{Name: sessionCookie, Value: "", Path: "/", MaxAge: -1, HttpOnly: true})
 	writeOK(w)
@@ -237,20 +196,19 @@ func (s *Server) handleUpdateMe(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 400, "bad_request", err.Error())
 		return
 	}
-	b := sqlBatch{db: s.db}
+	var p domain.UserPatch
 	if in.Name != nil && strings.TrimSpace(*in.Name) != "" {
-		b.exec(`UPDATE users SET name = ? WHERE id = ?`, strings.TrimSpace(*in.Name), u.ID)
+		p.Name = ptr(strings.TrimSpace(*in.Name))
 	}
 	if in.Locale != nil {
-		b.exec(`UPDATE users SET locale = ? WHERE id = ?`, normLocale(*in.Locale), u.ID)
+		p.Locale = ptr(normLocale(*in.Locale))
 	}
-	if err := b.err; err != nil {
+	if err := s.users.Update(u.ID, p); err != nil {
 		writeErr(w, 500, "internal", err.Error())
 		return
 	}
 	if in.NewPassword != "" {
-		var hash string
-		_ = s.db.QueryRow(`SELECT password_hash FROM users WHERE id = ?`, u.ID).Scan(&hash)
+		hash, _ := s.users.PasswordHash(u.ID)
 		if bcrypt.CompareHashAndPassword([]byte(hash), []byte(in.CurrentPassword)) != nil {
 			writeErr(w, 400, "wrong_password", "current password is wrong")
 			return
@@ -264,45 +222,15 @@ func (s *Server) handleUpdateMe(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, 200, nu)
 }
 
-type inviteRow struct {
-	ID         int64   `json:"id"`
-	Kind       string  `json:"kind"`
-	Email      string  `json:"email"`
-	Role       string  `json:"role"`
-	ClassID    *int64  `json:"classId,omitempty"`
-	ClassName  string  `json:"className,omitempty"`
-	InvitedBy  string  `json:"invitedBy,omitempty"`
-	Locale     string  `json:"locale"`
-	CreatedAt  string  `json:"createdAt"`
-	ExpiresAt  string  `json:"expiresAt"`
-	AcceptedAt *string `json:"acceptedAt,omitempty"`
-	EmailSent  bool    `json:"emailSent"`
-	Link       string  `json:"link,omitempty"`
-}
-
 func (s *Server) findInvite(token, kind string) (*inviteRow, error) {
-	var inv inviteRow
-	var classID sql.NullInt64
-	var accepted sql.NullString
-	var sent int
-	err := s.db.QueryRow(`SELECT i.id, i.kind, i.email, i.role, i.class_id, COALESCE(c.name,''), COALESCE(u.name,''), i.locale, i.created_at, i.expires_at, i.accepted_at, i.email_sent
-		FROM invites i LEFT JOIN classes c ON c.id = i.class_id LEFT JOIN users u ON u.id = i.invited_by
-		WHERE i.token_hash = ? AND i.kind = ?`, hashToken(token), kind).
-		Scan(&inv.ID, &inv.Kind, &inv.Email, &inv.Role, &classID, &inv.ClassName, &inv.InvitedBy, &inv.Locale, &inv.CreatedAt, &inv.ExpiresAt, &accepted, &sent)
+	inv, err := s.invites.FindByToken(hashToken(token), kind)
 	if err != nil {
 		return nil, err
 	}
-	if classID.Valid {
-		inv.ClassID = &classID.Int64
-	}
-	if accepted.Valid {
-		inv.AcceptedAt = &accepted.String
-	}
-	inv.EmailSent = sent == 1
-	if inv.AcceptedAt != nil || time.Now().After(parseTime(inv.ExpiresAt)) {
+	if !inv.Usable(time.Now()) {
 		return nil, errors.New("invite expired or already used")
 	}
-	return &inv, nil
+	return inv, nil
 }
 
 func (s *Server) handleInviteInfo(w http.ResponseWriter, r *http.Request) {
@@ -337,8 +265,7 @@ func (s *Server) handleRegister(w http.ResponseWriter, r *http.Request) {
 	if existing, err := s.getUserByEmail(inv.Email); err == nil {
 		// Existing account: the invite only adds the class, but the user must
 		// prove ownership with the current password.
-		var hash string
-		_ = s.db.QueryRow(`SELECT password_hash FROM users WHERE id = ?`, existing.ID).Scan(&hash)
+		hash, _ := s.users.PasswordHash(existing.ID)
 		if hash == "" || bcrypt.CompareHashAndPassword([]byte(hash), []byte(in.Password)) != nil {
 			writeErr(w, 401, "invalid_credentials", "wrong password for the existing account")
 			return
@@ -363,7 +290,7 @@ func (s *Server) handleRegister(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	if _, err := s.db.Exec(`UPDATE invites SET accepted_at = ? WHERE id = ?`, now(), inv.ID); err != nil {
+	if err := s.invites.MarkAccepted(inv.ID); err != nil {
 		writeErr(w, 500, "internal", err.Error())
 		return
 	}
@@ -386,8 +313,8 @@ func (s *Server) handleForgot(w http.ResponseWriter, r *http.Request) {
 	if u, err := s.getUserByEmail(in.Email); err == nil && u.Active {
 		tok := randomToken(24)
 		// The answer stays OK on failure too (no enumeration); only the mail is skipped.
-		_, err := s.db.Exec(`INSERT INTO invites(token_hash, kind, email, role, locale, created_at, expires_at) VALUES(?,?,?,?,?,?,?)`,
-			hashToken(tok), "reset", u.Email, u.Role, u.Locale, now(), time.Now().Add(resetLinkTTL).UTC().Format(time.RFC3339))
+		_, err := s.invites.Create(domain.NewInvite{TokenHash: hashToken(tok), Kind: domain.InviteKindReset, Email: u.Email, Role: u.Role,
+			Locale: u.Locale, ExpiresAt: time.Now().Add(resetLinkTTL).UTC().Format(time.RFC3339)})
 		if err != nil {
 			log.Printf("password reset for user %d: %v", u.ID, err)
 			writeOK(w)
@@ -420,10 +347,7 @@ func (s *Server) handleReset(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// The reset link must not stay usable and old sessions must end.
-	b := sqlBatch{db: s.db}
-	b.exec(`UPDATE invites SET accepted_at = ? WHERE id = ?`, now(), inv.ID)
-	b.exec(`DELETE FROM auth_sessions WHERE user_id = ?`, u.ID)
-	if err := b.err; err != nil {
+	if err := errors.Join(s.invites.MarkAccepted(inv.ID), s.logins.DeleteForUser(u.ID)); err != nil {
 		writeErr(w, 500, "internal", err.Error())
 		return
 	}
@@ -443,12 +367,11 @@ func (s *Server) createInvite(r *http.Request, inviter *User, email, role string
 	}
 	tok := randomToken(24)
 	exp := time.Now().Add(inviteTTL).UTC().Format(time.RFC3339)
-	res, err := s.db.Exec(`INSERT INTO invites(token_hash, kind, email, role, class_id, invited_by, locale, created_at, expires_at) VALUES(?,?,?,?,?,?,?,?,?)`,
-		hashToken(tok), "invite", email, role, classID, inviter.ID, normLocale(locale), now(), exp)
+	id, err := s.invites.Create(domain.NewInvite{TokenHash: hashToken(tok), Kind: domain.InviteKindInvite, Email: email, Role: role,
+		ClassID: classID, InvitedBy: &inviter.ID, Locale: normLocale(locale), ExpiresAt: exp})
 	if err != nil {
 		return nil, err
 	}
-	id, _ := res.LastInsertId()
 	link := s.baseURL(r) + "/register?token=" + tok
 	cls := ""
 	if className != "" {
@@ -460,7 +383,7 @@ func (s *Server) createInvite(r *http.Request, inviter *User, email, role string
 	sent := false
 	if err := s.sendMail(email, subj, body); err == nil {
 		sent = true
-		execOrLog(s.db, "mark invite sent", `UPDATE invites SET email_sent = 1 WHERE id = ?`, id)
+		logIfErr("mark invite sent", s.invites.MarkSent(id))
 	}
 	return &inviteRow{ID: id, Kind: "invite", Email: email, Role: role, ClassID: classID, ClassName: className, Locale: normLocale(locale), ExpiresAt: exp, EmailSent: sent, Link: link}, nil
 }

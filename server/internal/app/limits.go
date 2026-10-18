@@ -14,6 +14,13 @@ const (
 	maxEvaluationChars    = 40000
 )
 
+// List sizes of the admin and teacher pages.
+const (
+	maxListedUsers          = 500
+	maxListedInvites        = 500
+	maxListedTeacherInvites = 200
+)
+
 // JEV judge.
 const (
 	judgeRequestTimeout  = 90 * time.Second // whole judgement, all targets
