@@ -233,8 +233,9 @@ func (s *Server) generate(ctx context.Context, task string, req ai.Request, user
 			lastErr = err
 			continue
 		}
-		if cp.cfg.Kind == ai.KindJev {
-			continue // Jev only answers structured questions (see judge.go)
+		tm, ok := cp.p.(ai.TextModel)
+		if !ok {
+			continue // e.g. Jev only answers structured questions (see judge.go)
 		}
 		r := req
 		r.Model = t.Model
@@ -252,7 +253,7 @@ func (s *Server) generate(ctx context.Context, task string, req ai.Request, user
 					cancel()
 				}
 			})
-			res, err = cp.p.Stream(tctx, r, func(d string) error {
+			res, err = tm.Stream(tctx, r, func(d string) error {
 				if !started.Swap(true) {
 					timer.Stop()
 				}
@@ -260,7 +261,7 @@ func (s *Server) generate(ctx context.Context, task string, req ai.Request, user
 			})
 			timer.Stop()
 		} else {
-			res, err = cp.p.Generate(tctx, r)
+			res, err = tm.Generate(tctx, r)
 		}
 		cancel()
 		entry := usageEntry{UserID: userID, SessionID: sessionID, ProviderID: t.ProviderID, Provider: cp.name, Model: t.Model, Task: task, Latency: time.Since(start)}

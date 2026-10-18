@@ -13,7 +13,6 @@ import (
 // fakeDecider is a Jev-like provider: it answers every question with the
 // score in scores (0 when missing) and remembers the last request.
 type fakeDecider struct {
-	*fakeProvider
 	scores    map[string]float64
 	err       error
 	state     any
@@ -34,6 +33,8 @@ func (d *fakeDecider) Decide(ctx context.Context, model string, state any, qs ma
 	}
 	return &ai.JevResult{Model: model, Answers: answers, Usage: ai.Usage{InputTokens: 100, OutputTokens: 5}}, nil
 }
+
+func (d *fakeDecider) ListModels(ctx context.Context) ([]ai.ModelInfo, error) { return nil, nil }
 
 // scriptedLLM returns the same text for every Generate call.
 type scriptedLLM struct {
@@ -78,7 +79,7 @@ func TestJudgeDisabledDoesNothing(t *testing.T) {
 	if err := putSetting(s.db, "jev", JevSettings{Enabled: false}); err != nil {
 		t.Fatal(err)
 	}
-	d := &fakeDecider{fakeProvider: &fakeProvider{}}
+	d := &fakeDecider{}
 	useProvider(s, 1, ai.KindJev, d)
 	setJudgeRoute(t, s, RouteTarget{1, "jev"})
 	if r := s.judge(context.Background(), judgeIn("g"), nil, nil); r.Engine != "none" || d.questions != nil {
@@ -88,7 +89,7 @@ func TestJudgeDisabledDoesNothing(t *testing.T) {
 
 func TestJudgeWithJevAsksOneQuestionPerGoal(t *testing.T) {
 	s := newTestServer(t)
-	d := &fakeDecider{fakeProvider: &fakeProvider{}, scores: map[string]float64{"goal_0": 0.9, "goal_1": 0.3, "off_topic": 0.85}}
+	d := &fakeDecider{scores: map[string]float64{"goal_0": 0.9, "goal_1": 0.3, "off_topic": 0.85}}
 	useProvider(s, 1, ai.KindJev, d)
 	setJudgeRoute(t, s, RouteTarget{1, "jev-latest"})
 
@@ -114,7 +115,7 @@ func TestJudgeWithJevAsksOneQuestionPerGoal(t *testing.T) {
 
 func TestJudgeUsesInstructionsAsGoalWhenNoGoals(t *testing.T) {
 	s := newTestServer(t)
-	d := &fakeDecider{fakeProvider: &fakeProvider{}, scores: map[string]float64{"goal_0": 0.95}}
+	d := &fakeDecider{scores: map[string]float64{"goal_0": 0.95}}
 	useProvider(s, 1, ai.KindJev, d)
 	setJudgeRoute(t, s, RouteTarget{1, "jev"})
 
@@ -162,7 +163,7 @@ func TestJudgeLLMCompletedIsBlockedByMinTurns(t *testing.T) {
 func TestJudgeFallsBackToNextTarget(t *testing.T) {
 	s := newTestServer(t)
 	useProvider(s, 1, ai.KindOpenAI, &scriptedLLM{fakeProvider: &fakeProvider{}, text: "not json"})
-	useProvider(s, 2, ai.KindJev, &fakeDecider{fakeProvider: &fakeProvider{}, scores: map[string]float64{"goal_0": 0.8}})
+	useProvider(s, 2, ai.KindJev, &fakeDecider{scores: map[string]float64{"goal_0": 0.8}})
 	setJudgeRoute(t, s, RouteTarget{1, "bad"}, RouteTarget{2, "jev"})
 
 	r := s.judge(context.Background(), judgeIn("a"), nil, nil)
@@ -176,7 +177,7 @@ func TestJudgeFallsBackToNextTarget(t *testing.T) {
 
 func TestJudgeAllTargetsFailing(t *testing.T) {
 	s := newTestServer(t)
-	useProvider(s, 1, ai.KindJev, &fakeDecider{fakeProvider: &fakeProvider{}, err: &ai.HTTPError{Status: 500, Body: "down"}})
+	useProvider(s, 1, ai.KindJev, &fakeDecider{err: &ai.HTTPError{Status: 500, Body: "down"}})
 	setJudgeRoute(t, s, RouteTarget{1, "jev"})
 
 	r := s.judge(context.Background(), judgeIn("a"), nil, nil)
@@ -190,7 +191,7 @@ func TestJudgeInvalidThresholdFallsBackToDefault(t *testing.T) {
 	if err := putSetting(s.db, "jev", JevSettings{Enabled: true, Threshold: 1.5}); err != nil {
 		t.Fatal(err)
 	}
-	useProvider(s, 1, ai.KindJev, &fakeDecider{fakeProvider: &fakeProvider{}, scores: map[string]float64{"goal_0": 0.75}})
+	useProvider(s, 1, ai.KindJev, &fakeDecider{scores: map[string]float64{"goal_0": 0.75}})
 	setJudgeRoute(t, s, RouteTarget{1, "jev"})
 
 	if r := s.judge(context.Background(), judgeIn("a"), nil, nil); !r.Goals[0].Met {

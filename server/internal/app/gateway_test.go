@@ -112,17 +112,17 @@ func TestGenerateStopsOnCanceledContext(t *testing.T) {
 	}
 }
 
-func TestGenerateSkipsJevProviders(t *testing.T) {
+func TestGenerateSkipsProvidersWithoutText(t *testing.T) {
 	s := newTestServer(t)
-	jev := &fakeProvider{}
+	jev := &fakeDecider{}
 	llm := &fakeProvider{}
 	useProvider(s, 1, ai.KindJev, jev)
 	useProvider(s, 2, ai.KindOpenAI, llm)
 	setChatRoute(t, s, "ordered", RouteTarget{1, "jev-latest"}, RouteTarget{2, "m"})
 
 	res, err := s.generate(context.Background(), TaskChat, chatRequest(), nil, nil, nil)
-	if err != nil || res.ProviderID != 2 || len(jev.calls) != 0 {
-		t.Fatalf("jev must be skipped: %v %+v %v", err, res, jev.calls)
+	if err != nil || res.ProviderID != 2 || jev.decisions != 0 {
+		t.Fatalf("providers without text capability must be skipped: %v %+v", err, res)
 	}
 }
 

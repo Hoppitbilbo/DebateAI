@@ -95,14 +95,6 @@ func (p *jevProvider) Decide(ctx context.Context, model string, state any, quest
 	return &JevResult{Model: out.Model, Answers: out.Answers, Usage: Usage{InputTokens: out.Usage.InputTokens, OutputTokens: out.Usage.OutputTokens, CostUSD: out.Usage.Cost}}, nil
 }
 
-func (p *jevProvider) Generate(context.Context, Request) (*Response, error) {
-	return nil, ErrUnsupported
-}
-
-func (p *jevProvider) Stream(context.Context, Request, func(string) error) (*Response, error) {
-	return nil, ErrUnsupported
-}
-
 // ListModels depends on where System One is served: TypeSafe's own API
 // (api.typesafe.ai) lists its models, OpenRouter and OpenCode use fixed ids.
 func (p *jevProvider) ListModels(ctx context.Context) ([]ModelInfo, error) {

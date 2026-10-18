@@ -3,6 +3,7 @@ package app
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"strings"
@@ -33,6 +34,8 @@ type JudgeResult struct {
 	EvaluatedAt string       `json:"evaluatedAt"`
 	Error       string       `json:"error,omitempty"`
 }
+
+var errCannotJudge = errors.New("provider can neither decide nor generate text")
 
 type judgeInput struct {
 	Instructions string
@@ -156,10 +159,13 @@ func (s *Server) judge(ctx context.Context, in judgeInput, userID, sessionID *in
 		var r *JudgeResult
 		start := time.Now()
 		var usage ai.Usage
-		if d, ok := cp.p.(ai.Decider); ok {
-			r, usage, err = s.judgeWithJev(cctx, d, t.Model, jevState(in, goals, js.MaxStateChars), goals)
-		} else {
-			r, usage, err = s.judgeWithLLM(cctx, cp.p, t.Model, state, goals, in.Locale)
+		switch p := cp.p.(type) {
+		case ai.Decider:
+			r, usage, err = s.judgeWithJev(cctx, p, t.Model, jevState(in, goals, js.MaxStateChars), goals)
+		case ai.Generator:
+			r, usage, err = s.judgeWithLLM(cctx, p, t.Model, state, goals, in.Locale)
+		default:
+			err = errCannotJudge
 		}
 		cancel()
 		entry := usageEntry{UserID: userID, SessionID: sessionID, ProviderID: t.ProviderID, Provider: cp.name, Model: t.Model, Task: TaskJudge, Usage: usage, Latency: time.Since(start), OK: err == nil}
@@ -236,7 +242,7 @@ func (s *Server) judgeWithJev(ctx context.Context, d ai.Decider, model string, s
 	return r, out.Usage, nil
 }
 
-func (s *Server) judgeWithLLM(ctx context.Context, p ai.Provider, model, state string, goals []string, locale string) (*JudgeResult, ai.Usage, error) {
+func (s *Server) judgeWithLLM(ctx context.Context, p ai.Generator, model, state string, goals []string, locale string) (*JudgeResult, ai.Usage, error) {
 	lang := map[string]string{"it": "Italian", "en": "English", "es": "Spanish", "fr": "French", "de": "German"}[normLocale(locale)]
 	system := `You are JEV, a strict but fair educational judge. You read a teacher's assignment and a conversation between a STUDENT and AI characters, and decide which goals the STUDENT has achieved. Only credit what the student actually did. Answer ONLY with JSON of this shape:
 {"goals":[{"index":0,"score":0.0}],"completed":false,"offTopic":false,"hint":"..."}

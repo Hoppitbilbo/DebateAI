@@ -39,7 +39,7 @@ func TestOpenAIStream(t *testing.T) {
 		fmt.Fprint(w, "data: {\"choices\":[],\"usage\":{\"prompt_tokens\":7,\"completion_tokens\":3}}\n\ndata: [DONE]\n\n")
 	}))
 	defer srv.Close()
-	p, _ := New(Config{Kind: KindOpenAI, BaseURL: srv.URL})
+	p := newOpenAI(Config{Kind: KindOpenAI, BaseURL: srv.URL})
 	var parts []string
 	res, err := p.Stream(context.Background(), Request{Model: "m", Messages: []Message{{Role: "user", Content: "hi"}}}, func(d string) error {
 		parts = append(parts, d)
@@ -79,7 +79,7 @@ func TestHTTPErrorPropagates(t *testing.T) {
 		_, _ = w.Write([]byte("rate limited"))
 	}))
 	defer srv.Close()
-	p, _ := New(Config{Kind: KindOpenAI, BaseURL: srv.URL})
+	p := newOpenAI(Config{Kind: KindOpenAI, BaseURL: srv.URL})
 	_, err := p.Generate(context.Background(), Request{Model: "m", Messages: []Message{{Role: "user", Content: "x"}}})
 	he, ok := err.(*HTTPError)
 	if !ok || he.Status != 429 {
@@ -96,7 +96,7 @@ func TestOpenRouterVariablePriceAndReportedCost(t *testing.T) {
 		fmt.Fprint(w, `{"choices":[{"message":{"content":"ok"}}],"usage":{"prompt_tokens":10,"completion_tokens":2,"cost":0.00042}}`)
 	}))
 	defer srv.Close()
-	p, _ := New(Config{Kind: KindOpenAI, BaseURL: srv.URL})
+	p := newOpenAI(Config{Kind: KindOpenAI, BaseURL: srv.URL})
 	models, err := p.ListModels(context.Background())
 	if err != nil || len(models) != 2 {
 		t.Fatalf("models: %v %+v", err, models)
@@ -111,5 +111,27 @@ func TestOpenRouterVariablePriceAndReportedCost(t *testing.T) {
 	res, err := p.Generate(context.Background(), Request{Model: "typesafe/jev-router", Messages: []Message{{Role: "user", Content: "hi"}}})
 	if err != nil || res.Usage.CostUSD == nil || *res.Usage.CostUSD != 0.00042 {
 		t.Fatalf("reported cost: %v %+v", err, res.Usage)
+	}
+}
+
+func TestProviderCapabilities(t *testing.T) {
+	for _, kind := range []string{KindGemini, KindOpenAI, KindAnthropic} {
+		p, err := New(Config{Kind: kind})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if _, ok := p.(TextModel); !ok {
+			t.Errorf("%s must be a TextModel", kind)
+		}
+		if _, ok := p.(Decider); ok {
+			t.Errorf("%s must not be a Decider", kind)
+		}
+	}
+	jev, _ := New(Config{Kind: KindJev})
+	if _, ok := jev.(Decider); !ok {
+		t.Error("jev must be a Decider")
+	}
+	if _, ok := jev.(Generator); ok {
+		t.Error("jev must not pretend to generate text")
 	}
 }

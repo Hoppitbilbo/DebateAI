@@ -676,7 +676,12 @@ func (s *Server) handleTestProvider(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, 200, providerTestResponse{OK: true, LatencyMs: time.Since(start).Milliseconds(), Output: mustJSON(res.Answers)})
 		return
 	}
-	res, err := cp.p.Generate(ctx, ai.Request{Model: in.Model, Messages: []ai.Message{{Role: "user", Content: "Reply with the single word: ok"}}, MaxTokens: 50})
+	g, ok := cp.p.(ai.Generator)
+	if !ok {
+		writeErr(w, 400, "provider_error", "provider cannot generate text")
+		return
+	}
+	res, err := g.Generate(ctx, ai.Request{Model: in.Model, Messages: []ai.Message{{Role: "user", Content: "Reply with the single word: ok"}}, MaxTokens: 50})
 	entry := usageEntry{UserID: &u.ID, ProviderID: id, Provider: cp.name, Model: in.Model, Task: "test", OK: err == nil, Latency: time.Since(start)}
 	if err != nil {
 		entry.Err = err.Error()

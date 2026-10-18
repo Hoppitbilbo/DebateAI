@@ -32,7 +32,7 @@ func newTranscriptFixture(t *testing.T, assignment map[string]any, goalScore flo
 	if code := owner.do("POST", "/api/setup", map[string]string{"name": "Admin", "email": "admin@test.it", "password": "password123"}, nil); code != 201 {
 		t.Fatalf("setup %d", code)
 	}
-	d := &fakeDecider{fakeProvider: &fakeProvider{}, scores: map[string]float64{"goal_0": goalScore}}
+	d := &fakeDecider{scores: map[string]float64{"goal_0": goalScore}}
 	useProvider(s, 99, ai.KindJev, d)
 	setJudgeRoute(t, s, RouteTarget{99, "jev"})
 

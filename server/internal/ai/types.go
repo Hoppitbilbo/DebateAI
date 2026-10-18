@@ -6,7 +6,6 @@ package ai
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -71,15 +70,37 @@ type Config struct {
 	APIKey  string
 }
 
-type Provider interface {
-	Generate(ctx context.Context, req Request) (*Response, error)
-	Stream(ctx context.Context, req Request, onDelta func(string) error) (*Response, error)
+// Capabilities are small interfaces (Interface Segregation): a provider
+// implements only what it can do, and callers ask for the capability they
+// need with a type assertion instead of checking the provider kind.
+
+// ModelLister lists the models a provider serves.
+type ModelLister interface {
 	ListModels(ctx context.Context) ([]ModelInfo, error)
 }
 
-// ErrUnsupported is returned when a provider kind cannot serve a capability
-// (e.g. Jev cannot generate free text).
-var ErrUnsupported = errors.New("operation not supported by this provider")
+// Generator produces a complete text answer.
+type Generator interface {
+	Generate(ctx context.Context, req Request) (*Response, error)
+}
+
+// Streamer produces a text answer delta by delta.
+type Streamer interface {
+	Stream(ctx context.Context, req Request, onDelta func(string) error) (*Response, error)
+}
+
+// TextModel is a provider that can chat: Gemini, OpenAI-compatible, Anthropic.
+type TextModel interface {
+	ModelLister
+	Generator
+	Streamer
+}
+
+// Provider is what every adapter offers; see TextModel and Decider for the
+// optional capabilities.
+type Provider interface {
+	ModelLister
+}
 
 // HTTPError carries the upstream status so the router can decide whether a
 // fallback makes sense (429/5xx) or not.

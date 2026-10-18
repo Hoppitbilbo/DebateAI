@@ -64,7 +64,7 @@ func TestResponseShapes(t *testing.T) {
 	srv := httptest.NewServer(s.Handler())
 	defer srv.Close()
 	useProvider(s, 90, ai.KindOpenAI, &fakeProvider{})
-	useProvider(s, 91, ai.KindJev, &fakeDecider{fakeProvider: &fakeProvider{}, scores: map[string]float64{"goal_0": 0.9}})
+	useProvider(s, 91, ai.KindJev, &fakeDecider{scores: map[string]float64{"goal_0": 0.9}})
 	if err := putSetting(s.db, "routing", RoutingSettings{Strategy: "ordered", Tasks: map[string][]RouteTarget{
 		TaskChat: {{90, "m"}}, TaskJudge: {{91, "jev"}},
 	}}); err != nil {
