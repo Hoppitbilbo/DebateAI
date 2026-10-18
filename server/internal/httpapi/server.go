@@ -82,9 +82,11 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("GET /api/classes/{id}/assignments", s.role("teacher", s.handleListAssignments))
 	mux.HandleFunc("POST /api/classes/{id}/assignments", s.role("teacher", s.handleCreateAssignment))
 	mux.HandleFunc("GET /api/classes/{id}/progress", s.role("teacher", s.handleClassProgress))
+	mux.HandleFunc("GET /api/classes/{id}/grades.xlsx", s.role("teacher", s.handleClassGrades))
 	mux.HandleFunc("PATCH /api/assignments/{id}", s.role("teacher", s.handleUpdateAssignment))
 	mux.HandleFunc("DELETE /api/assignments/{id}", s.role("teacher", s.handleDeleteAssignment))
 	mux.HandleFunc("GET /api/assignments/{id}/progress", s.role("teacher", s.handleAssignmentProgress))
+	mux.HandleFunc("GET /api/assignments/{id}/grades.xlsx", s.role("teacher", s.handleAssignmentGrades))
 	mux.HandleFunc("GET /api/teacher/invites", s.role("teacher", s.handleTeacherInvites))
 
 	// admin

@@ -185,3 +185,25 @@ func (svc *assignmentService) Progress(a *domain.Assignment) ([]StudentProgress,
 	}
 	return out, nil
 }
+
+// GradeRow is one student's best attempt on one assignment, for reports.
+type GradeRow struct {
+	Student, Email, Assignment string
+	Session                    *domain.SessionSummary // nil when not started
+	Attempts                   int
+}
+
+// Grades returns a row per student for each assignment, in class order.
+func (svc *assignmentService) Grades(assignments []*domain.Assignment) ([]GradeRow, error) {
+	rows := []GradeRow{}
+	for _, a := range assignments {
+		students, err := svc.Progress(a)
+		if err != nil {
+			return nil, err
+		}
+		for _, st := range students {
+			rows = append(rows, GradeRow{Student: st.Name, Email: st.Email, Assignment: a.Title, Session: st.Session, Attempts: st.AttemptCount})
+		}
+	}
+	return rows, nil
+}
