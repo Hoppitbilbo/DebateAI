@@ -38,8 +38,8 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto · `[-]` scartato (spieg
 ## Stato attuale
 
 - **Fase in corso:** 4 (service, State, Observer, backend)
-- **Prossimo task:** 4.4b
-- **Lavoro a metà:** 4.4 (fatto 4.4a, restano 4.4b-d)
+- **Prossimo task:** 4.4c
+- **Lavoro a metà:** 4.4 (fatti 4.4a e 4.4b, restano 4.4c e 4.4d)
 - **Test:** Go 33 test nuovi + quelli esistenti verdi; Vitest 18 test verdi; lint 0 errori (18 warning preesistenti)
 
 ---
@@ -183,7 +183,7 @@ Un'area per task, spostando l'SQL in `internal/store`:
 - [x] **4.3** (`ec6a61d`) Observer per le notifiche mail.
 - [~] **4.4** `main.go` come composition root; `Server` ridotto a router e middleware; handler spostati in `httpapi/`.
   - [x] **4.4a** (`795d8e0`) `settingsService`
-  - [ ] **4.4b** `aiGateway` (provider, prezzi, budget, routing, generate, judge fuori da `Server`)
+  - [x] **4.4b** (`58d1b40`) `aiGateway` (provider, prezzi, budget, routing, generate, judge fuori da `Server`)
   - [ ] **4.4c** composition root: `app.NewServices` costruito da `main.go`
   - [ ] **4.4d** handler HTTP nel pacchetto `httpapi`
 
@@ -248,3 +248,4 @@ Un'area per task, spostando l'SQL in `internal/store`:
 | 2026-10-18 | 4.2c | `a11df2e` | Claude Code | `server/internal/app/assignment_service.go`: `Managed`, `Visible`, `ListForClass`, `ListForStudent`, `Create`, `Update`, `Progress`, `notifyStudents` (da trasformare in Observer nel 4.3), `dueText`. `sessionService` ora ha anche `Start`, `Load` (regole di accesso) e `Complete`; handler delle sessioni spostati in `sessions.go` con helper `ownSession`; helper `managedAssignment`. Rimossi `getAssignment`, `appTypes`, `canManageClass`, `isClassMember`, `latestSession`, `bestSession`. Test in `assignment_service_test.go`. |
 | 2026-10-18 | 4.3 | `ec6a61d` | Claude Code | `server/internal/app/notify.go`: interfaccia `assignmentListener` (`AssignmentPublished`), `mailNotifier` e `dueText`. `assignmentService` ha `listeners` e non conosce più mail o SMTP. L'evento parte solo se il docente ha chiesto la notifica e il compito diventa pubblicato (come prima). Le altre mail (benvenuto, invito, aggiunta alla classe) restano dentro i flussi di `authService`/`classService`, perché il risultato dell'invio serve alla risposta. Test in `notify_test.go`. |
 | 2026-10-18 | 4.4a | `795d8e0` | Claude Code | `settingsService` in `settings.go`: `General`, `Budget`, `Routing`, `Jev`, `SMTP`, `MailConfigured`, `Save*` con le regole di normalizzazione (prima nell'handler). Costanti delle chiavi (`settingGeneral`, ...). Campo `Server.settingsSvc`; rimossi i metodi `Server.general/budget/routing/jevSettings/smtp`. |
+| 2026-10-18 | 4.4b | `58d1b40` | Claude Code | `aiGateway` (in `gateway.go`, costruttore `newAIGateway`) con 16 metodi spostati da `Server`: cache dei provider, `priceFor`, `monthSpend`, `budgetExceeded`, `logUsage`, `recordUsage`, `meterText`, `meterDecider`, `runFallbackChain`, `targets`, `generate`, `judge`, `autoRoute`, `storeModels`, `insertProvider`, `invalidateProvider`. `aiGateway` implementa `priceBook` e `goalEvaluator`. I test usano `s.gateway.*`. Race detector verde. |
