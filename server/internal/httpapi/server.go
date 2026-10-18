@@ -65,6 +65,7 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("GET /api/sessions/{id}", s.auth(s.handleGetSession))
 	mux.HandleFunc("PUT /api/sessions/{id}/transcript", s.auth(s.handleSaveTranscript))
 	mux.HandleFunc("POST /api/sessions/{id}/complete", s.auth(s.handleCompleteSession))
+	mux.HandleFunc("PUT /api/sessions/{id}/feedback", s.role("teacher", s.handleSessionFeedback))
 
 	// assignments (read for members)
 	mux.HandleFunc("GET /api/assignments/{id}", s.auth(s.handleGetAssignment))

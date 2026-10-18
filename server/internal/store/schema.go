@@ -3,6 +3,7 @@ package store
 import (
 	"database/sql"
 	"fmt"
+	"strings"
 
 	_ "modernc.org/sqlite"
 )
@@ -96,6 +97,9 @@ CREATE TABLE IF NOT EXISTS activity_sessions (
   evaluation TEXT NOT NULL DEFAULT '',
   score_conversation INTEGER,
   score_reflection INTEGER,
+  teacher_feedback TEXT NOT NULL DEFAULT '',
+  teacher_score INTEGER,
+  teacher_feedback_at TEXT,
   cost_usd REAL NOT NULL DEFAULT 0,
   started_at TEXT NOT NULL,
   updated_at TEXT NOT NULL,
@@ -159,5 +163,25 @@ func Open(path string) (*sql.DB, error) {
 	if _, err := db.Exec(schema); err != nil {
 		return nil, fmt.Errorf("migrate: %w", err)
 	}
+	if err := applyMigrations(db); err != nil {
+		return nil, err
+	}
 	return db, nil
+}
+
+// migrations add columns to databases created by older versions; schema
+// above already has them for new databases. Append only, never edit.
+var migrations = []string{
+	`ALTER TABLE activity_sessions ADD COLUMN teacher_feedback TEXT NOT NULL DEFAULT ''`,
+	`ALTER TABLE activity_sessions ADD COLUMN teacher_score INTEGER`,
+	`ALTER TABLE activity_sessions ADD COLUMN teacher_feedback_at TEXT`,
+}
+
+func applyMigrations(db *sql.DB) error {
+	for _, m := range migrations {
+		if _, err := db.Exec(m); err != nil && !strings.Contains(err.Error(), "duplicate column") {
+			return fmt.Errorf("migrate %q: %w", m, err)
+		}
+	}
+	return nil
 }

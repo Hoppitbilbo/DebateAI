@@ -19,6 +19,7 @@ type sessionService struct {
 	classSvc    *classService
 	judge       goalEvaluator
 	jevSettings func() JevSettings
+	listeners   []feedbackListener
 }
 
 var (
@@ -26,7 +27,11 @@ var (
 	ErrAssignmentForbidden = errors.New("assignment not available")
 	ErrOtherApp            = errors.New("assignment is for another app")
 	ErrSessionNotFound     = errors.New("session not found")
+	ErrFeedbackForbidden   = errors.New("only the class teacher can give feedback")
 )
+
+// maxTeacherFeedbackChars bounds the teacher's written feedback.
+const maxTeacherFeedbackChars = 20000
 
 // NewAttempt is what the client sends to start an activity.
 type NewAttempt struct {
@@ -85,6 +90,34 @@ func (svc *sessionService) Load(u *domain.User, id int64) (*domain.SessionDetail
 		return d, false, nil
 	}
 	return nil, false, ErrSessionNotFound
+}
+
+// GiveFeedback stores the teacher's feedback (and optional 0-10 score) on a
+// student's attempt and tells the listeners (the student gets an e-mail).
+// Teachers who can see the session and admins may do it, never its owner.
+func (svc *sessionService) GiveFeedback(u *domain.User, id int64, f domain.TeacherFeedback, baseURL string) (*domain.SessionDetail, error) {
+	d, owner, err := svc.Load(u, id)
+	if err != nil {
+		return nil, err
+	}
+	if owner || (u.Role != domain.RoleTeacher && u.Role != domain.RoleAdmin) {
+		return nil, ErrFeedbackForbidden
+	}
+	if f.Score != nil && (*f.Score < 0 || *f.Score > 10) {
+		return nil, invalid(errors.New("score must be between 0 and 10"))
+	}
+	f.Text = truncate(strings.TrimSpace(f.Text), maxTeacherFeedbackChars)
+	if err := svc.sessions.SetTeacherFeedback(id, f); err != nil {
+		return nil, err
+	}
+	d, err = svc.sessions.Detail(id)
+	if err != nil {
+		return nil, err
+	}
+	for _, l := range svc.listeners {
+		l.FeedbackGiven(d, u, baseURL)
+	}
+	return d, nil
 }
 
 // Completion is what the student hands in after the activity.

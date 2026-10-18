@@ -53,6 +53,13 @@ var mailTexts = map[string]map[string][2]string{
 		"fr": {"Nouveau devoir : {title}", "Bonjour {name},\n\nun nouveau devoir a été publié dans « {class} » : {title}{due}.\n\nOuvrez-le ici : {link}"},
 		"de": {"Neue Aufgabe: {title}", "Hallo {name},\n\nin „{class}“ wurde eine neue Aufgabe veröffentlicht: {title}{due}.\n\nÖffne sie hier: {link}"},
 	},
+	"feedback": {
+		"it": {"Feedback del docente: {title}", "Ciao {name},\n\n{teacher} ha scritto un feedback sulla tua attività \"{title}\".\n\nLeggilo qui: {link}"},
+		"en": {"Teacher feedback: {title}", "Hi {name},\n\n{teacher} wrote feedback on your activity \"{title}\".\n\nRead it here: {link}"},
+		"es": {"Comentario del docente: {title}", "Hola {name},\n\n{teacher} ha escrito un comentario sobre tu actividad \"{title}\".\n\nLéelo aquí: {link}"},
+		"fr": {"Retour de l'enseignant : {title}", "Bonjour {name},\n\n{teacher} a écrit un retour sur ton activité « {title} ».\n\nLis-le ici : {link}"},
+		"de": {"Feedback der Lehrkraft: {title}", "Hallo {name},\n\n{teacher} hat Feedback zu deiner Aktivität „{title}“ geschrieben.\n\nLies es hier: {link}"},
+	},
 	"test": {
 		"it": {"Email di prova da {site}", "La configurazione SMTP funziona correttamente."},
 		"en": {"Test email from {site}", "Your SMTP configuration works."},

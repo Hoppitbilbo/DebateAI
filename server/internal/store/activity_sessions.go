@@ -14,7 +14,7 @@ type ActivitySessions struct{ db *sql.DB }
 func NewActivitySessions(db *sql.DB) *ActivitySessions { return &ActivitySessions{db: db} }
 
 const sessionSummaryCols = `s.id, s.user_id, COALESCE(u.name,''), s.assignment_id, COALESCE(a.title,''), s.app_type, s.title, s.status, s.turns, s.progress,
-	s.score_conversation, s.score_reflection, s.cost_usd, s.started_at, s.updated_at, s.completed_at`
+	s.score_conversation, s.score_reflection, s.teacher_score, s.cost_usd, s.started_at, s.updated_at, s.completed_at`
 const sessionFrom = ` FROM activity_sessions s LEFT JOIN users u ON u.id = s.user_id LEFT JOIN assignments a ON a.id = s.assignment_id`
 
 // bestFirst orders attempts from the most to the least successful.
@@ -22,9 +22,9 @@ const bestFirst = `CASE s.status WHEN 'completed' THEN 0 WHEN 'goal_reached' THE
 
 func scanSummary(row interface{ Scan(...any) error }, extra ...any) (*domain.SessionSummary, error) {
 	var ss domain.SessionSummary
-	var uid, aid, sc, sr sql.NullInt64
+	var uid, aid, sc, sr, ts sql.NullInt64
 	var comp sql.NullString
-	dest := []any{&ss.ID, &uid, &ss.UserName, &aid, &ss.AssignmentTitle, &ss.AppType, &ss.Title, &ss.Status, &ss.Turns, &ss.Progress, &sc, &sr, &ss.CostUSD, &ss.StartedAt, &ss.UpdatedAt, &comp}
+	dest := []any{&ss.ID, &uid, &ss.UserName, &aid, &ss.AssignmentTitle, &ss.AppType, &ss.Title, &ss.Status, &ss.Turns, &ss.Progress, &sc, &sr, &ts, &ss.CostUSD, &ss.StartedAt, &ss.UpdatedAt, &comp}
 	if err := row.Scan(append(dest, extra...)...); err != nil {
 		return nil, err
 	}
@@ -36,6 +36,7 @@ func scanSummary(row interface{ Scan(...any) error }, extra ...any) (*domain.Ses
 	}
 	ss.ScoreConversation = nullIntPtr(sc)
 	ss.ScoreReflection = nullIntPtr(sr)
+	ss.TeacherScore = nullIntPtr(ts)
 	if comp.Valid {
 		ss.CompletedAt = &comp.String
 	}
@@ -58,10 +59,14 @@ func (r *ActivitySessions) Summary(id int64) (*domain.SessionSummary, error) {
 func (r *ActivitySessions) Detail(id int64) (*domain.SessionDetail, error) {
 	var d domain.SessionDetail
 	var ctx, tr, jev string
-	ss, err := scanSummary(r.db.QueryRow(`SELECT `+sessionSummaryCols+`, s.context_json, s.transcript_json, s.jev_json, s.reflection, s.evaluation`+sessionFrom+` WHERE s.id = ?`, id),
-		&ctx, &tr, &jev, &d.Reflection, &d.Evaluation)
+	var feedbackAt sql.NullString
+	ss, err := scanSummary(r.db.QueryRow(`SELECT `+sessionSummaryCols+`, s.context_json, s.transcript_json, s.jev_json, s.reflection, s.evaluation, s.teacher_feedback, s.teacher_feedback_at`+sessionFrom+` WHERE s.id = ?`, id),
+		&ctx, &tr, &jev, &d.Reflection, &d.Evaluation, &d.TeacherFeedback, &feedbackAt)
 	if err != nil {
 		return nil, err
+	}
+	if feedbackAt.Valid {
+		d.TeacherFeedbackAt = &feedbackAt.String
 	}
 	d.SessionSummary = *ss
 	d.Context, d.Transcript, d.Jev = json.RawMessage(ctx), json.RawMessage(tr), json.RawMessage(jev)
@@ -99,7 +104,7 @@ func (r *ActivitySessions) ListForUser(userID int64, limit int) ([]*domain.Sessi
 
 // BestPerStudent returns, for a class, the best attempt of each student on each assignment.
 func (r *ActivitySessions) BestPerStudent(classID int64) ([]domain.ProgressCell, error) {
-	rows, err := r.db.Query(`SELECT s.assignment_id, s.user_id, s.status, s.progress, s.id, s.score_conversation, s.cost_usd FROM activity_sessions s
+	rows, err := r.db.Query(`SELECT s.assignment_id, s.user_id, s.status, s.progress, s.id, s.score_conversation, s.teacher_score, s.cost_usd FROM activity_sessions s
 		JOIN assignments a ON a.id = s.assignment_id WHERE a.class_id = ? ORDER BY `+bestFirst, classID)
 	if err != nil {
 		return nil, err
@@ -109,8 +114,8 @@ func (r *ActivitySessions) BestPerStudent(classID int64) ([]domain.ProgressCell,
 	cells := []domain.ProgressCell{}
 	for rows.Next() {
 		var c domain.ProgressCell
-		var score sql.NullInt64
-		if rows.Scan(&c.AssignmentID, &c.UserID, &c.Status, &c.Progress, &c.SessionID, &score, &c.CostUSD) != nil {
+		var score, teacherScore sql.NullInt64
+		if rows.Scan(&c.AssignmentID, &c.UserID, &c.Status, &c.Progress, &c.SessionID, &score, &teacherScore, &c.CostUSD) != nil {
 			continue
 		}
 		k := fmt.Sprintf("%d:%d", c.AssignmentID, c.UserID)
@@ -119,6 +124,7 @@ func (r *ActivitySessions) BestPerStudent(classID int64) ([]domain.ProgressCell,
 		}
 		seen[k] = true
 		c.Score = nullIntPtr(score)
+		c.TeacherScore = nullIntPtr(teacherScore)
 		cells = append(cells, c)
 	}
 	return cells, rows.Err()
@@ -189,6 +195,13 @@ func (r *ActivitySessions) Complete(id int64, c domain.SessionCompletion) error 
 	now := domain.Now()
 	_, err := r.db.Exec(`UPDATE activity_sessions SET status = 'completed', reflection = ?, evaluation = ?, score_conversation = ?, score_reflection = ?, completed_at = ?, updated_at = ? WHERE id = ?`,
 		c.Reflection, c.Evaluation, c.ScoreConversation, c.ScoreReflection, now, now, id)
+	return err
+}
+
+// SetTeacherFeedback stores (or replaces) the teacher's feedback on an attempt.
+func (r *ActivitySessions) SetTeacherFeedback(id int64, f domain.TeacherFeedback) error {
+	_, err := r.db.Exec(`UPDATE activity_sessions SET teacher_feedback = ?, teacher_score = ?, teacher_feedback_at = ? WHERE id = ?`,
+		f.Text, f.Score, domain.Now(), id)
 	return err
 }
 

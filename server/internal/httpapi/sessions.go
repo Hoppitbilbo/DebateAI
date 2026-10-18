@@ -80,6 +80,28 @@ func (s *Server) handleSaveTranscript(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, 200, resp)
 }
 
+// handleSessionFeedback stores the teacher's written feedback and score.
+func (s *Server) handleSessionFeedback(w http.ResponseWriter, r *http.Request) {
+	var in domain.TeacherFeedback
+	if err := readJSON(r, &in); err != nil {
+		writeErr(w, 400, "bad_request", err.Error())
+		return
+	}
+	d, err := s.SessionSvc.GiveFeedback(currentUser(r), pathID(r, "id"), in, s.baseURL(r))
+	switch {
+	case errors.Is(err, app.ErrSessionNotFound):
+		writeErr(w, 404, "not_found", err.Error())
+		return
+	case errors.Is(err, app.ErrFeedbackForbidden):
+		writeErr(w, 403, "forbidden", err.Error())
+		return
+	case err != nil:
+		writeServiceErr(w, err)
+		return
+	}
+	writeJSON(w, 200, d)
+}
+
 func (s *Server) handleCompleteSession(w http.ResponseWriter, r *http.Request) {
 	_, d, ok := s.ownSession(w, r)
 	if !ok {

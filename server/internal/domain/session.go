@@ -24,6 +24,7 @@ type SessionSummary struct {
 	Progress          int     `json:"progress"`
 	ScoreConversation *int    `json:"scoreConversation,omitempty"`
 	ScoreReflection   *int    `json:"scoreReflection,omitempty"`
+	TeacherScore      *int    `json:"teacherScore,omitempty"` // 0-10, given by the teacher
 	CostUSD           float64 `json:"costUsd"`
 	StartedAt         string  `json:"startedAt"`
 	UpdatedAt         string  `json:"updatedAt"`
@@ -37,6 +38,9 @@ type SessionDetail struct {
 	Jev        json.RawMessage `json:"jev"`
 	Reflection string          `json:"reflection"`
 	Evaluation string          `json:"evaluation"`
+	// Written by the teacher after reading the conversation.
+	TeacherFeedback   string  `json:"teacherFeedback"`
+	TeacherFeedbackAt *string `json:"teacherFeedbackAt,omitempty"`
 }
 
 // NewSession holds the values of an activity attempt to start.
@@ -64,5 +68,12 @@ type ProgressCell struct {
 	Progress     int     `json:"progress"`
 	SessionID    int64   `json:"sessionId"`
 	Score        *int    `json:"score,omitempty"`
+	TeacherScore *int    `json:"teacherScore,omitempty"`
 	CostUSD      float64 `json:"costUsd"`
+}
+
+// TeacherFeedback is what a teacher writes about a student's attempt.
+type TeacherFeedback struct {
+	Text  string `json:"feedback"`
+	Score *int   `json:"score"` // 0-10, optional
 }

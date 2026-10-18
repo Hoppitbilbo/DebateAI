@@ -98,6 +98,7 @@ type sessionStore interface {
 	SaveJudgement(id int64, judgementJSON string, progress int) error
 	SetStatus(id int64, status string) error
 	Complete(id int64, c domain.SessionCompletion) error
+	SetTeacherFeedback(id int64, f domain.TeacherFeedback) error
 	AddCost(id int64, usd float64) error
 	CountWithTurns() int
 	CountStarted(assignmentID int64) int
