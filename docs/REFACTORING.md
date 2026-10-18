@@ -38,7 +38,7 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto · `[-]` scartato (spieg
 ## Stato attuale
 
 - **Fase in corso:** 6 (resto del frontend)
-- **Prossimo task:** 6.1
+- **Prossimo task:** 6.2
 - **Lavoro a metà:** nessuno
 - **Test:** Go 33 test nuovi + quelli esistenti verdi; Vitest 18 test verdi; lint 0 errori (18 warning preesistenti)
 
@@ -200,7 +200,7 @@ Un'area per task, spostando l'SQL in `internal/store`:
 
 ### Fase 6: resto del frontend
 
-- [ ] **6.1** Tutorial guidati dai dati + `TutorialRenderer`.
+- [x] **6.1** (`6bc9dbf`) Tutorial guidati dai dati + `TutorialSlides`.
 - [ ] **6.2** Dividere `AdminAI.tsx` e `AdminPage.tsx` in hook dati e componenti.
 - [ ] **6.3** Dividere `TeacherPages.tsx`.
 
@@ -211,6 +211,7 @@ Un'area per task, spostando l'SQL in `internal/store`:
 - Schema della fase 3: il repository vive in `server/internal/store` (tipo concreto, es. `store.Settings`), mentre l'interfaccia la definisce chi la usa in `app` (es. `settingsStore` in `settings.go`). `Server` ha un campo per repository, inizializzato in `NewServer` (spostato in `main.go` al task 4.4). Ogni repository ha i suoi test in `store` con un DB temporaneo.
 - Entità condivise in `server/internal/domain` (`User`, `Invite`, `UserPatch`, ruoli, `Now`/`ParseTime`). In `app/repositories.go` ci sono le interfacce dei repository e gli alias temporanei (`User`, `inviteRow`, `Class`, `Member`, `Assignment`, `AssignStats`, `SessionSummary`, `SessionDetail`), da rimuovere quando gli handler useranno direttamente `domain` (fase 4). Lo schema SQL e `Open` sono in `store/schema.go`.
 - Possibile miglioramento (non fatto, cambierebbe il comportamento): `isCorrectGuess` del personaggio misterioso accetta anche tentativi cortissimi contenuti nel nome (es. "Da" per "Leonardo da Vinci"); fissato da `mystery.test.ts`.
+- **Gap di contenuto noto (tutorial ImpersonaTu):** il codice usa gli id di slide `thinkAloud`, `reflectionAndGrowth`, `examples` (e i punti elenco di altre 3 slide) che nei file `src/i18n/tutorials/*.json` hanno nomi diversi (`thinkAloudProtocols`, `reflectionGrowth`, `implementationExamples`, ...): 30 testi mostrano la chiave in tutte le lingue. Inoltre DoppiaIntervista in en/fr/es ha un set di slide diverso (ricade sull'italiano). Correggerli è lavoro sui contenuti; `tutorials.test.tsx` conta i 30 testi mancanti e fallirà (in meglio) quando verranno sistemati.
 - Go non ha ereditarietà: Template Method si realizza con funzioni o interfacce passate come parametro (composizione).
 - L'API HTTP e lo schema SQLite non cambiano durante il refactoring.
 - Task 1.2: unica eccezione voluta alla regola "nessun cambio di comportamento". Solo quando una scrittura sul DB fallisce: le scritture principali rispondono 500 invece di un falso OK, quelle di contorno (ultimo login, pulizia sessioni, costi, prezzi importati, `email_sent`) vengono loggate con `execOrLog`, e gli handler con più update usano `sqlBatch`. Restano volutamente le letture `_ = ...QueryRow(...).Scan(...)` che hanno un valore di default sensato (nome classe, somme dei costi): verranno riviste nei repository (fase 3).
@@ -261,3 +262,4 @@ Un'area per task, spostando l'SQL in `internal/store`:
 | 2026-10-18 | 5.2 | `b708914` | Claude Code | ImpersonaTu da 161 a 111 righe, WikiChatbot da 135 a 82. I test delle pagine sono ora in `src/pages/activityPages.test.tsx` (mock condivisi, `cleanup` esplicito perché Vitest gira senza globals). Vitest: 26 test. |
 | 2026-10-18 | 5.3 | `7d1e0f4` | Claude Code | DoppiaIntervista 175 → 129 righe, YouModerate 214 → 166, PersonaggioMisterioso 268 → 215 (+ `src/features/activity/mystery.ts` con `isCorrectGuess` e `RANDOM_CHARACTERS`, test `mystery.test.ts`). Il personaggio misterioso usa `chat.replacement` per il tentativo finale, `onEnded` personalizzato e `showEndReason: false`. Le sei pagine attività ora usano tutte `ActivityRunner`. Test delle pagine estesi alle tre app (stub di `ResizeObserver` per lo slider Radix). Vitest: 31 test; lint 17 avvisi (uno in meno). |
 | 2026-10-18 | 5.4 | `cb060a2` | Claude Code | `src/services/aiClient.ts` (interfaccia `AiClient`, `httpAiClient`, `AiClientContext`, `useAiClient`) e `src/services/AiClientProvider.tsx`. Usato da `useChatEngine`, `useEvaluationFlow` (che lo passa a `evaluateActivity`) e `ActivityShell`; il default è il client HTTP, quindi l'app non ha bisogno del provider. I test iniettano un client finto invece di `vi.mock` sul modulo. Il Live vocale (`liveConversationService`, WebSocket diretto a Google) resta fuori dall'interfaccia. Fase 5 completata. |
+| 2026-10-18 | 6.1 | `6bc9dbf` | Claude Code | `src/features/tutorials/tutorials.ts` (dati: `ns`, slide con icona e numero di punti), `TutorialSlides.tsx`, `src/pages/TutorialPage.tsx` (una pagina per tutte le rotte `/apps/*/tutorial`). Rimossi 5 componenti + 5 pagine (−1197/+252 righe). Scelto il layout dei 4 tutorial uguali: ImpersonaTu perde la barra di avanzamento e il titolo "Slide N". Bug corretti: i pulsanti Indietro/Avanti mostravano l'italiano in tutte le lingue (chiavi assenti nel namespace `tutorial`, fallback a it); il pulsante finale ricaricava la pagina con `window.location`, ora usa il router. Test `tutorials.test.tsx`: copertura delle traduzioni (con gap noto, vedi Note) e navigazione fino all'avvio dell'app. |
