@@ -277,3 +277,4 @@ Un'area per task, spostando l'SQL in `internal/store`:
 | 2026-10-18 | — | — | Claude Code | CI GitHub verde su `f26a002` (fine piano: `test`, `web`, `image`). |
 | 2026-10-18 | 7.1 | `19b49de` | Claude Code | `authApi` (config pubblica, me, login, logout, info invito, registrazione, password dimenticata, reset, setup, profilo). Test `context/AuthContext.test.tsx` (2). |
 | 2026-10-18 | 7.2 | `d81884b` | Claude Code | Nessun file in `src/pages`, `src/components` o `src/context` chiama più `api` direttamente: le chiamate stanno in `src/features/*` (e `services/` per l'AI). `InviteForm` ha la prop `invite` (rimosso `extraBody`, mai usato). Test `pages/dashboard/studentPages.test.tsx` (3). Vitest 48 test. |
+| 2026-10-18 | — | — | Claude Code | CI GitHub verde su `a9fd39c` (fine fase 7: `test`, `web`, `image`). |
