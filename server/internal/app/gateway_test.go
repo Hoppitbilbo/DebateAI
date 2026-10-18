@@ -308,3 +308,25 @@ func TestStrategiesDoNotModifyConfiguredList(t *testing.T) {
 		t.Fatal("unknown strategy must keep the configured order")
 	}
 }
+
+func TestDefaultRoutePolicies(t *testing.T) {
+	gemini := []ai.ModelInfo{{ID: "models/gemini-2.5-flash"}, {ID: "models/gemini-3.1-flash"}, {ID: "models/gemini-3.1-flash-lite"},
+		{ID: "gemini-3.1-flash-live-preview", SupportLive: true}, {ID: "gemini-3.1-flash-image"}}
+	rt := RoutingSettings{Tasks: map[string][]RouteTarget{TaskJudge: {{7, "old-judge"}}}}
+	routePolicyFor(ai.KindGemini)(&rt, 1, gemini)
+	if rt.Tasks[TaskChat][0].Model != "gemini-3.1-flash" || rt.Tasks[TaskUtility][0].Model != "gemini-3.1-flash-lite" ||
+		rt.Tasks[TaskLive][0].Model != "gemini-3.1-flash-live-preview" || rt.Tasks[TaskJudge][0].Model != "old-judge" {
+		t.Fatalf("gemini routes: %+v", rt.Tasks)
+	}
+
+	routePolicyFor(ai.KindJev)(&rt, 2, []ai.ModelInfo{{ID: "jev-1.13"}, {ID: "jev-latest"}})
+	if j := rt.Tasks[TaskJudge]; len(j) != 2 || j[0] != (RouteTarget{2, "jev-latest"}) || j[1].Model != "old-judge" {
+		t.Fatalf("jev must go first for judging: %+v", j)
+	}
+
+	rt = RoutingSettings{Tasks: map[string][]RouteTarget{}}
+	routePolicyFor(ai.KindOpenAI)(&rt, 3, []ai.ModelInfo{{ID: "paid"}, {ID: "x:free", Free: true}})
+	if rt.Tasks[TaskChat][0].Model != "x:free" || rt.Tasks[TaskJudge][0].Model != "x:free" || len(rt.Tasks[TaskLive]) != 0 {
+		t.Fatalf("openai routes: %+v", rt.Tasks)
+	}
+}

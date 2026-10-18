@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
-	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -403,10 +402,6 @@ func (s *Server) handleListProviders(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, 200, s.loadProviders())
 }
 
-func validKind(k string) bool {
-	return k == ai.KindGemini || k == ai.KindOpenAI || k == ai.KindAnthropic || k == ai.KindJev
-}
-
 func (s *Server) handleCreateProvider(w http.ResponseWriter, r *http.Request) {
 	var in struct {
 		Name, Kind, BaseURL, APIKey string
@@ -416,7 +411,7 @@ func (s *Server) handleCreateProvider(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 400, "bad_request", err.Error())
 		return
 	}
-	if strings.TrimSpace(in.Name) == "" || !validKind(in.Kind) {
+	if strings.TrimSpace(in.Name) == "" || !ai.KnownKind(in.Kind) {
 		writeErr(w, 400, "bad_request", "name and a valid kind are required")
 		return
 	}
@@ -450,105 +445,6 @@ func (s *Server) handleCreateProvider(w http.ResponseWriter, r *http.Request) {
 
 // autoRoute fills empty routing tasks with a sensible model of a newly added
 // provider, so a fresh install works right after the first provider is added.
-func (s *Server) autoRoute(providerID int64, kind string) {
-	var models []ai.ModelInfo
-	var raw string
-	_ = s.db.QueryRow(`SELECT models_json FROM providers WHERE id = ?`, providerID).Scan(&raw)
-	_ = json.Unmarshal([]byte(raw), &models)
-	pick := func(prefer ...string) string {
-		for _, p := range prefer {
-			for _, m := range models {
-				if m.ID == p {
-					return p
-				}
-			}
-		}
-		for _, p := range prefer { // known-good default even if listing failed
-			if p != "" {
-				return p
-			}
-		}
-		if len(models) > 0 {
-			return models[0].ID
-		}
-		return ""
-	}
-	rt := s.routing()
-	add := func(task, model string) {
-		if model != "" && len(rt.Tasks[task]) == 0 {
-			rt.Tasks[task] = []RouteTarget{{providerID, model}}
-		}
-	}
-	// newestFlash returns the most recent listed Gemini "flash" model, so new
-	// installs follow Google's lineup instead of a hard-coded name.
-	newestFlash := func(live, lite bool, fallback string) string {
-		best := ""
-		for _, m := range models {
-			id := strings.TrimPrefix(m.ID, "models/")
-			if m.SupportLive != live || !strings.Contains(id, "flash") || strings.Contains(id, "lite") != lite ||
-				strings.Contains(id, "image") || strings.Contains(id, "tts") || strings.Contains(id, "audio") || strings.Contains(id, "thinking") {
-				continue
-			}
-			if best == "" || geminiVersion(id) > geminiVersion(best) || (geminiVersion(id) == geminiVersion(best) && id > best) {
-				best = id
-			}
-		}
-		if best != "" {
-			return best
-		}
-		return pick(fallback)
-	}
-	switch kind {
-	case ai.KindJev:
-		// Jev is purpose-built for judging: put it first, keep others as fallback.
-		if m := pick("jev-latest", "jev-1.13-free", "jev-1.13"); m != "" {
-			rest := rt.Tasks[TaskJudge][:0:0]
-			for _, t := range rt.Tasks[TaskJudge] {
-				if t.ProviderID != providerID {
-					rest = append(rest, t)
-				}
-			}
-			rt.Tasks[TaskJudge] = append([]RouteTarget{{providerID, m}}, rest...)
-		}
-	case ai.KindGemini:
-		flash := newestFlash(false, false, "gemini-2.5-flash")
-		add(TaskChat, flash)
-		add(TaskEvaluation, flash)
-		add(TaskUtility, newestFlash(false, true, flash))
-		add(TaskJudge, newestFlash(false, true, flash))
-		add(TaskLive, newestFlash(true, false, "gemini-3.1-flash-live-preview"))
-	default:
-		var first string
-		for _, m := range models {
-			if m.Free {
-				first = m.ID
-				break
-			}
-		}
-		if first == "" {
-			first = pick()
-		}
-		add(TaskChat, first)
-		add(TaskEvaluation, first)
-		add(TaskUtility, first)
-		add(TaskJudge, first)
-	}
-	if err := putSetting(s.db, "routing", rt); err != nil {
-		log.Printf("auto-route provider %d: %v", providerID, err)
-	}
-}
-
-// geminiVersion extracts the version number from ids such as
-// "gemini-3.1-flash-live-preview" or "gemini-live-2.5-flash" (0 if none).
-func geminiVersion(id string) float64 {
-	for _, part := range strings.Split(id, "-") {
-		if v, err := strconv.ParseFloat(part, 64); err == nil {
-			return v
-		}
-	}
-	return 0
-}
-
 func (s *Server) storeModels(providerID int64, models []ai.ModelInfo) {
 	execOrLog(s.db, "store models", `UPDATE providers SET models_json = ? WHERE id = ?`, mustJSON(models), providerID)
 	// Import prices published by the upstream (e.g. OpenRouter) when the admin

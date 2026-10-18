@@ -117,19 +117,28 @@ func (e *HTTPError) Error() string {
 	return fmt.Sprintf("upstream error %d: %s", e.Status, body)
 }
 
+// factories is the provider registry (Factory pattern): adding a provider
+// kind means writing its adapter and registering it here, nothing else.
+var factories = map[string]func(Config) Provider{
+	KindGemini:    func(c Config) Provider { return newGemini(c) },
+	KindOpenAI:    func(c Config) Provider { return newOpenAI(c) },
+	KindAnthropic: func(c Config) Provider { return newAnthropic(c) },
+	KindJev:       func(c Config) Provider { return newJev(c) },
+}
+
+// KnownKind reports whether a provider kind is registered.
+func KnownKind(kind string) bool {
+	_, ok := factories[kind]
+	return ok
+}
+
+// New builds the adapter for cfg.Kind.
 func New(cfg Config) (Provider, error) {
-	switch cfg.Kind {
-	case KindGemini:
-		return newGemini(cfg), nil
-	case KindOpenAI:
-		return newOpenAI(cfg), nil
-	case KindAnthropic:
-		return newAnthropic(cfg), nil
-	case KindJev:
-		return newJev(cfg), nil
-	default:
+	f, ok := factories[cfg.Kind]
+	if !ok {
 		return nil, fmt.Errorf("unknown provider kind %q", cfg.Kind)
 	}
+	return f(cfg), nil
 }
 
 var httpClient = &http.Client{Timeout: 180 * time.Second}
