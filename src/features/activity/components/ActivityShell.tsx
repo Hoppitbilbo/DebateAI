@@ -6,7 +6,8 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { getAiStatus, AiStatus } from "@/services/aiService";
+import type { AiStatus } from "@/services/aiService";
+import { useAiClient } from "@/services/aiClient";
 import { useAuth } from "@/context/AuthContext";
 import type { ActivityPhase, AppMeta } from "../types";
 import type { ActivitySession } from "../useActivitySession";
@@ -28,11 +29,12 @@ const PHASES: ActivityPhase[] = ["setup", "chat", "reflection", "feedback"];
 const ActivityShell = ({ app, phase, session, onReset, children, phaseLabels }: ActivityShellProps) => {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const ai = useAiClient();
   const [status, setStatus] = useState<AiStatus | null>(null);
 
   useEffect(() => {
-    void getAiStatus().then(setStatus);
-  }, [user]);
+    void ai.status().then(setStatus);
+  }, [user, ai]);
 
   const title = t(`apps.${app.i18nKey}.title`);
   const description = t(`apps.${app.i18nKey}.description`, { defaultValue: "" }) || t(`apps.${app.i18nKey}.subtitle`, { defaultValue: "" });

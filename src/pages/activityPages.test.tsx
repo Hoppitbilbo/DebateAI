@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
-import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render as renderPage, screen } from "@testing-library/react";
+import type { AiClient } from "@/services/aiClient";
+import AiClientProvider from "@/services/AiClientProvider";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import ConvinciTuPage from "./ConvinciTuPage";
 import ImpersonaTuPage from "./ImpersonaTuPage";
@@ -51,7 +53,14 @@ vi.mock("@/features/activity/wiki", () => ({ useWikiSummaries: () => ({ summarie
 vi.mock("@/hooks/useLiveAi", () => ({
   useLiveAi: () => ({ liveMode: false, liveState: "off", liveAvailable: false, toggleLive: vi.fn(), stopLive: vi.fn(), sendLiveText: vi.fn() }),
 }));
-vi.mock("@/services/aiService", () => ({ generateStream: mocks.generateStream, formatAiError: String }));
+
+// The AI gateway is a fake AiClient given through the provider.
+const fakeAi = {
+  generateStream: (...args: Parameters<AiClient["generateStream"]>) => mocks.generateStream(...args),
+  status: () => Promise.resolve({ text: true }),
+  formatError: String,
+} as unknown as AiClient;
+const render = (page: ReactNode) => renderPage(<AiClientProvider client={fakeAi}>{page}</AiClientProvider>);
 
 beforeEach(() => {
   vi.clearAllMocks();

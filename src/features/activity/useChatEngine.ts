@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { ChatMessage, formatAiError, generateStream } from "@/services/aiService";
+import type { ChatMessage } from "@/services/aiService";
+import { useAiClient } from "@/services/aiClient";
 import { useLiveAi } from "@/hooks/useLiveAi";
 import type { ActivitySession, EndReason } from "./useActivitySession";
 import { ActivityMessage, newId } from "./types";
@@ -35,6 +36,7 @@ export const toHistory = (messages: ActivityMessage[], speakerKey?: string): Cha
  * with the JEV judge after every completed turn.
  */
 export const useChatEngine = ({ session, live, context, onEnded }: Options) => {
+  const ai = useAiClient();
   const [messages, setMessagesState] = useState<ActivityMessage[]>([]);
   const [busy, setBusy] = useState(false);
   const messagesRef = useRef<ActivityMessage[]>([]);
@@ -70,18 +72,18 @@ export const useChatEngine = ({ session, live, context, onEnded }: Options) => {
   const respond = useCallback(async (args: { system: string; history?: ChatMessage[]; name?: string; speakerKey?: string; maxTokens?: number }) => {
     const msg = addMessage({ role: "assistant", content: "", name: args.name, speakerKey: args.speakerKey, streaming: true });
     try {
-      const text = await generateStream(
+      const text = await ai.generateStream(
         { task: "chat", system: args.system, messages: args.history ?? toHistory(messagesRef.current.filter((m) => m.id !== msg.id), args.speakerKey), sessionId: session.getSessionId(), maxTokens: args.maxTokens },
         (_d, full) => patchMessage(msg.id, { content: full }),
       );
       patchMessage(msg.id, { content: text || "…", streaming: false });
       return text;
     } catch (e) {
-      patchMessage(msg.id, { content: formatAiError(e), streaming: false, error: true });
-      toast.error(formatAiError(e));
+      patchMessage(msg.id, { content: ai.formatError(e), streaming: false, error: true });
+      toast.error(ai.formatError(e));
       return null;
     }
-  }, [addMessage, patchMessage, session]);
+  }, [addMessage, patchMessage, session, ai]);
 
   // ----- Live voice mode -----
   const liveAssistantId = useRef<string | null>(null);

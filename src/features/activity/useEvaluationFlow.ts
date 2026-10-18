@@ -1,10 +1,11 @@
 import { useCallback, useState } from "react";
 import { evaluateActivity, EvaluationInput, EvaluationResult } from "@/utils/evaluationUtils";
-import { formatAiError } from "@/services/aiService";
+import { useAiClient } from "@/services/aiClient";
 import type { ActivitySession } from "./useActivitySession";
 
 /** Reflection → AI evaluation → session completion, shared by all apps. */
 export const useEvaluationFlow = (session: ActivitySession) => {
+  const ai = useAiClient();
   const [reflection, setReflection] = useState("");
   const [evaluation, setEvaluation] = useState<EvaluationResult | null>(null);
   const [partial, setPartial] = useState("");
@@ -21,6 +22,7 @@ export const useEvaluationFlow = (session: ActivitySession) => {
       const res = await evaluateActivity(
         { ...input, assignment: session.assignment, jev: session.jev, sessionId: session.getSessionId() },
         setPartial,
+        ai,
       );
       setEvaluation(res);
       await session.complete({
@@ -30,12 +32,12 @@ export const useEvaluationFlow = (session: ActivitySession) => {
         scoreReflection: res.scoreReflection,
       });
     } catch (e) {
-      setError(formatAiError(e));
+      setError(ai.formatError(e));
       await session.complete({ reflection: input.reflection, evaluation: "" });
     } finally {
       setLoading(false);
     }
-  }, [session]);
+  }, [session, ai]);
 
   const reset = useCallback(() => {
     setReflection("");

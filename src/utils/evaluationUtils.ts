@@ -1,6 +1,6 @@
 import i18n from "@/i18n";
 import type { Assignment, JudgeResult } from "@/lib/api";
-import { generateStream } from "@/services/aiService";
+import { AiClient, httpAiClient } from "@/services/aiClient";
 import type { ActivityMessage } from "@/features/activity/types";
 
 export interface EvaluationInput {
@@ -80,9 +80,10 @@ Be fair: short or superficial work gets low scores; never invent things the stud
 export const evaluateActivity = async (
   input: EvaluationInput,
   onPartial?: (markdown: string) => void,
+  ai: Pick<AiClient, "generateStream"> = httpAiClient,
 ): Promise<EvaluationResult> => {
   const { system, prompt } = buildPrompt(input);
-  const text = await generateStream(
+  const text = await ai.generateStream(
     { task: "evaluation", system, messages: [{ role: "user", content: prompt }], sessionId: input.sessionId, maxTokens: 2500 },
     (_d, full) => onPartial?.(parseEvaluation(full).markdown),
   );

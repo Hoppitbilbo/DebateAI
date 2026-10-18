@@ -1,8 +1,11 @@
+import type { ReactNode } from "react";
 import { act, renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ActivityMessage } from "./types";
 import { toHistory, useChatEngine } from "./useChatEngine";
 import type { ActivitySession } from "./useActivitySession";
+import type { AiClient } from "@/services/aiClient";
+import AiClientProvider from "@/services/AiClientProvider";
 
 // Characterization tests for useChatEngine (refactoring task 0.4).
 
@@ -12,12 +15,15 @@ const mocks = vi.hoisted(() => ({
   live: { liveMode: false, liveState: "off", liveAvailable: false, toggleLive: vi.fn(), stopLive: vi.fn(), sendLiveText: vi.fn() },
 }));
 
-vi.mock("@/services/aiService", () => ({
-  generateStream: mocks.generateStream,
-  formatAiError: (e: unknown) => `ERR: ${(e as Error).message}`,
-}));
 vi.mock("@/hooks/useLiveAi", () => ({ useLiveAi: () => mocks.live }));
 vi.mock("sonner", () => ({ toast: { error: mocks.toastError } }));
+
+// The AI gateway is replaced through AiClientProvider, not by mocking modules.
+const fakeAi = {
+  generateStream: (...args: Parameters<AiClient["generateStream"]>) => mocks.generateStream(...args),
+  formatError: (e: unknown) => `ERR: ${(e as Error).message}`,
+} as AiClient;
+const withAi = ({ children }: { children: ReactNode }) => <AiClientProvider client={fakeAi}>{children}</AiClientProvider>;
 
 const fakeSession = (overrides: Partial<ActivitySession> = {}) =>
   ({
@@ -69,7 +75,7 @@ describe("useChatEngine", () => {
   it("runs a turn: user message, reply, then sync with context", async () => {
     const session = fakeSession({ sync: vi.fn().mockResolvedValue("goal_reached") });
     const onEnded = vi.fn();
-    const { result } = renderHook(() => useChatEngine({ session, context: { topic: "t" }, onEnded }));
+    const { result } = renderHook(() => useChatEngine({ session, context: { topic: "t" }, onEnded }), { wrapper: withAi });
     const reply = vi.fn().mockResolvedValue(undefined);
 
     await act(async () => {
@@ -84,11 +90,11 @@ describe("useChatEngine", () => {
 
   it("ignores blank input and ended activities", async () => {
     const reply = vi.fn();
-    const blank = renderHook(() => useChatEngine({ session: fakeSession() }));
+    const blank = renderHook(() => useChatEngine({ session: fakeSession() }), { wrapper: withAi });
     await act(async () => {
       await blank.result.current.runTurn("   ", reply);
     });
-    const ended = renderHook(() => useChatEngine({ session: fakeSession({ endReason: "turn_limit" }) }));
+    const ended = renderHook(() => useChatEngine({ session: fakeSession({ endReason: "turn_limit" }) }), { wrapper: withAi });
     expect(ended.result.current.ended).toBe(true);
     await act(async () => {
       await ended.result.current.runTurn("ciao", reply);
@@ -102,7 +108,7 @@ describe("useChatEngine", () => {
     mocks.live.sendLiveText.mockReturnValue(true);
     const session = fakeSession();
     const reply = vi.fn();
-    const { result } = renderHook(() => useChatEngine({ session }));
+    const { result } = renderHook(() => useChatEngine({ session }), { wrapper: withAi });
     await act(async () => {
       await result.current.runTurn("ciao", reply);
     });
@@ -117,7 +123,7 @@ describe("useChatEngine", () => {
       onDelta("ve", "Salve");
       return "Salve";
     });
-    const { result } = renderHook(() => useChatEngine({ session: fakeSession() }));
+    const { result } = renderHook(() => useChatEngine({ session: fakeSession() }), { wrapper: withAi });
     act(() => result.current.reset([msg("user", "ciao")]));
 
     let text: unknown;
@@ -137,7 +143,7 @@ describe("useChatEngine", () => {
 
   it("marks the reply as an error when generation fails", async () => {
     mocks.generateStream.mockRejectedValue(new Error("quota"));
-    const { result } = renderHook(() => useChatEngine({ session: fakeSession() }));
+    const { result } = renderHook(() => useChatEngine({ session: fakeSession() }), { wrapper: withAi });
     let text: unknown;
     await act(async () => {
       text = await result.current.respond({ system: "sys" });
@@ -148,7 +154,7 @@ describe("useChatEngine", () => {
   });
 
   it("reset stops live mode and replaces the messages", () => {
-    const { result } = renderHook(() => useChatEngine({ session: fakeSession() }));
+    const { result } = renderHook(() => useChatEngine({ session: fakeSession() }), { wrapper: withAi });
     act(() => result.current.reset([msg("system", "intro")]));
     expect(mocks.live.stopLive).toHaveBeenCalled();
     expect(result.current.messagesRef.current).toEqual([msg("system", "intro")]);
