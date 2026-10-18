@@ -33,6 +33,9 @@ type Request struct {
 	Temperature *float64
 	MaxTokens   int
 	JSON        bool
+	// ReasoningEffort ("low", "medium", "high") limits hidden thinking on
+	// reasoning models; empty leaves the provider default.
+	ReasoningEffort string
 }
 
 type Usage struct {

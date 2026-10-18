@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"sort"
 	"strings"
+	"sync/atomic"
 	"time"
 
 	"github.com/Hoppitbilbo/DebateAI/server/internal/ai"
@@ -209,6 +210,10 @@ type genResult struct {
 	Model      string
 }
 
+// firstTokenTimeout bounds how long a streamed answer may stay silent before
+// the next target is tried. Free models are often queued for minutes.
+var firstTokenTimeout = 25 * time.Second
+
 var errNoTargets = errors.New("no AI model is configured for this task (ask the administrator to configure providers)")
 
 // generate runs a request through the fallback chain. When onDelta is non-nil
@@ -233,21 +238,41 @@ func (s *Server) generate(ctx context.Context, task string, req ai.Request, user
 		}
 		r := req
 		r.Model = t.Model
+		if r.ReasoningEffort == "" && (task == TaskChat || task == TaskUtility) {
+			r.ReasoningEffort = "low" // characters must answer quickly
+		}
 		start := time.Now()
 		var res *ai.Response
-		started := false
+		var started, timedOut atomic.Bool
+		tctx, cancel := context.WithCancel(ctx)
 		if onDelta != nil {
-			res, err = cp.p.Stream(ctx, r, func(d string) error { started = true; return onDelta(d) })
+			timer := time.AfterFunc(firstTokenTimeout, func() {
+				if !started.Load() {
+					timedOut.Store(true)
+					cancel()
+				}
+			})
+			res, err = cp.p.Stream(tctx, r, func(d string) error {
+				if !started.Swap(true) {
+					timer.Stop()
+				}
+				return onDelta(d)
+			})
+			timer.Stop()
 		} else {
-			res, err = cp.p.Generate(ctx, r)
+			res, err = cp.p.Generate(tctx, r)
 		}
+		cancel()
 		entry := usageEntry{UserID: userID, SessionID: sessionID, ProviderID: t.ProviderID, Provider: cp.name, Model: t.Model, Task: task, Latency: time.Since(start)}
 		if err != nil {
+			if timedOut.Load() {
+				err = fmt.Errorf("no answer within %s, trying next model", firstTokenTimeout)
+			}
 			entry.Err = err.Error()
 			s.logUsage(entry)
 			lastErr = fmt.Errorf("%s/%s: %w", cp.name, t.Model, err)
 			log.Printf("ai %s via %s/%s failed: %v", task, cp.name, t.Model, err)
-			if started || !retryable(err) {
+			if started.Load() || (!timedOut.Load() && !retryable(err)) || ctx.Err() != nil {
 				return nil, lastErr
 			}
 			continue

@@ -33,6 +33,7 @@ type oaRequest struct {
 	StreamOptions  map[string]any `json:"stream_options,omitempty"`
 	ResponseFormat map[string]any `json:"response_format,omitempty"`
 	Usage          map[string]any `json:"usage,omitempty"`
+	Reasoning      map[string]any `json:"reasoning,omitempty"`
 }
 
 type oaUsage struct {
@@ -78,6 +79,11 @@ func (p *openAIProvider) body(req Request, stream bool) oaRequest {
 	}
 	if strings.Contains(p.cfg.BaseURL, "openrouter.ai") {
 		out.Usage = map[string]any{"include": true} // report the real cost
+		if req.ReasoningEffort != "" {
+			// OpenRouter normalises this across models and ignores it for
+			// models that do not reason.
+			out.Reasoning = map[string]any{"effort": req.ReasoningEffort}
+		}
 	}
 	return out
 }

@@ -2,7 +2,12 @@ package app
 
 import (
 	"bytes"
+	"context"
+	"fmt"
+	"time"
+
 	"encoding/json"
+	"github.com/Hoppitbilbo/DebateAI/server/internal/ai"
 	"io"
 	"net/http"
 	"net/http/cookiejar"
@@ -313,5 +318,61 @@ func itoa(n int64) string {
 func TestGeminiVersion(t *testing.T) {
 	if geminiVersion("gemini-3.1-flash-live-preview") != 3.1 || geminiVersion("gemini-live-2.5-flash") != 2.5 || geminiVersion("models/gemini-2.0-flash") != 2 || geminiVersion("aqa") != 0 {
 		t.Fatal("version parse")
+	}
+}
+
+func TestStreamFallsBackWhenFirstTokenIsLate(t *testing.T) {
+	up := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if strings.HasSuffix(r.URL.Path, "/models") {
+			fmt.Fprint(w, `{"data":[{"id":"slow"},{"id":"fast"}]}`)
+			return
+		}
+		var body struct{ Model string }
+		_ = json.NewDecoder(r.Body).Decode(&body)
+		if body.Model == "slow" {
+			select {
+			case <-r.Context().Done():
+			case <-time.After(3 * time.Second):
+			}
+			return
+		}
+		w.Header().Set("Content-Type", "text/event-stream")
+		fmt.Fprint(w, "data: {\"choices\":[{\"delta\":{\"content\":\"Ciao\"}}]}\n\ndata: [DONE]\n\n")
+	}))
+	defer up.Close()
+
+	old := firstTokenTimeout
+	firstTokenTimeout = 200 * time.Millisecond
+	defer func() { firstTokenTimeout = old }()
+
+	dir := t.TempDir()
+	cfg := Config{DataDir: dir, DatabasePath: filepath.Join(dir, "t.db"), Secret: "test-secret"}
+	db, err := OpenDB(cfg.DatabasePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer db.Close()
+	s := NewServer(cfg, db, nil)
+	srv := httptest.NewServer(s.Handler())
+	defer srv.Close()
+	admin := newClient(t, srv.URL)
+	admin.do("POST", "/api/setup", map[string]string{"name": "Admin", "email": "admin@test.it", "password": "password123"}, nil)
+	var prov providerRow
+	admin.do("POST", "/api/admin/providers", map[string]string{"name": "Up", "kind": "openai", "baseUrl": up.URL + "/v1", "apiKey": "k"}, &prov)
+	admin.do("PUT", "/api/admin/settings/routing", map[string]any{"strategy": "ordered", "tasks": map[string]any{
+		"chat": []map[string]any{{"providerId": prov.ID, "model": "slow"}, {"providerId": prov.ID, "model": "fast"}},
+	}}, nil)
+
+	start := time.Now()
+	var got strings.Builder
+	res, err := s.generate(context.Background(), TaskChat, ai.Request{Messages: []ai.Message{{Role: "user", Content: "hi"}}}, nil, nil, func(d string) error {
+		got.WriteString(d)
+		return nil
+	})
+	if err != nil || res.Model != "fast" || got.String() != "Ciao" {
+		t.Fatalf("fallback failed: %v %+v %q", err, res, got.String())
+	}
+	if time.Since(start) > 2*time.Second {
+		t.Fatalf("waited for the slow model: %s", time.Since(start))
 	}
 }
