@@ -89,7 +89,7 @@ type price struct {
 
 func (s *Server) priceFor(providerID int64, model string) price {
 	var in, out float64
-	if err := s.db.QueryRow(`SELECT input_per_m, output_per_m FROM model_prices WHERE provider_id = ? AND model = ?`, providerID, model).Scan(&in, &out); err == nil {
+	if err := s.db.QueryRow(`SELECT input_per_m, output_per_m FROM model_prices WHERE provider_id = ? AND model = ?`, providerID, model).Scan(&in, &out); err == nil && in >= 0 && out >= 0 {
 		return price{in, out, true}
 	}
 	var base string
@@ -170,8 +170,13 @@ type usageEntry struct {
 }
 
 func (s *Server) logUsage(e usageEntry) float64 {
-	p := s.priceFor(e.ProviderID, e.Model)
-	cost := (float64(e.Usage.InputTokens)*p.In + float64(e.Usage.OutputTokens)*p.Out) / 1e6
+	var cost float64
+	if e.Usage.CostUSD != nil && *e.Usage.CostUSD >= 0 {
+		cost = *e.Usage.CostUSD
+	} else {
+		p := s.priceFor(e.ProviderID, e.Model)
+		cost = (float64(e.Usage.InputTokens)*p.In + float64(e.Usage.OutputTokens)*p.Out) / 1e6
+	}
 	ok := 0
 	if e.OK {
 		ok = 1

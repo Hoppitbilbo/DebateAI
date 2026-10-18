@@ -438,7 +438,7 @@
       "chat": "Risposte dei personaggi in tutte le app. Qui i modelli gratuiti vanno bene.",
       "evaluation": "Feedback finale e punteggi. Un modello più forte dà feedback migliori.",
       "utility": "Piccoli compiti: scelta della voce, suggerimento degli obiettivi.",
-      "judge": "Verifica gli obiettivi del compito dopo ogni turno. Jev (OpenCode) è fatto apposta; qualsiasi modello testuale può fare da riserva.",
+      "judge": "Verifica gli obiettivi del compito dopo ogni turno. Va bene qualsiasi modello testuale, anche gratuito (es. OpenRouter). Facoltativi: Jev su OpenCode (gratuito) o typesafe/jev-router su OpenRouter.",
       "live": "Voce in tempo reale (solo Gemini Live API)."
     },
     "overview": {

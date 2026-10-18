@@ -32,11 +32,17 @@ type oaRequest struct {
 	Stream         bool           `json:"stream,omitempty"`
 	StreamOptions  map[string]any `json:"stream_options,omitempty"`
 	ResponseFormat map[string]any `json:"response_format,omitempty"`
+	Usage          map[string]any `json:"usage,omitempty"`
 }
 
 type oaUsage struct {
-	PromptTokens     int `json:"prompt_tokens"`
-	CompletionTokens int `json:"completion_tokens"`
+	PromptTokens     int      `json:"prompt_tokens"`
+	CompletionTokens int      `json:"completion_tokens"`
+	Cost             *float64 `json:"cost"`
+}
+
+func (u *oaUsage) usage() Usage {
+	return Usage{InputTokens: u.PromptTokens, OutputTokens: u.CompletionTokens, CostUSD: u.Cost}
 }
 
 type oaResponse struct {
@@ -69,6 +75,9 @@ func (p *openAIProvider) body(req Request, stream bool) oaRequest {
 	}
 	if req.JSON {
 		out.ResponseFormat = map[string]any{"type": "json_object"}
+	}
+	if strings.Contains(p.cfg.BaseURL, "openrouter.ai") {
+		out.Usage = map[string]any{"include": true} // report the real cost
 	}
 	return out
 }
@@ -124,7 +133,7 @@ func (p *openAIProvider) Generate(ctx context.Context, req Request) (*Response, 
 	}
 	r := &Response{Text: stripThinking(out.Choices[0].Message.Content)}
 	if out.Usage != nil {
-		r.Usage = Usage{InputTokens: out.Usage.PromptTokens, OutputTokens: out.Usage.CompletionTokens}
+		r.Usage = out.Usage.usage()
 	} else {
 		r.Usage = estimateUsage(req, r.Text)
 	}
@@ -172,7 +181,7 @@ func (p *openAIProvider) Stream(ctx context.Context, req Request, onDelta func(s
 	}
 	r := &Response{Text: stripThinking(full.String())}
 	if usage != nil {
-		r.Usage = Usage{InputTokens: usage.PromptTokens, OutputTokens: usage.CompletionTokens}
+		r.Usage = usage.usage()
 	} else {
 		r.Usage = estimateUsage(req, r.Text)
 	}
@@ -214,7 +223,8 @@ func (p *openAIProvider) ListModels(ctx context.Context) ([]ModelInfo, error) {
 		if m.Pricing != nil {
 			in, e1 := strconv.ParseFloat(m.Pricing.Prompt, 64)
 			outp, e2 := strconv.ParseFloat(m.Pricing.Completion, 64)
-			if e1 == nil && e2 == nil {
+			// OpenRouter uses -1 for variable pricing (routers): leave it unknown.
+			if e1 == nil && e2 == nil && in >= 0 && outp >= 0 {
 				in, outp = in*1e6, outp*1e6
 				mi.InputPerM, mi.OutputPerM = &in, &outp
 				if in == 0 && outp == 0 {

@@ -438,7 +438,7 @@
       "chat": "Antworten der Personen in allen Apps. Kostenlose Modelle funktionieren hier gut.",
       "evaluation": "Abschlussfeedback und Punkte. Ein stärkeres Modell gibt besseres Feedback.",
       "utility": "Kleine Aufgaben: Stimmenauswahl, Zielvorschläge.",
-      "judge": "Prüft nach jedem Zug die Ziele der Aufgabe. Jev (OpenCode) ist dafür gemacht; jedes Textmodell kann als Reserve dienen.",
+      "judge": "Prüft nach jedem Zug die Ziele der Aufgabe. Jedes Textmodell funktioniert, auch kostenlose (z. B. OpenRouter). Optional: Jev über OpenCode (kostenlos) oder typesafe/jev-router über OpenRouter.",
       "live": "Echtzeit-Sprache (nur Gemini Live API)."
     },
     "overview": {

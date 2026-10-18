@@ -649,11 +649,11 @@ func (s *Server) handleListPrices(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) handlePutPrice(w http.ResponseWriter, r *http.Request) {
 	var in struct {
-		ProviderID int64    `json:"providerId"`
-		Model      string   `json:"model"`
-		InputPerM  float64  `json:"inputPerM"`
-		OutputPerM float64  `json:"outputPerM"`
-		Delete     bool     `json:"delete"`
+		ProviderID int64   `json:"providerId"`
+		Model      string  `json:"model"`
+		InputPerM  float64 `json:"inputPerM"`
+		OutputPerM float64 `json:"outputPerM"`
+		Delete     bool    `json:"delete"`
 	}
 	if err := readJSON(r, &in); err != nil || in.Model == "" {
 		writeErr(w, 400, "bad_request", "providerId and model required")

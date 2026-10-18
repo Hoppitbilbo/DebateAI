@@ -234,7 +234,9 @@ func (s *Server) handleUpdateAssignment(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 	wasPublished := a.Published
-	set := func(col string, v any) { _, _ = s.db.Exec(`UPDATE assignments SET `+col+` = ?, updated_at = ? WHERE id = ?`, v, now(), a.ID) }
+	set := func(col string, v any) {
+		_, _ = s.db.Exec(`UPDATE assignments SET `+col+` = ?, updated_at = ? WHERE id = ?`, v, now(), a.ID)
+	}
 	if in.Title != nil && strings.TrimSpace(*in.Title) != "" {
 		set("title", strings.TrimSpace(*in.Title))
 	}

@@ -171,8 +171,8 @@ func CreateLiveToken(ctx context.Context, cfg Config, opts LiveTokenOptions) (st
 	uses := int32(1)
 
 	live := &genai.LiveConnectConfig{
-		ResponseModalities:      []genai.Modality{genai.ModalityAudio},
-		InputAudioTranscription: &genai.AudioTranscriptionConfig{},
+		ResponseModalities:       []genai.Modality{genai.ModalityAudio},
+		InputAudioTranscription:  &genai.AudioTranscriptionConfig{},
 		OutputAudioTranscription: &genai.AudioTranscriptionConfig{},
 	}
 	if opts.SystemInstruction != "" {

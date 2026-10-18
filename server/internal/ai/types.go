@@ -38,6 +38,10 @@ type Request struct {
 type Usage struct {
 	InputTokens  int `json:"inputTokens"`
 	OutputTokens int `json:"outputTokens"`
+	// CostUSD is the exact cost when the provider reports it (OpenRouter
+	// does); it takes precedence over the price table. Needed for routers
+	// such as typesafe/jev-router whose price depends on the routed model.
+	CostUSD *float64 `json:"costUsd,omitempty"`
 }
 
 type Response struct {

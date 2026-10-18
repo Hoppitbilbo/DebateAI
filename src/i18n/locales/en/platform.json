@@ -438,7 +438,7 @@
       "chat": "Answers of the characters in every app. Free models work well here.",
       "evaluation": "Final feedback and scores. A stronger model gives better feedback.",
       "utility": "Small tasks: voice casting, goal suggestions.",
-      "judge": "Checks the assignment goals after each turn. Jev (OpenCode) is built for this; any text model can be a fallback.",
+      "judge": "Checks the assignment goals after each turn. Any text model works, free ones too (e.g. OpenRouter). Optional: Jev on OpenCode (free) or typesafe/jev-router on OpenRouter.",
       "live": "Real-time voice (Gemini Live API only)."
     },
     "overview": {

@@ -438,7 +438,7 @@
       "chat": "Respuestas de los personajes en todas las apps. Aquí los modelos gratuitos funcionan bien.",
       "evaluation": "Comentarios finales y puntuaciones. Un modelo más potente da mejores comentarios.",
       "utility": "Tareas pequeñas: elección de voz, sugerencia de objetivos.",
-      "judge": "Comprueba los objetivos de la tarea tras cada turno. Jev (OpenCode) está hecho para esto; cualquier modelo de texto sirve de respaldo.",
+      "judge": "Comprueba los objetivos de la tarea tras cada turno. Sirve cualquier modelo de texto, también gratuito (p. ej. OpenRouter). Opcional: Jev en OpenCode (gratis) o typesafe/jev-router en OpenRouter.",
       "live": "Voz en tiempo real (solo Gemini Live API)."
     },
     "overview": {

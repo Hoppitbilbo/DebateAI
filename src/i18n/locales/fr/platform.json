@@ -438,7 +438,7 @@
       "chat": "Réponses des personnages dans toutes les applis. Les modèles gratuits conviennent bien.",
       "evaluation": "Retour final et notes. Un modèle plus puissant donne de meilleurs retours.",
       "utility": "Petites tâches : choix de la voix, suggestion d'objectifs.",
-      "judge": "Vérifie les objectifs du devoir après chaque tour. Jev (OpenCode) est conçu pour cela ; tout modèle texte peut servir de secours.",
+      "judge": "Vérifie les objectifs du devoir après chaque tour. N'importe quel modèle texte convient, même gratuit (ex. OpenRouter). En option : Jev sur OpenCode (gratuit) ou typesafe/jev-router sur OpenRouter.",
       "live": "Voix en temps réel (Gemini Live API uniquement)."
     },
     "overview": {

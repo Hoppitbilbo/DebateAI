@@ -86,3 +86,30 @@ func TestHTTPErrorPropagates(t *testing.T) {
 		t.Fatalf("want HTTPError 429, got %v", err)
 	}
 }
+
+func TestOpenRouterVariablePriceAndReportedCost(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/models" {
+			fmt.Fprint(w, `{"data":[{"id":"typesafe/jev-router","pricing":{"prompt":"-1","completion":"-1"}},{"id":"a/b","pricing":{"prompt":"0.000001","completion":"0.000002"}}]}`)
+			return
+		}
+		fmt.Fprint(w, `{"choices":[{"message":{"content":"ok"}}],"usage":{"prompt_tokens":10,"completion_tokens":2,"cost":0.00042}}`)
+	}))
+	defer srv.Close()
+	p, _ := New(Config{Kind: KindOpenAI, BaseURL: srv.URL})
+	models, err := p.ListModels(context.Background())
+	if err != nil || len(models) != 2 {
+		t.Fatalf("models: %v %+v", err, models)
+	}
+	// (Free is true here only because the test server is on 127.0.0.1.)
+	if models[0].InputPerM != nil || models[0].OutputPerM != nil {
+		t.Fatalf("variable price must stay unknown: %+v", models[0])
+	}
+	if models[1].InputPerM == nil || *models[1].InputPerM != 1 || *models[1].OutputPerM != 2 {
+		t.Fatalf("fixed price: %+v", models[1])
+	}
+	res, err := p.Generate(context.Background(), Request{Model: "typesafe/jev-router", Messages: []Message{{Role: "user", Content: "hi"}}})
+	if err != nil || res.Usage.CostUSD == nil || *res.Usage.CostUSD != 0.00042 {
+		t.Fatalf("reported cost: %v %+v", err, res.Usage)
+	}
+}
