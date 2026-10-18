@@ -38,7 +38,7 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto · `[-]` scartato (spieg
 ## Stato attuale
 
 - **Fase in corso:** 3 (repository, backend)
-- **Prossimo task:** 3.4
+- **Prossimo task:** 3.5
 - **Lavoro a metà:** nessuno
 - **Test:** Go 33 test nuovi + quelli esistenti verdi; Vitest 18 test verdi; lint 0 errori (18 warning preesistenti)
 
@@ -169,7 +169,7 @@ Un'area per task, spostando l'SQL in `internal/store`:
 - [x] **3.1** (`5e7cc2b`) settings
 - [x] **3.2** (`8403969`) users e invites
 - [x] **3.3** (`2a5f8ca`) classes
-- [ ] **3.4** assignments
+- [x] **3.4** (`6dd6bca`) assignments
 - [ ] **3.5** sessions
 - [ ] **3.6** usage e prices
 
@@ -198,7 +198,7 @@ Un'area per task, spostando l'SQL in `internal/store`:
 ## Note e decisioni
 
 - Schema della fase 3: il repository vive in `server/internal/store` (tipo concreto, es. `store.Settings`), mentre l'interfaccia la definisce chi la usa in `app` (es. `settingsStore` in `settings.go`). `Server` ha un campo per repository, inizializzato in `NewServer` (spostato in `main.go` al task 4.4). Ogni repository ha i suoi test in `store` con un DB temporaneo.
-- Entità condivise in `server/internal/domain` (`User`, `Invite`, `UserPatch`, ruoli, `Now`/`ParseTime`). In `app/repositories.go` ci sono le interfacce dei repository e gli alias temporanei (`User`, `inviteRow`, `Class`, `Member`), da rimuovere quando gli handler useranno direttamente `domain` (fase 4). Lo schema SQL e `Open` sono in `store/schema.go`.
+- Entità condivise in `server/internal/domain` (`User`, `Invite`, `UserPatch`, ruoli, `Now`/`ParseTime`). In `app/repositories.go` ci sono le interfacce dei repository e gli alias temporanei (`User`, `inviteRow`, `Class`, `Member`, `Assignment`, `AssignStats`, `SessionSummary`, `SessionDetail`), da rimuovere quando gli handler useranno direttamente `domain` (fase 4). Lo schema SQL e `Open` sono in `store/schema.go`.
 - Go non ha ereditarietà: Template Method si realizza con funzioni o interfacce passate come parametro (composizione).
 - L'API HTTP e lo schema SQLite non cambiano durante il refactoring.
 - Task 1.2: unica eccezione voluta alla regola "nessun cambio di comportamento". Solo quando una scrittura sul DB fallisce: le scritture principali rispondono 500 invece di un falso OK, quelle di contorno (ultimo login, pulizia sessioni, costi, prezzi importati, `email_sent`) vengono loggate con `execOrLog`, e gli handler con più update usano `sqlBatch`. Restano volutamente le letture `_ = ...QueryRow(...).Scan(...)` che hanno un valore di default sensato (nome classe, somme dei costi): verranno riviste nei repository (fase 3).
@@ -231,3 +231,4 @@ Un'area per task, spostando l'SQL in `internal/store`:
 | 2026-10-18 | 3.1 | `5e7cc2b` | Claude Code | `server/internal/store/settings.go` (`Load`/`Save`) + test; in `app` interfaccia `settingsStore` e helper `loadSetting[T]`; rimossi `getSetting`/`putSetting`. I test usano `s.settings.Save`. |
 | 2026-10-18 | 3.2 | `8403969` | Claude Code | `store.Users`, `store.AuthSessions`, `store.Invites` (+ test sullo schema vero) e pacchetto `domain`. `app` non contiene più SQL su users, auth_sessions e invites; restano gli inserimenti in `class_members` e le letture del nome classe (task 3.3) e i conteggi su `usage_log` della lista utenti (3.6). `Users.Update` usa una transazione; `domain.Invite.Usable` contiene la regola "non usato e non scaduto". Nuove costanti `maxListedUsers`, `maxListedInvites`, `maxListedTeacherInvites`. |
 | 2026-10-18 | 3.3 | `2a5f8ca` | Claude Code | `store.Classes` (classi + membri) + test; `domain.Class`, `Member`, `ClassPatch`, `NewJoinCode`, `NormalizeJoinCode`. `app` non tocca più `classes` e `class_members`, salvo la sottoquery nell'elenco compiti dello studente (passa al 3.4). La creazione della classe e l'iscrizione del proprietario come docente ora sono un'unica transazione. |
+| 2026-10-18 | 3.4 | `6dd6bca` | Claude Code | `store.Assignments` + test; `domain.Assignment`, `NewAssignment`, `AssignmentPatch`, `AppTypes`, `CleanGoals`, `MaxAssignmentGoals` e (anticipati, perché `Assignment` li usa) `SessionSummary`/`SessionDetail` con le costanti di stato in `domain/session.go`. Update in transazione. Helper `valueOr[T]`. |
