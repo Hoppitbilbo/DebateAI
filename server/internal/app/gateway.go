@@ -336,12 +336,12 @@ func (s *Server) handleAIStatus(w http.ResponseWriter, r *http.Request) {
 	u := s.userFromRequest(r)
 	g := s.general()
 	live := g.LiveEnabled && len(s.targets(TaskLive)) > 0 && (u != nil || g.GuestLive)
-	writeJSON(w, 200, map[string]any{
-		"text":        len(s.targets(TaskChat)) > 0 && (u != nil || g.GuestAccess),
-		"live":        live,
-		"judge":       s.jevSettings().Enabled && len(s.targets(TaskJudge)) > 0,
-		"loggedIn":    u != nil,
-		"guestAccess": g.GuestAccess,
+	writeJSON(w, 200, aiStatusResponse{
+		Text:        len(s.targets(TaskChat)) > 0 && (u != nil || g.GuestAccess),
+		Live:        live,
+		Judge:       s.jevSettings().Enabled && len(s.targets(TaskJudge)) > 0,
+		LoggedIn:    u != nil,
+		GuestAccess: g.GuestAccess,
 	})
 }
 
@@ -402,7 +402,7 @@ func (s *Server) handleGenerate(w http.ResponseWriter, r *http.Request) {
 			writeErr(w, 502, "ai_error", err.Error())
 			return
 		}
-		writeJSON(w, 200, map[string]any{"text": res.Text, "provider": res.Provider, "model": res.Model})
+		writeJSON(w, 200, generateResponse{Text: res.Text, Provider: res.Provider, Model: res.Model})
 		return
 	}
 
@@ -421,12 +421,12 @@ func (s *Server) handleGenerate(w http.ResponseWriter, r *http.Request) {
 		}
 		return nil
 	}
-	res, err := s.generate(r.Context(), in.Task, req, userID, sessionID, func(d string) error { return send(map[string]string{"delta": d}) })
+	res, err := s.generate(r.Context(), in.Task, req, userID, sessionID, func(d string) error { return send(streamDelta{Delta: d}) })
 	if err != nil {
-		_ = send(map[string]string{"error": err.Error()})
+		_ = send(streamError{Error: err.Error()})
 		return
 	}
-	_ = send(map[string]any{"done": true, "provider": res.Provider, "model": res.Model})
+	_ = send(streamDone{Done: true, Provider: res.Provider, Model: res.Model})
 }
 
 func (s *Server) handleLiveToken(w http.ResponseWriter, r *http.Request) {
@@ -477,7 +477,7 @@ func (s *Server) handleLiveToken(w http.ResponseWriter, r *http.Request) {
 			log.Printf("live token via %s/%s: %v", cp.name, t.Model, err)
 			continue
 		}
-		writeJSON(w, 200, map[string]any{"token": tok, "model": t.Model, "providerId": t.ProviderID, "expiresAt": exp.UTC().Format(time.RFC3339), "voiceName": voice})
+		writeJSON(w, 200, liveTokenResponse{Token: tok, Model: t.Model, ProviderID: t.ProviderID, ExpiresAt: exp.UTC().Format(time.RFC3339), VoiceName: voice})
 		return
 	}
 	writeErr(w, 502, "live_unavailable", lastErr.Error())
@@ -514,5 +514,5 @@ func (s *Server) handleLiveUsage(w http.ResponseWriter, r *http.Request) {
 	_ = s.db.QueryRow(`SELECT name FROM providers WHERE id = ?`, in.ProviderID).Scan(&name)
 	cost := s.logUsage(usageEntry{UserID: userID, SessionID: sessionID, ProviderID: in.ProviderID, Provider: name, Model: in.Model, Task: TaskLive,
 		Usage: ai.Usage{InputTokens: in.InputTokens, OutputTokens: in.OutputTokens}, OK: true, Latency: time.Duration(in.Seconds) * time.Second})
-	writeJSON(w, 200, map[string]any{"ok": true, "costUsd": cost})
+	writeJSON(w, 200, liveUsageResponse{OK: true, CostUSD: cost})
 }

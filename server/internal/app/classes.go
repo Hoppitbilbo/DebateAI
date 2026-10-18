@@ -161,7 +161,7 @@ func (s *Server) handleGetClass(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	invites := s.listInvites(`WHERE i.kind = 'invite' AND i.class_id = ? AND i.accepted_at IS NULL`, id)
-	writeJSON(w, 200, map[string]any{"class": c, "members": members, "invites": invites})
+	writeJSON(w, 200, classDetailResponse{Class: c, Members: members, Invites: invites})
 }
 
 func (s *Server) handleUpdateClass(w http.ResponseWriter, r *http.Request) {
@@ -209,7 +209,7 @@ func (s *Server) handleDeleteClass(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 500, "internal", err.Error())
 		return
 	}
-	writeJSON(w, 200, map[string]bool{"ok": true})
+	writeOK(w)
 }
 
 func (s *Server) handleRegenerateCode(w http.ResponseWriter, r *http.Request) {
@@ -224,7 +224,7 @@ func (s *Server) handleRegenerateCode(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 500, "internal", err.Error())
 		return
 	}
-	writeJSON(w, 200, map[string]string{"joinCode": code})
+	writeJSON(w, 200, joinCodeResponse{JoinCode: code})
 }
 
 // handleClassInvite invites a list of e-mails. Existing users are added to the
@@ -263,14 +263,7 @@ func (s *Server) handleClassInvite(w http.ResponseWriter, r *http.Request) {
 	var className string
 	_ = s.db.QueryRow(`SELECT name FROM classes WHERE id = ?`, id).Scan(&className)
 
-	type result struct {
-		Email     string `json:"email"`
-		Status    string `json:"status"` // added | invited | error
-		EmailSent bool   `json:"emailSent"`
-		Link      string `json:"link,omitempty"`
-		Error     string `json:"error,omitempty"`
-	}
-	results := []result{}
+	results := []inviteResult{}
 	for _, raw := range splitEmails(in.Emails) {
 		if existing, err := s.getUserByEmail(raw); err == nil {
 			memberRole := "student"
@@ -278,22 +271,22 @@ func (s *Server) handleClassInvite(w http.ResponseWriter, r *http.Request) {
 				memberRole = "teacher"
 			}
 			if _, err := s.db.Exec(`INSERT OR IGNORE INTO class_members(class_id, user_id, role, joined_at) VALUES(?,?,?,?)`, id, existing.ID, memberRole, now()); err != nil {
-				results = append(results, result{Email: existing.Email, Status: "error", Error: err.Error()})
+				results = append(results, inviteResult{Email: existing.Email, Status: "error", EmailSent: boolPtr(false), Error: err.Error()})
 				continue
 			}
 			subj, body := renderMail("added", existing.Locale, map[string]string{"site": s.general().SiteName, "name": existing.Name, "inviter": u.Name, "class": className, "link": s.baseURL(r) + "/dashboard"})
 			s.sendMailAsync(existing.Email, subj, body)
-			results = append(results, result{Email: existing.Email, Status: "added", EmailSent: s.smtp().Host != ""})
+			results = append(results, inviteResult{Email: existing.Email, Status: "added", EmailSent: boolPtr(s.smtp().Host != "")})
 			continue
 		}
 		inv, err := s.createInvite(r, u, raw, in.Role, &id, className, locale)
 		if err != nil {
-			results = append(results, result{Email: raw, Status: "error", Error: err.Error()})
+			results = append(results, inviteResult{Email: raw, Status: "error", EmailSent: boolPtr(false), Error: err.Error()})
 			continue
 		}
-		results = append(results, result{Email: inv.Email, Status: "invited", EmailSent: inv.EmailSent, Link: inv.Link})
+		results = append(results, invitedResult(inv))
 	}
-	writeJSON(w, 200, map[string]any{"results": results})
+	writeJSON(w, 200, inviteResultsResponse{Results: results})
 }
 
 func splitEmails(in []string) []string {
@@ -322,7 +315,7 @@ func (s *Server) handleRemoveMember(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 500, "internal", err.Error())
 		return
 	}
-	writeJSON(w, 200, map[string]bool{"ok": true})
+	writeOK(w)
 }
 
 func (s *Server) handleTeacherInvites(w http.ResponseWriter, r *http.Request) {
@@ -357,7 +350,7 @@ func (s *Server) handleJoinClass(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 500, "internal", err.Error())
 		return
 	}
-	writeJSON(w, 200, map[string]any{"classId": id, "name": name})
+	writeJSON(w, 200, joinClassResponse{ClassID: id, Name: name})
 }
 
 func (s *Server) handleMyClasses(w http.ResponseWriter, r *http.Request) {

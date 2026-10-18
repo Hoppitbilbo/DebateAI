@@ -304,7 +304,7 @@ func (s *Server) handleDeleteAssignment(w http.ResponseWriter, r *http.Request) 
 		writeErr(w, 500, "internal", err.Error())
 		return
 	}
-	writeJSON(w, 200, map[string]bool{"ok": true})
+	writeOK(w)
 }
 
 func (s *Server) handleGetAssignment(w http.ResponseWriter, r *http.Request) {
@@ -386,7 +386,7 @@ func (s *Server) handleAssignmentProgress(w http.ResponseWriter, r *http.Request
 	if out == nil {
 		out = []StudentProgress{}
 	}
-	writeJSON(w, 200, map[string]any{"assignment": a, "students": out})
+	writeJSON(w, 200, assignmentProgressResponse{Assignment: a, Students: out})
 }
 
 // handleClassProgress returns a students × assignments matrix.
@@ -396,15 +396,6 @@ func (s *Server) handleClassProgress(w http.ResponseWriter, r *http.Request) {
 	if !s.canManageClass(u, classID) {
 		writeErr(w, 403, "forbidden", "not your class")
 		return
-	}
-	type cell struct {
-		AssignmentID int64   `json:"assignmentId"`
-		UserID       int64   `json:"userId"`
-		Status       string  `json:"status"`
-		Progress     int     `json:"progress"`
-		SessionID    int64   `json:"sessionId"`
-		Score        *int    `json:"score,omitempty"`
-		CostUSD      float64 `json:"costUsd"`
 	}
 	// best session per (user, assignment): completed first, then highest progress
 	rows, err := s.db.Query(`SELECT s.assignment_id, s.user_id, s.status, s.progress, s.id, s.score_conversation, s.cost_usd FROM activity_sessions s
@@ -416,9 +407,9 @@ func (s *Server) handleClassProgress(w http.ResponseWriter, r *http.Request) {
 	}
 	defer rows.Close()
 	seen := map[string]bool{}
-	cells := []cell{}
+	cells := []classProgressCell{}
 	for rows.Next() {
-		var c cell
+		var c classProgressCell
 		var score sql.NullInt64
 		if rows.Scan(&c.AssignmentID, &c.UserID, &c.Status, &c.Progress, &c.SessionID, &score, &c.CostUSD) != nil {
 			continue
@@ -434,7 +425,7 @@ func (s *Server) handleClassProgress(w http.ResponseWriter, r *http.Request) {
 		}
 		cells = append(cells, c)
 	}
-	writeJSON(w, 200, map[string]any{"cells": cells})
+	writeJSON(w, 200, classProgressResponse{Cells: cells})
 }
 
 // ---------- sessions ----------
@@ -661,7 +652,7 @@ func (s *Server) handleSaveTranscript(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp := map[string]any{"status": status, "turns": turns, "progress": d.Progress, "ended": status != "active"}
+	resp := transcriptSyncResponse{Status: status, Turns: turns, Progress: d.Progress, Ended: status != "active"}
 	if d.AssignmentID == nil || status != "active" {
 		writeJSON(w, 200, resp)
 		return
@@ -671,7 +662,7 @@ func (s *Server) handleSaveTranscript(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, 200, resp)
 		return
 	}
-	resp["maxTurns"] = a.MaxTurns
+	resp.MaxTurns = &a.MaxTurns
 	reason := ""
 
 	js := s.jevSettings()
@@ -694,13 +685,13 @@ func (s *Server) handleSaveTranscript(w http.ResponseWriter, r *http.Request) {
 		jr := s.judge(ctx, judgeInput{Instructions: a.Instructions, Goals: a.Goals, AppType: a.AppType, Context: truncate(ctxText, maxJudgeContextChars),
 			Transcript: in.Messages, Locale: u.Locale, MinTurns: a.MinTurns, Turns: turns}, &u.ID, &d.ID)
 		cancel()
-		resp["jev"] = jr
+		resp.Jev = &jr
 		if jr.Engine != "none" {
 			if _, err := s.db.Exec(`UPDATE activity_sessions SET jev_json = ?, progress = ? WHERE id = ?`, mustJSON(jr), jr.Progress, d.ID); err != nil {
 				writeErr(w, 500, "internal", err.Error())
 				return
 			}
-			resp["progress"] = jr.Progress
+			resp.Progress = jr.Progress
 			if jr.Completed && a.AutoEnd {
 				status, reason = "goal_reached", "goal_reached"
 			}
@@ -715,9 +706,9 @@ func (s *Server) handleSaveTranscript(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	resp["status"] = status
-	resp["ended"] = status != "active"
-	resp["reason"] = reason
+	resp.Status = status
+	resp.Ended = status != "active"
+	resp.Reason = &reason
 	writeJSON(w, 200, resp)
 }
 
@@ -744,5 +735,5 @@ func (s *Server) handleCompleteSession(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 500, "internal", err.Error())
 		return
 	}
-	writeJSON(w, 200, map[string]bool{"ok": true})
+	writeOK(w)
 }

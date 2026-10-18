@@ -144,15 +144,15 @@ func (s *Server) userFromRequest(r *http.Request) *User {
 
 func (s *Server) handlePublicConfig(w http.ResponseWriter, r *http.Request) {
 	g := s.general()
-	writeJSON(w, 200, map[string]any{
-		"siteName":        g.SiteName,
-		"defaultLocale":   g.DefaultLocale,
-		"guestAccess":     g.GuestAccess,
-		"guestLive":       g.GuestLive,
-		"allowJoinByCode": g.AllowJoinByCode,
-		"liveEnabled":     g.LiveEnabled,
-		"setupRequired":   countRows(s.db, `SELECT COUNT(*) FROM users WHERE role = 'admin'`) == 0,
-		"mailConfigured":  s.smtp().Host != "",
+	writeJSON(w, 200, publicConfigResponse{
+		SiteName:        g.SiteName,
+		DefaultLocale:   g.DefaultLocale,
+		GuestAccess:     g.GuestAccess,
+		GuestLive:       g.GuestLive,
+		AllowJoinByCode: g.AllowJoinByCode,
+		LiveEnabled:     g.LiveEnabled,
+		SetupRequired:   countRows(s.db, `SELECT COUNT(*) FROM users WHERE role = 'admin'`) == 0,
+		MailConfigured:  s.smtp().Host != "",
 	})
 }
 
@@ -218,16 +218,11 @@ func (s *Server) handleLogout(w http.ResponseWriter, r *http.Request) {
 		execOrLog(s.db, "logout", `DELETE FROM auth_sessions WHERE token_hash = ?`, hashToken(c.Value))
 	}
 	http.SetCookie(w, &http.Cookie{Name: sessionCookie, Value: "", Path: "/", MaxAge: -1, HttpOnly: true})
-	writeJSON(w, 200, map[string]bool{"ok": true})
+	writeOK(w)
 }
 
 func (s *Server) handleMe(w http.ResponseWriter, r *http.Request) {
-	u := s.userFromRequest(r)
-	if u == nil {
-		writeJSON(w, 200, map[string]any{"user": nil})
-		return
-	}
-	writeJSON(w, 200, map[string]any{"user": u})
+	writeJSON(w, 200, meResponse{User: s.userFromRequest(r)})
 }
 
 func (s *Server) handleUpdateMe(w http.ResponseWriter, r *http.Request) {
@@ -317,9 +312,9 @@ func (s *Server) handleInviteInfo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	_, existsErr := s.getUserByEmail(inv.Email)
-	writeJSON(w, 200, map[string]any{
-		"email": inv.Email, "role": inv.Role, "className": inv.ClassName, "invitedBy": inv.InvitedBy,
-		"locale": inv.Locale, "userExists": existsErr == nil,
+	writeJSON(w, 200, inviteInfoResponse{
+		Email: inv.Email, Role: inv.Role, ClassName: inv.ClassName, InvitedBy: inv.InvitedBy,
+		Locale: inv.Locale, UserExists: existsErr == nil,
 	})
 }
 
@@ -395,13 +390,13 @@ func (s *Server) handleForgot(w http.ResponseWriter, r *http.Request) {
 			hashToken(tok), "reset", u.Email, u.Role, u.Locale, now(), time.Now().Add(resetLinkTTL).UTC().Format(time.RFC3339))
 		if err != nil {
 			log.Printf("password reset for user %d: %v", u.ID, err)
-			writeJSON(w, 200, map[string]bool{"ok": true})
+			writeOK(w)
 			return
 		}
 		subj, body := renderMail("reset", u.Locale, map[string]string{"site": s.general().SiteName, "name": u.Name, "link": s.baseURL(r) + "/reset-password?token=" + tok})
 		s.sendMailAsync(u.Email, subj, body)
 	}
-	writeJSON(w, 200, map[string]bool{"ok": true})
+	writeOK(w)
 }
 
 func (s *Server) handleReset(w http.ResponseWriter, r *http.Request) {

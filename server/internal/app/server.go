@@ -104,7 +104,7 @@ func (s *Server) Handler() http.Handler {
 	mux := http.NewServeMux()
 
 	// public
-	mux.HandleFunc("GET /api/health", func(w http.ResponseWriter, r *http.Request) { writeJSON(w, 200, map[string]any{"ok": true}) })
+	mux.HandleFunc("GET /api/health", func(w http.ResponseWriter, r *http.Request) { writeOK(w) })
 	mux.HandleFunc("GET /api/public/config", s.handlePublicConfig)
 	mux.HandleFunc("POST /api/setup", s.handleSetup)
 

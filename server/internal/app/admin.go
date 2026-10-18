@@ -21,25 +21,25 @@ func (s *Server) handleAdminOverview(w http.ResponseWriter, r *http.Request) {
 	today := time.Now().UTC().Truncate(24 * time.Hour).Format(time.RFC3339)
 	var todayCost sql.NullFloat64
 	_ = s.db.QueryRow(`SELECT SUM(cost_usd) FROM usage_log WHERE created_at >= ?`, today).Scan(&todayCost)
-	writeJSON(w, 200, map[string]any{
-		"users": map[string]int{
-			"admin":   countRows(s.db, `SELECT COUNT(*) FROM users WHERE role='admin'`),
-			"teacher": countRows(s.db, `SELECT COUNT(*) FROM users WHERE role='teacher'`),
-			"student": countRows(s.db, `SELECT COUNT(*) FROM users WHERE role='student'`),
+	writeJSON(w, 200, adminOverviewResponse{
+		Users: userCounts{
+			Admin:   countRows(s.db, `SELECT COUNT(*) FROM users WHERE role='admin'`),
+			Teacher: countRows(s.db, `SELECT COUNT(*) FROM users WHERE role='teacher'`),
+			Student: countRows(s.db, `SELECT COUNT(*) FROM users WHERE role='student'`),
 		},
-		"classes":         countRows(s.db, `SELECT COUNT(*) FROM classes WHERE archived = 0`),
-		"assignments":     countRows(s.db, `SELECT COUNT(*) FROM assignments`),
-		"sessions":        countRows(s.db, `SELECT COUNT(*) FROM activity_sessions WHERE turns > 0`),
-		"pendingInvites":  countRows(s.db, `SELECT COUNT(*) FROM invites WHERE kind='invite' AND accepted_at IS NULL AND expires_at > ?`, now()),
-		"providers":       countRows(s.db, `SELECT COUNT(*) FROM providers WHERE enabled = 1`),
-		"monthSpendUsd":   spend,
-		"todaySpendUsd":   todayCost.Float64,
-		"monthBudgetUsd":  b.MonthlyUSD,
-		"budgetExceeded":  s.budgetExceeded(),
-		"requestsToday":   countRows(s.db, `SELECT COUNT(*) FROM usage_log WHERE created_at >= ?`, today),
-		"errorsToday":     countRows(s.db, `SELECT COUNT(*) FROM usage_log WHERE created_at >= ? AND ok = 0`, today),
-		"mailConfigured":  s.smtp().Host != "",
-		"routingComplete": len(s.routing().Tasks[TaskChat]) > 0,
+		Classes:         countRows(s.db, `SELECT COUNT(*) FROM classes WHERE archived = 0`),
+		Assignments:     countRows(s.db, `SELECT COUNT(*) FROM assignments`),
+		Sessions:        countRows(s.db, `SELECT COUNT(*) FROM activity_sessions WHERE turns > 0`),
+		PendingInvites:  countRows(s.db, `SELECT COUNT(*) FROM invites WHERE kind='invite' AND accepted_at IS NULL AND expires_at > ?`, now()),
+		Providers:       countRows(s.db, `SELECT COUNT(*) FROM providers WHERE enabled = 1`),
+		MonthSpendUSD:   spend,
+		TodaySpendUSD:   todayCost.Float64,
+		MonthBudgetUSD:  b.MonthlyUSD,
+		BudgetExceeded:  s.budgetExceeded(),
+		RequestsToday:   countRows(s.db, `SELECT COUNT(*) FROM usage_log WHERE created_at >= ?`, today),
+		ErrorsToday:     countRows(s.db, `SELECT COUNT(*) FROM usage_log WHERE created_at >= ? AND ok = 0`, today),
+		MailConfigured:  s.smtp().Host != "",
+		RoutingComplete: len(s.routing().Tasks[TaskChat]) > 0,
 	})
 }
 
@@ -174,7 +174,7 @@ func (s *Server) handleDeleteUser(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 500, "internal", err.Error())
 		return
 	}
-	writeJSON(w, 200, map[string]bool{"ok": true})
+	writeOK(w)
 }
 
 // ---------- invites ----------
@@ -231,20 +231,20 @@ func (s *Server) handleCreateInvites(w http.ResponseWriter, r *http.Request) {
 	if locale == "" {
 		locale = u.Locale
 	}
-	results := []any{}
+	results := []inviteResult{}
 	for _, e := range splitEmails(in.Emails) {
 		if _, err := s.getUserByEmail(e); err == nil && in.ClassID == nil {
-			results = append(results, map[string]string{"email": e, "status": "error", "error": "already registered"})
+			results = append(results, inviteResult{Email: e, Status: "error", Error: "already registered"})
 			continue
 		}
 		inv, err := s.createInvite(r, u, e, in.Role, in.ClassID, className, locale)
 		if err != nil {
-			results = append(results, map[string]string{"email": e, "status": "error", "error": err.Error()})
+			results = append(results, inviteResult{Email: e, Status: "error", Error: err.Error()})
 			continue
 		}
-		results = append(results, map[string]any{"email": inv.Email, "status": "invited", "emailSent": inv.EmailSent, "link": inv.Link})
+		results = append(results, invitedResult(inv))
 	}
-	writeJSON(w, 200, map[string]any{"results": results})
+	writeJSON(w, 200, inviteResultsResponse{Results: results})
 }
 
 func (s *Server) handleResendInvite(w http.ResponseWriter, r *http.Request) {
@@ -279,7 +279,7 @@ func (s *Server) handleDeleteInvite(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 500, "internal", err.Error())
 		return
 	}
-	writeJSON(w, 200, map[string]bool{"ok": true})
+	writeOK(w)
 }
 
 // ---------- settings ----------
@@ -288,14 +288,14 @@ func (s *Server) handleGetSettings(w http.ResponseWriter, r *http.Request) {
 	smtp := s.smtp()
 	hasPw := smtp.Password != ""
 	smtp.Password = ""
-	writeJSON(w, 200, map[string]any{
-		"general":         s.general(),
-		"smtp":            smtp,
-		"smtpHasPassword": hasPw,
-		"budget":          s.budget(),
-		"routing":         s.routing(),
-		"jev":             s.jevSettings(),
-		"tasks":           AllTasks,
+	writeJSON(w, 200, settingsResponse{
+		General:         s.general(),
+		SMTP:            smtp,
+		SMTPHasPassword: hasPw,
+		Budget:          s.budget(),
+		Routing:         s.routing(),
+		Jev:             s.jevSettings(),
+		Tasks:           AllTasks,
 	})
 }
 
@@ -364,7 +364,7 @@ func (s *Server) handleSMTPTest(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 502, "smtp_error", err.Error())
 		return
 	}
-	writeJSON(w, 200, map[string]bool{"ok": true})
+	writeOK(w)
 }
 
 // ---------- providers ----------
@@ -622,7 +622,7 @@ func (s *Server) handleDeleteProvider(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 500, "internal", err.Error())
 		return
 	}
-	writeJSON(w, 200, map[string]bool{"ok": true})
+	writeOK(w)
 }
 
 func (s *Server) handleRefreshModels(w http.ResponseWriter, r *http.Request) {
@@ -673,7 +673,7 @@ func (s *Server) handleTestProvider(w http.ResponseWriter, r *http.Request) {
 			writeErr(w, 502, "provider_error", err.Error())
 			return
 		}
-		writeJSON(w, 200, map[string]any{"ok": true, "latencyMs": time.Since(start).Milliseconds(), "output": mustJSON(res.Answers)})
+		writeJSON(w, 200, providerTestResponse{OK: true, LatencyMs: time.Since(start).Milliseconds(), Output: mustJSON(res.Answers)})
 		return
 	}
 	res, err := cp.p.Generate(ctx, ai.Request{Model: in.Model, Messages: []ai.Message{{Role: "user", Content: "Reply with the single word: ok"}}, MaxTokens: 50})
@@ -686,7 +686,7 @@ func (s *Server) handleTestProvider(w http.ResponseWriter, r *http.Request) {
 	}
 	entry.Usage = res.Usage
 	s.logUsage(entry)
-	writeJSON(w, 200, map[string]any{"ok": true, "latencyMs": time.Since(start).Milliseconds(), "output": res.Text, "usage": res.Usage})
+	writeJSON(w, 200, providerTestResponse{OK: true, LatencyMs: time.Since(start).Milliseconds(), Output: res.Text, Usage: &res.Usage})
 }
 
 func usageOr(r *ai.JevResult) ai.Usage {
@@ -758,29 +758,20 @@ func (s *Server) handleUsageSummary(w http.ResponseWriter, r *http.Request) {
 	}
 	since := time.Now().UTC().AddDate(0, 0, -days).Format(time.RFC3339)
 
-	type agg struct {
-		Key          string  `json:"key"`
-		Label        string  `json:"label,omitempty"`
-		Requests     int     `json:"requests"`
-		Errors       int     `json:"errors"`
-		InputTokens  int64   `json:"inputTokens"`
-		OutputTokens int64   `json:"outputTokens"`
-		CostUSD      float64 `json:"costUsd"`
-	}
-	group := func(expr, label string, byKey bool) []agg {
+	group := func(expr, label string, byKey bool) []usageAggregate {
 		order := `SUM(cost_usd) DESC, COUNT(*) DESC`
 		if byKey {
 			order = `1`
 		}
 		rows, err := s.db.Query(`SELECT `+expr+`, `+label+`, COUNT(*), SUM(CASE WHEN ok = 0 THEN 1 ELSE 0 END), SUM(input_tokens), SUM(output_tokens), SUM(cost_usd)
 			FROM usage_log l WHERE created_at >= ? GROUP BY 1 ORDER BY `+order+` LIMIT 400`, since)
-		out := []agg{}
+		out := []usageAggregate{}
 		if err != nil {
 			return out
 		}
 		defer rows.Close()
 		for rows.Next() {
-			var a agg
+			var a usageAggregate
 			var key, lbl sql.NullString
 			if rows.Scan(&key, &lbl, &a.Requests, &a.Errors, &a.InputTokens, &a.OutputTokens, &a.CostUSD) == nil {
 				a.Key, a.Label = key.String, lbl.String
@@ -789,17 +780,17 @@ func (s *Server) handleUsageSummary(w http.ResponseWriter, r *http.Request) {
 		}
 		return out
 	}
-	writeJSON(w, 200, map[string]any{
-		"days":       days,
-		"byDay":      group(`substr(created_at, 1, 10)`, `''`, true),
-		"byModel":    group(`provider_name || ' / ' || model`, `MAX(model)`, false),
-		"byTask":     group(`task`, `''`, false),
-		"byProvider": group(`provider_name`, `''`, false),
-		"byUser":     group(`CAST(COALESCE(user_id, 0) AS TEXT)`, `(SELECT COALESCE(name, 'guest') FROM users WHERE id = l.user_id)`, false),
-		"byClass": group(`CAST(COALESCE((SELECT a.class_id FROM activity_sessions s JOIN assignments a ON a.id = s.assignment_id WHERE s.id = l.session_id), 0) AS TEXT)`,
+	writeJSON(w, 200, usageSummaryResponse{
+		Days:       days,
+		ByDay:      group(`substr(created_at, 1, 10)`, `''`, true),
+		ByModel:    group(`provider_name || ' / ' || model`, `MAX(model)`, false),
+		ByTask:     group(`task`, `''`, false),
+		ByProvider: group(`provider_name`, `''`, false),
+		ByUser:     group(`CAST(COALESCE(user_id, 0) AS TEXT)`, `(SELECT COALESCE(name, 'guest') FROM users WHERE id = l.user_id)`, false),
+		ByClass: group(`CAST(COALESCE((SELECT a.class_id FROM activity_sessions s JOIN assignments a ON a.id = s.assignment_id WHERE s.id = l.session_id), 0) AS TEXT)`,
 			`(SELECT c.name FROM activity_sessions s JOIN assignments a ON a.id = s.assignment_id JOIN classes c ON c.id = a.class_id WHERE s.id = l.session_id)`, false),
-		"monthSpendUsd": s.monthSpend(),
-		"budget":        s.budget(),
+		MonthSpendUSD: s.monthSpend(),
+		Budget:        s.budget(),
 	})
 }
 
