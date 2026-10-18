@@ -94,7 +94,7 @@ func (f freeOnly) order(list []RouteTarget, prices priceBook) []RouteTarget {
 // targets returns the candidate list for a task according to the routing
 // strategy and the budget state. This is the "decide which API" half of JEV.
 func (s *Server) targets(task string) []RouteTarget {
-	rt := s.routing()
+	rt := s.settingsSvc.Routing()
 	list := rt.Tasks[task]
 	if len(list) == 0 && task != TaskChat && task != TaskLive {
 		list = rt.Tasks[TaskChat] // sensible fallback

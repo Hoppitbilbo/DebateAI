@@ -36,9 +36,9 @@ func (s *Server) autoRoute(providerID int64, kind string) {
 	if p, err := s.providers.Get(providerID); err == nil {
 		models = p.Models
 	}
-	rt := s.routing()
+	rt := s.settingsSvc.Routing()
 	routePolicyFor(kind)(&rt, providerID, models)
-	if err := s.settings.Save("routing", rt); err != nil {
+	if err := s.settingsSvc.SaveRouting(rt); err != nil {
 		log.Printf("auto-route provider %d: %v", providerID, err)
 	}
 }

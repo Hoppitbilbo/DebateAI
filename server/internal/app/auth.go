@@ -51,7 +51,7 @@ func writeServiceErr(w http.ResponseWriter, err error) {
 // ---------- handlers ----------
 
 func (s *Server) handlePublicConfig(w http.ResponseWriter, r *http.Request) {
-	g := s.general()
+	g := s.settingsSvc.General()
 	writeJSON(w, 200, publicConfigResponse{
 		SiteName:        g.SiteName,
 		DefaultLocale:   g.DefaultLocale,
@@ -60,7 +60,7 @@ func (s *Server) handlePublicConfig(w http.ResponseWriter, r *http.Request) {
 		AllowJoinByCode: g.AllowJoinByCode,
 		LiveEnabled:     g.LiveEnabled,
 		SetupRequired:   s.users.Count(domain.RoleAdmin) == 0,
-		MailConfigured:  s.smtp().Host != "",
+		MailConfigured:  s.settingsSvc.MailConfigured(),
 	})
 }
 
@@ -80,9 +80,9 @@ func (s *Server) handleSetup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if in.Locale != "" {
-		g := s.general()
+		g := s.settingsSvc.General()
 		g.DefaultLocale = normLocale(in.Locale)
-		if err := s.settings.Save("general", g); err != nil {
+		if err := s.settingsSvc.SaveGeneral(g); err != nil {
 			log.Printf("setup: default locale: %v", err)
 		}
 	}

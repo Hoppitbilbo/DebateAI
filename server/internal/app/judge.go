@@ -130,7 +130,7 @@ func jevState(in judgeInput, goals []string, maxChars int) map[string]any {
 }
 
 func (s *Server) judge(ctx context.Context, in judgeInput, userID, sessionID *int64) JudgeResult {
-	js := s.jevSettings()
+	js := s.settingsSvc.Jev()
 	res := JudgeResult{Engine: "none", EvaluatedAt: now()}
 	goals := in.Goals
 	if len(goals) == 0 && strings.TrimSpace(in.Instructions) != "" {

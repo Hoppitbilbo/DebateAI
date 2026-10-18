@@ -145,7 +145,7 @@ func (s *Server) handleTeacherInvites(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) handleJoinClass(w http.ResponseWriter, r *http.Request) {
 	u := currentUser(r)
-	if !s.general().AllowJoinByCode {
+	if !s.settingsSvc.General().AllowJoinByCode {
 		writeErr(w, 403, "disabled", "joining by code is disabled")
 		return
 	}

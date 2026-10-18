@@ -14,7 +14,7 @@ import (
 // ---------- overview ----------
 
 func (s *Server) handleAdminOverview(w http.ResponseWriter, r *http.Request) {
-	b := s.budget()
+	b := s.settingsSvc.Budget()
 	spend := s.monthSpend()
 	today := time.Now().UTC().Truncate(24 * time.Hour).Format(time.RFC3339)
 	writeJSON(w, 200, adminOverviewResponse{
@@ -34,8 +34,8 @@ func (s *Server) handleAdminOverview(w http.ResponseWriter, r *http.Request) {
 		BudgetExceeded:  s.budgetExceeded(),
 		RequestsToday:   s.usage.CountSince(today, false),
 		ErrorsToday:     s.usage.CountSince(today, true),
-		MailConfigured:  s.smtp().Host != "",
-		RoutingComplete: len(s.routing().Tasks[TaskChat]) > 0,
+		MailConfigured:  s.settingsSvc.MailConfigured(),
+		RoutingComplete: len(s.settingsSvc.Routing().Tasks[TaskChat]) > 0,
 	})
 }
 
@@ -234,61 +234,47 @@ func (s *Server) handleDeleteInvite(w http.ResponseWriter, r *http.Request) {
 // ---------- settings ----------
 
 func (s *Server) handleGetSettings(w http.ResponseWriter, r *http.Request) {
-	smtp := s.smtp()
+	smtp := s.settingsSvc.SMTP()
 	hasPw := smtp.Password != ""
 	smtp.Password = ""
 	writeJSON(w, 200, settingsResponse{
-		General:         s.general(),
+		General:         s.settingsSvc.General(),
 		SMTP:            smtp,
 		SMTPHasPassword: hasPw,
-		Budget:          s.budget(),
-		Routing:         s.routing(),
-		Jev:             s.jevSettings(),
+		Budget:          s.settingsSvc.Budget(),
+		Routing:         s.settingsSvc.Routing(),
+		Jev:             s.settingsSvc.Jev(),
 		Tasks:           AllTasks,
 	})
 }
 
 func (s *Server) handlePutSetting(w http.ResponseWriter, r *http.Request) {
-	key := r.PathValue("key")
 	var err error
-	switch key {
-	case "general":
+	switch r.PathValue("key") {
+	case settingGeneral:
 		v := defaultGeneral()
 		if err = readJSON(r, &v); err == nil {
-			v.DefaultLocale = normLocale(v.DefaultLocale)
-			err = s.settings.Save(key, v)
+			err = s.settingsSvc.SaveGeneral(v)
 		}
-	case "smtp":
+	case settingSMTP:
 		var v SMTPSettings
 		if err = readJSON(r, &v); err == nil {
-			if v.Password == "" { // keep the stored password unless a new one is sent
-				old := loadSetting(s.settings, "smtp", SMTPSettings{})
-				v.Password = old.Password
-			} else {
-				v.Password = s.crypto.Encrypt(v.Password)
-			}
-			if v.Port == 0 {
-				v.Port = 587
-			}
-			err = s.settings.Save(key, v)
+			err = s.settingsSvc.SaveSMTP(v)
 		}
-	case "budget":
+	case settingBudget:
 		var v BudgetSettings
 		if err = readJSON(r, &v); err == nil {
-			err = s.settings.Save(key, v)
+			err = s.settingsSvc.SaveBudget(v)
 		}
-	case "routing":
+	case settingRouting:
 		var v RoutingSettings
 		if err = readJSON(r, &v); err == nil {
-			if v.Tasks == nil {
-				v.Tasks = map[string][]RouteTarget{}
-			}
-			err = s.settings.Save(key, v)
+			err = s.settingsSvc.SaveRouting(v)
 		}
-	case "jev":
+	case settingJev:
 		v := defaultJev()
 		if err = readJSON(r, &v); err == nil {
-			err = s.settings.Save(key, v)
+			err = s.settingsSvc.SaveJev(v)
 		}
 	default:
 		writeErr(w, 404, "not_found", "unknown setting")
@@ -308,7 +294,7 @@ func (s *Server) handleSMTPTest(w http.ResponseWriter, r *http.Request) {
 	if in.To == "" {
 		in.To = u.Email
 	}
-	subj, body := renderMail("test", u.Locale, map[string]string{"site": s.general().SiteName})
+	subj, body := renderMail("test", u.Locale, map[string]string{"site": s.settingsSvc.General().SiteName})
 	if err := s.sendMail(in.To, subj, body); err != nil {
 		writeErr(w, 502, "smtp_error", err.Error())
 		return
@@ -436,7 +422,7 @@ func (s *Server) handleDeleteProvider(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	s.invalidateProvider(id)
-	rt := s.routing()
+	rt := s.settingsSvc.Routing()
 	for task, list := range rt.Tasks {
 		kept := list[:0:0]
 		for _, t := range list {
@@ -446,7 +432,7 @@ func (s *Server) handleDeleteProvider(w http.ResponseWriter, r *http.Request) {
 		}
 		rt.Tasks[task] = kept
 	}
-	if err := s.settings.Save("routing", rt); err != nil {
+	if err := s.settingsSvc.SaveRouting(rt); err != nil {
 		writeErr(w, 500, "internal", err.Error())
 		return
 	}
@@ -581,7 +567,7 @@ func (s *Server) handleUsageSummary(w http.ResponseWriter, r *http.Request) {
 		ByUser:        group(domain.UsageByUser),
 		ByClass:       group(domain.UsageByClass),
 		MonthSpendUSD: s.monthSpend(),
-		Budget:        s.budget(),
+		Budget:        s.settingsSvc.Budget(),
 	})
 }
 

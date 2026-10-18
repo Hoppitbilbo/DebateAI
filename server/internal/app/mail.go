@@ -106,7 +106,7 @@ var errSMTPNotConfigured = errors.New("SMTP is not configured")
 // sendMail delivers a plain-text + HTML e-mail. When SMTP is not configured the
 // message is logged so admins can still copy the links from the dashboard.
 func (s *Server) sendMail(to, subject, body string) error {
-	cfg := s.smtp()
+	cfg := s.settingsSvc.SMTP()
 	if cfg.Host == "" {
 		log.Printf("[mail disabled] to=%s subject=%q\n%s", to, subject, body)
 		return errSMTPNotConfigured

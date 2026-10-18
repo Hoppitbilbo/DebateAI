@@ -33,6 +33,7 @@ type Server struct {
 	prices      priceStore
 	usage       usageStore
 
+	settingsSvc   *settingsService
 	sessionSvc    *sessionService
 	accounts      *authService
 	classSvc      *classService
@@ -63,14 +64,15 @@ func NewServer(cfg Config, db *sql.DB, static fs.FS) *Server {
 		limiter:     newRateLimiter(),
 		provs:       map[int64]cachedProvider{},
 	}
+	s.settingsSvc = &settingsService{store: s.settings, crypto: s.crypto, smtpDefaults: cfg.SMTP}
 	s.accounts = &authService{users: s.users, logins: s.logins, invites: s.invites, classes: s.classes, mail: s,
-		siteName: func() string { return s.general().SiteName }}
+		siteName: func() string { return s.settingsSvc.General().SiteName }}
 	s.classSvc = &classService{classes: s.classes, users: s.users, accounts: s.accounts, mail: s,
-		siteName: func() string { return s.general().SiteName }, mailOn: func() bool { return s.smtp().Host != "" }}
+		siteName: func() string { return s.settingsSvc.General().SiteName }, mailOn: func() bool { return s.settingsSvc.MailConfigured() }}
 	s.assignmentSvc = &assignmentService{assignments: s.assignments, classes: s.classes, sessions: s.sessions, classSvc: s.classSvc,
-		listeners: []assignmentListener{mailNotifier{classes: s.classes, mail: s, siteName: func() string { return s.general().SiteName }}}}
+		listeners: []assignmentListener{mailNotifier{classes: s.classes, mail: s, siteName: func() string { return s.settingsSvc.General().SiteName }}}}
 	s.sessionSvc = &sessionService{sessions: s.sessions, assignments: s.assignments, classes: s.classes, classSvc: s.classSvc,
-		judge: s, jevSettings: s.jevSettings}
+		judge: s, jevSettings: s.settingsSvc.Jev}
 	s.bootstrap()
 	return s
 }
@@ -113,11 +115,11 @@ func (s *Server) bootstrap() {
 		if id := add("OpenRouter", "openai", "https://openrouter.ai/api/v1", s.cfg.OpenRouterKey); id != 0 {
 			// openrouter/free is OpenRouter's own router over its free models:
 			// a stable id that keeps working as individual free models change.
-			rt := s.routing()
+			rt := s.settingsSvc.Routing()
 			for _, task := range []string{TaskChat, TaskEvaluation, TaskUtility, TaskJudge} {
 				rt.Tasks[task] = []RouteTarget{{id, "openrouter/free"}}
 			}
-			if err := s.settings.Save("routing", rt); err != nil {
+			if err := s.settingsSvc.SaveRouting(rt); err != nil {
 				log.Printf("bootstrap OpenRouter routing: %v", err)
 			}
 		}
@@ -383,7 +385,7 @@ func clientIP(r *http.Request) string {
 
 // baseURL is used to build links in e-mails.
 func (s *Server) baseURL(r *http.Request) string {
-	if g := s.general(); g.PublicURL != "" {
+	if g := s.settingsSvc.General(); g.PublicURL != "" {
 		return strings.TrimRight(g.PublicURL, "/")
 	}
 	if s.cfg.PublicURL != "" {

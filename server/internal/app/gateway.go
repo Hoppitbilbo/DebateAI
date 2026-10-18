@@ -100,7 +100,7 @@ func (s *Server) monthSpend() float64 {
 }
 
 func (s *Server) budgetExceeded() bool {
-	b := s.budget()
+	b := s.settingsSvc.Budget()
 	return b.MonthlyUSD > 0 && b.BlockPaidWhenExceeded && s.monthSpend() >= b.MonthlyUSD
 }
 
@@ -214,7 +214,7 @@ func (s *Server) generate(ctx context.Context, task string, req ai.Request, user
 
 func (s *Server) aiAllowed(w http.ResponseWriter, r *http.Request) (*User, bool) {
 	u := s.userFromRequest(r)
-	g := s.general()
+	g := s.settingsSvc.General()
 	if u == nil {
 		if !g.GuestAccess {
 			writeErr(w, 401, "login_required", "login required to use the AI apps")
@@ -255,12 +255,12 @@ func (s *Server) sessionFor(u *User, sessionID int64) (*int64, string, error) {
 
 func (s *Server) handleAIStatus(w http.ResponseWriter, r *http.Request) {
 	u := s.userFromRequest(r)
-	g := s.general()
+	g := s.settingsSvc.General()
 	live := g.LiveEnabled && len(s.targets(TaskLive)) > 0 && (u != nil || g.GuestLive)
 	writeJSON(w, 200, aiStatusResponse{
 		Text:        len(s.targets(TaskChat)) > 0 && (u != nil || g.GuestAccess),
 		Live:        live,
-		Judge:       s.jevSettings().Enabled && len(s.targets(TaskJudge)) > 0,
+		Judge:       s.settingsSvc.Jev().Enabled && len(s.targets(TaskJudge)) > 0,
 		LoggedIn:    u != nil,
 		GuestAccess: g.GuestAccess,
 	})
@@ -352,7 +352,7 @@ func (s *Server) handleGenerate(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) handleLiveToken(w http.ResponseWriter, r *http.Request) {
 	u := s.userFromRequest(r)
-	g := s.general()
+	g := s.settingsSvc.General()
 	if !g.LiveEnabled || (u == nil && !g.GuestLive) {
 		writeErr(w, 403, "live_disabled", "live conversation is not enabled for this account")
 		return
@@ -382,7 +382,7 @@ func (s *Server) handleLiveToken(w http.ResponseWriter, r *http.Request) {
 	}
 	voice := in.VoiceName
 	if voice == "" {
-		voice = s.routing().DefaultVoice
+		voice = s.settingsSvc.Routing().DefaultVoice
 	}
 	var lastErr error = errNoTargets
 	for _, t := range s.targets(TaskLive) {

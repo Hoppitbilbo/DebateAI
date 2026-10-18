@@ -87,34 +87,84 @@ func defaultJev() JevSettings {
 	return JevSettings{Enabled: true, Threshold: defaultJudgeThreshold, EvaluateEvery: 1, MaxStateChars: 24000}
 }
 
-func (s *Server) general() GeneralSettings {
-	return loadSetting(s.settings, "general", defaultGeneral())
+// settingsService reads and writes the admin settings with their defaults;
+// the SMTP password is kept encrypted at rest.
+type settingsService struct {
+	store        settingsStore
+	crypto       *Crypto
+	smtpDefaults SMTPSettings // from the environment
 }
 
-func (s *Server) budget() BudgetSettings {
-	return loadSetting(s.settings, "budget", BudgetSettings{MonthlyUSD: 0, WarnPercent: 80, BlockPaidWhenExceeded: true})
+// Setting keys.
+const (
+	settingGeneral = "general"
+	settingSMTP    = "smtp"
+	settingBudget  = "budget"
+	settingRouting = "routing"
+	settingJev     = "jev"
+)
+
+func (c *settingsService) General() GeneralSettings {
+	return loadSetting(c.store, settingGeneral, defaultGeneral())
 }
 
-func (s *Server) routing() RoutingSettings {
-	r := loadSetting(s.settings, "routing", RoutingSettings{Strategy: StrategyOrdered, Tasks: map[string][]RouteTarget{}, DefaultVoice: "Aoede"})
+func (c *settingsService) Budget() BudgetSettings {
+	return loadSetting(c.store, settingBudget, BudgetSettings{MonthlyUSD: 0, WarnPercent: 80, BlockPaidWhenExceeded: true})
+}
+
+func (c *settingsService) Routing() RoutingSettings {
+	r := loadSetting(c.store, settingRouting, RoutingSettings{Strategy: StrategyOrdered, Tasks: map[string][]RouteTarget{}, DefaultVoice: "Aoede"})
 	if r.Tasks == nil {
 		r.Tasks = map[string][]RouteTarget{}
 	}
 	return r
 }
 
-func (s *Server) jevSettings() JevSettings {
-	return loadSetting(s.settings, "jev", defaultJev())
+func (c *settingsService) Jev() JevSettings {
+	return loadSetting(c.store, settingJev, defaultJev())
 }
 
-func (s *Server) smtp() SMTPSettings {
-	st := loadSetting(s.settings, "smtp", s.cfg.SMTP)
+// SMTP returns the mail settings with the password decrypted; without a
+// configured host the environment defaults apply.
+func (c *settingsService) SMTP() SMTPSettings {
+	st := loadSetting(c.store, settingSMTP, c.smtpDefaults)
 	if st.Host == "" {
-		st = s.cfg.SMTP
-		return st
+		return c.smtpDefaults
 	}
-	if pw, err := s.crypto.Decrypt(st.Password); err == nil {
+	if pw, err := c.crypto.Decrypt(st.Password); err == nil {
 		st.Password = pw
 	}
 	return st
 }
+
+// MailConfigured reports whether e-mails can be sent.
+func (c *settingsService) MailConfigured() bool { return c.SMTP().Host != "" }
+
+func (c *settingsService) SaveGeneral(v GeneralSettings) error {
+	v.DefaultLocale = normLocale(v.DefaultLocale)
+	return c.store.Save(settingGeneral, v)
+}
+
+// SaveSMTP encrypts a new password; an empty one keeps the stored password.
+func (c *settingsService) SaveSMTP(v SMTPSettings) error {
+	if v.Password == "" {
+		v.Password = loadSetting(c.store, settingSMTP, SMTPSettings{}).Password
+	} else {
+		v.Password = c.crypto.Encrypt(v.Password)
+	}
+	if v.Port == 0 {
+		v.Port = 587
+	}
+	return c.store.Save(settingSMTP, v)
+}
+
+func (c *settingsService) SaveBudget(v BudgetSettings) error { return c.store.Save(settingBudget, v) }
+
+func (c *settingsService) SaveRouting(v RoutingSettings) error {
+	if v.Tasks == nil {
+		v.Tasks = map[string][]RouteTarget{}
+	}
+	return c.store.Save(settingRouting, v)
+}
+
+func (c *settingsService) SaveJev(v JevSettings) error { return c.store.Save(settingJev, v) }
