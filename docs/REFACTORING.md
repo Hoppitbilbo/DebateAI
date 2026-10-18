@@ -29,7 +29,7 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto · `[-]` scartato (spieg
 ## Stato attuale
 
 - **Fase in corso:** 0 (rete di sicurezza)
-- **Prossimo task:** 0.3
+- **Prossimo task:** 0.4
 - **Lavoro a metà:** nessuno
 - **Test:** `go test ./...` verde all'inizio del refactoring
 
@@ -133,7 +133,7 @@ main.go        composition root (costruisce e inietta le dipendenze)
 
 - [x] **0.1** (`2aae325`) Test del gateway `generate`: fallback su errore ritentabile, stop su errore non ritentabile, timeout del primo token, salto di Jev, budget esaurito.
 - [x] **0.2** (`b3d71ec`) Test del giudice: `finalize` (soglia, `minTurns`, progress) e `judge` con provider finti (Jev e LLM).
-- [ ] **0.3** Test HTTP di `handleSaveTranscript`: conteggio turni, `EvaluateEvery`, `AutoEnd`, `MaxTurns`, risposta JSON (snapshot delle chiavi).
+- [x] **0.3** (`bc8e02f`) Test HTTP di `handleSaveTranscript`: conteggio turni, `EvaluateEvery`, `AutoEnd`, `MaxTurns`, risposta JSON (snapshot delle chiavi).
 - [ ] **0.4** Aggiungere Vitest al frontend, con test di `useActivitySession` e `useChatEngine` su un client AI finto.
 - [ ] **0.5** CI: `go vet`, `go test`, `npm run lint`, `vitest` in `.github/workflows`.
 
@@ -190,6 +190,7 @@ Un'area per task, spostando l'SQL in `internal/store`:
 
 - Go non ha ereditarietà: Template Method si realizza con funzioni o interfacce passate come parametro (composizione).
 - L'API HTTP e lo schema SQLite non cambiano durante il refactoring.
+- La risposta di `PUT /api/sessions/{id}/transcript` ha tre forme diverse (sessione libera o già chiusa: `ended,progress,status,turns`; compito attivo: in più `jev,maxTurns,reason`). È fissata da `TestSaveTranscript*`: il DTO del task 1.4 deve mantenerla, usando `omitempty` dove serve.
 
 ---
 
@@ -200,3 +201,4 @@ Un'area per task, spostando l'SQL in `internal/store`:
 | 2026-10-18 | — | `fb57987` | Claude Code | Creato il documento. Go test verdi. |
 | 2026-10-18 | 0.1 | `2aae325` | Claude Code | `server/internal/app/gateway_test.go`: 11 test. Helper riusabili: `newTestServer`, `useProvider` (inietta un provider finto nella cache), `setChatRoute`, `fakeProvider`. |
 | 2026-10-18 | 0.2 | `b3d71ec` | Claude Code | `server/internal/app/judge_test.go`: 10 test (Jev, LLM, fallback, soglia, `minTurns`). Fake: `fakeDecider`, `scriptedLLM`, helper `setJudgeRoute`. |
+| 2026-10-18 | 0.3 | `bc8e02f` | Claude Code | `server/internal/app/transcript_test.go`: 11 test HTTP (forma della risposta, turni, `autoEnd`, `maxTurns`, `evaluateEvery`, flag `judge`, contesto, troncamento a 1000, solo proprietario). Fixture: `newTranscriptFixture`. |
