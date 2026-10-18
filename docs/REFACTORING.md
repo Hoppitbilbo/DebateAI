@@ -38,11 +38,10 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto · `[-]` scartato (spieg
 ## Stato attuale
 
 - **Fase in corso:** 8 (punti aperti e funzioni docente)
-- **Prossimo task:** 8.3
+- **Prossimo task:** 8.4
 - **Lavoro a metà:** nessuno
-- **Test:** Go (pacchetti `ai`, `app`, `domain`, `httpapi`, `store`) verdi anche con `-race`; Vitest 48 test verdi; lint 0 errori (16 avvisi `react-refresh/only-export-components` preesistenti, soprattutto in `src/components/ui` e `pages/dashboard/common.tsx`).
+- **Test:** Go (pacchetti `ai`, `app`, `domain`, `httpapi`, `store`) verdi anche con `-race`; Vitest 48 test verdi; lint 0 errori e 0 avvisi.
 - **Punti aperti (non refactoring, da decidere):**
-  3. Avvisi `react-refresh` rimasti: spostare le funzioni condivise (`formatDate`, `usd`, `copy`, ...) da file di componenti a moduli separati.
   4. Unire `go` in `master` (nessuna pull request aperta).
 
 ---
@@ -216,7 +215,7 @@ Un'area per task, spostando l'SQL in `internal/store`:
 
 - [x] **8.1** (`8f788ea`) Tutorial: allineare gli id delle slide ai testi esistenti, tenere il necessario, migliorare i testi poco chiari.
 - [x] **8.2** (`a25b47a`) Personaggio misterioso: confronto del tentativo severo; la partita termina quando JEV giudica raggiunto l'obiettivo, con un messaggio.
-- [ ] **8.3** Eliminare gli avvisi `react-refresh/only-export-components`.
+- [x] **8.3** (`6c65719`) Eliminare gli avvisi `react-refresh/only-export-components`.
 - [ ] **8.4** Docente: stampa/PDF della chat, feedback scritto a mano (visibile allo studente), export dei voti in Excel. Voti in dashboard e revisione della chat in qualsiasi momento esistono già (pagina di avanzamento del compito e `/sessions/{id}`).
 - [ ] **8.5** Pull request da `go` a `master`.
 
@@ -287,3 +286,4 @@ Un'area per task, spostando l'SQL in `internal/store`:
 | 2026-10-18 | — | — | Claude Code | CI GitHub verde su `a9fd39c` (fine fase 7: `test`, `web`, `image`). |
 | 2026-10-18 | 8.1 | `8f788ea` | Claude Code | Riscritti i tutorial di ImpersonaTu e DoppiaIntervista: 6 slide brevi ciascuno (benvenuto, come funziona, consigli, cosa si impara/confronto, riflessione e valutazione, in classe) aderenti a cosa fa l'app, in it/en/es/fr/de; prima descrivevano sessioni con facilitatori tra pari inesistenti e 30 testi mostravano la chiave. Aggiunti i 3 punti mancanti di YouModerate in en/fr. `tutorials.test.tsx` ora richiede ogni testo in ogni lingua. |
 | 2026-10-18 | 8.2 | `a25b47a` | Claude Code | `isCorrectGuess` severo: giusto solo con il nome completo o con una parola intera del nome di almeno 4 lettere ("Vinci", "Leonardo"); frammenti, particelle e errori di battitura sono sbagliati. Quando JEV giudica raggiunto l'obiettivo del compito (`goal_reached`, serve `autoEnd`), le domande si fermano, compare il messaggio `apps.personaggioMisterioso.judgeEnded` (5 lingue) e si passa alla risposta finale. Test in `mystery.test.ts` e `activityPages.test.tsx`. |
+| 2026-10-18 | 8.3 | `6c65719` | Claude Code | Lint a 0 avvisi. `useAuth`/`dashboardPath` in `context/auth.ts` e `useAnimation` in `context/animation.ts` (i provider restano nei `.tsx`; i test mockano `@/context/auth`); `formatDate`/`usd` in `lib/format.ts`; `copy` in `lib/clipboard.ts`; `LOCALES` in `i18n/languages.ts`; `APP_ICONS`/`APP_TYPES` in `features/activity/appCatalog.ts`. In `eslint.config.js` la regola è spenta solo per `src/components/ui` (componenti shadcn generati). |
