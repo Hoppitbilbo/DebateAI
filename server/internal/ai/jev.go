@@ -46,7 +46,7 @@ type JevResult struct {
 
 // Decider is implemented by providers that can answer structured questions.
 type Decider interface {
-	Decide(ctx context.Context, model, state string, questions map[string]JevQuestion) (*JevResult, error)
+	Decide(ctx context.Context, model string, state any, questions map[string]JevQuestion) (*JevResult, error)
 }
 
 func (p *jevProvider) url() string {
@@ -60,7 +60,9 @@ func (p *jevProvider) url() string {
 	return u
 }
 
-func (p *jevProvider) Decide(ctx context.Context, model, state string, questions map[string]JevQuestion) (*JevResult, error) {
+// state may be a string or any JSON value; TypeSafe recommends an object with
+// descriptive field names.
+func (p *jevProvider) Decide(ctx context.Context, model string, state any, questions map[string]JevQuestion) (*JevResult, error) {
 	payload := map[string]any{"model": model, "state": state, "questions": questions}
 	b, _ := json.Marshal(payload)
 	r, err := http.NewRequestWithContext(ctx, http.MethodPost, p.url(), bytes.NewReader(b))

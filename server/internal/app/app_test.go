@@ -94,11 +94,13 @@ func mockAI(t *testing.T) *httptest.Server {
 			_, _ = w.Write([]byte(`{"data":[{"id":"free-model","pricing":{"prompt":"0","completion":"0"}},{"id":"paid-model","pricing":{"prompt":"0.000001","completion":"0.000002"}}]}`))
 		case strings.HasSuffix(r.URL.Path, "/systemone"):
 			var req struct {
-				State     string                     `json:"state"`
+				State struct {
+					Conversation json.RawMessage `json:"conversation"`
+				} `json:"state"`
 				Questions map[string]json.RawMessage `json:"questions"`
 			}
 			_ = json.Unmarshal(body, &req)
-			conv := req.State[strings.Index(req.State, "CONVERSATION"):]
+			conv := string(req.State.Conversation)
 			answers := map[string]any{}
 			for k := range req.Questions {
 				v := 0.1
@@ -374,5 +376,20 @@ func TestStreamFallsBackWhenFirstTokenIsLate(t *testing.T) {
 	}
 	if time.Since(start) > 2*time.Second {
 		t.Fatalf("waited for the slow model: %s", time.Since(start))
+	}
+}
+
+func TestJevStateIsStructuredAndTruncated(t *testing.T) {
+	var msgs []transcriptMsg
+	for i := 0; i < 200; i++ {
+		msgs = append(msgs, transcriptMsg{Role: "user", Content: strings.Repeat("parola ", 20)}, transcriptMsg{Role: "assistant", Name: "Napoleone", Content: "risposta"})
+	}
+	st := jevState(judgeInput{Instructions: "Intervista", Transcript: msgs}, []string{"g1"}, 4000)
+	if n := len(mustJSON(st)); n > 4000 {
+		t.Fatalf("state too long: %d", n)
+	}
+	conv := st["conversation"].([]map[string]string)
+	if st["earlier_messages_omitted"] == nil || conv[len(conv)-1]["from"] != "Napoleone" || conv[len(conv)-2]["from"] != "student" {
+		t.Fatalf("bad state: %v", st["earlier_messages_omitted"])
 	}
 }

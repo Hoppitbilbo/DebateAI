@@ -631,8 +631,12 @@ func (s *Server) handleTestProvider(w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
 	u := currentUser(r)
 	if d, ok := cp.p.(ai.Decider); ok {
-		res, err := d.Decide(ctx, in.Model, "STUDENT: I asked Napoleon why he invaded Russia and he explained the Continental System.",
-			map[string]ai.JevQuestion{"asked": {Type: "noul", Instructions: "Did the student ask about the invasion of Russia?"}})
+		state := map[string]any{"conversation": []map[string]string{
+			{"from": "student", "text": "Why did you invade Russia?"},
+			{"from": "Napoleon", "text": "The Tsar broke the Continental System."},
+		}}
+		res, err := d.Decide(ctx, in.Model, state,
+			map[string]ai.JevQuestion{"asked": {Type: "noul", Instructions: "In `conversation`, did the student ask about the invasion of Russia?"}})
 		s.logUsage(usageEntry{UserID: &u.ID, ProviderID: id, Provider: cp.name, Model: in.Model, Task: "test", OK: err == nil, Latency: time.Since(start), Usage: usageOr(res)})
 		if err != nil {
 			writeErr(w, 502, "provider_error", err.Error())
