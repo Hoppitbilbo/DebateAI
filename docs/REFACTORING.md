@@ -38,7 +38,7 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto · `[-]` scartato (spieg
 ## Stato attuale
 
 - **Fase in corso:** 5 (attività, frontend)
-- **Prossimo task:** 5.3
+- **Prossimo task:** 5.4
 - **Lavoro a metà:** nessuno
 - **Test:** Go 33 test nuovi + quelli esistenti verdi; Vitest 18 test verdi; lint 0 errori (18 warning preesistenti)
 
@@ -195,7 +195,7 @@ Un'area per task, spostando l'SQL in `internal/store`:
 
 - [x] **5.1** (`2381ff4`) `useActivityFlow` + `ActivityRunner`; migrata ConvinciTu.
 - [x] **5.2** (`b708914`) Migrare ImpersonaTu e WikiChatbot.
-- [ ] **5.3** Migrare DoppiaIntervista, PersonaggioMisterioso e YouModerate.
+- [x] **5.3** (`7d1e0f4`) Migrare DoppiaIntervista, PersonaggioMisterioso e YouModerate.
 - [ ] **5.4** `AiClient` (Adapter) usato dagli hook.
 
 ### Fase 6: resto del frontend
@@ -210,6 +210,7 @@ Un'area per task, spostando l'SQL in `internal/store`:
 
 - Schema della fase 3: il repository vive in `server/internal/store` (tipo concreto, es. `store.Settings`), mentre l'interfaccia la definisce chi la usa in `app` (es. `settingsStore` in `settings.go`). `Server` ha un campo per repository, inizializzato in `NewServer` (spostato in `main.go` al task 4.4). Ogni repository ha i suoi test in `store` con un DB temporaneo.
 - Entità condivise in `server/internal/domain` (`User`, `Invite`, `UserPatch`, ruoli, `Now`/`ParseTime`). In `app/repositories.go` ci sono le interfacce dei repository e gli alias temporanei (`User`, `inviteRow`, `Class`, `Member`, `Assignment`, `AssignStats`, `SessionSummary`, `SessionDetail`), da rimuovere quando gli handler useranno direttamente `domain` (fase 4). Lo schema SQL e `Open` sono in `store/schema.go`.
+- Possibile miglioramento (non fatto, cambierebbe il comportamento): `isCorrectGuess` del personaggio misterioso accetta anche tentativi cortissimi contenuti nel nome (es. "Da" per "Leonardo da Vinci"); fissato da `mystery.test.ts`.
 - Go non ha ereditarietà: Template Method si realizza con funzioni o interfacce passate come parametro (composizione).
 - L'API HTTP e lo schema SQLite non cambiano durante il refactoring.
 - Task 1.2: unica eccezione voluta alla regola "nessun cambio di comportamento". Solo quando una scrittura sul DB fallisce: le scritture principali rispondono 500 invece di un falso OK, quelle di contorno (ultimo login, pulizia sessioni, costi, prezzi importati, `email_sent`) vengono loggate con `execOrLog`, e gli handler con più update usano `sqlBatch`. Restano volutamente le letture `_ = ...QueryRow(...).Scan(...)` che hanno un valore di default sensato (nome classe, somme dei costi): verranno riviste nei repository (fase 3).
@@ -258,3 +259,4 @@ Un'area per task, spostando l'SQL in `internal/store`:
 | 2026-10-18 | — | — | Claude Code | CI GitHub verde su `9c73d83` (fine fase 4: `test`, `web`, `image`). |
 | 2026-10-18 | 5.1 | `2381ff4` | Claude Code | `src/features/activity/useActivityFlow.ts` (`begin`, `finishChat`, `submitReflection`, `restart`, `preset`, `minTurns`; `live(phase, assignment)`) e `components/ActivityRunner.tsx` (props `setup`, `chat` con `ready`/`replacement`, `reflection` con `brief`/`showEndReason`, `feedback`). Al posto di un oggetto `ActivityDefinition` statico si usa la composizione hook + componente, più naturale in React perché le parti variabili dipendono dallo stato della pagina. ConvinciTu: da 157 a 103 righe. Attenzione: la callback `live` riceve l'assignment, così il prompt si costruisce con una funzione (una costante dichiarata dopo l'hook darebbe un ReferenceError a runtime). Test: `useActivityFlow.test.tsx` (5) e `pages/ConvinciTuPage.test.tsx` (render della pagina vera fino alla chat). |
 | 2026-10-18 | 5.2 | `b708914` | Claude Code | ImpersonaTu da 161 a 111 righe, WikiChatbot da 135 a 82. I test delle pagine sono ora in `src/pages/activityPages.test.tsx` (mock condivisi, `cleanup` esplicito perché Vitest gira senza globals). Vitest: 26 test. |
+| 2026-10-18 | 5.3 | `7d1e0f4` | Claude Code | DoppiaIntervista 175 → 129 righe, YouModerate 214 → 166, PersonaggioMisterioso 268 → 215 (+ `src/features/activity/mystery.ts` con `isCorrectGuess` e `RANDOM_CHARACTERS`, test `mystery.test.ts`). Il personaggio misterioso usa `chat.replacement` per il tentativo finale, `onEnded` personalizzato e `showEndReason: false`. Le sei pagine attività ora usano tutte `ActivityRunner`. Test delle pagine estesi alle tre app (stub di `ResizeObserver` per lo slider Radix). Vitest: 31 test; lint 17 avvisi (uno in meno). |
