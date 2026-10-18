@@ -38,8 +38,8 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto · `[-]` scartato (spieg
 ## Stato attuale
 
 - **Fase in corso:** 4 (service, State, Observer, backend)
-- **Prossimo task:** 4.4
-- **Lavoro a metà:** nessuno
+- **Prossimo task:** 4.4b
+- **Lavoro a metà:** 4.4 (fatto 4.4a, restano 4.4b-d)
 - **Test:** Go 33 test nuovi + quelli esistenti verdi; Vitest 18 test verdi; lint 0 errori (18 warning preesistenti)
 
 ---
@@ -181,7 +181,11 @@ Un'area per task, spostando l'SQL in `internal/store`:
   - [x] **4.2b** (`a07cc6a`) `classService`
   - [x] **4.2c** (`a11df2e`) `assignmentService` (+ `sessionService.Start/Load/Complete`)
 - [x] **4.3** (`ec6a61d`) Observer per le notifiche mail.
-- [ ] **4.4** `main.go` come composition root; `Server` ridotto a router e middleware; handler spostati in `httpapi/`.
+- [~] **4.4** `main.go` come composition root; `Server` ridotto a router e middleware; handler spostati in `httpapi/`.
+  - [x] **4.4a** (`795d8e0`) `settingsService`
+  - [ ] **4.4b** `aiGateway` (provider, prezzi, budget, routing, generate, judge fuori da `Server`)
+  - [ ] **4.4c** composition root: `app.NewServices` costruito da `main.go`
+  - [ ] **4.4d** handler HTTP nel pacchetto `httpapi`
 
 ### Fase 5: attività (frontend)
 
@@ -243,3 +247,4 @@ Un'area per task, spostando l'SQL in `internal/store`:
 | 2026-10-18 | 4.2b | `a07cc6a` | Claude Code | `server/internal/app/class_service.go`: `CanManage`, `List`, `Create`, `Update`, `RegenerateCode`, `Invite` (+ `addExisting`), `Join`, `Joined`, `splitEmails`; errori `errBadMemberRole`, `errOnlyOwner`, `errInvalidCode`. Helper `managedClass` per il controllo 403 ripetuto in 6 handler. Test in `class_service_test.go`. |
 | 2026-10-18 | 4.2c | `a11df2e` | Claude Code | `server/internal/app/assignment_service.go`: `Managed`, `Visible`, `ListForClass`, `ListForStudent`, `Create`, `Update`, `Progress`, `notifyStudents` (da trasformare in Observer nel 4.3), `dueText`. `sessionService` ora ha anche `Start`, `Load` (regole di accesso) e `Complete`; handler delle sessioni spostati in `sessions.go` con helper `ownSession`; helper `managedAssignment`. Rimossi `getAssignment`, `appTypes`, `canManageClass`, `isClassMember`, `latestSession`, `bestSession`. Test in `assignment_service_test.go`. |
 | 2026-10-18 | 4.3 | `ec6a61d` | Claude Code | `server/internal/app/notify.go`: interfaccia `assignmentListener` (`AssignmentPublished`), `mailNotifier` e `dueText`. `assignmentService` ha `listeners` e non conosce più mail o SMTP. L'evento parte solo se il docente ha chiesto la notifica e il compito diventa pubblicato (come prima). Le altre mail (benvenuto, invito, aggiunta alla classe) restano dentro i flussi di `authService`/`classService`, perché il risultato dell'invio serve alla risposta. Test in `notify_test.go`. |
+| 2026-10-18 | 4.4a | `795d8e0` | Claude Code | `settingsService` in `settings.go`: `General`, `Budget`, `Routing`, `Jev`, `SMTP`, `MailConfigured`, `Save*` con le regole di normalizzazione (prima nell'handler). Costanti delle chiavi (`settingGeneral`, ...). Campo `Server.settingsSvc`; rimossi i metodi `Server.general/budget/routing/jevSettings/smtp`. |
