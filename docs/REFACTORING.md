@@ -38,11 +38,10 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto · `[-]` scartato (spieg
 ## Stato attuale
 
 - **Fase in corso:** 8 (punti aperti e funzioni docente)
-- **Prossimo task:** 8.2
+- **Prossimo task:** 8.3
 - **Lavoro a metà:** nessuno
 - **Test:** Go (pacchetti `ai`, `app`, `domain`, `httpapi`, `store`) verdi anche con `-race`; Vitest 48 test verdi; lint 0 errori (16 avvisi `react-refresh/only-export-components` preesistenti, soprattutto in `src/components/ui` e `pages/dashboard/common.tsx`).
 - **Punti aperti (non refactoring, da decidere):**
-  2. `isCorrectGuess` troppo permissivo con tentativi cortissimi (vedi Note).
   3. Avvisi `react-refresh` rimasti: spostare le funzioni condivise (`formatDate`, `usd`, `copy`, ...) da file di componenti a moduli separati.
   4. Unire `go` in `master` (nessuna pull request aperta).
 
@@ -216,7 +215,7 @@ Un'area per task, spostando l'SQL in `internal/store`:
 ### Fase 8: punti aperti e nuove funzioni per il docente (richiesta del 2026-10-18)
 
 - [x] **8.1** (`8f788ea`) Tutorial: allineare gli id delle slide ai testi esistenti, tenere il necessario, migliorare i testi poco chiari.
-- [ ] **8.2** Personaggio misterioso: confronto del tentativo severo; la partita termina quando JEV giudica raggiunto l'obiettivo, con un messaggio.
+- [x] **8.2** (`a25b47a`) Personaggio misterioso: confronto del tentativo severo; la partita termina quando JEV giudica raggiunto l'obiettivo, con un messaggio.
 - [ ] **8.3** Eliminare gli avvisi `react-refresh/only-export-components`.
 - [ ] **8.4** Docente: stampa/PDF della chat, feedback scritto a mano (visibile allo studente), export dei voti in Excel. Voti in dashboard e revisione della chat in qualsiasi momento esistono già (pagina di avanzamento del compito e `/sessions/{id}`).
 - [ ] **8.5** Pull request da `go` a `master`.
@@ -227,7 +226,7 @@ Un'area per task, spostando l'SQL in `internal/store`:
 
 - Schema della fase 3: il repository vive in `server/internal/store` (tipo concreto, es. `store.Settings`), mentre l'interfaccia la definisce chi la usa in `app` (es. `settingsStore` in `settings.go`). `Server` ha un campo per repository, inizializzato in `NewServer` (spostato in `main.go` al task 4.4). Ogni repository ha i suoi test in `store` con un DB temporaneo.
 - Entità condivise in `server/internal/domain` (`User`, `Invite`, `UserPatch`, ruoli, `Now`/`ParseTime`). In `app/repositories.go` ci sono le interfacce dei repository e gli alias temporanei (`User`, `inviteRow`, `Class`, `Member`, `Assignment`, `AssignStats`, `SessionSummary`, `SessionDetail`), da rimuovere quando gli handler useranno direttamente `domain` (fase 4). Lo schema SQL e `Open` sono in `store/schema.go`.
-- Possibile miglioramento (non fatto, cambierebbe il comportamento): `isCorrectGuess` del personaggio misterioso accetta anche tentativi cortissimi contenuti nel nome (es. "Da" per "Leonardo da Vinci"); fissato da `mystery.test.ts`.
+- (Fatto nel task 8.2) `isCorrectGuess` del personaggio misterioso accetta anche tentativi cortissimi contenuti nel nome (es. "Da" per "Leonardo da Vinci"); fissato da `mystery.test.ts`.
 - **(Risolto nel task 8.1) Gap di contenuto dei tutorial:** il codice usa gli id di slide `thinkAloud`, `reflectionAndGrowth`, `examples` (e i punti elenco di altre 3 slide) che nei file `src/i18n/tutorials/*.json` hanno nomi diversi (`thinkAloudProtocols`, `reflectionGrowth`, `implementationExamples`, ...): 30 testi mostrano la chiave in tutte le lingue. Inoltre DoppiaIntervista in en/fr/es ha un set di slide diverso (ricade sull'italiano). Correggerli è lavoro sui contenuti; `tutorials.test.tsx` conta i 30 testi mancanti e fallirà (in meglio) quando verranno sistemati.
 - Go non ha ereditarietà: Template Method si realizza con funzioni o interfacce passate come parametro (composizione).
 - L'API HTTP e lo schema SQLite non cambiano durante il refactoring.
@@ -287,3 +286,4 @@ Un'area per task, spostando l'SQL in `internal/store`:
 | 2026-10-18 | 7.2 | `d81884b` | Claude Code | Nessun file in `src/pages`, `src/components` o `src/context` chiama più `api` direttamente: le chiamate stanno in `src/features/*` (e `services/` per l'AI). `InviteForm` ha la prop `invite` (rimosso `extraBody`, mai usato). Test `pages/dashboard/studentPages.test.tsx` (3). Vitest 48 test. |
 | 2026-10-18 | — | — | Claude Code | CI GitHub verde su `a9fd39c` (fine fase 7: `test`, `web`, `image`). |
 | 2026-10-18 | 8.1 | `8f788ea` | Claude Code | Riscritti i tutorial di ImpersonaTu e DoppiaIntervista: 6 slide brevi ciascuno (benvenuto, come funziona, consigli, cosa si impara/confronto, riflessione e valutazione, in classe) aderenti a cosa fa l'app, in it/en/es/fr/de; prima descrivevano sessioni con facilitatori tra pari inesistenti e 30 testi mostravano la chiave. Aggiunti i 3 punti mancanti di YouModerate in en/fr. `tutorials.test.tsx` ora richiede ogni testo in ogni lingua. |
+| 2026-10-18 | 8.2 | `a25b47a` | Claude Code | `isCorrectGuess` severo: giusto solo con il nome completo o con una parola intera del nome di almeno 4 lettere ("Vinci", "Leonardo"); frammenti, particelle e errori di battitura sono sbagliati. Quando JEV giudica raggiunto l'obiettivo del compito (`goal_reached`, serve `autoEnd`), le domande si fermano, compare il messaggio `apps.personaggioMisterioso.judgeEnded` (5 lingue) e si passa alla risposta finale. Test in `mystery.test.ts` e `activityPages.test.tsx`. |
