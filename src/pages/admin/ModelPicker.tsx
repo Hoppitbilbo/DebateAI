@@ -6,8 +6,8 @@ import { Switch } from "@/components/ui/switch";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
+import type { ModelInfo } from "@/features/admin/aiAdminApi";
 
-export interface ModelInfo { id: string; name?: string; inputPerM?: number; outputPerM?: number; free: boolean; supportLive?: boolean }
 
 const price = (m: ModelInfo) =>
   m.inputPerM === undefined || m.outputPerM === undefined ? "" : `$${m.inputPerM.toFixed(2)} / $${m.outputPerM.toFixed(2)}`;

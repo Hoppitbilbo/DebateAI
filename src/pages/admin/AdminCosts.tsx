@@ -1,20 +1,10 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useQuery } from "@tanstack/react-query";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
-import { api } from "@/lib/api";
+import { Agg, useUsageLog, useUsageSummary } from "@/features/admin/adminApi";
 import { EmptyState, formatDate, Panel, Spinner, StatTile, usd } from "../dashboard/common";
-
-interface Agg { key: string; label?: string; requests: number; errors: number; inputTokens: number; outputTokens: number; costUsd: number }
-interface Summary {
-  days: number;
-  byDay: Agg[]; byModel: Agg[]; byTask: Agg[]; byProvider: Agg[]; byUser: Agg[]; byClass: Agg[];
-  monthSpendUsd: number;
-  budget: { monthlyUsd: number; warnPercent: number; blockPaidWhenExceeded: boolean };
-}
-interface LogRow { id: number; createdAt: string; user: string; sessionId?: number; provider: string; model: string; task: string; inputTokens: number; outputTokens: number; costUsd: number; ok: boolean; latencyMs: number; error?: string }
 
 const num = (n: number) => n.toLocaleString();
 
@@ -61,8 +51,8 @@ const AggTable = ({ rows, keyLabel, labelFor }: { rows: Agg[]; keyLabel: string;
 const AdminCosts = () => {
   const { t, i18n } = useTranslation();
   const [days, setDays] = useState("30");
-  const summary = useQuery({ queryKey: ["usage", days], queryFn: () => api.get<Summary>(`/api/admin/usage?days=${days}`) });
-  const log = useQuery({ queryKey: ["usage-log"], queryFn: () => api.get<LogRow[]>("/api/admin/usage/log?limit=200") });
+  const summary = useUsageSummary(days);
+  const log = useUsageLog();
 
   if (summary.isLoading || !summary.data) return <Spinner />;
   const s = summary.data;
