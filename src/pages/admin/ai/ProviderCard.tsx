@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Provider, providerActions } from "@/features/admin/aiAdminApi";
-import { ConfirmButton } from "../../dashboard/TeacherPages";
+import ConfirmButton from "../../dashboard/ConfirmButton";
 import ModelInput from "./ModelInput";
 
 const ProviderCard = ({ p, onChanged }: { p: Provider; onChanged: () => void }) => {

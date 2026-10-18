@@ -33,10 +33,9 @@ const AccountPage = named(authPages, "AccountPage");
 import { RequireRole, Spinner } from "./pages/dashboard/common";
 const StudentDashboard = lazy(() => import("./pages/dashboard/StudentDashboard"));
 const SessionDetailPage = lazy(() => import("./pages/dashboard/SessionDetailPage"));
-const teacherPages = () => import("./pages/dashboard/TeacherPages");
-const TeacherDashboard = named(teacherPages, "TeacherDashboard");
-const ClassPage = named(teacherPages, "ClassPage");
-const AssignmentProgressPage = named(teacherPages, "AssignmentProgressPage");
+const TeacherDashboard = lazy(() => import("./pages/dashboard/teacher/TeacherDashboard"));
+const ClassPage = lazy(() => import("./pages/dashboard/teacher/ClassPage"));
+const AssignmentProgressPage = lazy(() => import("./pages/dashboard/teacher/AssignmentProgressPage"));
 const AdminPage = lazy(() => import("./pages/admin/AdminPage"));
 
 const queryClient = new QueryClient({ defaultOptions: { queries: { retry: 1, refetchOnWindowFocus: false } } });

@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAdminClasses, useTeachers } from "@/features/admin/adminApi";
 import { Panel, Spinner } from "../../dashboard/common";
-import { ClassCreateDialog, ClassGrid } from "../../dashboard/TeacherPages";
+import ClassCreateDialog from "../../dashboard/teacher/ClassCreateDialog";
+import ClassGrid from "../../dashboard/teacher/ClassGrid";
 
 const ClassesTab = () => {
   const { t } = useTranslation();

@@ -12,7 +12,7 @@ import type { Role } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { NewUser, useInviteActions, useUserActions, useUsers } from "@/features/admin/adminApi";
 import { EmptyState, formatDate, Panel, Spinner, usd } from "../../dashboard/common";
-import { ConfirmButton } from "../../dashboard/TeacherPages";
+import ConfirmButton from "../../dashboard/ConfirmButton";
 import InviteForm from "../../dashboard/InviteForm";
 import { LOCALES } from "../../auth/AuthPages";
 

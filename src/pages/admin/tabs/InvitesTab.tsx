@@ -4,7 +4,7 @@ import { RotateCw, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useInviteActions, useInvites } from "@/features/admin/adminApi";
 import { EmptyState, formatDate, Panel, Spinner } from "../../dashboard/common";
-import { ConfirmButton } from "../../dashboard/TeacherPages";
+import ConfirmButton from "../../dashboard/ConfirmButton";
 
 const InvitesTab = () => {
   const { t, i18n } = useTranslation();
