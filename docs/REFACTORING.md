@@ -37,14 +37,14 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto · `[-]` scartato (spieg
 
 ## Stato attuale
 
-- **Piano completato** (fasi 0-6) il 2026-10-18 sul branch `go`.
+- **Piano completato** (fasi 0-7) il 2026-10-18 sul branch `go`.
 - **Lavoro a metà:** nessuno
-- **Test:** Go (pacchetti `ai`, `app`, `domain`, `httpapi`, `store`) verdi anche con `-race`; Vitest 43 test verdi; lint 0 errori (16 avvisi `react-refresh/only-export-components` preesistenti, soprattutto in `src/components/ui` e `pages/dashboard/common.tsx`).
+- **Test:** Go (pacchetti `ai`, `app`, `domain`, `httpapi`, `store`) verdi anche con `-race`; Vitest 48 test verdi; lint 0 errori (16 avvisi `react-refresh/only-export-components` preesistenti, soprattutto in `src/components/ui` e `pages/dashboard/common.tsx`).
 - **Punti aperti (non refactoring, da decidere):**
   1. Contenuti dei tutorial: 30 testi di ImpersonaTu mostrano la chiave; DoppiaIntervista ha slide diverse tra le lingue (vedi Note).
   2. `isCorrectGuess` troppo permissivo con tentativi cortissimi (vedi Note).
   3. Avvisi `react-refresh` rimasti: spostare le funzioni condivise (`formatDate`, `usd`, `copy`, ...) da file di componenti a moduli separati.
-  4. Pagine non toccate dal piano e ancora con chiamate `api` dirette: `StudentDashboard`, `SessionDetailPage`, `AssignmentForm`, `InviteForm`, `AuthPages` (stesso schema del 6.2/6.3 se si vuole uniformare).
+  4. Unire `go` in `master` (nessuna pull request aperta).
 
 ---
 
@@ -208,6 +208,11 @@ Un'area per task, spostando l'SQL in `internal/store`:
 - [x] **6.2** (`1fca02f`) Dividere `AdminAI.tsx` e `AdminPage.tsx` in hook dati e componenti.
 - [x] **6.3** (`b1cdc25`) Dividere `TeacherPages.tsx`.
 
+### Fase 7: pagine rimaste con chiamate API dirette
+
+- [x] **7.1** (`19b49de`) `features/auth/authApi.ts` usato da `AuthContext` e `AuthPages`.
+- [x] **7.2** (`d81884b`) `features/student/studentApi.ts` (dashboard studente, dettaglio sessione); `teacherApi` con `saveAssignment`, `inviteToClass`, `inviteToPlatform`; `InviteForm` riceve il mittente invece dell'URL; `AssignmentForm` usa `AiClient`.
+
 ---
 
 ## Note e decisioni
@@ -270,3 +275,5 @@ Un'area per task, spostando l'SQL in `internal/store`:
 | 2026-10-18 | 6.2 | `1fca02f` | Claude Code | Livello dati `src/features/admin/adminApi.ts` (overview, utenti, inviti, classi, settings, costi) e `aiAdminApi.ts` (provider, routing, JEV, prezzi; tipo `ModelInfo` spostato qui da `ModelPicker`), dati statici in `aiPresets.ts`. `AdminPage.tsx` 419 → 37 righe (schede in `pages/admin/tabs/`), `AdminAI.tsx` 425 → 42 (componenti in `pages/admin/ai/`). Nessun componente admin chiama più `api` o `useQuery` direttamente. Test `AdminPage.test.tsx`: render delle 7 schede su risposte API finte. Vitest 40 test, lint 16 avvisi. |
 | 2026-10-18 | 6.3 | `b1cdc25` | Claude Code | `src/features/teacher/teacherApi.ts` (`useMyClasses`, `useClass` con azioni che ricaricano la classe, `useAssignmentProgress`, `createClass`); `TeacherPages.tsx` (420 righe) diviso in `pages/dashboard/teacher/` (`TeacherDashboard`, `ClassPage` + `ClassAssignments`/`ClassMembers`/`ClassProgress`/`ClassSettings`, `AssignmentProgressPage`, `ClassCreateDialog`, `ClassGrid`) e `pages/dashboard/ConfirmButton.tsx`; `App.tsx` carica le pagine con import di default. Test `teacherPages.test.tsx` (3). **Piano completato.** |
 | 2026-10-18 | — | — | Claude Code | CI GitHub verde su `f26a002` (fine piano: `test`, `web`, `image`). |
+| 2026-10-18 | 7.1 | `19b49de` | Claude Code | `authApi` (config pubblica, me, login, logout, info invito, registrazione, password dimenticata, reset, setup, profilo). Test `context/AuthContext.test.tsx` (2). |
+| 2026-10-18 | 7.2 | `d81884b` | Claude Code | Nessun file in `src/pages`, `src/components` o `src/context` chiama più `api` direttamente: le chiamate stanno in `src/features/*` (e `services/` per l'AI). `InviteForm` ha la prop `invite` (rimosso `extraBody`, mai usato). Test `pages/dashboard/studentPages.test.tsx` (3). Vitest 48 test. |
