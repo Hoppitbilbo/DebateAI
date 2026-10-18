@@ -12,7 +12,7 @@ const mocks = vi.hoisted(() => ({
   api: { get: vi.fn(), post: vi.fn(), put: vi.fn() },
 }));
 
-vi.mock("@/context/AuthContext", () => ({ useAuth: () => ({ user: mocks.user }) }));
+vi.mock("@/context/auth", () => ({ useAuth: () => ({ user: mocks.user }) }));
 vi.mock("@/lib/api", () => ({ api: mocks.api }));
 
 const assignment = { id: 5, appType: "convinci-tu", maxTurns: 3, minTurns: 1, allowLive: false, requireReflection: false };

@@ -35,7 +35,7 @@ vi.mock("@/lib/api", async (orig) => ({
     post: mocks.post, put: vi.fn(), patch: vi.fn(), del: vi.fn(),
   },
 }));
-vi.mock("@/context/AuthContext", () => ({ useAuth: () => ({ user: me, config: { allowJoinByCode: true }, loading: false }) }));
+vi.mock("@/context/auth", () => ({ useAuth: () => ({ user: me, config: { allowJoinByCode: true }, loading: false }) }));
 vi.mock("@/components/Navbar", () => ({ default: () => null }));
 
 beforeAll(() => i18n.changeLanguage("en"));

@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import LanguageSwitcher from "@/components/shared/LanguageSwitcher";
 import { cn } from "@/lib/utils";
-import { dashboardPath, useAuth } from "@/context/AuthContext";
+import { dashboardPath, useAuth } from "@/context/auth";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);

@@ -6,19 +6,9 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/context/auth";
 import type { AppType, Role, SessionSummary } from "@/lib/api";
-
-export const APP_ICONS: Record<AppType, React.ComponentType<{ className?: string }>> = {
-  "convinci-tu": Speech,
-  "doppia-intervista": Users,
-  "wiki-chatbot": MessageSquare,
-  "personaggio-misterioso": Search,
-  "impersona-tu": User,
-  "you-moderate": BookOpen,
-};
-
-export const APP_TYPES = Object.keys(APP_ICONS) as AppType[];
+import { APP_ICONS } from "@/features/activity/appCatalog";
 
 export const AppName = ({ type }: { type: AppType }) => {
   const { t } = useTranslation();
@@ -101,8 +91,3 @@ export const RequireRole = ({ role, children }: { role: Role; children: React.Re
   if (rank[user.role] < rank[role]) return <Navigate to="/dashboard" replace />;
   return <>{children}</>;
 };
-
-export const formatDate = (iso?: string, locale?: string) => (iso ? new Date(iso).toLocaleString(locale, { dateStyle: "short", timeStyle: "short" }) : "–");
-
-export const usd = (v: number | undefined) =>
-  v === undefined ? "–" : v === 0 ? "$0" : v < 0.01 ? `$${v.toFixed(4)}` : `$${v.toFixed(2)}`;

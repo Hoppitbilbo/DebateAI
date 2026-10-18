@@ -2,7 +2,7 @@
 import { ReactNode } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useAnimation } from "@/context/AnimationContext";
+import { useAnimation } from "@/context/animation";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 

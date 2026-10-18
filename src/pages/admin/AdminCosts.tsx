@@ -4,7 +4,8 @@ import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxi
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
 import { Agg, useUsageLog, useUsageSummary } from "@/features/admin/adminApi";
-import { EmptyState, formatDate, Panel, Spinner, StatTile, usd } from "../dashboard/common";
+import { EmptyState, Panel, Spinner, StatTile } from "../dashboard/common";
+import { formatDate, usd } from "@/lib/format";
 
 const num = (n: number) => n.toLocaleString();
 

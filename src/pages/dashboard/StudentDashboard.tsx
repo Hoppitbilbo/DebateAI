@@ -8,9 +8,10 @@ import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { ApiError, Assignment } from "@/lib/api";
 import { useJoinClass, useMyAssignments, useMyClasses, useMySessions } from "@/features/student/studentApi";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/context/auth";
 import { APPS } from "@/features/activity/types";
-import { AppName, DashboardLayout, EmptyState, formatDate, Panel, Spinner, StatusBadge } from "./common";
+import { AppName, DashboardLayout, EmptyState, Panel, Spinner, StatusBadge } from "./common";
+import { formatDate } from "@/lib/format";
 
 const StudentDashboard = () => {
   const { t, i18n } = useTranslation();

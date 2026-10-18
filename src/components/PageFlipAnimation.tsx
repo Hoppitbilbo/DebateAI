@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { useAnimation } from '@/context/AnimationContext';
+import { useAnimation } from '@/context/animation';
 
 const PageFlipAnimation: React.FC = () => {
   const { isAnimating } = useAnimation();

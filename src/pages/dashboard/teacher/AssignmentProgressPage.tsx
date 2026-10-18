@@ -3,7 +3,8 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useAssignmentProgress } from "@/features/teacher/teacherApi";
-import { DashboardLayout, EmptyState, formatDate, Panel, Spinner, StatusBadge, usd } from "../common";
+import { DashboardLayout, EmptyState, Panel, Spinner, StatusBadge } from "../common";
+import { formatDate, usd } from "@/lib/format";
 
 /** How each student is doing on one assignment. */
 const AssignmentProgressPage = () => {

@@ -4,8 +4,9 @@ import { CheckCircle2, Circle } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import MarkdownViewer from "@/components/shared/MarkdownViewer";
 import { useSession } from "@/features/student/studentApi";
-import { useAuth } from "@/context/AuthContext";
-import { AppName, DashboardLayout, EmptyState, formatDate, Panel, Spinner, StatTile, StatusBadge, usd } from "./common";
+import { useAuth } from "@/context/auth";
+import { AppName, DashboardLayout, EmptyState, Panel, Spinner, StatTile, StatusBadge } from "./common";
+import { formatDate, usd } from "@/lib/format";
 
 /** Transcript + reflection + evaluation of one activity (student, teacher, admin). */
 const SessionDetailPage = () => {

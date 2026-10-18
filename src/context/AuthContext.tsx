@@ -1,21 +1,10 @@
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import i18n from "@/i18n";
 import type { PublicConfig, User } from "@/lib/api";
 import { authApi } from "@/features/auth/authApi";
+import { AuthContext } from "./auth";
 
-interface AuthState {
-  user: User | null;
-  config: PublicConfig | null;
-  loading: boolean;
-  serverAvailable: boolean;
-  refresh: () => Promise<void>;
-  login: (email: string, password: string) => Promise<User>;
-  logout: () => Promise<void>;
-  setUser: (u: User | null) => void;
-}
-
-const AuthContext = createContext<AuthState | null>(null);
-
+/** Loads the session and the public config, and provides login/logout to the app. */
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUserState] = useState<User | null>(null);
   const [config, setConfig] = useState<PublicConfig | null>(null);
@@ -68,12 +57,3 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
-
-export const useAuth = () => {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuth must be used inside AuthProvider");
-  return ctx;
-};
-
-export const dashboardPath = (u: User | null) =>
-  !u ? "/login" : u.role === "admin" ? "/admin" : u.role === "teacher" ? "/teacher" : "/student";

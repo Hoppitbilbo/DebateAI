@@ -9,13 +9,14 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import type { Role } from "@/lib/api";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/context/auth";
 import { NewUser, useInviteActions, useUserActions, useUsers } from "@/features/admin/adminApi";
-import { EmptyState, formatDate, Panel, Spinner, usd } from "../../dashboard/common";
+import { EmptyState, Panel, Spinner } from "../../dashboard/common";
+import { formatDate, usd } from "@/lib/format";
 import ConfirmButton from "../../dashboard/ConfirmButton";
 import InviteForm from "../../dashboard/InviteForm";
 import { inviteToPlatform } from "@/features/teacher/teacherApi";
-import { LOCALES } from "../../auth/AuthPages";
+import { LOCALES } from "@/i18n/languages";
 
 const CreateUserDialog = ({ open, onOpenChange, onDone }: { open: boolean; onOpenChange: (o: boolean) => void; onDone: () => void }) => {
   const { t } = useTranslation();

@@ -14,7 +14,8 @@ import { saveAssignment } from "@/features/teacher/teacherApi";
 import { useAiClient } from "@/services/aiClient";
 import { CharacterPicker } from "@/features/activity/components/SetupCard";
 import { uiLanguage } from "@/features/activity/prompts";
-import { APP_TYPES, AppName } from "./common";
+import { AppName } from "./common";
+import { APP_TYPES } from "@/features/activity/appCatalog";
 
 interface Props {
   classId: number;

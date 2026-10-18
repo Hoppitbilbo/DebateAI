@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import type { Assignment } from "@/lib/api";
-import { AppName, EmptyState, formatDate, Spinner } from "../common";
+import { AppName, EmptyState, Spinner } from "../common";
+import { formatDate } from "@/lib/format";
 import ConfirmButton from "../ConfirmButton";
 
 interface ClassAssignmentsProps {

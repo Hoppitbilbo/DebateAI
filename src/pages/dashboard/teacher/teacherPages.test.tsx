@@ -42,7 +42,7 @@ vi.mock("@/lib/api", async (orig) => ({
     post: vi.fn(), put: vi.fn(), patch: vi.fn(), del: vi.fn(),
   },
 }));
-vi.mock("@/context/AuthContext", () => ({ useAuth: () => ({ user: me, loading: false, refresh: vi.fn(), logout: vi.fn() }) }));
+vi.mock("@/context/auth", () => ({ useAuth: () => ({ user: me, loading: false, refresh: vi.fn(), logout: vi.fn() }) }));
 vi.mock("@/components/Navbar", () => ({ default: () => null }));
 
 beforeAll(() => i18n.changeLanguage("en"));

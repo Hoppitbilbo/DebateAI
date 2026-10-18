@@ -3,7 +3,8 @@ import { toast } from "sonner";
 import { RotateCw, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useInviteActions, useInvites } from "@/features/admin/adminApi";
-import { EmptyState, formatDate, Panel, Spinner } from "../../dashboard/common";
+import { EmptyState, Panel, Spinner } from "../../dashboard/common";
+import { formatDate } from "@/lib/format";
 import ConfirmButton from "../../dashboard/ConfirmButton";
 
 const InvitesTab = () => {

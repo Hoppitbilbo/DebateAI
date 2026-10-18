@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { api, AppType, Assignment, JudgeResult, SessionSummary, TranscriptMessage } from "@/lib/api";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/context/auth";
 import type { ActivityMessage } from "./types";
 
 export type EndReason = "goal_reached" | "turn_limit" | "manual" | null;

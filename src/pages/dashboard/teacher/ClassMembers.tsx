@@ -2,9 +2,11 @@ import { useTranslation } from "react-i18next";
 import { Copy, RefreshCw, UserMinus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ClassDetail, inviteToClass } from "@/features/teacher/teacherApi";
-import { EmptyState, formatDate, Panel } from "../common";
+import { EmptyState, Panel } from "../common";
+import { formatDate } from "@/lib/format";
 import ConfirmButton from "../ConfirmButton";
-import InviteForm, { copy } from "../InviteForm";
+import InviteForm from "../InviteForm";
+import { copy } from "@/lib/clipboard";
 
 interface ClassMembersProps {
   detail: ClassDetail;

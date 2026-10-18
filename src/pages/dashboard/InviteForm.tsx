@@ -8,8 +8,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { InviteResult, Role } from "@/lib/api";
 import type { InviteSender } from "@/features/teacher/teacherApi";
-import { useAuth } from "@/context/AuthContext";
-import { LOCALES } from "../auth/AuthPages";
+import { useAuth } from "@/context/auth";
+import { copy } from "@/lib/clipboard";
+import { LOCALES } from "@/i18n/languages";
 
 interface Props {
   /** Who receives the invitations: a class (inviteToClass) or the platform (inviteToPlatform). */
@@ -17,15 +18,6 @@ interface Props {
   roles: Role[];
   onDone?: () => void;
 }
-
-export const copy = async (text: string, okMsg: string) => {
-  try {
-    await navigator.clipboard.writeText(text);
-    toast.success(okMsg);
-  } catch {
-    toast.error(text);
-  }
-};
 
 /** Bulk invite by e-mail. Shows registration links when SMTP is not configured. */
 const InviteForm = ({ invite, roles, onDone }: Props) => {

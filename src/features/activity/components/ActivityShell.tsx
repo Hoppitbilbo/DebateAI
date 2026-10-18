@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { AiStatus } from "@/services/aiService";
 import { useAiClient } from "@/services/aiClient";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/context/auth";
 import type { ActivityPhase, AppMeta } from "../types";
 import type { ActivitySession } from "../useActivitySession";
 import AssignmentPanel from "./AssignmentPanel";

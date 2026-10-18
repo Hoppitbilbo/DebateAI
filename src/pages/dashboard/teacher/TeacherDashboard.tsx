@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/context/auth";
 import { useMyClasses } from "@/features/teacher/teacherApi";
 import { DashboardLayout, Spinner } from "../common";
 import ClassCreateDialog from "./ClassCreateDialog";

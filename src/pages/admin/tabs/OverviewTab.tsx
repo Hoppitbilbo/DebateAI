@@ -2,7 +2,8 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { CheckCircle2, Circle } from "lucide-react";
 import { useOverview } from "@/features/admin/adminApi";
-import { Panel, Spinner, StatTile, usd } from "../../dashboard/common";
+import { Panel, Spinner, StatTile } from "../../dashboard/common";
+import { usd } from "@/lib/format";
 
 /** Key numbers and the setup checklist of a new installation. */
 const OverviewTab = () => {

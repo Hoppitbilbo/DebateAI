@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Award, Bot, Download, LayoutDashboard, Loader2, MessagesSquare, RotateCcw, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import MarkdownViewer from "@/components/shared/MarkdownViewer";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/context/auth";
 import type { ActivityMessage } from "../types";
 import type { EvaluationResult } from "@/utils/evaluationUtils";
 

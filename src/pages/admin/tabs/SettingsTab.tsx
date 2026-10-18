@@ -7,10 +7,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/context/auth";
 import { Budget, General, Smtp, useSettings, useSettingsActions } from "@/features/admin/adminApi";
 import { Panel, Spinner } from "../../dashboard/common";
-import { LOCALES } from "../../auth/AuthPages";
+import { LOCALES } from "@/i18n/languages";
 
 const SwitchRow = ({ label, hint, checked, onChange }: { label: string; hint?: string; checked: boolean; onChange: (v: boolean) => void }) => (
   <label className="flex items-start justify-between gap-4 rounded-md border border-border p-3">

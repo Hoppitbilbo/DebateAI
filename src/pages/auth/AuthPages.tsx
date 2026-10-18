@@ -11,16 +11,9 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ApiError } from "@/lib/api";
 import { authApi, InviteInfo, ProfileChange } from "@/features/auth/authApi";
-import { dashboardPath, useAuth } from "@/context/AuthContext";
+import { dashboardPath, useAuth } from "@/context/auth";
 import i18n from "@/i18n";
-
-export const LOCALES = [
-  { code: "it", label: "Italiano" },
-  { code: "en", label: "English" },
-  { code: "es", label: "Español" },
-  { code: "fr", label: "Français" },
-  { code: "de", label: "Deutsch" },
-];
+import { LOCALES } from "@/i18n/languages";
 
 export const AuthLayout = ({ title, subtitle, children }: { title: string; subtitle?: string; children: React.ReactNode }) => (
   <div className="flex min-h-screen flex-col bg-background text-foreground">
