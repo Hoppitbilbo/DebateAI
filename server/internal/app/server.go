@@ -33,11 +33,12 @@ type Server struct {
 	prices      priceStore
 	usage       usageStore
 
-	sessionSvc *sessionService
-	accounts   *authService
-	classSvc   *classService
-	crypto     *Crypto
-	static     fs.FS
+	sessionSvc    *sessionService
+	accounts      *authService
+	classSvc      *classService
+	assignmentSvc *assignmentService
+	crypto        *Crypto
+	static        fs.FS
 
 	limiter *rateLimiter
 	provMu  sync.Mutex
@@ -66,7 +67,10 @@ func NewServer(cfg Config, db *sql.DB, static fs.FS) *Server {
 		siteName: func() string { return s.general().SiteName }}
 	s.classSvc = &classService{classes: s.classes, users: s.users, accounts: s.accounts, mail: s,
 		siteName: func() string { return s.general().SiteName }, mailOn: func() bool { return s.smtp().Host != "" }}
-	s.sessionSvc = &sessionService{sessions: s.sessions, assignments: s.assignments, judge: s, jevSettings: s.jevSettings}
+	s.assignmentSvc = &assignmentService{assignments: s.assignments, classes: s.classes, sessions: s.sessions, classSvc: s.classSvc, mail: s,
+		siteName: func() string { return s.general().SiteName }}
+	s.sessionSvc = &sessionService{sessions: s.sessions, assignments: s.assignments, classes: s.classes, classSvc: s.classSvc,
+		judge: s, jevSettings: s.jevSettings}
 	s.bootstrap()
 	return s
 }

@@ -8,12 +8,6 @@ import (
 	"time"
 )
 
-func (s *Server) canManageClass(u *User, classID int64) bool { return s.classSvc.CanManage(u, classID) }
-
-func (s *Server) isClassMember(u *User, classID int64) bool {
-	return s.classes.IsMember(classID, u.ID)
-}
-
 // managedClass returns the {id} of the path when the current user may
 // manage that class; otherwise it answers 403 and ok is false.
 func (s *Server) managedClass(w http.ResponseWriter, r *http.Request) (u *User, id int64, ok bool) {

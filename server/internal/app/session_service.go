@@ -3,6 +3,7 @@ package app
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"strings"
 
 	"github.com/Hoppitbilbo/DebateAI/server/internal/domain"
@@ -14,8 +15,92 @@ import (
 type sessionService struct {
 	sessions    sessionStore
 	assignments assignmentStore
+	classes     classStore
+	classSvc    *classService
 	judge       goalEvaluator
 	jevSettings func() JevSettings
+}
+
+var (
+	errInvalidApp          = errors.New("invalid appType")
+	errAssignmentForbidden = errors.New("assignment not available")
+	errOtherApp            = errors.New("assignment is for another app")
+	errSessionNotFound     = errors.New("session not found")
+)
+
+// NewAttempt is what the client sends to start an activity.
+type NewAttempt struct {
+	AppType      string          `json:"appType"`
+	AssignmentID int64           `json:"assignmentId"` // 0 for free practice
+	Title        string          `json:"title"`
+	Context      json.RawMessage `json:"context"`
+}
+
+// Start opens a new attempt; for an assignment it also closes the
+// student's previous attempts that never got a turn.
+func (svc *sessionService) Start(u *User, in NewAttempt) (*SessionSummary, error) {
+	if !domain.AppTypes[in.AppType] {
+		return nil, errInvalidApp
+	}
+	n := domain.NewSession{UserID: u.ID, AppType: in.AppType, Title: truncate(in.Title, maxSessionTitleChars), Context: "{}"}
+	if in.AssignmentID > 0 {
+		a, err := svc.assignments.Get(in.AssignmentID)
+		if err != nil || (!svc.classSvc.CanManage(u, a.ClassID) && (!svc.classes.IsMember(a.ClassID, u.ID) || !a.Published)) {
+			return nil, errAssignmentForbidden
+		}
+		if a.AppType != in.AppType {
+			return nil, errOtherApp
+		}
+		n.AssignmentID = &a.ID
+		logIfErr("abandon empty sessions", svc.sessions.AbandonEmpty(u.ID, a.ID))
+	}
+	if len(in.Context) > 0 {
+		n.Context = string(in.Context)
+	}
+	id, err := svc.sessions.Create(n)
+	if err != nil {
+		return nil, err
+	}
+	return svc.sessions.Summary(id)
+}
+
+// Load returns a session u may see and whether u is its owner. Admins see
+// every session; teachers those of their classes' assignments and the free
+// practice of their students.
+func (svc *sessionService) Load(u *User, id int64) (*SessionDetail, bool, error) {
+	d, err := svc.sessions.Detail(id)
+	if err != nil {
+		return nil, false, errSessionNotFound
+	}
+	owner := d.UserID != nil && *d.UserID == u.ID
+	if owner || u.Role == domain.RoleAdmin {
+		return d, owner, nil
+	}
+	if d.AssignmentID != nil {
+		if a, err := svc.assignments.Get(*d.AssignmentID); err == nil && svc.classSvc.CanManage(u, a.ClassID) {
+			return d, false, nil
+		}
+	}
+	if u.Role == domain.RoleTeacher && d.UserID != nil && svc.classes.TeachesStudent(u.ID, *d.UserID) {
+		return d, false, nil
+	}
+	return nil, false, errSessionNotFound
+}
+
+// Completion is what the student hands in after the activity.
+type Completion struct {
+	Reflection        string `json:"reflection"`
+	Evaluation        string `json:"evaluation"`
+	ScoreConversation *int   `json:"scoreConversation"`
+	ScoreReflection   *int   `json:"scoreReflection"`
+}
+
+// Complete closes the attempt with the student's reflection and evaluation.
+func (svc *sessionService) Complete(d *SessionDetail, c Completion) error {
+	return svc.sessions.Complete(d.ID, domain.SessionCompletion{
+		Reflection: truncate(c.Reflection, maxReflectionChars), Evaluation: truncate(c.Evaluation, maxEvaluationChars),
+		ScoreConversation: c.ScoreConversation, ScoreReflection: c.ScoreReflection,
+	})
 }
 
 // goalEvaluator scores a conversation against the assignment goals
@@ -118,6 +203,13 @@ func countStudentTurns(msgs []transcriptMsg) int {
 		}
 	}
 	return turns
+}
+
+func truncate(s string, n int) string {
+	if len(s) <= n {
+		return s
+	}
+	return s[:n]
 }
 
 func firstNonEmpty(a, b json.RawMessage) json.RawMessage {
