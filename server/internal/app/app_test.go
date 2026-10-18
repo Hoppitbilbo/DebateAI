@@ -309,3 +309,9 @@ func itoa(n int64) string {
 	b, _ := json.Marshal(n)
 	return string(b)
 }
+
+func TestGeminiVersion(t *testing.T) {
+	if geminiVersion("gemini-3.1-flash-live-preview") != 3.1 || geminiVersion("gemini-live-2.5-flash") != 2.5 || geminiVersion("models/gemini-2.0-flash") != 2 || geminiVersion("aqa") != 0 {
+		t.Fatal("version parse")
+	}
+}

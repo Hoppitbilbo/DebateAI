@@ -461,15 +461,44 @@ func (s *Server) autoRoute(providerID int64, kind string) {
 			rt.Tasks[task] = []RouteTarget{{providerID, model}}
 		}
 	}
+	// newestFlash returns the most recent listed Gemini "flash" model, so new
+	// installs follow Google's lineup instead of a hard-coded name.
+	newestFlash := func(live, lite bool, fallback string) string {
+		best := ""
+		for _, m := range models {
+			id := strings.TrimPrefix(m.ID, "models/")
+			if m.SupportLive != live || !strings.Contains(id, "flash") || strings.Contains(id, "lite") != lite ||
+				strings.Contains(id, "image") || strings.Contains(id, "tts") || strings.Contains(id, "audio") || strings.Contains(id, "thinking") {
+				continue
+			}
+			if best == "" || geminiVersion(id) > geminiVersion(best) || (geminiVersion(id) == geminiVersion(best) && id > best) {
+				best = id
+			}
+		}
+		if best != "" {
+			return best
+		}
+		return pick(fallback)
+	}
 	switch kind {
 	case ai.KindJev:
-		add(TaskJudge, pick("jev-1.13-free", "jev-1.13"))
+		// Jev is purpose-built for judging: put it first, keep others as fallback.
+		if m := pick("jev-latest", "jev-1.13-free", "jev-1.13"); m != "" {
+			rest := rt.Tasks[TaskJudge][:0:0]
+			for _, t := range rt.Tasks[TaskJudge] {
+				if t.ProviderID != providerID {
+					rest = append(rest, t)
+				}
+			}
+			rt.Tasks[TaskJudge] = append([]RouteTarget{{providerID, m}}, rest...)
+		}
 	case ai.KindGemini:
-		add(TaskChat, pick("gemini-2.5-flash"))
-		add(TaskEvaluation, pick("gemini-2.5-flash"))
-		add(TaskUtility, pick("gemini-2.5-flash-lite", "gemini-2.5-flash"))
-		add(TaskJudge, pick("gemini-2.5-flash-lite", "gemini-2.5-flash"))
-		add(TaskLive, pick("gemini-3.1-flash-live-preview"))
+		flash := newestFlash(false, false, "gemini-2.5-flash")
+		add(TaskChat, flash)
+		add(TaskEvaluation, flash)
+		add(TaskUtility, newestFlash(false, true, flash))
+		add(TaskJudge, newestFlash(false, true, flash))
+		add(TaskLive, newestFlash(true, false, "gemini-3.1-flash-live-preview"))
 	default:
 		var first string
 		for _, m := range models {
@@ -487,6 +516,17 @@ func (s *Server) autoRoute(providerID int64, kind string) {
 		add(TaskJudge, first)
 	}
 	_ = putSetting(s.db, "routing", rt)
+}
+
+// geminiVersion extracts the version number from ids such as
+// "gemini-3.1-flash-live-preview" or "gemini-live-2.5-flash" (0 if none).
+func geminiVersion(id string) float64 {
+	for _, part := range strings.Split(id, "-") {
+		if v, err := strconv.ParseFloat(part, 64); err == nil {
+			return v
+		}
+	}
+	return 0
 }
 
 func (s *Server) storeModels(providerID int64, models []ai.ModelInfo) {

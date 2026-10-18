@@ -33,6 +33,8 @@ export const PRESETS: Preset[] = [
   { id: "gemini", name: "Google Gemini (AI Studio)", kind: "gemini", baseUrl: "", keyUrl: "https://aistudio.google.com/apikey", free: true, note: "presetNotes.gemini" },
   { id: "opencode", name: "OpenCode Zen", kind: "openai", baseUrl: "https://opencode.ai/inference/openai/v1", keyUrl: "https://opencode.ai/", free: true,
     models: ["big-pickle", "glm-5.3-flash-free", "deepseek-v4.1-flash-free", "mimo-v2.6-flash-free", "nemotron-3.5-super-vl-free", "nemotron-3-ultra-free", "longcat-2.5-preview-free"], note: "presetNotes.opencode" },
+  { id: "typesafe", name: "TypeSafe Jev (JEV judge)", kind: "jev", baseUrl: "https://api.typesafe.ai/v1", keyUrl: "https://console.typesafe.ai/", models: ["jev-latest"], note: "presetNotes.typesafe" },
+  { id: "jev-openrouter", name: "Jev via OpenRouter (JEV judge)", kind: "jev", baseUrl: "https://openrouter.ai/api/v1", keyUrl: "https://openrouter.ai/keys", models: ["jev-latest", "jev-1.13"], note: "presetNotes.jevOpenrouter" },
   { id: "jev", name: "OpenCode Jev (JEV judge)", kind: "jev", baseUrl: "https://opencode.ai/inference/systemone/v1/systemone", keyUrl: "https://opencode.ai/", free: true, models: ["jev-1.13-free", "jev-1.13"], note: "presetNotes.jev" },
   { id: "openrouter", name: "OpenRouter", kind: "openai", baseUrl: "https://openrouter.ai/api/v1", keyUrl: "https://openrouter.ai/keys", free: true, note: "presetNotes.openrouter" },
   { id: "groq", name: "Groq", kind: "openai", baseUrl: "https://api.groq.com/openai/v1", keyUrl: "https://console.groq.com/keys", free: true },

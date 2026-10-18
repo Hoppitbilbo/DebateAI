@@ -10,7 +10,9 @@ import (
 )
 
 // Jev is TypeSafe AI's "System One" decision model, served by OpenCode at
-// https://opencode.ai/inference/systemone/v1/systemone. Instead of producing
+// https://opencode.ai/inference/systemone/v1/systemone (also served directly
+// at https://api.typesafe.ai/v1/systemone and via OpenRouter at
+// https://openrouter.ai/api/v1/systemone). Instead of producing
 // text it scores a `state` against typed questions (noul / choice / score)
 // and returns calibrated values. We use it to decide whether the teacher's
 // assignment has been completed.
@@ -80,14 +82,15 @@ func (p *jevProvider) Decide(ctx context.Context, model, state string, questions
 		Model   string               `json:"model"`
 		Answers map[string]JevAnswer `json:"answers"`
 		Usage   struct {
-			InputTokens  int `json:"input_tokens"`
-			OutputTokens int `json:"output_tokens"`
+			InputTokens  int      `json:"input_tokens"`
+			OutputTokens int      `json:"output_tokens"`
+			Cost         *float64 `json:"cost"` // OpenRouter only
 		} `json:"usage"`
 	}
 	if err := json.NewDecoder(resp.Body).Decode(&out); err != nil {
 		return nil, err
 	}
-	return &JevResult{Model: out.Model, Answers: out.Answers, Usage: Usage{InputTokens: out.Usage.InputTokens, OutputTokens: out.Usage.OutputTokens}}, nil
+	return &JevResult{Model: out.Model, Answers: out.Answers, Usage: Usage{InputTokens: out.Usage.InputTokens, OutputTokens: out.Usage.OutputTokens, CostUSD: out.Usage.Cost}}, nil
 }
 
 func (p *jevProvider) Generate(context.Context, Request) (*Response, error) {
@@ -98,9 +101,51 @@ func (p *jevProvider) Stream(context.Context, Request, func(string) error) (*Res
 	return nil, ErrUnsupported
 }
 
-func (p *jevProvider) ListModels(context.Context) ([]ModelInfo, error) {
+// ListModels depends on where System One is served: TypeSafe's own API
+// (api.typesafe.ai) lists its models, OpenRouter and OpenCode use fixed ids.
+func (p *jevProvider) ListModels(ctx context.Context) ([]ModelInfo, error) {
+	u := p.url()
+	switch {
+	case strings.Contains(u, "openrouter.ai"):
+		return []ModelInfo{{ID: "jev-latest", Name: "Jev (latest)"}, {ID: "jev-1.13", Name: "Jev 1.13"}}, nil
+	case strings.Contains(u, "typesafe.ai"):
+		return p.listTypeSafe(ctx, strings.TrimSuffix(u, "/systemone")+"/models")
+	}
 	return []ModelInfo{
 		{ID: "jev-1.13-free", Name: "Jev 1.13 Free", Free: true},
 		{ID: "jev-1.13", Name: "Jev 1.13"},
 	}, nil
+}
+
+func (p *jevProvider) listTypeSafe(ctx context.Context, url string) ([]ModelInfo, error) {
+	r, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return nil, err
+	}
+	r.Header.Set("Authorization", "Bearer "+p.cfg.APIKey)
+	resp, err := httpClient.Do(r)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode >= 300 {
+		body, _ := io.ReadAll(io.LimitReader(resp.Body, 4096))
+		return nil, &HTTPError{Status: resp.StatusCode, Body: string(body)}
+	}
+	var out struct {
+		Models []struct {
+			Name        string `json:"name"`
+			Description string `json:"description"`
+		} `json:"models"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&out); err != nil {
+		return nil, err
+	}
+	res := []ModelInfo{{ID: "jev-latest", Name: "Jev (latest)"}}
+	for _, m := range out.Models {
+		if m.Name != "" && m.Name != "jev-latest" {
+			res = append(res, ModelInfo{ID: m.Name, Name: m.Name})
+		}
+	}
+	return res, nil
 }

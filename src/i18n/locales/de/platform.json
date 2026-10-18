@@ -512,6 +512,8 @@
       "test": "Testen",
       "replaceKey": "API-Schlüssel ersetzen…",
       "presetNotes": {
+        "typesafe": "Jev direkt von TypeSafe: ein Entscheidungsmodell, das das Gespräch anhand der Ziele der Lehrkraft bewertet. Schlüssel unter console.typesafe.ai.",
+        "jevOpenrouter": "Jev über OpenRouter: dieselbe API wie bei TypeSafe, mit deinem OpenRouter-Schlüssel. Die echten Kosten werden pro Aufruf erfasst.",
         "gemini": "Kostenloses Kontingent in Google AI Studio. Für den Live-Sprachmodus erforderlich.",
         "opencode": "OpenCode Zen bietet zeitlich begrenzt kostenlose Modelle (big-pickle, GLM, DeepSeek, MiMo, Nemotron…).",
         "jev": "Jev ist ein Entscheidungsmodell: Es bewertet das Gespräch anhand der Ziele der Lehrkraft. jev-1.13-free ist kostenlos.",
