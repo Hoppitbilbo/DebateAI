@@ -661,14 +661,14 @@ func (s *Server) handleTestProvider(w http.ResponseWriter, r *http.Request) {
 	defer cancel()
 	start := time.Now()
 	u := currentUser(r)
+	entry := usageEntry{UserID: &u.ID, ProviderID: id, Provider: cp.name, Model: in.Model, Task: "test"}
 	if d, ok := cp.p.(ai.Decider); ok {
 		state := map[string]any{"conversation": []map[string]string{
 			{"from": "student", "text": "Why did you invade Russia?"},
 			{"from": "Napoleon", "text": "The Tsar broke the Continental System."},
 		}}
-		res, err := d.Decide(ctx, in.Model, state,
+		res, err := s.meterDecider(d, entry).Decide(ctx, in.Model, state,
 			map[string]ai.JevQuestion{"asked": {Type: "noul", Instructions: "In `conversation`, did the student ask about the invasion of Russia?"}})
-		s.logUsage(usageEntry{UserID: &u.ID, ProviderID: id, Provider: cp.name, Model: in.Model, Task: "test", OK: err == nil, Latency: time.Since(start), Usage: usageOr(res)})
 		if err != nil {
 			writeErr(w, 502, "provider_error", err.Error())
 			return
@@ -676,21 +676,16 @@ func (s *Server) handleTestProvider(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, 200, providerTestResponse{OK: true, LatencyMs: time.Since(start).Milliseconds(), Output: mustJSON(res.Answers)})
 		return
 	}
-	g, ok := cp.p.(ai.Generator)
+	tm, ok := cp.p.(ai.TextModel)
 	if !ok {
 		writeErr(w, 400, "provider_error", "provider cannot generate text")
 		return
 	}
-	res, err := g.Generate(ctx, ai.Request{Model: in.Model, Messages: []ai.Message{{Role: "user", Content: "Reply with the single word: ok"}}, MaxTokens: 50})
-	entry := usageEntry{UserID: &u.ID, ProviderID: id, Provider: cp.name, Model: in.Model, Task: "test", OK: err == nil, Latency: time.Since(start)}
+	res, err := s.meterText(tm, entry).Generate(ctx, ai.Request{Model: in.Model, Messages: []ai.Message{{Role: "user", Content: "Reply with the single word: ok"}}, MaxTokens: 50})
 	if err != nil {
-		entry.Err = err.Error()
-		s.logUsage(entry)
 		writeErr(w, 502, "provider_error", err.Error())
 		return
 	}
-	entry.Usage = res.Usage
-	s.logUsage(entry)
 	writeJSON(w, 200, providerTestResponse{OK: true, LatencyMs: time.Since(start).Milliseconds(), Output: res.Text, Usage: &res.Usage})
 }
 

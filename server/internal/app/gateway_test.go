@@ -275,3 +275,21 @@ func TestSQLBatchStopsAtFirstError(t *testing.T) {
 		t.Fatal("statements after the failure must not run")
 	}
 }
+
+func TestMeteredModelLogsEveryCall(t *testing.T) {
+	s := newTestServer(t)
+	fp := &fakeProvider{errs: map[string]error{"bad": errors.New("boom")}}
+	m := s.meterText(fp, usageEntry{ProviderID: 1, Provider: "p", Task: TaskChat})
+	if _, err := m.Generate(context.Background(), ai.Request{Model: "ok"}); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := m.Generate(context.Background(), ai.Request{Model: "bad"}); err == nil {
+		t.Fatal("expected error")
+	}
+	if ok, failed := usageRows(t, s); ok != 1 || failed != 1 {
+		t.Fatalf("usage log ok=%d failed=%d", ok, failed)
+	}
+	if countRows(s.db, `SELECT COUNT(*) FROM usage_log WHERE ok = 0 AND error = 'boom' AND input_tokens = 0`) != 1 {
+		t.Fatal("failed call must log its error")
+	}
+}

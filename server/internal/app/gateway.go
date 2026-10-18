@@ -242,45 +242,28 @@ func (s *Server) generate(ctx context.Context, task string, req ai.Request, user
 		if r.ReasoningEffort == "" && (task == TaskChat || task == TaskUtility) {
 			r.ReasoningEffort = "low" // characters must answer quickly
 		}
-		start := time.Now()
+		model := s.meterText(ai.WithFirstTokenTimeout(tm, firstTokenTimeout),
+			usageEntry{UserID: userID, SessionID: sessionID, ProviderID: t.ProviderID, Provider: cp.name, Model: t.Model, Task: task})
 		var res *ai.Response
-		var started, timedOut atomic.Bool
-		tctx, cancel := context.WithCancel(ctx)
+		var started atomic.Bool
 		if onDelta != nil {
-			timer := time.AfterFunc(firstTokenTimeout, func() {
-				if !started.Load() {
-					timedOut.Store(true)
-					cancel()
-				}
-			})
-			res, err = tm.Stream(tctx, r, func(d string) error {
-				if !started.Swap(true) {
-					timer.Stop()
-				}
+			res, err = model.Stream(ctx, r, func(d string) error {
+				started.Store(true)
 				return onDelta(d)
 			})
-			timer.Stop()
 		} else {
-			res, err = tm.Generate(tctx, r)
+			res, err = model.Generate(ctx, r)
 		}
-		cancel()
-		entry := usageEntry{UserID: userID, SessionID: sessionID, ProviderID: t.ProviderID, Provider: cp.name, Model: t.Model, Task: task, Latency: time.Since(start)}
 		if err != nil {
-			if timedOut.Load() {
-				err = fmt.Errorf("no answer within %s, trying next model", firstTokenTimeout)
-			}
-			entry.Err = err.Error()
-			s.logUsage(entry)
 			lastErr = fmt.Errorf("%s/%s: %w", cp.name, t.Model, err)
 			log.Printf("ai %s via %s/%s failed: %v", task, cp.name, t.Model, err)
-			if started.Load() || (!timedOut.Load() && !retryable(err)) || ctx.Err() != nil {
+			// Fall back only before the student saw any text, and only for
+			// errors another model may not have (a silent model is one).
+			if started.Load() || !retryable(err) || ctx.Err() != nil {
 				return nil, lastErr
 			}
 			continue
 		}
-		entry.OK = true
-		entry.Usage = res.Usage
-		s.logUsage(entry)
 		return &genResult{Text: res.Text, ProviderID: t.ProviderID, Provider: cp.name, Model: t.Model}, nil
 	}
 	if lastErr == nil {
