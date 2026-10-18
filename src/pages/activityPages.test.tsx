@@ -24,6 +24,7 @@ globalThis.ResizeObserver ??= class {
 const mocks = vi.hoisted(() => ({
   begin: vi.fn().mockResolvedValue(7),
   generateStream: vi.fn(),
+  sync: vi.fn(),
 }));
 
 vi.mock("@/features/activity/useActivitySession", () => ({
@@ -37,7 +38,7 @@ vi.mock("@/features/activity/useActivitySession", () => ({
     sessionId: 7,
     getSessionId: () => 7,
     begin: mocks.begin,
-    sync: vi.fn().mockResolvedValue(null),
+    sync: mocks.sync,
     markManualEnd: vi.fn(),
   }),
 }));
@@ -65,6 +66,7 @@ const render = (page: ReactNode) => renderPage(<AiClientProvider client={fakeAi}
 beforeEach(() => {
   vi.clearAllMocks();
   mocks.generateStream.mockResolvedValue("risposta");
+  mocks.sync.mockResolvedValue(null);
 });
 afterEach(cleanup);
 
@@ -147,5 +149,20 @@ describe("PersonaggioMisteriosoPage", () => {
     await start();
     expect(mocks.begin).toHaveBeenCalledWith(expect.any(String), { character: expect.stringMatching(/^Person /), questions: 7 });
     expect(screen.getByText(/7 questions/)).toBeTruthy(); // the intro
+  });
+});
+
+describe("PersonaggioMisteriosoPage end of game", () => {
+  it("ends the game with a message when JEV judges the goal reached", async () => {
+    render(<PersonaggioMisteriosoPage />);
+    pickAll();
+    await start();
+    mocks.sync.mockResolvedValue("goal_reached");
+    fireEvent.change(screen.getByRole("textbox"), { target: { value: "Sei Napoleone?" } });
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: "Send" }));
+    });
+    expect(screen.getByText(/JEV decided you have reached the goal/)).toBeTruthy();
+    expect(screen.getByLabelText("Your answer")).toBeTruthy(); // the final guess form replaced the chat
   });
 });

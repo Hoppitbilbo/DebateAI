@@ -258,7 +258,8 @@
       "answerWas": "The character was {{name}} – you answered \"{{guess}}\".",
       "questionsUsed": "Questions used",
       "reflectionPrompt": "Which questions helped you most? How would you change your strategy?",
-      "evalActivity": "guessing game with a limited number of questions"
+      "evalActivity": "guessing game with a limited number of questions",
+      "judgeEnded": "JEV decided you have reached the goal: the game is over. Write your final answer."
     },
     "impersonaTu": {
       "setupTitle": "Choose the roles",

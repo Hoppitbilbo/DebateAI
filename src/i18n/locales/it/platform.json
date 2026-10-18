@@ -258,7 +258,8 @@
       "answerWas": "Il personaggio era {{name}} – hai risposto \"{{guess}}\".",
       "questionsUsed": "Domande usate",
       "reflectionPrompt": "Quali domande ti sono state più utili? Come cambieresti la tua strategia?",
-      "evalActivity": "gioco di indovinare il personaggio con domande limitate"
+      "evalActivity": "gioco di indovinare il personaggio con domande limitate",
+      "judgeEnded": "JEV ha stabilito che hai raggiunto l'obiettivo: la partita è finita. Scrivi la tua risposta finale."
     },
     "impersonaTu": {
       "setupTitle": "Scegli i ruoli",

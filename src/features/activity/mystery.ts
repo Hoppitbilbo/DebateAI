@@ -10,14 +10,23 @@ export const RANDOM_CHARACTERS = [
 ];
 
 const normalize = (s: string) =>
-  s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/\(.*?\)/g, "").replace(/[^a-z0-9 ]/g, " ").replace(/\s+/g, " ").trim();
+  s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\(.*?\)/g, "").replace(/[^a-z0-9 ]/g, " ").replace(/\s+/g, " ").trim();
 
-/** Lenient name match: full containment or a shared significant surname. */
+/** Short words of names ("da", "van", "de", "von"...) never identify a person. */
+const MIN_NAME_WORD = 4;
+
+/** The words of a name that identify it: at least MIN_NAME_WORD letters. */
+const nameWords = (s: string) => normalize(s).split(" ").filter((w) => w.length >= MIN_NAME_WORD);
+
+/**
+ * Strict name match: the guess is right when it is the full name or contains,
+ * as a whole word, one of the significant words of the answer ("Vinci",
+ * "Leonardo"). Fragments ("Da", "Leo") and misspellings are wrong.
+ */
 export const isCorrectGuess = (guess: string, answer: string) => {
   const g = normalize(guess);
-  const a = normalize(answer);
   if (!g) return false;
-  if (a.includes(g) || g.includes(a)) return true;
-  const sig = (s: string) => s.split(" ").filter((w) => w.length > 3);
-  return sig(a).some((w) => sig(g).includes(w));
+  if (g === normalize(answer)) return true;
+  const guessWords = new Set(g.split(" "));
+  return nameWords(answer).some((w) => guessWords.has(w));
 };

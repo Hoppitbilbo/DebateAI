@@ -258,7 +258,8 @@
       "answerWas": "Le personnage était {{name}} – vous avez répondu « {{guess}} ».",
       "questionsUsed": "Questions utilisées",
       "reflectionPrompt": "Quelles questions vous ont le plus aidé ? Comment changeriez-vous votre stratégie ?",
-      "evalActivity": "jeu de devinette avec un nombre limité de questions"
+      "evalActivity": "jeu de devinette avec un nombre limité de questions",
+      "judgeEnded": "JEV a estimé que tu as atteint l'objectif : la partie est terminée. Écris ta réponse finale."
     },
     "impersonaTu": {
       "setupTitle": "Choisissez les rôles",

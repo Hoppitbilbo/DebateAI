@@ -29,15 +29,21 @@ const PersonaggioMisteriosoPage = () => {
   const [guess, setGuess] = useState("");
   const [reasoning, setReasoning] = useState("");
   const [result, setResult] = useState<boolean | null>(null);
+  const [endedByJudge, setEndedByJudge] = useState(false);
 
   const { summaries, loading } = useWikiSummaries([character]);
   const bio = bioOf(character, summaries);
   const systemFor = (assignment: Assignment | null) => (character ? prompts.mystery(character.title, bio, assignment) : "");
 
-  // When the server stops the questions, the game moves on to the guess.
+  // When the server ends the questions (turn limit, or JEV judging the goal
+  // reached) the game moves on to the final guess.
   const onEnded = useCallback((reason: EndReason) => {
-    if (reason === "turn_limit") setGuessing(true);
-  }, []);
+    if (reason === "goal_reached") {
+      setEndedByJudge(true);
+      toast.success(t("platform.apps.personaggioMisterioso.judgeEnded"));
+    }
+    if (reason === "turn_limit" || reason === "goal_reached") setGuessing(true);
+  }, [t]);
 
   const flow = useActivityFlow(app.type, {
     live: (phase, assignment) =>
@@ -73,6 +79,7 @@ const PersonaggioMisteriosoPage = () => {
   const start = async () => {
     if (!character) return;
     setGuessing(false);
+    setEndedByJudge(false);
     setResult(null);
     setGuess("");
     setReasoning("");
@@ -100,12 +107,17 @@ const PersonaggioMisteriosoPage = () => {
         setConcealed(false);
       }
       setGuessing(false);
+      setEndedByJudge(false);
     });
 
   const guessForm = (
     <SetupCard
       title={t("platform.apps.personaggioMisterioso.finalGuessTitle")}
-      description={t("platform.apps.personaggioMisterioso.finalGuessDescription")}
+      description={
+        endedByJudge
+          ? `${t("platform.apps.personaggioMisterioso.judgeEnded")} ${t("platform.apps.personaggioMisterioso.finalGuessDescription")}`
+          : t("platform.apps.personaggioMisterioso.finalGuessDescription")
+      }
       onStart={submitGuess}
       canStart={!!guess.trim() && !!reasoning.trim()}
       startLabel={t("platform.apps.personaggioMisterioso.submitGuess")}

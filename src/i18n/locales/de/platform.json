@@ -258,7 +258,8 @@
       "answerWas": "Die Person war {{name}} – du hast „{{guess}}“ geantwortet.",
       "questionsUsed": "Verwendete Fragen",
       "reflectionPrompt": "Welche Fragen haben dir am meisten geholfen? Wie würdest du deine Strategie ändern?",
-      "evalActivity": "Ratespiel mit begrenzter Anzahl an Fragen"
+      "evalActivity": "Ratespiel mit begrenzter Anzahl an Fragen",
+      "judgeEnded": "JEV hat entschieden, dass du das Ziel erreicht hast: Das Spiel ist vorbei. Schreib deine endgültige Antwort."
     },
     "impersonaTu": {
       "setupTitle": "Rollen wählen",
