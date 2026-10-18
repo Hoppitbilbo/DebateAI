@@ -229,6 +229,7 @@ Un'area per task, spostando l'SQL in `internal/store`:
 - L'API HTTP e lo schema SQLite non cambiano durante il refactoring.
 - Task 1.2: unica eccezione voluta alla regola "nessun cambio di comportamento". Solo quando una scrittura sul DB fallisce: le scritture principali rispondono 500 invece di un falso OK, quelle di contorno (ultimo login, pulizia sessioni, costi, prezzi importati, `email_sent`) vengono loggate con `execOrLog`, e gli handler con più update usano `sqlBatch`. Restano volutamente le letture `_ = ...QueryRow(...).Scan(...)` che hanno un valore di default sensato (nome classe, somme dei costi): verranno riviste nei repository (fase 3).
 - La risposta di `PUT /api/sessions/{id}/transcript` ha tre forme diverse (sessione libera o già chiusa: `ended,progress,status,turns`; compito attivo: in più `jev,maxTurns,reason`). È fissata da `TestSaveTranscript*`: il DTO del task 1.4 deve mantenerla, usando `omitempty` dove serve.
+- Deploy Vercel multi-service (task operativo): aggiunto `vercel.json` con due servizi (`app` Vite e `server` Go) e rewrite pubbliche `/api/(.*) -> server`, `/(.*) -> app`. Nessun binding `service` aggiunto: il frontend chiama `/api/*` dal browser via dominio pubblico (non da runtime serverless interno), quindi non c'è una chiamata service-to-service interna da legare.
 
 ---
 
@@ -291,3 +292,4 @@ Un'area per task, spostando l'SQL in `internal/store`:
 | 2026-10-18 | 8.5 | — | Claude Code | La PR #9 (`go` → `master`, aperta in precedenza) contiene tutto il lavoro; commento di riepilogo: https://github.com/Hoppitbilbo/DebateAI/pull/9#issuecomment-6254869651 |
 | 2026-10-18 | — | — | Claude Code | CI GitHub verde su `4abb18e` (fine fase 8: `test`, `web`, `image`). |
 | 2026-10-18 | — | `c0246a3` | Claude Code | PR #9 unita in `master` (merge commit, su richiesta). |
+| 2026-10-18 | deploy/vercel | — | Copilot Task Agent | Aggiunto `vercel.json` (services mode: `app`/`server`) con rewrite pubbliche `/api/(.*)` e catch-all `/(.*)`. Verificato che il client usa già URL relativi `/api/*`; nessun binding interno necessario al momento. |
