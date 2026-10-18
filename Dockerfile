@@ -17,12 +17,15 @@ RUN CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /debateai .
 
 # --- 3. runtime ---
 FROM alpine:3.22
-RUN apk add --no-cache ca-certificates tzdata && adduser -D -H -u 10001 debateai
+RUN apk add --no-cache ca-certificates tzdata \
+ && adduser -D -H -u 10001 debateai \
+ && mkdir -p /data && chown debateai:debateai /data
 COPY --from=server /debateai /usr/local/bin/debateai
 ENV PORT=8080 DATA_DIR=/data
+# Declared after /data is created and owned by the runtime user: changes made
+# to a path after VOLUME are discarded.
 VOLUME ["/data"]
 EXPOSE 8080
-RUN mkdir -p /data && chown debateai /data
 USER debateai
 HEALTHCHECK --interval=30s --timeout=3s CMD wget -qO- http://127.0.0.1:8080/api/health || exit 1
 ENTRYPOINT ["debateai"]

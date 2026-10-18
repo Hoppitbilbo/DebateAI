@@ -21,6 +21,8 @@ type Config struct {
 	AdminName     string
 	GeminiAPIKey  string
 	OpencodeKey   string
+	OpenRouterKey string
+	TypeSafeKey   string
 	SMTP          SMTPSettings
 }
 
@@ -42,6 +44,8 @@ func LoadConfig() Config {
 		AdminName:     env("ADMIN_NAME", "Admin"),
 		GeminiAPIKey:  env("GEMINI_API_KEY", env("VITE_GEMINI_API_KEY", "")),
 		OpencodeKey:   env("OPENCODE_API_KEY", ""),
+		OpenRouterKey: env("OPENROUTER_API_KEY", ""),
+		TypeSafeKey:   env("TYPESAFE_API_KEY", ""),
 		SMTP: SMTPSettings{
 			Host:     env("SMTP_HOST", ""),
 			Port:     atoiDefault(env("SMTP_PORT", "587"), 587),

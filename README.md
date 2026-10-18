@@ -31,17 +31,25 @@ Go server (single binary, embeds the built frontend)
 ## Quick start (Docker, recommended for a school server)
 
 ```sh
-cp .env.example .env        # optionally set PUBLIC_URL, GEMINI_API_KEY, OPENCODE_API_KEY, SMTP_*
+cp .env.example .env        # optional: PUBLIC_URL, OPENROUTER_API_KEY, TYPESAFE_API_KEY, GEMINI_API_KEY, SMTP_*
 docker compose up -d --build
 ```
 
 Open `http://<server>:8080`. On first launch you will be asked to create the administrator account, then:
 
-1. **Admin → AI & JEV → Add provider**: for example *Google Gemini* (free tier, required for live voice) and *OpenCode Zen* + *OpenCode Jev* (free models). The routing for each task is filled in automatically and you can reorder or extend it.
+1. **Admin → AI & JEV → Add provider**: for example *OpenRouter* (free `:free` models for chat and evaluation), *TypeSafe Jev* (the JEV judge) and *Google Gemini* (required for live voice). Keys set in `.env` are added automatically on first start. The routing for each task is filled in automatically and you can reorder or extend it. If a model does not start answering within 25 s, the next one in the list is used.
 2. **Admin → Settings**: SMTP for e-mails, public URL, monthly budget, guest access.
 3. **Admin → Users**: invite the teachers. Teachers create their classes and invite the students.
 
-All data lives in the `debateai-data` volume (`/data`): the SQLite database and `secret.key`, which encrypts the API keys. Back up both together.
+All data lives in the `debateai-data` volume (`/data`): the SQLite database and `secret.key`, which encrypts the API keys. Back up both together, for example:
+
+```sh
+docker compose stop
+docker run --rm -v debateai-data:/data -v "$PWD":/backup alpine tar czf /backup/debateai-backup.tgz -C /data .
+docker compose start
+```
+
+Update to a new version with `git pull && docker compose up -d --build` (the data volume is kept). The container runs as a non-root user and reports its health at `/api/health`.
 
 > **Hosting note:** SQLite needs a persistent disk. Use a VPS/droplet with Docker, or any host with persistent volumes. Platforms with an ephemeral filesystem would lose the data on every deploy.
 
@@ -76,7 +84,7 @@ See [.env.example](.env.example). Everything except `PORT`, `DATA_DIR`, `APP_SEC
 | `PUBLIC_URL` | Base URL used in e-mail links |
 | `APP_SECRET` | Encrypts stored API keys (auto-generated in `DATA_DIR/secret.key` if empty) |
 | `ADMIN_EMAIL`, `ADMIN_PASSWORD` | Create the first admin non-interactively |
-| `GEMINI_API_KEY`, `OPENCODE_API_KEY` | Pre-configure providers on first start |
+| `OPENROUTER_API_KEY`, `TYPESAFE_API_KEY`, `GEMINI_API_KEY`, `OPENCODE_API_KEY` | Pre-configure providers and routing on first start |
 | `SMTP_*` | Default SMTP settings |
 
 ## AI providers & routing
@@ -85,10 +93,10 @@ Tasks routed independently (Admin → AI & JEV):
 
 | Task | Used for | Good choice |
 |---|---|---|
-| `chat` | characters' answers | free models (OpenCode `big-pickle`, OpenRouter `:free`, Groq, local Ollama) |
+| `chat` | characters' answers | fast free models (OpenRouter `:free` / `openrouter/free`, Groq, local Ollama); avoid slow reasoning models |
 | `evaluation` | final feedback & scores | a stronger model |
 | `utility` | voice casting, goal suggestions | small/free model |
-| `judge` | JEV goal checks | **Jev** `jev-1.13-free`, fallback any text model |
+| `judge` | JEV goal checks | **Jev** (`jev-latest` on TypeSafe or OpenRouter, `jev-1.13-free` on OpenCode), fallback any text model |
 | `live` | real-time voice | Gemini Live model (e.g. `gemini-3.1-flash-live-preview`) |
 
 Each task has an ordered list of `provider/model` targets: on error or quota (429/5xx) the next one is used. Strategies: *ordered*, *free first*, *cheapest first*. When the monthly budget is exhausted, only free/local targets are used. Prices (USD per 1M tokens) are editable; OpenRouter prices are imported automatically and local models cost 0.

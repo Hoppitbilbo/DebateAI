@@ -7,7 +7,12 @@ services:
     restart: unless-stopped
     ports:
       - "8080:8080"
-    env_file: .env
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      # Always keep the database on the volume, whatever .env says.
+      DATA_DIR: /data
     volumes:
       - debateai-data:/data
     # Lets the server reach Ollama / LM Studio running on the host machine
@@ -25,4 +30,5 @@ services:
 
 volumes:
   debateai-data:
+    name: debateai-data
   # ollama-data:

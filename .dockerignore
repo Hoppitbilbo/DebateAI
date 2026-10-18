@@ -8,3 +8,6 @@ server/webui/dist/*
 .git
 .env
 jules-scratch
+docs
+*.md
+!README.md

@@ -54,28 +54,48 @@ func (s *Server) bootstrap() {
 	if countRows(s.db, `SELECT COUNT(*) FROM providers`) > 0 {
 		return
 	}
-	routing := s.routing()
-	if s.cfg.GeminiAPIKey != "" {
-		id, err := s.insertProvider("Google Gemini", "gemini", "", s.cfg.GeminiAPIKey)
-		if err == nil {
-			routing.Tasks[TaskChat] = append(routing.Tasks[TaskChat], RouteTarget{id, "gemini-2.5-flash"})
-			routing.Tasks[TaskEvaluation] = append(routing.Tasks[TaskEvaluation], RouteTarget{id, "gemini-2.5-flash"})
-			routing.Tasks[TaskUtility] = append(routing.Tasks[TaskUtility], RouteTarget{id, "gemini-2.5-flash-lite"})
-			routing.Tasks[TaskJudge] = append(routing.Tasks[TaskJudge], RouteTarget{id, "gemini-2.5-flash-lite"})
-			routing.Tasks[TaskLive] = []RouteTarget{{id, "gemini-3.1-flash-live-preview"}}
-			log.Printf("configured Gemini provider from GEMINI_API_KEY")
+	// Same path as adding a provider in the admin panel: list models, import
+	// prices, then let autoRoute pick sensible defaults per task.
+	add := func(name, kind, baseURL, key string) int64 {
+		id, err := s.insertProvider(name, kind, baseURL, key)
+		if err != nil {
+			log.Printf("bootstrap %s: %v", name, err)
+			return 0
 		}
+		if cp, err := s.provider(id); err == nil {
+			ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+			if models, err := cp.p.ListModels(ctx); err == nil && len(models) > 0 {
+				s.storeModels(id, models)
+			} else if err != nil {
+				log.Printf("bootstrap %s: listing models failed: %v", name, err)
+			}
+			cancel()
+		}
+		s.autoRoute(id, kind)
+		log.Printf("configured %s from environment", name)
+		return id
+	}
+	if s.cfg.OpenRouterKey != "" {
+		if id := add("OpenRouter", "openai", "https://openrouter.ai/api/v1", s.cfg.OpenRouterKey); id != 0 {
+			// openrouter/free is OpenRouter's own router over its free models:
+			// a stable id that keeps working as individual free models change.
+			rt := s.routing()
+			for _, task := range []string{TaskChat, TaskEvaluation, TaskUtility, TaskJudge} {
+				rt.Tasks[task] = []RouteTarget{{id, "openrouter/free"}}
+			}
+			_ = putSetting(s.db, "routing", rt)
+		}
+	}
+	if s.cfg.GeminiAPIKey != "" {
+		add("Google Gemini", "gemini", "", s.cfg.GeminiAPIKey)
 	}
 	if s.cfg.OpencodeKey != "" {
-		if id, err := s.insertProvider("OpenCode Zen", "openai", "https://opencode.ai/inference/openai/v1", s.cfg.OpencodeKey); err == nil {
-			routing.Tasks[TaskChat] = append([]RouteTarget{{id, "big-pickle"}}, routing.Tasks[TaskChat]...)
-		}
-		if id, err := s.insertProvider("OpenCode Jev", "jev", "https://opencode.ai/inference/systemone/v1/systemone", s.cfg.OpencodeKey); err == nil {
-			routing.Tasks[TaskJudge] = append([]RouteTarget{{id, "jev-1.13-free"}}, routing.Tasks[TaskJudge]...)
-		}
-		log.Printf("configured OpenCode providers from OPENCODE_API_KEY")
+		add("OpenCode Zen", "openai", "https://opencode.ai/inference/openai/v1", s.cfg.OpencodeKey)
+		add("OpenCode Jev", "jev", "https://opencode.ai/inference/systemone/v1/systemone", s.cfg.OpencodeKey)
 	}
-	_ = putSetting(s.db, "routing", routing)
+	if s.cfg.TypeSafeKey != "" {
+		add("TypeSafe Jev", "jev", "https://api.typesafe.ai/v1", s.cfg.TypeSafeKey)
+	}
 }
 
 func (s *Server) Handler() http.Handler {
