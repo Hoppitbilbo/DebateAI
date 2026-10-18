@@ -18,7 +18,7 @@ Chi riprende il lavoro legge prima la sezione *Stato attuale*, poi esegue il pri
    - aggiungi una riga al *Registro*.
 5. **Verifica prima di spuntare.** Comandi:
    - backend: `cd server && go vet ./... && go test ./...`
-   - frontend: `npm run lint && npm run build` (e `npx vitest run` dopo il task 0.4)
+   - frontend: `npm run lint && npm test && npm run build`
    - traduzioni: `npm run check:i18n`
 6. **Se ti fermi a metà**, lascia il task `[~]` e scrivi in *Stato attuale* cosa manca, quali file sono toccati e cosa non funziona.
 
@@ -28,10 +28,10 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto · `[-]` scartato (spieg
 
 ## Stato attuale
 
-- **Fase in corso:** 0 (rete di sicurezza)
-- **Prossimo task:** 0.4
+- **Fase in corso:** 1 (interventi veloci)
+- **Prossimo task:** 1.1
 - **Lavoro a metà:** nessuno
-- **Test:** `go test ./...` verde all'inizio del refactoring
+- **Test:** Go 33 test nuovi + quelli esistenti verdi; Vitest 18 test verdi; lint 0 errori (18 warning preesistenti)
 
 ---
 
@@ -134,8 +134,8 @@ main.go        composition root (costruisce e inietta le dipendenze)
 - [x] **0.1** (`2aae325`) Test del gateway `generate`: fallback su errore ritentabile, stop su errore non ritentabile, timeout del primo token, salto di Jev, budget esaurito.
 - [x] **0.2** (`b3d71ec`) Test del giudice: `finalize` (soglia, `minTurns`, progress) e `judge` con provider finti (Jev e LLM).
 - [x] **0.3** (`bc8e02f`) Test HTTP di `handleSaveTranscript`: conteggio turni, `EvaluateEvery`, `AutoEnd`, `MaxTurns`, risposta JSON (snapshot delle chiavi).
-- [ ] **0.4** Aggiungere Vitest al frontend, con test di `useActivitySession` e `useChatEngine` su un client AI finto.
-- [ ] **0.5** CI: `go vet`, `go test`, `npm run lint`, `vitest` in `.github/workflows`.
+- [x] **0.4** (`eb85be2`) Aggiungere Vitest al frontend, con test di `useActivitySession` e `useChatEngine` su un client AI finto.
+- [x] **0.5** (`c1b591b`) CI: `go vet`, `go test`, `npm run lint`, `vitest` in `.github/workflows`.
 
 ### Fase 1: interventi veloci
 
@@ -202,3 +202,5 @@ Un'area per task, spostando l'SQL in `internal/store`:
 | 2026-10-18 | 0.1 | `2aae325` | Claude Code | `server/internal/app/gateway_test.go`: 11 test. Helper riusabili: `newTestServer`, `useProvider` (inietta un provider finto nella cache), `setChatRoute`, `fakeProvider`. |
 | 2026-10-18 | 0.2 | `b3d71ec` | Claude Code | `server/internal/app/judge_test.go`: 10 test (Jev, LLM, fallback, soglia, `minTurns`). Fake: `fakeDecider`, `scriptedLLM`, helper `setJudgeRoute`. |
 | 2026-10-18 | 0.3 | `bc8e02f` | Claude Code | `server/internal/app/transcript_test.go`: 11 test HTTP (forma della risposta, turni, `autoEnd`, `maxTurns`, `evaluateEvery`, flag `judge`, contesto, troncamento a 1000, solo proprietario). Fixture: `newTranscriptFixture`. |
+| 2026-10-18 | 0.4 | `eb85be2` | Claude Code | Vitest 2.1.9 + jsdom + Testing Library; `vitest.config.ts`, script `npm test`. Test in `src/features/activity/*.test.tsx` (18): API, auth, `useLiveAi`, `aiService` sostituiti con `vi.mock`. |
+| 2026-10-18 | 0.5 | `c1b591b` | Claude Code | `.github/workflows/docker.yml`: `go vet` nel job `test`, nuovo job `web` (lint, i18n, Vitest, Node 22 come nel Dockerfile); `image` dipende da entrambi. Non ancora verificato su GitHub (nessun push). |
