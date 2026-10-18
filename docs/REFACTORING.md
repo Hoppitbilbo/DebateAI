@@ -37,7 +37,7 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto · `[-]` scartato (spieg
 ## Stato attuale
 
 - **Fase in corso:** 2 (livello AI, backend)
-- **Prossimo task:** 2.1
+- **Prossimo task:** 2.2
 - **Lavoro a metà:** nessuno
 - **Test:** Go 33 test nuovi + quelli esistenti verdi; Vitest 18 test verdi; lint 0 errori (18 warning preesistenti)
 
@@ -154,7 +154,7 @@ main.go        composition root (costruisce e inietta le dipendenze)
 
 ### Fase 2: livello AI (backend)
 
-- [ ] **2.1** Separare le interfacce (`Generator`, `Streamer`, `ModelLister`, `Decider`); rimuovere gli stub `ErrUnsupported` di Jev.
+- [x] **2.1** (`f83dfc5`) Separare le interfacce (`Generator`, `Streamer`, `ModelLister`, `Decider`); rimuovere gli stub `ErrUnsupported` di Jev.
 - [ ] **2.2** Decorator per log dell'uso e timeout del primo token.
 - [ ] **2.3** `FallbackChain` unica, usata da `generate` e da `judge`.
 - [ ] **2.4** `RoutingStrategy` e filtro budget.
@@ -218,3 +218,4 @@ Un'area per task, spostando l'SQL in `internal/store`:
 | 2026-10-18 | 1.2 | `999aa75` | Claude Code | Helper `execOrLog` e `sqlBatch` in `server/internal/app/db.go`. Corretti due bug: reset password (link riutilizzabile se l'update falliva) e forgot (mail con token non salvato). |
 | 2026-10-18 | 1.3 | `923bd09` | Claude Code | Nuovo `server/internal/app/limits.go` con limiti, timeout e soglie (valori invariati). Restano inline i `LIMIT` delle query di lista (verranno spostati nei repository, fase 3). Le costanti del frontend vengono rivedute nella fase 5. |
 | 2026-10-18 | 1.4 | `4a1c582`, `a625ad9` | Claude Code | Test golden `TestResponseShapes` (prima del refactoring), poi `server/internal/app/dto.go` con tutti i corpi delle risposte; `writeOK` per `{"ok":true}`. Forma JSON invariata. Restano mappe solo nello *state* inviato a Jev (`jevState`, test del provider), che è un input del modello e non una risposta API. |
+| 2026-10-18 | 2.1 | `f83dfc5` | Claude Code | `server/internal/ai/types.go`: `ModelLister`, `Generator`, `Streamer`, `TextModel`; `Provider` = solo `ModelLister`. Gateway, giudice e test provider usano type assertion sulla capacità. Rimosso `ErrUnsupported`. Test `TestProviderCapabilities`. I fake dei test ora rispecchiano le capacità reali (`fakeDecider` non ha più `Generate`). |
