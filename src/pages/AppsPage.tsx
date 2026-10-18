@@ -12,49 +12,49 @@ const AppsPage = () => {
     {
       title: t('appsPage.appCards.youModerate.title'),
       description: t('appsPage.appCards.youModerate.description'),
-      icon: <Book className="h-12 w-12 text-white" />,
+      icon: <Book className="h-12 w-12 text-education" />,
       link: "/apps/you-moderate",
       isNew: true,
     },
     {
       title: t('appsPage.appCards.doppiaIntervista.title'),
       description: t('appsPage.appCards.doppiaIntervista.description'),
-      icon: <Users className="h-12 w-12 text-white" />,
+      icon: <Users className="h-12 w-12 text-education" />,
       link: "/apps/doppia-intervista",
       isNew: true,
     },
     {
       title: t('appsPage.appCards.wikiChatbot.title'),
       description: t('appsPage.appCards.wikiChatbot.description'),
-      icon: <MessageSquare className="h-12 w-12 text-white" />,
+      icon: <MessageSquare className="h-12 w-12 text-education" />,
       link: "/apps/wiki-chatbot",
       isNew: true,
     },
     {
       title: t('appsPage.appCards.personaggioMisterioso.title'),
       description: t('appsPage.appCards.personaggioMisterioso.description'),
-      icon: <Search className="h-12 w-12 text-white" />,
+      icon: <Search className="h-12 w-12 text-education" />,
       link: "/apps/personaggio-misterioso",
       isNew: true,
     },
     {
       title: t('appsPage.appCards.promptEngineer.title'),
       description: t('appsPage.appCards.promptEngineer.description'),
-      icon: <Calendar className="h-12 w-12 text-white" />,
+      icon: <Calendar className="h-12 w-12 text-education" />,
       link: "/apps/prompt-engineer",
       isComingSoon: true,
     },
     {
       title: t('appsPage.appCards.convinciTu.title'),
       description: t('appsPage.appCards.convinciTu.description'),
-      icon: <Speech className="h-12 w-12 text-white" />,
+      icon: <Speech className="h-12 w-12 text-education" />,
       link: "/apps/convinci-tu",
       isNew: true,
     },
     {
       title: t('appsPage.appCards.impersonaTu.title'),
       description: t('appsPage.appCards.impersonaTu.description'),
-      icon: <User className="h-12 w-12 text-white" />,
+      icon: <User className="h-12 w-12 text-education" />,
       link: "/apps/impersona-tu",
       isNew: true,
     },
@@ -70,7 +70,7 @@ const AppsPage = () => {
             <h1 className="text-3xl font-extrabold text-education-light sm:text-4xl">
               {t('appsPage.title')}
             </h1>
-            <p className="mt-3 text-xl text-gray-200">
+            <p className="mt-3 text-xl text-muted-foreground">
               {t('appsPage.subtitle')}
             </p>
           </div>

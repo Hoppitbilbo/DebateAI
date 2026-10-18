@@ -37,7 +37,7 @@ const AppCard = ({
     <Card className="overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-lg border border-accent">
       <CardHeader className="pb-3 bg-accent">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-lg font-bold text-white">{title}</CardTitle>
+          <CardTitle className="text-lg font-bold text-foreground">{title}</CardTitle>
           {isNew && (
             <span className="bg-education text-education-dark text-xs font-medium px-2 py-1 rounded-full">
               {t('appsPage.badges.new')}

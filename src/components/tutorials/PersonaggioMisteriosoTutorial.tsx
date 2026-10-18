@@ -120,10 +120,10 @@ const PersonaggioMisteriosoTutorial: React.FC = () => {
     <div className="max-w-4xl mx-auto p-6 space-y-6">
       {/* Header */}
       <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-education-dark mb-2">
+        <h1 className="text-3xl font-bold text-education-light mb-2">
           {t('personaggioMisterioso.title')}
         </h1>
-        <p className="text-lg text-education-muted">
+        <p className="text-lg text-muted-foreground">
           {t('personaggioMisterioso.subtitle')}
         </p>
       </div>
@@ -138,7 +138,7 @@ const PersonaggioMisteriosoTutorial: React.FC = () => {
               className={`w-3 h-3 rounded-full transition-colors ${
                 index === currentSlide
                   ? 'bg-education'
-                  : 'bg-gray-300 hover:bg-gray-400'
+                  : 'bg-muted-foreground/40 hover:bg-muted-foreground/70'
               }`}
             />
           ))}
@@ -146,17 +146,17 @@ const PersonaggioMisteriosoTutorial: React.FC = () => {
       </div>
 
       {/* Main Slide */}
-      <Card className="bg-white/95 backdrop-blur-sm border-education/20 shadow-lg">
+      <Card className="bg-card border-border shadow-lg">
         <CardContent className="p-8">
           <div className="flex items-start space-x-6">
             <div className="flex-shrink-0">
               {currentSlideData.icon}
             </div>
             <div className="flex-1">
-              <h2 className="text-2xl font-semibold text-education-dark mb-4">
+              <h2 className="text-2xl font-semibold text-foreground mb-4">
                 {t(currentSlideData.titleKey)}
               </h2>
-              <p className="text-lg text-gray-700 mb-6 leading-relaxed">
+              <p className="text-lg text-foreground/90 mb-6 leading-relaxed">
                 {t(currentSlideData.contentKey)}
               </p>
               
@@ -165,7 +165,7 @@ const PersonaggioMisteriosoTutorial: React.FC = () => {
                   {currentSlideData.bullets.map((bulletKey, index) => (
                     <li key={index} className="flex items-start space-x-3">
                       <div className="w-2 h-2 bg-education rounded-full mt-2 flex-shrink-0" />
-                      <span className="text-gray-700">{t(bulletKey)}</span>
+                      <span className="text-foreground/90">{t(bulletKey)}</span>
                     </li>
                   ))}
                 </ul>
@@ -187,7 +187,7 @@ const PersonaggioMisteriosoTutorial: React.FC = () => {
           <span>{t('common.back')}</span>
         </Button>
 
-        <span className="text-sm text-gray-500">
+        <span className="text-sm text-muted-foreground">
           {currentSlide + 1} / {slides.length}
         </span>
 

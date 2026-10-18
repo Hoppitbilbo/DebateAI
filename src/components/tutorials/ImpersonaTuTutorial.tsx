@@ -42,28 +42,28 @@ const ImpersonaTuTutorial = () => {
     return (
       <div className="text-center space-y-6">
         {getSlideIcon(currentSlide)}
-        <h2 className="text-2xl font-bold text-education-dark">
+        <h2 className="text-2xl font-bold text-foreground">
           {t(`${slideKey}.title`)}
         </h2>
-        <p className="text-lg text-gray-700 leading-relaxed">
+        <p className="text-lg text-foreground/90 leading-relaxed">
           {t(`${slideKey}.content`)}
         </p>
         <div className="space-y-3 text-left max-w-2xl mx-auto">
           <div className="flex items-start space-x-3">
             <span className="text-education text-lg">•</span>
-            <span className="text-gray-700">{t(`${slideKey}.bullet1`)}</span>
+            <span className="text-foreground/90">{t(`${slideKey}.bullet1`)}</span>
           </div>
           <div className="flex items-start space-x-3">
             <span className="text-education text-lg">•</span>
-            <span className="text-gray-700">{t(`${slideKey}.bullet2`)}</span>
+            <span className="text-foreground/90">{t(`${slideKey}.bullet2`)}</span>
           </div>
           <div className="flex items-start space-x-3">
             <span className="text-education text-lg">•</span>
-            <span className="text-gray-700">{t(`${slideKey}.bullet3`)}</span>
+            <span className="text-foreground/90">{t(`${slideKey}.bullet3`)}</span>
           </div>
           <div className="flex items-start space-x-3">
             <span className="text-education text-lg">•</span>
-            <span className="text-gray-700">{t(`${slideKey}.bullet4`)}</span>
+            <span className="text-foreground/90">{t(`${slideKey}.bullet4`)}</span>
           </div>
         </div>
       </div>
@@ -82,14 +82,14 @@ const ImpersonaTuTutorial = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8">
+    <div className="py-8">
       <div className="max-w-4xl mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-education-dark mb-2">
+          <h1 className="text-3xl font-bold text-education-light mb-2">
             {t('impersonaTu.title')}
           </h1>
-          <p className="text-xl text-gray-600">
+          <p className="text-xl text-muted-foreground">
             {t('impersonaTu.subtitle')}
           </p>
         </div>
@@ -97,16 +97,16 @@ const ImpersonaTuTutorial = () => {
         {/* Progress Bar */}
         <div className="mb-8">
           <div className="flex justify-between items-center mb-2">
-            <span className="text-sm text-gray-600">
+            <span className="text-sm text-muted-foreground">
               {t('common.progress')}: {currentSlide + 1} / {totalSlides}
             </span>
-            <span className="text-sm text-gray-600">{Math.round(progress)}%</span>
+            <span className="text-sm text-muted-foreground">{Math.round(progress)}%</span>
           </div>
           <Progress value={progress} className="h-2" />
         </div>
 
         {/* Main Content Card */}
-        <Card className="bg-white/90 backdrop-blur-sm border-education/20 shadow-xl">
+        <Card className="bg-card border-border shadow-lg">
           <CardHeader className="pb-4">
             <CardTitle className="text-center text-education">
               {t('common.slide')} {currentSlide + 1}
@@ -136,7 +136,7 @@ const ImpersonaTuTutorial = () => {
                 onClick={() => setCurrentSlide(i)}
                 aria-label={`${i + 1} / ${totalSlides}`}
                 className={`w-3 h-3 rounded-full transition-colors ${
-                  i === currentSlide ? 'bg-education' : 'bg-gray-300'
+                  i === currentSlide ? 'bg-education' : 'bg-muted-foreground/40'
                 }`}
               />
             ))}

@@ -16,40 +16,40 @@ const Slide4TeachingStyles = () => {
       </p>
 
       <div className="grid md:grid-cols-2 gap-6">
-        <div className="bg-accent/70 p-5 rounded-lg shadow-xl hover:shadow-green-500/30 transition-all duration-300 transform hover:-translate-y-1">
+        <div className="bg-accent/70 p-5 rounded-lg shadow-xl hover:shadow-education/20 transition-all duration-300 transform hover:-translate-y-1">
           <div className="flex items-center mb-3">
-            <Users className="h-7 w-7 text-green-400 mr-3" />
-            <h3 className="text-xl font-semibold text-green-300">{t('teacherGuide.slide4.personalizedLearning.title')}</h3>
+            <Users className="h-7 w-7 text-education mr-3" />
+            <h3 className="text-xl font-semibold text-education-light">{t('teacherGuide.slide4.personalizedLearning.title')}</h3>
           </div>
           <p className="text-foreground/85">
             {t('teacherGuide.slide4.personalizedLearning.description')}
           </p>
         </div>
 
-        <div className="bg-accent/70 p-5 rounded-lg shadow-xl hover:shadow-yellow-500/30 transition-all duration-300 transform hover:-translate-y-1">
+        <div className="bg-accent/70 p-5 rounded-lg shadow-xl hover:shadow-education/20 transition-all duration-300 transform hover:-translate-y-1">
           <div className="flex items-center mb-3">
-            <Puzzle className="h-7 w-7 text-yellow-400 mr-3" />
-            <h3 className="text-xl font-semibold text-yellow-300">{t('teacherGuide.slide4.problemBasedLearning.title')}</h3>
+            <Puzzle className="h-7 w-7 text-education mr-3" />
+            <h3 className="text-xl font-semibold text-education-light">{t('teacherGuide.slide4.problemBasedLearning.title')}</h3>
           </div>
           <p className="text-foreground/85">
             {t('teacherGuide.slide4.problemBasedLearning.description')}
           </p>
         </div>
 
-        <div className="bg-accent/70 p-5 rounded-lg shadow-xl hover:shadow-pink-500/30 transition-all duration-300 transform hover:-translate-y-1">
+        <div className="bg-accent/70 p-5 rounded-lg shadow-xl hover:shadow-education/20 transition-all duration-300 transform hover:-translate-y-1">
           <div className="flex items-center mb-3">
-            <FlaskConical className="h-7 w-7 text-pink-400 mr-3" />
-            <h3 className="text-xl font-semibold text-pink-300">{t('teacherGuide.slide4.inquiryBasedLearning.title')}</h3>
+            <FlaskConical className="h-7 w-7 text-education mr-3" />
+            <h3 className="text-xl font-semibold text-education-light">{t('teacherGuide.slide4.inquiryBasedLearning.title')}</h3>
           </div>
           <p className="text-foreground/85">
             {t('teacherGuide.slide4.inquiryBasedLearning.description')}
           </p>
         </div>
 
-        <div className="bg-accent/70 p-5 rounded-lg shadow-xl hover:shadow-purple-500/30 transition-all duration-300 transform hover:-translate-y-1">
+        <div className="bg-accent/70 p-5 rounded-lg shadow-xl hover:shadow-education/20 transition-all duration-300 transform hover:-translate-y-1">
           <div className="flex items-center mb-3">
-            <MessageSquareHeart className="h-7 w-7 text-purple-400 mr-3" />
-            <h3 className="text-xl font-semibold text-purple-300">{t('teacherGuide.slide4.immediateFeedback.title')}</h3>
+            <MessageSquareHeart className="h-7 w-7 text-education mr-3" />
+            <h3 className="text-xl font-semibold text-education-light">{t('teacherGuide.slide4.immediateFeedback.title')}</h3>
           </div>
           <p className="text-foreground/85">
             {t('teacherGuide.slide4.immediateFeedback.description')}

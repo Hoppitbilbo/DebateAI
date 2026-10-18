@@ -8,7 +8,7 @@ const Slide1Intro = () => {
   return (
     <div className="text-center p-6 animate-fadeIn">
       <div className="flex justify-center mb-6">
-        <Zap className="h-16 w-16 text-yellow-400 animate-pulse" />
+        <Zap className="h-16 w-16 text-education animate-pulse" />
       </div>
       <h2 className="text-3xl font-bold text-education-light mb-4">
         {t('teacherGuide.slide1.title')}
@@ -19,8 +19,8 @@ const Slide1Intro = () => {
       <div className="grid md:grid-cols-2 gap-6 text-left">
         <div className="bg-accent p-4 rounded-lg shadow-lg hover:shadow-sky-500/30 transition-shadow duration-300">
           <div className="flex items-center mb-2">
-            <BookOpen className="h-6 w-6 text-green-400 mr-3" />
-            <h3 className="text-xl font-semibold text-green-300">{t('teacherGuide.slide1.whatYouWillLearn.title')}</h3>
+            <BookOpen className="h-6 w-6 text-education mr-3" />
+            <h3 className="text-xl font-semibold text-education-light">{t('teacherGuide.slide1.whatYouWillLearn.title')}</h3>
           </div>
           <ul className="list-disc list-inside text-foreground/85 space-y-1">
             <li>{t('teacherGuide.slide1.whatYouWillLearn.item1')}</li>
@@ -31,8 +31,8 @@ const Slide1Intro = () => {
         </div>
         <div className="bg-accent p-4 rounded-lg shadow-lg hover:shadow-sky-500/30 transition-shadow duration-300">
           <div className="flex items-center mb-2">
-            <Lightbulb className="h-6 w-6 text-yellow-400 mr-3" />
-            <h3 className="text-xl font-semibold text-yellow-300">{t('teacherGuide.slide1.guideObjectives.title')}</h3>
+            <Lightbulb className="h-6 w-6 text-education mr-3" />
+            <h3 className="text-xl font-semibold text-education-light">{t('teacherGuide.slide1.guideObjectives.title')}</h3>
           </div>
           <ul className="list-disc list-inside text-foreground/85 space-y-1">
             <li>{t('teacherGuide.slide1.guideObjectives.item1')}</li>

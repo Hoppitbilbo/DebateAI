@@ -40,7 +40,7 @@ const Navbar = () => {
     <header className="sticky top-0 z-40 border-b border-border/60 bg-education-dark/95 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link to="/" className="logo text-xl font-bold text-education">
-          {config?.siteName && config.siteName !== "AiDebate.tech" ? config.siteName : <>AiDebate<span className="text-slate-50">.tech</span></>}
+          {config?.siteName && config.siteName !== "AiDebate.tech" ? config.siteName : <>AiDebate<span className="text-foreground">.tech</span></>}
         </Link>
 
         <nav className="hidden items-center gap-1 md:flex" aria-label={t("platform.nav.main")}>

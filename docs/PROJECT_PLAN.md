@@ -74,7 +74,6 @@ La piattaforma si installa sul server della scuola, così i dati restano all'ist
 
 ### Debito noto
 
-- La home ha ancora sezioni con colori fissi (bianco e verde) invece dei token del tema. Sono leggibili ma meno coerenti.
 - I testi di Privacy e Termini sono una base: ogni istituto deve completarli.
 - Non c'è ancora una licenza nel repository: va scelta prima del rilascio pubblico.
 
@@ -131,7 +130,6 @@ Obiettivo: correggere ciò che è emerso nel pilota e completare le funzioni "Sh
 - [ ] Esportazione dei risultati di classe in CSV
 - [ ] Commento del docente su una sessione, visibile allo studente
 - [ ] Taratura delle soglie di JEV per ogni app
-- [ ] Coerenza grafica della home con i token del tema
 - [ ] Accessibilità: navigazione da tastiera, contrasto, lettore di schermo
 
 Pausa natalizia: lavoro ridotto dal 22 dicembre al 6 gennaio.

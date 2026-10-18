@@ -18,14 +18,14 @@ const Slide3Scenarios = () => {
 
       <Accordion type="single" collapsible className="w-full space-y-4">
         <AccordionItem value="activity-1" className="bg-accent/50 rounded-lg shadow-md">
-          <AccordionTrigger className="text-xl font-semibold text-amber-300 hover:text-amber-200 p-4">
+          <AccordionTrigger className="text-xl font-semibold text-education-light hover:text-education p-4">
             <div className="flex items-center gap-3">
               <Search className="h-6 w-6" />
               {t('teacherGuide.slide3.activity1.title')}
             </div>
           </AccordionTrigger>
           <AccordionContent className="text-foreground/85 space-y-3 p-4 pt-2">
-            <p className="font-semibold text-amber-200">
+            <p className="font-semibold text-education-light">
               <Trans i18nKey="teacherGuide.slide3.activity1.objective" components={{ strong: <strong /> }} />
             </p>
             <div className="space-y-2">
@@ -43,14 +43,14 @@ const Slide3Scenarios = () => {
         </AccordionItem>
 
         <AccordionItem value="activity-2" className="bg-accent/50 rounded-lg shadow-md">
-          <AccordionTrigger className="text-xl font-semibold text-lime-300 hover:text-lime-200 p-4">
+          <AccordionTrigger className="text-xl font-semibold text-education-light hover:text-education p-4">
             <div className="flex items-center gap-3">
               <Bot className="h-6 w-6" />
               {t('teacherGuide.slide3.activity2.title')}
             </div>
           </AccordionTrigger>
           <AccordionContent className="text-foreground/85 space-y-3 p-4 pt-2">
-            <p className="font-semibold text-lime-200">
+            <p className="font-semibold text-education-light">
               <Trans i18nKey="teacherGuide.slide3.activity2.objective" components={{ strong: <strong /> }} />
             </p>
             <div className="space-y-2">
@@ -68,7 +68,7 @@ const Slide3Scenarios = () => {
         </AccordionItem>
 
         <AccordionItem value="activity-3" className="bg-accent/50 rounded-lg shadow-md">
-          <AccordionTrigger className="text-xl font-semibold text-education-light hover:text-education-light p-4">
+          <AccordionTrigger className="text-xl font-semibold text-education-light hover:text-education p-4">
             <div className="flex items-center gap-3">
               <Users className="h-6 w-6" />
               {t('teacherGuide.slide3.activity3.title')}

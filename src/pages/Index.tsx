@@ -35,16 +35,16 @@ const Index = () => {
         
         {/* Teacher's Guide Section */}
         <div ref={teacherGuideReveal.ref as React.RefObject<HTMLDivElement>}
-          className={`bg-white dark:bg-gray-900 py-12 reveal-from-left ${teacherGuideReveal.isVisible ? 'revealed' : ''}`}>
+          className={`bg-background py-16 reveal-from-left ${teacherGuideReveal.isVisible ? 'revealed' : ''}`}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
               <div className="flex justify-center mb-4">
                 <School className="h-12 w-12 text-education" />
               </div>
-              <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white sm:text-4xl">
+              <h2 className="text-3xl font-extrabold text-foreground sm:text-4xl">
                 {t('homepage.teacherGuide.title')}
               </h2>
-              <p className="mt-4 text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+              <p className="mt-4 text-xl text-muted-foreground max-w-2xl mx-auto">
                 {t('homepage.teacherGuide.description')}
               </p>
               <div className="mt-8">
@@ -60,32 +60,32 @@ const Index = () => {
 
         {/* Social Purpose Section */}
         <div ref={socialPurposeReveal.ref as React.RefObject<HTMLDivElement>}
-          className={`bg-education-light dark:bg-gray-800 py-12 reveal-from-right ${socialPurposeReveal.isVisible ? 'revealed' : ''}`}>
+          className={`bg-secondary border-t border-border/60 py-16 reveal-from-right ${socialPurposeReveal.isVisible ? 'revealed' : ''}`}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
               <div className="flex justify-center mb-4">
                 <Users className="h-12 w-12 text-education" />
               </div>
-              <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white sm:text-4xl">
+              <h2 className="text-3xl font-extrabold text-foreground sm:text-4xl">
                 {t('homepage.socialPurpose.title')}
               </h2>
-              <p className="mt-4 text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+              <p className="mt-4 text-xl text-muted-foreground max-w-2xl mx-auto">
                 {t('homepage.socialPurpose.description')}
               </p>
               <div className="mt-8 space-y-4 sm:space-y-0 sm:flex sm:justify-center sm:space-x-4">
                 <Link to="/apps" className="block sm:inline-block">
-                  <Button className="bg-education-dark hover:bg-education-dark/90 text-education-light w-full sm:w-auto">
+                  <Button className="bg-education hover:bg-education/90 text-education-dark w-full sm:w-auto">
                     {t('homepage.socialPurpose.exploreButton')}
                   </Button>
                 </Link>
                 <Link to="/tutorials" className="block sm:inline-block">
-                  <Button variant="outline" className="border-education-dark bg-transparent text-education-dark hover:bg-education-dark hover:text-education-light w-full sm:w-auto">
+                  <Button variant="outline" className="border-education bg-transparent text-education-light hover:bg-education hover:text-education-dark w-full sm:w-auto">
                     <BookOpen className="w-4 h-4 mr-2" />
                     {t('platform.nav.tutorials')}
                   </Button>
                 </Link>
                 <Link to="/about" className="block sm:inline-block">
-                  <Button variant="outline" className="border-education-dark bg-transparent text-education-dark hover:bg-education-dark hover:text-education-light w-full sm:w-auto">
+                  <Button variant="outline" className="border-education bg-transparent text-education-light hover:bg-education hover:text-education-dark w-full sm:w-auto">
                     {t('homepage.socialPurpose.learnMoreButton')}
                   </Button>
                 </Link>

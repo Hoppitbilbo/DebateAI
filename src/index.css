@@ -1,4 +1,3 @@
-@import './styles/design-system.css';
 
 @tailwind base;
 @tailwind components;
@@ -24,45 +23,46 @@
 
 @layer base {
   :root {
+    /* Single site theme: deep teal surfaces, lime accent. */
     --background: 187 30% 25%;
-    --foreground: 0 0% 95%;
+    --foreground: 0 0% 96%;
 
-    --card: 187 30% 28%;
-    --card-foreground: 0 0% 95%;
+    --card: 187 30% 29%;
+    --card-foreground: 0 0% 96%;
 
-    --popover: 187 30% 28%;
-    --popover-foreground: 0 0% 95%;
+    --popover: 187 32% 22%;
+    --popover-foreground: 0 0% 96%;
 
     --primary: 84 65% 52%;
-    --primary-foreground: 187 62% 15%;
+    --primary-foreground: 195 65% 16%;
 
-    --secondary: 180 60% 20%;
-    --secondary-foreground: 0 0% 95%;
+    --secondary: 195 65% 16%;
+    --secondary-foreground: 0 0% 96%;
 
-    --muted: 187 30% 30%;
-    --muted-foreground: 0 0% 90%;
+    --muted: 187 30% 31%;
+    --muted-foreground: 187 12% 78%;
 
     --accent: 187 30% 35%;
-    --accent-foreground: 0 0% 95%;
+    --accent-foreground: 0 0% 96%;
 
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 72% 58%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 187 30% 30%;
-    --input: 220 13% 91%;
+    --border: 187 25% 38%;
+    --input: 187 25% 42%;
     --ring: 84 65% 52%;
 
     --radius: 0.5rem;
 
-    --sidebar-background: 187 30% 20%;
-    --sidebar-foreground: 0 0% 95%;
+    --sidebar-background: 195 65% 16%;
+    --sidebar-foreground: 0 0% 96%;
     --sidebar-primary: 84 65% 52%;
-    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-primary-foreground: 195 65% 16%;
     --sidebar-accent: 187 30% 30%;
-    --sidebar-accent-foreground: 0 0% 90%;
-    --sidebar-border: 187 30% 30%;
+    --sidebar-accent-foreground: 0 0% 96%;
+    --sidebar-border: 187 25% 38%;
     --sidebar-ring: 84 65% 52%;
-    
+
     /* Font variables */
     --font-heading: 'Fraunces', serif;
     --font-body: 'Inter', sans-serif;
@@ -71,45 +71,11 @@
     --font-weight-semibold: 600;
     --font-weight-bold: 700;
     --letter-spacing-tight: -0.01em;
-  }
 
-  .dark {
-    --background: 187 62% 15%;
-    --foreground: 0 0% 95%;
-
-    --card: 187 62% 18%;
-    --card-foreground: 0 0% 95%;
-
-    --popover: 187 62% 18%;
-    --popover-foreground: 0 0% 95%;
-
-    --primary: 84 65% 52%;
-    --primary-foreground: 187 62% 15%;
-
-    --secondary: 180 60% 20%;
-    --secondary-foreground: 0 0% 95%;
-
-    --muted: 187 30% 25%;
-    --muted-foreground: 0 0% 80%;
-
-    --accent: 187 30% 25%;
-    --accent-foreground: 0 0% 95%;
-
-    --destructive: 0 62.8% 40.6%;
-    --destructive-foreground: 0 0% 95%;
-
-    --border: 187 30% 25%;
-    --input: 187 30% 25%;
-    --ring: 84 65% 52%;
-
-    --sidebar-background: 187 62% 15%;
-    --sidebar-foreground: 0 0% 90%;
-    --sidebar-primary: 84 65% 52%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 187 30% 25%;
-    --sidebar-accent-foreground: 0 0% 90%;
-    --sidebar-border: 187 30% 25%;
-    --sidebar-ring: 84 65% 52%;
+    /* Brand ramp (same values as tailwind `education`) */
+    --brand: 77 63% 51%;
+    --brand-light: 84 100% 78%;
+    --brand-dark: 195 65% 16%;
   }
 }
 
@@ -144,7 +110,7 @@
 
   h3 {
     font-size: 1.5rem; /* xl */
-    color: #D8FF8F; /* Updated to acid green */
+    color: hsl(var(--brand-light));
     font-variation-settings: "SOFT" 100, "WONK" 1;
   }
 

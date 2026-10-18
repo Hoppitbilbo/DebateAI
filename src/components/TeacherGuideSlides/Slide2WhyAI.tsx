@@ -18,8 +18,8 @@ const Slide2WhyAI = () => {
       <div className="grid md:grid-cols-2 gap-6">
         <div className="bg-accent p-5 rounded-lg shadow-lg hover:scale-105 transition-transform duration-300">
           <div className="flex items-center mb-3">
-            <TrendingUp className="h-7 w-7 text-green-400 mr-3" />
-            <h3 className="text-xl font-semibold text-green-300">{t('teacherGuide.slide2.teachingEnhancement.title')}</h3>
+            <TrendingUp className="h-7 w-7 text-education mr-3" />
+            <h3 className="text-xl font-semibold text-education-light">{t('teacherGuide.slide2.teachingEnhancement.title')}</h3>
           </div>
           <p className="text-foreground/85">
             {t('teacherGuide.slide2.teachingEnhancement.description')}
@@ -28,8 +28,8 @@ const Slide2WhyAI = () => {
 
         <div className="bg-accent p-5 rounded-lg shadow-lg hover:scale-105 transition-transform duration-300">
           <div className="flex items-center mb-3">
-            <Users className="h-7 w-7 text-yellow-400 mr-3" />
-            <h3 className="text-xl font-semibold text-yellow-300">{t('teacherGuide.slide2.learningPersonalization.title')}</h3>
+            <Users className="h-7 w-7 text-education mr-3" />
+            <h3 className="text-xl font-semibold text-education-light">{t('teacherGuide.slide2.learningPersonalization.title')}</h3>
           </div>
           <p className="text-foreground/85">
             {t('teacherGuide.slide2.learningPersonalization.description')}
@@ -38,8 +38,8 @@ const Slide2WhyAI = () => {
 
         <div className="bg-accent p-5 rounded-lg shadow-lg hover:scale-105 transition-transform duration-300">
           <div className="flex items-center mb-3">
-            <Sparkles className="h-7 w-7 text-pink-400 mr-3" />
-            <h3 className="text-xl font-semibold text-pink-300">{t('teacherGuide.slide2.futureProofSkills.title')}</h3>
+            <Sparkles className="h-7 w-7 text-education mr-3" />
+            <h3 className="text-xl font-semibold text-education-light">{t('teacherGuide.slide2.futureProofSkills.title')}</h3>
           </div>
           <p className="text-foreground/85">
             {t('teacherGuide.slide2.futureProofSkills.description')}
@@ -48,8 +48,8 @@ const Slide2WhyAI = () => {
 
         <div className="bg-accent p-5 rounded-lg shadow-lg hover:scale-105 transition-transform duration-300">
           <div className="flex items-center mb-3">
-            <Lightbulb className="h-7 w-7 text-purple-400 mr-3" /> {/* Re-using Lightbulb, consider a different icon if available */}
-            <h3 className="text-xl font-semibold text-purple-300">{t('teacherGuide.slide2.newResources.title')}</h3>
+            <Lightbulb className="h-7 w-7 text-education mr-3" /> {/* Re-using Lightbulb, consider a different icon if available */}
+            <h3 className="text-xl font-semibold text-education-light">{t('teacherGuide.slide2.newResources.title')}</h3>
           </div>
           <p className="text-foreground/85">
             {t('teacherGuide.slide2.newResources.description')}
