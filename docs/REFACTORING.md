@@ -38,7 +38,7 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto · `[-]` scartato (spieg
 ## Stato attuale
 
 - **Fase in corso:** 4 (service, State, Observer, backend)
-- **Prossimo task:** 4.1
+- **Prossimo task:** 4.2
 - **Lavoro a metà:** nessuno
 - **Test:** Go 33 test nuovi + quelli esistenti verdi; Vitest 18 test verdi; lint 0 errori (18 warning preesistenti)
 
@@ -175,7 +175,7 @@ Un'area per task, spostando l'SQL in `internal/store`:
 
 ### Fase 4: service, State, Observer (backend)
 
-- [ ] **4.1** `SessionService` con macchina a stati della sessione; `handleSaveTranscript` sotto le 20 righe.
+- [x] **4.1** (`07e38cf`) `SessionService` con macchina a stati della sessione; `handleSaveTranscript` sotto le 20 righe.
 - [ ] **4.2** Service per auth, classes e assignments; handler sottili in `httpapi/`.
 - [ ] **4.3** Observer per le notifiche mail.
 - [ ] **4.4** `main.go` come composition root; `Server` ridotto a router e middleware.
@@ -235,3 +235,4 @@ Un'area per task, spostando l'SQL in `internal/store`:
 | 2026-10-18 | 3.5 | `0f55532` | Claude Code | `store.ActivitySessions` + test; `domain.NewSession`, `SessionCompletion`, `ProgressCell` e costanti di stato. Transcript e contesto salvati in un'unica transazione. Formattato `domain/session.go` (era sfuggito nel 3.4). Costante `maxListedSessions`. |
 | 2026-10-18 | 3.6 | `d44f124` | Claude Code | `store.Providers`, `store.Prices`, `store.Usage` + test; `domain.Provider`, `ProviderPatch`, `ModelPrice`, `UsageRecord`, `UsageLogRow`, `UsageAggregate`, `UsageGrouping`. Esteso ai provider, che non erano nel piano originale. **`app` non contiene più SQL**: `Server` ha un repository per tabella e nessun `*sql.DB`. Rimossi `sqlBatch`, `execOrLog`, `countRows`, `boolInt`. Nota: nel report costi le chiamate degli ospiti hanno chiave `0` ed etichetta vuota (comportamento preesistente, ora fissato da un test). Fase 3 completata. |
 | 2026-10-18 | — | — | Claude Code | CI GitHub verde su `ee90557` (fine fase 3: `test`, `web`, `image`). |
+| 2026-10-18 | 4.1 | `07e38cf` | Claude Code | `server/internal/domain/session_state.go` (State: `activeState`, `endedState`, `StateOf`, `TurnOutcome`) + test della tabella delle transizioni. `server/internal/app/session_service.go`: `sessionService.SaveTranscript` con `shouldJudge`, `evaluate`, `lastMessages`, `countStudentTurns`; dipende da `sessionStore`, `assignmentStore` e dall'interfaccia `goalEvaluator` (oggi implementata da `Server.judge`). `handleSaveTranscript` = 19 righe. Il service è costruito in `NewServer` (passa a `main.go` nel 4.4). |
