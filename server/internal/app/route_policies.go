@@ -1,7 +1,6 @@
 package app
 
 import (
-	"encoding/json"
 	"log"
 	"strconv"
 	"strings"
@@ -34,9 +33,9 @@ func routePolicyFor(kind string) routePolicy {
 // autoRoute applies the default policy of a newly added provider.
 func (s *Server) autoRoute(providerID int64, kind string) {
 	var models []ai.ModelInfo
-	var raw string
-	_ = s.db.QueryRow(`SELECT models_json FROM providers WHERE id = ?`, providerID).Scan(&raw)
-	_ = json.Unmarshal([]byte(raw), &models)
+	if p, err := s.providers.Get(providerID); err == nil {
+		models = p.Models
+	}
 	rt := s.routing()
 	routePolicyFor(kind)(&rt, providerID, models)
 	if err := s.settings.Save("routing", rt); err != nil {

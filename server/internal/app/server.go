@@ -21,7 +21,6 @@ import (
 
 type Server struct {
 	cfg         Config
-	db          *sql.DB
 	settings    settingsStore
 	users       userStore
 	logins      authSessionStore
@@ -29,6 +28,9 @@ type Server struct {
 	classes     classStore
 	assignments assignmentStore
 	sessions    sessionStore
+	providers   providerStore
+	prices      priceStore
+	usage       usageStore
 	crypto      *Crypto
 	static      fs.FS
 
@@ -40,7 +42,6 @@ type Server struct {
 func NewServer(cfg Config, db *sql.DB, static fs.FS) *Server {
 	s := &Server{
 		cfg:         cfg,
-		db:          db,
 		settings:    store.NewSettings(db),
 		users:       store.NewUsers(db),
 		logins:      store.NewAuthSessions(db),
@@ -48,6 +49,9 @@ func NewServer(cfg Config, db *sql.DB, static fs.FS) *Server {
 		classes:     store.NewClasses(db),
 		assignments: store.NewAssignments(db),
 		sessions:    store.NewActivitySessions(db),
+		providers:   store.NewProviders(db),
+		prices:      store.NewPrices(db),
+		usage:       store.NewUsage(db),
 		crypto:      NewCrypto(cfg.Secret),
 		static:      static,
 		limiter:     newRateLimiter(),
@@ -67,7 +71,7 @@ func (s *Server) bootstrap() {
 			log.Printf("created admin user %s", s.cfg.AdminEmail)
 		}
 	}
-	if countRows(s.db, `SELECT COUNT(*) FROM providers`) > 0 {
+	if s.providers.Count(false) > 0 {
 		return
 	}
 	// Same path as adding a provider in the admin panel: list models, import

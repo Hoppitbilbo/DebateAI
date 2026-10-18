@@ -1,7 +1,5 @@
 package app
 
-import "database/sql"
-
 // loadSetting returns the stored value of key, or def when it is missing or invalid.
 func loadSetting[T any](st settingsStore, key string, def T) T {
 	out := def
@@ -119,10 +117,4 @@ func (s *Server) smtp() SMTPSettings {
 		st.Password = pw
 	}
 	return st
-}
-
-func countRows(db *sql.DB, q string, args ...any) int {
-	var n int
-	_ = db.QueryRow(q, args...).Scan(&n)
-	return n
 }

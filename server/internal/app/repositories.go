@@ -1,6 +1,9 @@
 package app
 
-import "github.com/Hoppitbilbo/DebateAI/server/internal/domain"
+import (
+	"github.com/Hoppitbilbo/DebateAI/server/internal/ai"
+	"github.com/Hoppitbilbo/DebateAI/server/internal/domain"
+)
 
 // Repositories the application depends on (Dependency Inversion): the
 // interfaces are defined here, by their consumer, and implemented by the
@@ -112,4 +115,34 @@ type sessionStore interface {
 	CountStarted(assignmentID int64) int
 	CountFinished(assignmentID int64) int
 	CountAttempts(userID, assignmentID int64) int
+}
+
+type providerStore interface {
+	Get(id int64) (*domain.Provider, error)
+	List() []domain.Provider
+	Create(name, kind, baseURL, apiKeyEnc string) (int64, error)
+	Update(id int64, p domain.ProviderPatch) error
+	Delete(id int64) error
+	SetModels(id int64, models []ai.ModelInfo) error
+	Name(id int64) string
+	BaseURL(id int64) string
+	Count(onlyEnabled bool) int
+}
+
+type priceStore interface {
+	Get(providerID int64, model string) (inPerM, outPerM float64, ok bool)
+	List() ([]domain.ModelPrice, error)
+	Put(providerID int64, model string, inPerM, outPerM float64) error
+	Import(providerID int64, model string, inPerM, outPerM float64) error
+	Delete(providerID int64, model string) error
+}
+
+type usageStore interface {
+	Insert(u domain.UsageRecord) error
+	SpendSince(since string) float64
+	UserSpendSince(userID int64, since string) float64
+	CountSince(since string, onlyErrors bool) int
+	CountUserRequestsSince(userID int64, since, excludedTask string) int
+	Aggregate(since string, by domain.UsageGrouping, limit int) []domain.UsageAggregate
+	Recent(limit int) ([]domain.UsageLogRow, error)
 }

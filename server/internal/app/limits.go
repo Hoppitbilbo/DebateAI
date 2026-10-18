@@ -19,6 +19,7 @@ const (
 	maxListedInvites        = 500
 	maxListedTeacherInvites = 200
 	maxListedSessions       = 100 // a student's own attempts
+	maxUsageGroups          = 400 // rows per grouping in the cost report
 )
 
 // JEV judge.

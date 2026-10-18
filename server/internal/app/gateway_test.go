@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/Hoppitbilbo/DebateAI/server/internal/ai"
+	"github.com/Hoppitbilbo/DebateAI/server/internal/domain"
 )
 
 // Characterization tests for the gateway fallback chain (refactoring task 0.1).
@@ -80,7 +81,8 @@ func chatRequest() ai.Request {
 
 func usageRows(t *testing.T, s *Server) (ok, failed int) {
 	t.Helper()
-	return countRows(s.db, `SELECT COUNT(*) FROM usage_log WHERE ok = 1`), countRows(s.db, `SELECT COUNT(*) FROM usage_log WHERE ok = 0`)
+	failed = s.usage.CountSince("", true)
+	return s.usage.CountSince("", false) - failed, failed
 }
 
 func TestGenerateFallsBackOnRetryableError(t *testing.T) {
@@ -231,8 +233,7 @@ func TestBudgetExceededKeepsOnlyFreeTargets(t *testing.T) {
 	if err := s.settings.Save("budget", BudgetSettings{MonthlyUSD: 1, BlockPaidWhenExceeded: true}); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := s.db.Exec(`INSERT INTO usage_log(created_at, provider_id, provider_name, model, task, input_tokens, output_tokens, cost_usd, ok, latency_ms, error)
-		VALUES(?, 1, 'p', 'paid', 'chat', 0, 0, 5, 1, 0, '')`, now()); err != nil {
+	if err := s.usage.Insert(domain.UsageRecord{ProviderID: 1, Provider: "p", Model: "paid", Task: TaskChat, CostUSD: 5, OK: true}); err != nil {
 		t.Fatal(err)
 	}
 	setChatRoute(t, s, "ordered", RouteTarget{1, "paid"}, RouteTarget{1, "cheap:free"})
@@ -262,20 +263,6 @@ func TestRetryable(t *testing.T) {
 	}
 }
 
-func TestSQLBatchStopsAtFirstError(t *testing.T) {
-	s := newTestServer(t)
-	b := sqlBatch{db: s.db}
-	b.exec(`INSERT INTO settings(key, value) VALUES('a', '1')`)
-	b.exec(`INSERT INTO no_such_table VALUES(1)`)
-	b.exec(`INSERT INTO settings(key, value) VALUES('b', '2')`)
-	if b.err == nil {
-		t.Fatal("expected the error of the second statement")
-	}
-	if countRows(s.db, `SELECT COUNT(*) FROM settings WHERE key IN ('a', 'b')`) != 1 {
-		t.Fatal("statements after the failure must not run")
-	}
-}
-
 func TestMeteredModelLogsEveryCall(t *testing.T) {
 	s := newTestServer(t)
 	fp := &fakeProvider{errs: map[string]error{"bad": errors.New("boom")}}
@@ -289,7 +276,7 @@ func TestMeteredModelLogsEveryCall(t *testing.T) {
 	if ok, failed := usageRows(t, s); ok != 1 || failed != 1 {
 		t.Fatalf("usage log ok=%d failed=%d", ok, failed)
 	}
-	if countRows(s.db, `SELECT COUNT(*) FROM usage_log WHERE ok = 0 AND error = 'boom' AND input_tokens = 0`) != 1 {
+	if rows, _ := s.usage.Recent(1); rows[0].OK || rows[0].Error != "boom" || rows[0].InputTokens != 0 {
 		t.Fatal("failed call must log its error")
 	}
 }

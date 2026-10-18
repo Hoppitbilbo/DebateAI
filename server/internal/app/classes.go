@@ -268,10 +268,3 @@ func (s *Server) handleMyClasses(w http.ResponseWriter, r *http.Request) {
 	}
 	writeJSON(w, 200, out)
 }
-
-func boolInt(b bool) int {
-	if b {
-		return 1
-	}
-	return 0
-}

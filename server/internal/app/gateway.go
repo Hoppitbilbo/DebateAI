@@ -2,7 +2,6 @@ package app
 
 import (
 	"context"
-	"database/sql"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -13,6 +12,7 @@ import (
 	"time"
 
 	"github.com/Hoppitbilbo/DebateAI/server/internal/ai"
+	"github.com/Hoppitbilbo/DebateAI/server/internal/domain"
 )
 
 // ---------- provider registry ----------
@@ -36,12 +36,7 @@ type cachedProvider struct {
 }
 
 func (s *Server) insertProvider(name, kind, baseURL, apiKey string) (int64, error) {
-	res, err := s.db.Exec(`INSERT INTO providers(name, kind, base_url, api_key_enc, created_at) VALUES(?,?,?,?,?)`,
-		name, kind, strings.TrimSpace(baseURL), s.crypto.Encrypt(strings.TrimSpace(apiKey)), now())
-	if err != nil {
-		return 0, err
-	}
-	return res.LastInsertId()
+	return s.providers.Create(name, kind, strings.TrimSpace(baseURL), s.crypto.Encrypt(strings.TrimSpace(apiKey)))
 }
 
 func (s *Server) invalidateProvider(id int64) {
@@ -57,25 +52,23 @@ func (s *Server) provider(id int64) (*cachedProvider, error) {
 	if cp, ok := s.provs[id]; ok {
 		return &cp, nil
 	}
-	var name, kind, base, keyEnc string
-	var enabled int
-	if err := s.db.QueryRow(`SELECT name, kind, base_url, api_key_enc, enabled FROM providers WHERE id = ?`, id).
-		Scan(&name, &kind, &base, &keyEnc, &enabled); err != nil {
+	rec, err := s.providers.Get(id)
+	if err != nil {
 		return nil, fmt.Errorf("provider %d not found", id)
 	}
-	if enabled != 1 {
-		return nil, fmt.Errorf("provider %s is disabled", name)
+	if !rec.Enabled {
+		return nil, fmt.Errorf("provider %s is disabled", rec.Name)
 	}
-	key, err := s.crypto.Decrypt(keyEnc)
+	key, err := s.crypto.Decrypt(rec.APIKeyEnc)
 	if err != nil {
 		return nil, err
 	}
-	cfg := ai.Config{ID: id, Name: name, Kind: kind, BaseURL: base, APIKey: key}
+	cfg := ai.Config{ID: id, Name: rec.Name, Kind: rec.Kind, BaseURL: rec.BaseURL, APIKey: key}
 	p, err := ai.New(cfg)
 	if err != nil {
 		return nil, err
 	}
-	cp := cachedProvider{p: p, cfg: cfg, name: name}
+	cp := cachedProvider{p: p, cfg: cfg, name: rec.Name}
 	s.provs[id] = cp
 	return &cp, nil
 }
@@ -88,13 +81,10 @@ type price struct {
 }
 
 func (s *Server) priceFor(providerID int64, model string) price {
-	var in, out float64
-	if err := s.db.QueryRow(`SELECT input_per_m, output_per_m FROM model_prices WHERE provider_id = ? AND model = ?`, providerID, model).Scan(&in, &out); err == nil && in >= 0 && out >= 0 {
+	if in, out, ok := s.prices.Get(providerID, model); ok {
 		return price{in, out, true}
 	}
-	var base string
-	_ = s.db.QueryRow(`SELECT base_url FROM providers WHERE id = ?`, providerID).Scan(&base)
-	if ai.IsLikelyFree(base, model) {
+	if ai.IsLikelyFree(s.providers.BaseURL(providerID), model) {
 		return price{0, 0, true}
 	}
 	return price{}
@@ -106,9 +96,7 @@ func monthStart() string {
 }
 
 func (s *Server) monthSpend() float64 {
-	var v sql.NullFloat64
-	_ = s.db.QueryRow(`SELECT SUM(cost_usd) FROM usage_log WHERE created_at >= ?`, monthStart()).Scan(&v)
-	return v.Float64
+	return s.usage.SpendSince(monthStart())
 }
 
 func (s *Server) budgetExceeded() bool {
@@ -139,16 +127,11 @@ func (s *Server) logUsage(e usageEntry) float64 {
 		p := s.priceFor(e.ProviderID, e.Model)
 		cost = (float64(e.Usage.InputTokens)*p.In + float64(e.Usage.OutputTokens)*p.Out) / 1e6
 	}
-	ok := 0
-	if e.OK {
-		ok = 1
-	}
-	_, err := s.db.Exec(`INSERT INTO usage_log(created_at, user_id, session_id, provider_id, provider_name, model, task, input_tokens, output_tokens, cost_usd, ok, latency_ms, error)
-		VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)`, now(), e.UserID, e.SessionID, e.ProviderID, e.Provider, e.Model, e.Task,
-		e.Usage.InputTokens, e.Usage.OutputTokens, cost, ok, e.Latency.Milliseconds(), e.Err)
-	if err != nil {
-		log.Printf("usage log: %v", err)
-	}
+	logIfErr("usage log", s.usage.Insert(domain.UsageRecord{
+		UserID: e.UserID, SessionID: e.SessionID, ProviderID: e.ProviderID, Provider: e.Provider, Model: e.Model, Task: e.Task,
+		InputTokens: e.Usage.InputTokens, OutputTokens: e.Usage.OutputTokens, CostUSD: cost, OK: e.OK,
+		LatencyMs: e.Latency.Milliseconds(), Error: e.Err,
+	}))
 	if e.SessionID != nil && cost > 0 {
 		logIfErr("add session cost", s.sessions.AddCost(*e.SessionID, cost))
 	}
@@ -245,7 +228,7 @@ func (s *Server) aiAllowed(w http.ResponseWriter, r *http.Request) (*User, bool)
 	}
 	if u.Role == "student" && g.StudentRequestsPerDay > 0 {
 		since := time.Now().UTC().Add(-24 * time.Hour).Format(time.RFC3339)
-		if countRows(s.db, `SELECT COUNT(*) FROM usage_log WHERE user_id = ? AND created_at >= ? AND task != 'judge'`, u.ID, since) >= g.StudentRequestsPerDay {
+		if s.usage.CountUserRequestsSince(u.ID, since, TaskJudge) >= g.StudentRequestsPerDay {
 			writeErr(w, 429, "daily_limit", "daily AI request limit reached")
 			return nil, false
 		}
@@ -448,9 +431,7 @@ func (s *Server) handleLiveUsage(w http.ResponseWriter, r *http.Request) {
 		userID = &u.ID
 	}
 	sessionID, _, _ := s.sessionFor(u, in.SessionID)
-	name := ""
-	_ = s.db.QueryRow(`SELECT name FROM providers WHERE id = ?`, in.ProviderID).Scan(&name)
-	cost := s.logUsage(usageEntry{UserID: userID, SessionID: sessionID, ProviderID: in.ProviderID, Provider: name, Model: in.Model, Task: TaskLive,
+	cost := s.logUsage(usageEntry{UserID: userID, SessionID: sessionID, ProviderID: in.ProviderID, Provider: s.providers.Name(in.ProviderID), Model: in.Model, Task: TaskLive,
 		Usage: ai.Usage{InputTokens: in.InputTokens, OutputTokens: in.OutputTokens}, OK: true, Latency: time.Duration(in.Seconds) * time.Second})
 	writeJSON(w, 200, liveUsageResponse{OK: true, CostUSD: cost})
 }

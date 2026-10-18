@@ -190,24 +190,14 @@ type providerTestResponse struct {
 	Usage     *ai.Usage `json:"usage,omitempty"`
 }
 
-type usageAggregate struct {
-	Key          string  `json:"key"`
-	Label        string  `json:"label,omitempty"`
-	Requests     int     `json:"requests"`
-	Errors       int     `json:"errors"`
-	InputTokens  int64   `json:"inputTokens"`
-	OutputTokens int64   `json:"outputTokens"`
-	CostUSD      float64 `json:"costUsd"`
-}
-
 type usageSummaryResponse struct {
-	Days          int              `json:"days"`
-	ByDay         []usageAggregate `json:"byDay"`
-	ByModel       []usageAggregate `json:"byModel"`
-	ByTask        []usageAggregate `json:"byTask"`
-	ByProvider    []usageAggregate `json:"byProvider"`
-	ByUser        []usageAggregate `json:"byUser"`
-	ByClass       []usageAggregate `json:"byClass"`
-	MonthSpendUSD float64          `json:"monthSpendUsd"`
-	Budget        BudgetSettings   `json:"budget"`
+	Days          int                     `json:"days"`
+	ByDay         []domain.UsageAggregate `json:"byDay"`
+	ByModel       []domain.UsageAggregate `json:"byModel"`
+	ByTask        []domain.UsageAggregate `json:"byTask"`
+	ByProvider    []domain.UsageAggregate `json:"byProvider"`
+	ByUser        []domain.UsageAggregate `json:"byUser"`
+	ByClass       []domain.UsageAggregate `json:"byClass"`
+	MonthSpendUSD float64                 `json:"monthSpendUsd"`
+	Budget        BudgetSettings          `json:"budget"`
 }
