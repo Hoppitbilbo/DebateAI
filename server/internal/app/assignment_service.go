@@ -3,23 +3,27 @@ package app
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"strings"
-	"time"
 
 	"github.com/Hoppitbilbo/DebateAI/server/internal/domain"
 )
 
 // assignmentService runs the teacher's assignments: creating and editing
-// them, who may see them, the students' progress and the e-mail sent when
+// them, who may see them and the students' progress. Listeners hear when
 // one is published.
 type assignmentService struct {
 	assignments assignmentStore
 	classes     classStore
 	sessions    sessionStore
 	classSvc    *classService
-	mail        mailer
-	siteName    func() string
+	listeners   []assignmentListener
+}
+
+// published tells every listener that students should hear about a.
+func (svc *assignmentService) published(a *Assignment, baseURL string) {
+	for _, l := range svc.listeners {
+		l.AssignmentPublished(a, baseURL)
+	}
 }
 
 var (
@@ -130,7 +134,7 @@ func (svc *assignmentService) Create(u *User, classID int64, in AssignmentInput,
 	}
 	a, err := svc.assignments.Get(id)
 	if err == nil && in.Notify && a.Published {
-		svc.notifyStudents(a, baseURL)
+		svc.published(a, baseURL)
 	}
 	return a, err
 }
@@ -163,7 +167,7 @@ func (svc *assignmentService) Update(a *Assignment, in AssignmentInput, baseURL 
 	}
 	a, err := svc.assignments.Get(a.ID)
 	if err == nil && in.Notify && a.Published && !wasPublished {
-		svc.notifyStudents(a, baseURL)
+		svc.published(a, baseURL)
 	}
 	return a, err
 }
@@ -180,33 +184,4 @@ func (svc *assignmentService) Progress(a *Assignment) ([]StudentProgress, error)
 			Session: svc.sessions.Best(st.ID, a.ID), AttemptCount: svc.sessions.CountAttempts(st.ID, a.ID)})
 	}
 	return out, nil
-}
-
-// notifyStudents e-mails the active students of the class about a
-// published assignment.
-func (svc *assignmentService) notifyStudents(a *Assignment, baseURL string) {
-	students, err := svc.classes.Students(a.ClassID)
-	if err != nil {
-		return
-	}
-	for _, st := range students {
-		if !st.Active {
-			continue
-		}
-		subj, body := renderMail("assignment", st.Locale, map[string]string{"site": svc.siteName(), "name": st.Name, "class": a.ClassName,
-			"title": a.Title, "due": dueText(a.DueAt, st.Locale), "link": baseURL + "/dashboard"})
-		svc.mail.sendMailAsync(st.Email, subj, body)
-	}
-}
-
-// dueText is the "due on ..." sentence of the mail, in the reader's language.
-func dueText(dueAt *string, locale string) string {
-	if dueAt == nil {
-		return ""
-	}
-	when := *dueAt
-	if t, err := time.Parse(time.RFC3339, when); err == nil {
-		when = t.Format("02/01/2006 15:04")
-	}
-	return fmt.Sprintf(duePhrase[normLocale(locale)], when)
 }

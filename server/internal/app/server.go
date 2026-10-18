@@ -67,8 +67,8 @@ func NewServer(cfg Config, db *sql.DB, static fs.FS) *Server {
 		siteName: func() string { return s.general().SiteName }}
 	s.classSvc = &classService{classes: s.classes, users: s.users, accounts: s.accounts, mail: s,
 		siteName: func() string { return s.general().SiteName }, mailOn: func() bool { return s.smtp().Host != "" }}
-	s.assignmentSvc = &assignmentService{assignments: s.assignments, classes: s.classes, sessions: s.sessions, classSvc: s.classSvc, mail: s,
-		siteName: func() string { return s.general().SiteName }}
+	s.assignmentSvc = &assignmentService{assignments: s.assignments, classes: s.classes, sessions: s.sessions, classSvc: s.classSvc,
+		listeners: []assignmentListener{mailNotifier{classes: s.classes, mail: s, siteName: func() string { return s.general().SiteName }}}}
 	s.sessionSvc = &sessionService{sessions: s.sessions, assignments: s.assignments, classes: s.classes, classSvc: s.classSvc,
 		judge: s, jevSettings: s.jevSettings}
 	s.bootstrap()
