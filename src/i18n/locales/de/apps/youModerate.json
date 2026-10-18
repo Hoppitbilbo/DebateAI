@@ -1,0 +1,50 @@
+{
+  "name": "Du moderierst",
+  "title": "Du moderierst",
+  "subtitle": "Historische Persönlichkeiten diskutieren lassen",
+  "description": "Erstelle und analysiere tiefgehende Gespräche zwischen zwei historischen Persönlichkeiten auf Grundlage ihrer Wikipedia-Profile.",
+  "errors": {
+    "fetchError": "Fehler beim Abrufen der Wikipedia-Daten für {{title}}",
+    "noSummary": "Keine Zusammenfassung gefunden.",
+    "summaryError": "Die Zusammenfassung für diese Person konnte nicht abgerufen werden."
+  },
+  "setup": {
+    "buildDialogue": "Dialog aufbauen",
+    "selectDescription": "Wähle zwei historische Personen aus Wikipedia und lege ein Thema für ihre Diskussion fest.",
+    "character1": "Erste Person",
+    "character2": "Zweite Person",
+    "themeLabel": "Gesprächsthema",
+    "themePlaceholder": "Beispiel: Die Auswirkungen des Buchdrucks auf die Gesellschaft",
+    "startButton": "Dialog starten",
+    "loadingSummary": "Zusammenfassung wird von Wikipedia geladen...",
+    "summaryLoaded": "Zusammenfassung geladen."
+  },
+  "chat": {
+    "systemMessage": "Starte den Dialog zwischen {{char1}} und {{char2}} zum Thema: {{theme}}.",
+    "errorMessage": "Beim Erzeugen der Antwort ist ein Fehler aufgetreten.",
+    "autoErrorMessage": "Beim Erzeugen der automatischen Antwort ist ein Fehler aufgetreten.",
+    "dialogueTab": "Dialog",
+    "charactersTab": "Profile",
+    "endDialogueButton": "Dialog beenden und reflektieren",
+    "speakToAll": "An alle",
+    "speakTo": "An {{name}}",
+    "askBothPlaceholder": "Stelle beiden eine Frage...",
+    "askCharacterPlaceholder": "Stelle {{character}} eine Frage...",
+    "nextIntervention": "Nächster Beitrag von {{character}}"
+  },
+  "characterStyles": {
+    "erudite": "gelehrt",
+    "reflective": "nachdenklich"
+  },
+  "reflection": {
+    "title": "Reflexion über den historischen Dialog",
+    "description": "Analysiere den Dialog: Standpunkte, Argumente und was dich beeindruckt hat.",
+    "questions": [
+      "Welche Kernpunkte sind im Dialog entstanden?",
+      "Passten die Argumente zu den historischen Personen? Warum?",
+      "Welche Person hatte die überraschendste Sichtweise?",
+      "Wie hat der Dialog dein Verständnis des Themas verändert?",
+      "Welche Frage würdest du einer der beiden Personen stellen?"
+    ]
+  }
+}

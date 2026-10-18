@@ -18,8 +18,10 @@ import teacherGuidePage from './teacherGuidePage.json';
 import tutorialsPage from './tutorialsPage.json';
 import ai from './ai.json';
 import evaluation from './evaluation.json';
+import platform from './platform.json';
 
 export default {
+  platform,
   aboutPage,
   apps,
   appsPage,

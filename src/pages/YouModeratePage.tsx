@@ -1,329 +1,166 @@
-import { useState, useEffect, useCallback } from "react";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import YouModerateChat from "@/components/YouModerateChat";
-import WikiSearchSelect from "@/components/WikiSearchSelect";
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { FastForward } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowRight, BookOpen } from "lucide-react";
-import { ConversationData, getAIGameAndReflectionEvaluation, AIScoreEvaluation } from "@/utils/evaluationUtils";
-import { Message } from "@/types/conversation"; // Using the global Message type
-import YouModerateReflection from "@/components/YouModerate/YouModerateReflection";
-import YouModerateFeedback from "@/components/YouModerate/YouModerateFeedback";
-// Import local Message type from you-moderate for the handler
-import { Message as YouModerateMessage } from "@/components/you-moderate/types";
-import { useTranslation } from "react-i18next";
+import { Label } from "@/components/ui/label";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import type { WikiRef } from "@/lib/api";
+import type { ChatMessage } from "@/services/aiService";
+import ActivityRunner from "@/features/activity/components/ActivityRunner";
+import { CharacterPicker } from "@/features/activity/components/SetupCard";
+import { useActivityFlow } from "@/features/activity/useActivityFlow";
+import { bioOf, useWikiSummaries } from "@/features/activity/wiki";
+import { prompts } from "@/features/activity/prompts";
+import { APPS, ActivityMessage } from "@/features/activity/types";
 
-interface WikiSearchResult {
-  title: string;
-  snippet: string;
-  pageid: number;
-}
+const app = APPS["you-moderate"];
+type Key = "a" | "b";
+const SPEAKER_STYLES = { a: "border-l-4 border-l-sky-400", b: "border-l-4 border-l-amber-400" };
 
-//This interface is used within YouModeratePage and passed to YouModerateChat
-export interface CharacterDetail extends WikiSearchResult {
-    name: string; // Already in WikiSearchResult as title, but explicit for clarity
-    wikiTitle: string; // Same as title, for consistency with other components
-    bio: string; // This will be the fetched summary
-    dialogueStyle: string; // Example: "formal", "analytical"
-    summary?: string; // Optional: full summary if different from bio snippet used initially
-}
+/** The debate seen from one debater: own lines = assistant, everything else = user. */
+const debateHistory = (messages: ActivityMessage[], me: Key, moderator: string): ChatMessage[] =>
+  messages
+    .filter((m) => m.content.trim() && !m.error && !m.streaming)
+    .map((m) =>
+      m.speakerKey === me && m.role === "assistant"
+        ? { role: "assistant" as const, content: m.content }
+        : { role: "user" as const, content: `${m.role === "user" ? moderator : m.role === "system" ? "[!]" : m.name}: ${m.content}` },
+    );
 
+/** The student moderates a debate between two historical characters. */
 const YouModeratePage = () => {
-  const { t, i18n } = useTranslation();
-  const [selectedCharacters, setSelectedCharacters] = useState<WikiSearchResult[]>([]);
+  const { t } = useTranslation();
+  const [chars, setChars] = useState<[WikiRef | null, WikiRef | null]>([null, null]);
   const [theme, setTheme] = useState("");
-  const [characterSummaries, setCharacterSummaries] = useState<{ [key: string]: string }>({});
-  const [currentPhase, setCurrentPhase] = useState<"selecting" | "chatting" | "reflecting" | "feedback">("selecting");
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [userReflection, setUserReflection] = useState("");
-  const [aiEvaluation, setAiEvaluation] = useState<AIScoreEvaluation | null>(null);
+  const [target, setTarget] = useState<"next" | Key>("next");
+  const [nextSpeaker, setNextSpeaker] = useState<Key>("a");
+  const [a, b] = chars;
+  const { summaries, loading } = useWikiSummaries(chars);
+  const moderator = t("platform.apps.youModerate.moderator");
 
-  const getWikipediaLanguageCode = () => {
-    const langMap: { [key: string]: string } = {
-      'it': 'it',
-      'en': 'en', 
-      'es': 'es',
-      'fr': 'fr',
-      'de': 'de'
-    };
-    return langMap[i18n.language] || 'it';
-  };
-  const [isEvaluating, setIsEvaluating] = useState(false);
+  const flow = useActivityFlow(app.type, { context: { characters: [a?.title, b?.title], theme } });
+  const { preset, engine, session } = flow;
 
-  const fetchWikiSummary = async (title: string, index: number) => {
-    setCharacterSummaries(prevSummaries => {
-      const newSummaries = { ...prevSummaries };
-      newSummaries[index] = null; // Indicate loading
-      return newSummaries;
+  useEffect(() => {
+    if (preset.characters?.length === 2) setChars([preset.characters[0], preset.characters[1]]);
+    if (preset.topic) setTheme(preset.topic);
+  }, [preset.characters, preset.topic]);
+
+  /** One debater speaks, then the floor passes to the other. */
+  const speak = async (key: Key) => {
+    if (!a || !b) return;
+    const me = key === "a" ? a : b;
+    const other = key === "a" ? b : a;
+    const style = key === "a" ? t("platform.apps.youModerate.styleA") : t("platform.apps.youModerate.styleB");
+    await engine.respond({
+      system: prompts.moderated(me.title, bioOf(me, summaries), other.title, theme, style, session.assignment),
+      history: debateHistory(engine.messagesRef.current, key, moderator),
+      name: me.title,
+      speakerKey: key,
     });
+    setNextSpeaker(key === "a" ? "b" : "a");
+  };
+
+  /** Lets a debater speak without a moderator message (the chat stays busy meanwhile). */
+  const speakAlone = async (key: Key) => {
+    engine.setBusy(true);
     try {
-      const wikiLang = getWikipediaLanguageCode();
-      const endpoint = `https://${wikiLang}.wikipedia.org/w/api.php?action=query&prop=extracts&exintro&explaintext&titles=${encodeURIComponent(title)}&format=json&origin=*&redirects=1`;
-      const response = await fetch(endpoint);
-      if (!response.ok) throw new Error(t('apps.youModerate.errors.fetchError', { title }));
-      const data = await response.json();
-      const pages = data.query.pages;
-      const pageId = Object.keys(pages)[0];
-      const extract = pages[pageId].extract || t('apps.youModerate.errors.noSummary');
-      setCharacterSummaries(prevSummaries => {
-        const newSummaries = { ...prevSummaries };
-        newSummaries[index] = extract;
-        return newSummaries;
-      });
-    } catch (error) {
-      console.error("Errore fetchWikiSummary:", error);
-      setCharacterSummaries(prevSummaries => {
-        const newSummaries = { ...prevSummaries };
-        newSummaries[index] = t('apps.youModerate.errors.summaryError');
-        return newSummaries;
-      });
-    }
-  };
-
-  const handleCharacterSelect = (index: number, result: WikiSearchResult | null) => {
-    const newSelectedCharacters = [...selectedCharacters];
-    newSelectedCharacters[index] = result;
-    setSelectedCharacters(newSelectedCharacters);
-
-    if (result && result.title) {
-      fetchWikiSummary(result.title, index); 
-    } else {
-      setCharacterSummaries(prevSummaries => {
-        const newSummaries = { ...prevSummaries };
-        delete newSummaries[index];
-        return newSummaries;
-      });
-    }
-  };
-  
-  const handleStartDialogue = () => {
-    const errorMessage = t('apps.youModerate.errors.summaryError');
-    if (selectedCharacters[0] && selectedCharacters[1] && characterSummaries[0] && characterSummaries[1] && theme.trim() && characterSummaries[0] !== errorMessage && characterSummaries[1] !== errorMessage) {
-      setMessages([]);
-      setCurrentPhase("chatting");
-    }
-  };
-
-  const handleMessagesUpdate = useCallback((updatedMessagesFromChat: YouModerateMessage[]) => {
-    // Map messages from YouModerateChat's local type to the global Message type
-    const mappedMessages: Message[] = updatedMessagesFromChat.map(msg => {
-      let role: "user" | "assistant" | "system" | "character" = "assistant"; // Default for character messages
-      if (msg.role === "user") role = "user";
-      else if (msg.role === "system") role = "system";
-      // For 'character1' and 'character2', we map to 'assistant' and use characterName
-      return {
-        role: role,
-        content: msg.content,
-        characterName: (msg.role === "character1" || msg.role === "character2") ? msg.character : undefined,
-        // id and timestamp can be added if needed by global Message type
-      };
-    });
-    setMessages(mappedMessages);
-  }, []);
-
-  const handleEndChatInPage = useCallback(() => {
-    setCurrentPhase("reflecting");
-  }, []);
-
-  const evaluateCurrentReflection = useCallback(async (reflection: string) => {
-    if (!selectedCharacters[0] || !selectedCharacters[1] || !theme || messages.length === 0) {
-      setAiEvaluation({
-        textualFeedback: t('apps.youModerate.errors.insufficientData', {
-          defaultValue:
-            'Dati insufficienti per la valutazione (personaggi, tema o messaggi mancanti).',
-        }),
-      } as AIScoreEvaluation);
-      setCurrentPhase("feedback");
-      return;
-    }
-
-    setIsEvaluating(true);
-    setAiEvaluation(null);
-    try {
-      const conversationData: ConversationData = {
-        character: `${selectedCharacters[0].title} & ${selectedCharacters[1].title}`,
-        topic: theme,
-        messages: messages,
-      };
-      const evaluationResult = await getAIGameAndReflectionEvaluation(conversationData, reflection);
-      setAiEvaluation(evaluationResult);
-    } catch (error) {
-      console.error("Errore durante la valutazione:", error);
-      setAiEvaluation({
-        textualFeedback: t('apps.youModerate.errors.technicalReflection', {
-          defaultValue:
-            'Si è verificato un errore tecnico durante la valutazione della riflessione.',
-        }),
-      } as AIScoreEvaluation);
+      await speak(key);
     } finally {
-      setIsEvaluating(false);
-      setCurrentPhase("feedback");
+      engine.setBusy(false);
     }
-  }, [selectedCharacters, theme, messages, t]);
-
-  const handleSubmitReflection = useCallback(async (reflection: string) => {
-    setUserReflection(reflection);
-    setCurrentPhase("reflecting");
-    await evaluateCurrentReflection(reflection);
-  }, [evaluateCurrentReflection]);
-
-  const handleStartNewDialogue = () => {
-    setSelectedCharacters([null, null]);
-    setCharacterSummaries({});
-    setTheme("");
-    setCurrentPhase("selecting");
-    setUserReflection("");
-    setAiEvaluation(null);
-    setMessages([]);
   };
 
-  const getChatCharactersDetails = (): [CharacterDetail, CharacterDetail] | null => {
-    if (selectedCharacters[0] && selectedCharacters[1] && characterSummaries[0] && characterSummaries[1]) {
-      // Ensure summaries are not error messages or null before proceeding
-      const errorMessage = t('apps.youModerate.errors.summaryError');
-      if (characterSummaries[0] === errorMessage || characterSummaries[1] === errorMessage || characterSummaries[0] === null || characterSummaries[1] === null) {
-        return null;
-      }
-      return [
-        {
-          ...selectedCharacters[0],
-          name: selectedCharacters[0].title,
-          wikiTitle: selectedCharacters[0].title,
-          bio: characterSummaries[0],
-          dialogueStyle: t('apps.youModerate.characterStyles.erudite')
-        },
-        {
-          ...selectedCharacters[1],
-          name: selectedCharacters[1].title,
-          wikiTitle: selectedCharacters[1].title,
-          bio: characterSummaries[1],
-          dialogueStyle: t('apps.youModerate.characterStyles.reflective')
-        },
-      ];
-    }
-    return null;
+  const start = async () => {
+    if (!a || !b) return;
+    setNextSpeaker("a");
+    await flow.begin(`${a.title} vs ${b.title}: ${theme}`, { characters: [a, b], theme }, [
+      { id: "intro", role: "system", content: t("platform.apps.youModerate.intro", { a: a.title, b: b.title, theme }) },
+    ]);
+    await speakAlone("a");
   };
 
-  const isLoadingSummaries = Object.values(characterSummaries).some(summary => summary === null) && selectedCharacters.length > 0;
+  const send = (text: string) => engine.runTurn(text, () => speak(target === "next" ? nextSpeaker : target), moderator);
 
-  return <div className="flex flex-col min-h-screen bg-gray-900 text-white">
-      <Navbar />
-      <main className="flex-1 py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h1 className="text-4xl font-extrabold sm:text-5xl md:text-6xl text-education-light">
-              {t('apps.youModerate.title')}
-            </h1>
-            <p className="mt-4 text-xl text-gray-300 max-w-2xl mx-auto">
-              {t('apps.youModerate.description')}
-            </p>
-            <div className="mt-6">
-              <Button
-                variant="outline"
-                onClick={() => window.location.href = '/apps/you-moderate/tutorial'}
-                className="inline-flex items-center space-x-2 border-education-light text-education-light hover:bg-education-light hover:text-gray-900"
-              >
-                <BookOpen className="w-4 h-4" />
-                <span>{t('common.viewTutorial', 'View Tutorial')}</span>
-              </Button>
+  const continueDebate = () => {
+    if (!engine.busy && !engine.ended) void speakAlone(nextSpeaker);
+  };
+
+  const restart = () =>
+    flow.restart(() => {
+      if (!preset.characters) setChars([null, null]);
+      if (!preset.topic) setTheme("");
+    });
+
+  const sameCharacter = !!a && !!b && a.title === b.title;
+  const both = `${a?.title} & ${b?.title}`;
+
+  return (
+    <ActivityRunner
+      app={app}
+      flow={flow}
+      onRestart={restart}
+      setup={{
+        title: t("platform.apps.youModerate.setupTitle"),
+        description: t("platform.apps.youModerate.setupDescription"),
+        canStart: !!a && !!b && !sameCharacter && !!theme.trim() && !loading,
+        starting: loading,
+        onStart: start,
+        children: (
+          <>
+            <div className="grid gap-4 md:grid-cols-2">
+              <CharacterPicker label={t("platform.apps.common.characterN", { n: 1 })} value={a} onChange={(v) => setChars([v, b])} locked={!!preset.characters} />
+              <CharacterPicker label={t("platform.apps.common.characterN", { n: 2 })} value={b} onChange={(v) => setChars([a, v])} locked={!!preset.characters} />
             </div>
+            {sameCharacter && <p className="text-sm text-destructive">{t("platform.apps.common.differentCharacters")}</p>}
+            <div className="space-y-2">
+              <Label htmlFor="theme">{t("platform.apps.youModerate.themeLabel")}</Label>
+              <Input id="theme" value={theme} onChange={(e) => setTheme(e.target.value)} placeholder={t("platform.apps.youModerate.themePlaceholder")} disabled={!!preset.topic} />
+            </div>
+          </>
+        ),
+      }}
+      chat={{
+        ready: !!a && !!b,
+        onSend: send,
+        placeholder: t("platform.apps.youModerate.placeholder"),
+        userLabel: moderator,
+        speakerStyles: SPEAKER_STYLES,
+        toolbar: a && b && (
+          <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-muted-foreground">{t("platform.apps.youModerate.addressTo")}</span>
+              <ToggleGroup type="single" size="sm" value={target} onValueChange={(v) => v && setTarget(v as "next" | Key)}>
+                <ToggleGroupItem value="next">{t("platform.apps.youModerate.nextSpeaker", { name: nextSpeaker === "a" ? a.title : b.title })}</ToggleGroupItem>
+                <ToggleGroupItem value="a" className="data-[state=on]:text-sky-300">{a.title}</ToggleGroupItem>
+                <ToggleGroupItem value="b" className="data-[state=on]:text-amber-300">{b.title}</ToggleGroupItem>
+              </ToggleGroup>
+            </div>
+            <Button size="sm" variant="outline" onClick={continueDebate} disabled={engine.busy || engine.ended}>
+              <FastForward className="mr-2 h-4 w-4" /> {t("platform.apps.youModerate.continue")}
+            </Button>
           </div>
-          
-          {currentPhase === "selecting" && (
-            <div className="max-w-3xl mx-auto">
-              <Card className="bg-gray-800 border-gray-700 shadow-xl">
-                <CardHeader>
-                  <CardTitle className="text-3xl text-education-light">{t('apps.youModerate.setup.buildDialogue')}</CardTitle>
-                  <CardDescription className="text-gray-400">
-                    {t('apps.youModerate.setup.selectDescription')}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  {[0, 1].map(index => (
-                    <div key={index} className="space-y-3 p-4 bg-gray-700/50 rounded-lg">
-                      <label className="block text-lg font-medium text-education-lighter">
-                        {t(`apps.youModerate.setup.character${index + 1}`)}
-                      </label>
-                      <WikiSearchSelect onSelect={result => handleCharacterSelect(index, result)} />
-                      {selectedCharacters[index] && (
-                        <div className="mt-3 p-3 bg-gray-800 rounded-md text-sm text-gray-300 border border-gray-600">
-                          <h4 className="font-semibold text-education-lighter">{selectedCharacters[index]?.title}</h4>
-                          <p className="text-xs italic truncate">{selectedCharacters[index]?.snippet.replace(/<\/?[^>]+(>|$)/g, "")}</p>
-                          {characterSummaries[index] === null && <p className="text-xs text-yellow-400 mt-1">{t('apps.youModerate.setup.loadingSummary')}</p>}
-                          {characterSummaries[index] === t('apps.youModerate.errors.summaryError') && <p className="text-xs text-red-400 mt-1">{characterSummaries[index]}</p>}
-                          {characterSummaries[index] && characterSummaries[index] !== null && characterSummaries[index] !== t('apps.youModerate.errors.summaryError') && (
-                            <p className="text-xs text-green-400 mt-1">{t('apps.youModerate.setup.summaryLoaded')}</p>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                  <div className="space-y-3 p-4 bg-gray-700/50 rounded-lg">
-                    <label className="block text-lg font-medium text-education-lighter">
-                      {t('apps.youModerate.setup.themeLabel')}
-                    </label>
-                    <Input 
-                        placeholder={t('apps.youModerate.setup.themePlaceholder')}
-                        value={theme} 
-                        onChange={e => setTheme(e.target.value)} 
-                        className="bg-gray-800 border-gray-600 placeholder-gray-500 text-white focus:ring-education focus:border-education"
-                    />
-                  </div>
-                  <Button 
-                    onClick={handleStartDialogue} 
-                    disabled={!getChatCharactersDetails() || !theme.trim() || isLoadingSummaries}
-                    className="w-full bg-education hover:bg-education-dark text-white py-3 text-lg font-semibold disabled:opacity-50"
-                  >
-                    {t('apps.youModerate.setup.startButton')} <ArrowRight className="ml-2 h-5 w-5" />
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
-          )}
-
-          {currentPhase === "chatting" && getChatCharactersDetails() && (
-            <div className="max-w-5xl mx-auto">
-              <YouModerateChat
-                characters={getChatCharactersDetails()!} 
-                theme={theme}
-                onMessagesUpdate={handleMessagesUpdate}
-                handleEndChat={handleEndChatInPage}
-              />
-            </div>
-          )}
-
-          {currentPhase === "reflecting" && (
-            <YouModerateReflection onSubmit={handleSubmitReflection} />
-          )}
-
-          {currentPhase === "reflecting" && isEvaluating && (
-            <div className="max-w-2xl mx-auto text-center py-10">
-              <p className="text-2xl text-gray-300">
-                {t('apps.youModerate.status.evaluating', {
-                  defaultValue: 'Valutazione della riflessione in corso...',
-                })}
-              </p>
-              {/* Consider adding a visual loader/spinner */}
-            </div>
-          )}
-
-          {currentPhase === "feedback" && (
-            <YouModerateFeedback
-              userReflection={userReflection} 
-              aiEvaluation={aiEvaluation?.textualFeedback || ""} 
-              isLoading={isEvaluating}
-              onStartNewChat={handleStartNewDialogue}
-              messages={messages} // These are now global Message[]
-              character1Name={selectedCharacters[0]?.title || t('common.na', { defaultValue: 'N/A' })}
-              character2Name={selectedCharacters[1]?.title || t('common.na', { defaultValue: 'N/A' })}
-              topic={theme}
-            />
-          )}
-        </div>
-      </main>
-      <Footer />
-    </div>;
+        ),
+      }}
+      reflection={{
+        prompt: t("platform.apps.youModerate.reflectionPrompt", { a: a?.title, b: b?.title }),
+        brief: () => ({
+          activity: `${t("apps.youModerate.title")}: ${t("platform.apps.youModerate.evalActivity", { a: a?.title, b: b?.title })}`,
+          characters: both,
+          studentRole: moderator,
+          topic: theme,
+        }),
+      }}
+      feedback={{
+        title: `${t("apps.youModerate.title")} - ${theme}`,
+        facts: [
+          { label: t("platform.apps.common.characters"), value: both },
+          { label: t("platform.apps.youModerate.themeLabel"), value: theme },
+        ],
+      }}
+    />
+  );
 };
+
 export default YouModeratePage;

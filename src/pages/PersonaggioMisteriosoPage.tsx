@@ -1,37 +1,226 @@
-
-import PersonaggioMisteriosoInterface from "@/components/PersonaggioMisteriosoInterface";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import { Button } from "@/components/ui/button";
-import { BookOpen } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
+import { CheckCircle2, Dices, HelpCircle, XCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
+import { Textarea } from "@/components/ui/textarea";
+import type { Assignment, WikiRef } from "@/lib/api";
+import ActivityRunner from "@/features/activity/components/ActivityRunner";
+import { CharacterPicker, SetupCard } from "@/features/activity/components/SetupCard";
+import { useActivityFlow } from "@/features/activity/useActivityFlow";
+import type { EndReason } from "@/features/activity/useActivitySession";
+import { bioOf, useWikiSummaries } from "@/features/activity/wiki";
+import { prompts } from "@/features/activity/prompts";
+import { APPS } from "@/features/activity/types";
+import { isCorrectGuess, RANDOM_CHARACTERS } from "@/features/activity/mystery";
 
+const app = APPS["personaggio-misterioso"];
+
+/** Guess who: the student asks a limited number of questions, then guesses the character. */
 const PersonaggioMisteriosoPage = () => {
   const { t } = useTranslation();
+  const [character, setCharacter] = useState<WikiRef | null>(null);
+  const [concealed, setConcealed] = useState(false);
+  const [maxQuestions, setMaxQuestions] = useState(7);
+  const [guessing, setGuessing] = useState(false);
+  const [guess, setGuess] = useState("");
+  const [reasoning, setReasoning] = useState("");
+  const [result, setResult] = useState<boolean | null>(null);
+  const [endedByJudge, setEndedByJudge] = useState(false);
+
+  const { summaries, loading } = useWikiSummaries([character]);
+  const bio = bioOf(character, summaries);
+  const systemFor = (assignment: Assignment | null) => (character ? prompts.mystery(character.title, bio, assignment) : "");
+
+  // When the server ends the questions (turn limit, or JEV judging the goal
+  // reached) the game moves on to the final guess.
+  const onEnded = useCallback((reason: EndReason) => {
+    if (reason === "goal_reached") {
+      setEndedByJudge(true);
+      toast.success(t("platform.apps.personaggioMisterioso.judgeEnded"));
+    }
+    if (reason === "turn_limit" || reason === "goal_reached") setGuessing(true);
+  }, [t]);
+
+  const flow = useActivityFlow(app.type, {
+    live: (phase, assignment) =>
+      phase === "chat" && character && !guessing ? { systemInstruction: systemFor(assignment), characterName: character.title, characterBio: bio } : null,
+    context: { questions: maxQuestions },
+    onEnded,
+  });
+  const { preset, engine, session, phase } = flow;
+  const system = systemFor(session.assignment);
+  const questionsLeft = Math.max(0, maxQuestions - session.turns);
+
+  useEffect(() => {
+    if (preset.character) {
+      setCharacter(preset.character);
+      setConcealed(true); // the teacher chose it: the student must not see it
+    }
+    if (preset.questions) setMaxQuestions(preset.questions);
+  }, [preset.character, preset.questions]);
+
+  useEffect(() => {
+    if (phase === "chat" && session.turns >= maxQuestions && !guessing) {
+      engine.live.stopLive();
+      setGuessing(true);
+      toast.info(t("platform.apps.personaggioMisterioso.noQuestionsLeft"));
+    }
+  }, [session.turns, maxQuestions, phase, guessing, engine.live, t]);
+
+  const pickRandom = () => {
+    setCharacter({ title: RANDOM_CHARACTERS[Math.floor(Math.random() * RANDOM_CHARACTERS.length)] });
+    setConcealed(true);
+  };
+
+  const start = async () => {
+    if (!character) return;
+    setGuessing(false);
+    setEndedByJudge(false);
+    setResult(null);
+    setGuess("");
+    setReasoning("");
+    await flow.begin(t("apps.personaggioMisterioso.title"), { character: character.title, questions: maxQuestions }, [
+      { id: "intro", role: "assistant", name: "???", content: t("platform.apps.personaggioMisterioso.intro", { count: maxQuestions }) },
+    ]);
+  };
+
+  const submitGuess = () => {
+    if (!character) return;
+    const ok = isCorrectGuess(guess, character.title);
+    setResult(ok);
+    engine.addMessage({ role: "system", content: t("platform.apps.personaggioMisterioso.guessLog", { guess, answer: character.title }) });
+    void engine.afterTurn();
+    session.markManualEnd();
+    if (ok) toast.success(t("platform.apps.personaggioMisterioso.correct", { name: character.title }));
+    else toast.error(t("platform.apps.personaggioMisterioso.wrong", { name: character.title }));
+    flow.setPhase("reflection");
+  };
+
+  const restart = () =>
+    flow.restart(() => {
+      if (!preset.character) {
+        setCharacter(null);
+        setConcealed(false);
+      }
+      setGuessing(false);
+      setEndedByJudge(false);
+    });
+
+  const guessForm = (
+    <SetupCard
+      title={t("platform.apps.personaggioMisterioso.finalGuessTitle")}
+      description={
+        endedByJudge
+          ? `${t("platform.apps.personaggioMisterioso.judgeEnded")} ${t("platform.apps.personaggioMisterioso.finalGuessDescription")}`
+          : t("platform.apps.personaggioMisterioso.finalGuessDescription")
+      }
+      onStart={submitGuess}
+      canStart={!!guess.trim() && !!reasoning.trim()}
+      startLabel={t("platform.apps.personaggioMisterioso.submitGuess")}
+    >
+      <div className="space-y-2">
+        <Label htmlFor="guess">{t("platform.apps.personaggioMisterioso.guessLabel")}</Label>
+        <Input id="guess" value={guess} onChange={(e) => setGuess(e.target.value)} autoFocus />
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="why">{t("platform.apps.personaggioMisterioso.reasoningLabel")}</Label>
+        <Textarea id="why" value={reasoning} onChange={(e) => setReasoning(e.target.value)} className="min-h-[100px]" />
+      </div>
+    </SetupCard>
+  );
+
   return (
-    <div className="flex flex-col min-h-screen bg-background">
-      <Navbar />
-      <main className="flex-1 container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold text-center text-education-light mb-6">
-          {t('apps.personaggioMisterioso.title')}
-        </h1>
-        <p className="text-center text-foreground mb-6 max-w-3xl mx-auto">
-          {t('apps.personaggioMisterioso.description')}
-        </p>
-        <div className="text-center mb-8">
-          <Button
-            variant="outline"
-            onClick={() => window.location.href = '/apps/personaggio-misterioso/tutorial'}
-            className="inline-flex items-center space-x-2"
-          >
-            <BookOpen className="w-4 h-4" />
-            <span>{t('common.tutorial', 'View Tutorial')}</span>
-          </Button>
-        </div>
-        <PersonaggioMisteriosoInterface />
-      </main>
-      <Footer />
-    </div>
+    <ActivityRunner
+      app={app}
+      flow={flow}
+      onRestart={restart}
+      phaseLabels={{ chat: t("platform.apps.personaggioMisterioso.gamePhase") }}
+      setup={{
+        title: t("platform.apps.personaggioMisterioso.setupTitle"),
+        description: t("platform.apps.personaggioMisterioso.setupDescription"),
+        canStart: !!character && !loading,
+        starting: loading,
+        onStart: start,
+        children: (
+          <>
+            <CharacterPicker
+              label={t("platform.apps.personaggioMisterioso.characterLabel")}
+              value={character}
+              onChange={(v) => {
+                setCharacter(v);
+                setConcealed(false);
+              }}
+              locked={!!preset.character}
+              conceal={concealed}
+              hint={t("platform.apps.personaggioMisterioso.characterHint")}
+            />
+            {!preset.character && (
+              <Button variant="outline" onClick={pickRandom} className="w-full">
+                <Dices className="mr-2 h-4 w-4" /> {t("platform.apps.personaggioMisterioso.random")}
+              </Button>
+            )}
+            <div className="space-y-3">
+              <Label>{t("platform.apps.personaggioMisterioso.questionsLabel", { count: maxQuestions })}</Label>
+              <Slider value={[maxQuestions]} min={3} max={15} step={1} onValueChange={(v) => setMaxQuestions(v[0])} disabled={!!preset.questions} />
+            </div>
+          </>
+        ),
+      }}
+      chat={{
+        ready: !!character,
+        replacement: guessing ? guessForm : undefined,
+        onSend: (text) => engine.runTurn(text, () => engine.respond({ system, name: "???" })),
+        placeholder: t("platform.apps.personaggioMisterioso.placeholder"),
+        live: engine.live,
+        disabled: questionsLeft === 0,
+        disabledReason: t("platform.apps.personaggioMisterioso.noQuestionsLeft"),
+        onEnd: () => {
+          engine.live.stopLive();
+          setGuessing(true);
+        },
+        endLabel: t("platform.apps.personaggioMisterioso.guessNow"),
+        canEnd: session.turns >= 1,
+        footerNote: (
+          <span className="inline-flex items-center gap-1">
+            <HelpCircle className="h-3.5 w-3.5" /> {t("platform.apps.personaggioMisterioso.questionsLeft", { count: questionsLeft })}
+          </span>
+        ),
+      }}
+      reflection={{
+        prompt: t("platform.apps.personaggioMisterioso.reflectionPrompt"),
+        showEndReason: false,
+        summary: (
+          <div className="flex items-center gap-3 rounded-md border border-border bg-background/50 p-4">
+            {result ? <CheckCircle2 className="h-8 w-8 text-primary" /> : <XCircle className="h-8 w-8 text-destructive" />}
+            <div>
+              <p className="font-semibold">{result ? t("platform.apps.personaggioMisterioso.correctShort") : t("platform.apps.personaggioMisterioso.wrongShort")}</p>
+              <p className="text-sm text-muted-foreground">{t("platform.apps.personaggioMisterioso.answerWas", { name: character?.title, guess })}</p>
+            </div>
+          </div>
+        ),
+        brief: () => ({
+          activity: `${t("apps.personaggioMisterioso.title")}: ${t("platform.apps.personaggioMisterioso.evalActivity")}`,
+          characters: character?.title ?? "",
+          extraFacts: [
+            `FINAL GUESS: ${guess} — ${result ? "CORRECT" : "WRONG"} (answer: ${character?.title})`,
+            `STUDENT REASONING: ${reasoning}`,
+            `QUESTIONS USED: ${session.turns}/${maxQuestions}`,
+          ],
+        }),
+      }}
+      feedback={{
+        title: `${t("apps.personaggioMisterioso.title")} - ${character?.title ?? ""}`,
+        facts: [
+          { label: t("platform.apps.common.character"), value: character?.title },
+          { label: t("platform.apps.personaggioMisterioso.guessLabel"), value: `${guess} ${result ? "✅" : "❌"}` },
+          { label: t("platform.apps.personaggioMisterioso.questionsUsed"), value: `${session.turns}/${maxQuestions}` },
+        ],
+      }}
+    />
   );
 };
 

@@ -1,41 +1,102 @@
-
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import ConvinciTuInterface from "@/components/ConvinciTuInterface";
-import { Button } from "@/components/ui/button";
-import { BookOpen } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import type { Assignment, WikiRef } from "@/lib/api";
+import ActivityRunner from "@/features/activity/components/ActivityRunner";
+import { CharacterPicker } from "@/features/activity/components/SetupCard";
+import { useActivityFlow } from "@/features/activity/useActivityFlow";
+import { bioOf, useWikiSummaries } from "@/features/activity/wiki";
+import { prompts } from "@/features/activity/prompts";
+import { APPS } from "@/features/activity/types";
 
+const app = APPS["convinci-tu"];
+
+/** The student tries to convince a historical character about a topic. */
 const ConvinciTuPage = () => {
   const { t } = useTranslation();
+  const [character, setCharacter] = useState<WikiRef | null>(null);
+  const [topic, setTopic] = useState("");
+
+  const { summaries, loading } = useWikiSummaries([character]);
+  const bio = bioOf(character, summaries);
+  const systemFor = (assignment: Assignment | null) => (character ? prompts.convinciTu(character.title, bio, topic, assignment) : "");
+
+  const flow = useActivityFlow(app.type, {
+    live: (phase, assignment) =>
+      phase === "chat" && character ? { systemInstruction: systemFor(assignment), characterName: character.title, characterBio: bio } : null,
+    context: { character: character?.title, topic },
+  });
+  const { preset, engine } = flow;
+  const system = systemFor(flow.session.assignment);
+
+  useEffect(() => {
+    if (preset.character) setCharacter(preset.character);
+    if (preset.topic) setTopic(preset.topic);
+  }, [preset.character, preset.topic]);
+
+  const start = async () => {
+    if (!character || !topic.trim()) return;
+    await flow.begin(`${character.title}: ${topic}`, { character, topic }, [
+      { id: "intro", role: "system", content: t("platform.apps.convinciTu.intro", { name: character.title, topic }) },
+    ]);
+  };
+
+  const restart = () =>
+    flow.restart(() => {
+      if (!preset.character) setCharacter(null);
+      if (!preset.topic) setTopic("");
+    });
+
   return (
-    <div className="flex flex-col min-h-screen bg-background">
-      <Navbar />
-      <main className="flex-1 container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-education-light mb-4">
-              {t('apps.convinciTu.title')}
-            </h1>
-            <p className="text-lg text-foreground mb-6">
-              {t('apps.convinciTu.subtitle')}
-            </p>
-            <div className="mb-8">
-              <Button
-                variant="outline"
-                onClick={() => window.location.href = '/apps/convinci-tu/tutorial'}
-                className="inline-flex items-center space-x-2"
-              >
-                <BookOpen className="w-4 h-4" />
-                <span>{t('common.tutorial', 'View Tutorial')}</span>
-              </Button>
+    <ActivityRunner
+      app={app}
+      flow={flow}
+      onRestart={restart}
+      setup={{
+        title: t("platform.apps.convinciTu.setupTitle"),
+        description: t("platform.apps.convinciTu.setupDescription"),
+        canStart: !!character && !!topic.trim() && !loading,
+        starting: loading,
+        onStart: start,
+        children: (
+          <>
+            <CharacterPicker label={t("platform.apps.common.character")} value={character} onChange={setCharacter} locked={!!preset.character} />
+            <div className="space-y-2">
+              <Label htmlFor="topic">{t("platform.apps.convinciTu.topicLabel")}</Label>
+              <Input
+                id="topic"
+                value={topic}
+                onChange={(e) => setTopic(e.target.value)}
+                placeholder={t("platform.apps.convinciTu.topicPlaceholder")}
+                disabled={!!preset.topic}
+              />
             </div>
-          </div>
-          <ConvinciTuInterface />
-        </div>
-      </main>
-      <Footer />
-    </div>
+          </>
+        ),
+      }}
+      chat={{
+        ready: !!character,
+        onSend: (text) => engine.runTurn(text, () => engine.respond({ system, name: character?.title })),
+        placeholder: t("platform.apps.convinciTu.placeholder", { name: character?.title }),
+        live: engine.live,
+      }}
+      reflection={{
+        prompt: t("platform.apps.convinciTu.reflectionPrompt", { name: character?.title }),
+        brief: () => ({
+          activity: `${t("apps.convinciTu.title")}: ${t("platform.apps.convinciTu.evalActivity", { name: character?.title, topic })}`,
+          characters: character?.title ?? "",
+          topic,
+        }),
+      }}
+      feedback={{
+        title: `${t("apps.convinciTu.title")} - ${character?.title ?? ""}`,
+        facts: [
+          { label: t("platform.apps.common.character"), value: character?.title },
+          { label: t("platform.apps.convinciTu.topicShort"), value: topic },
+        ],
+      }}
+    />
   );
 };
 

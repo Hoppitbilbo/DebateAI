@@ -13,10 +13,6 @@
     "slides": {
       "welcome": {
         "title": "Benvenuto in Personaggio Misterioso!",
-        "content": "Un gioco interattivo di indovinelli dove scopri figure storiche attraverso domande strategiche."
-      },
-      "welcome": {
-        "title": "Benvenuto in Personaggio Misterioso!",
         "content": "Un gioco interattivo di indovinelli dove scopri figure storiche attraverso domande strategiche.",
         "bullet1": "Gioco educativo interattivo per tutte le età",
         "bullet2": "Scopri personaggi storici famosi",
@@ -214,155 +210,103 @@
   },
   "impersonaTu": {
     "title": "Tutorial ImpersonaTu",
-    "subtitle": "Padroneggia l'apprendimento tra pari attraverso il gioco di ruolo storico e il pensiero critico",
+    "subtitle": "Lo studente interpreta un personaggio storico e dibatte con un altro personaggio, interpretato dall'IA",
     "startApp": "Inizia ImpersonaTu",
     "slides": {
       "welcome": {
         "title": "Benvenuto in ImpersonaTu!",
-        "content": "Impegnati nel gioco di ruolo storico collaborativo dove incarni figure famose mentre pari e insegnanti facilitano il tuo percorso di apprendimento attraverso protocolli think-aloud e analisi critica.",
-        "bullet1": "Incarna figure storiche famose attraverso il gioco di ruolo collaborativo",
-        "bullet2": "Sviluppa capacità di pensiero critico e analisi storica",
-        "bullet3": "Impara attraverso protocolli think-aloud e feedback dei pari",
-        "bullet4": "Costruisci comprensione attraverso l'apprendimento collaborativo"
+        "content": "Lo studente diventa un personaggio storico e discute un tema con un altro personaggio, interpretato dall'intelligenza artificiale.",
+        "bullet1": "Lo studente parla in prima persona, come farebbe il suo personaggio",
+        "bullet2": "L'IA risponde restando nel ruolo dell'altro personaggio",
+        "bullet3": "Alla fine arrivano una riflessione e una valutazione"
       },
-      "peerLearning": {
-        "title": "Apprendimento tra Pari e Facilitazione",
-        "content": "Scopri come l'apprendimento collaborativo e la facilitazione tra pari migliorano l'esperienza educativa attraverso il supporto reciproco e la condivisione di conoscenze.",
-        "bullet1": "Collabora con compagni di classe in ruoli di facilitatori e osservatori",
-        "bullet2": "Condividi conoscenze e prospettive attraverso l'interazione strutturata",
-        "bullet3": "Ricevi feedback costruttivo e supporto dai pari",
-        "bullet4": "Sviluppa fiducia attraverso l'apprendimento collaborativo"
+      "howItWorks": {
+        "title": "Come funziona",
+        "content": "Bastano tre scelte per iniziare: chi interpreti, con chi parli e di cosa discutete.",
+        "bullet1": "Scegli il tuo personaggio e quello dell'IA (devono essere diversi)",
+        "bullet2": "Scrivi il tema del confronto, ad esempio \"La guerra è mai giusta?\"",
+        "bullet3": "Conversa scrivendo, con la dettatura o, se attiva, a voce",
+        "bullet4": "Termina quando vuoi, dopo il numero minimo di turni"
       },
-      "collaborativeRolePlay": {
-        "title": "Gioco di Ruolo Collaborativo con Facilitazione di Pari/Insegnante",
-        "content": "• Lavora con compagni di classe che si alternano come facilitatori e osservatori\n• Ricevi guida in tempo reale dagli insegnanti durante le sessioni di gioco di ruolo\n• Sperimenta diverse prospettive di apprendimento attraverso l'inversione di ruolo\n• Costruisci una comunità di apprendimento solidale attraverso esperienze condivise\n• Sviluppa empatia e comprensione attraverso l'esplorazione collaborativa"
+      "inRole": {
+        "title": "Restare nel personaggio",
+        "content": "Il valore dell'attività sta nel ragionare come il personaggio, non nel citarlo.",
+        "bullet1": "Usa le idee e il linguaggio della sua epoca",
+        "bullet2": "Motiva le posizioni: \"Come Galileo sostengo che… perché…\"",
+        "bullet3": "Rispondi alle obiezioni senza uscire dal ruolo"
       },
-      "peerLearningPrinciples": {
-        "title": "Principi di Apprendimento tra Pari in Azione",
-        "content": "• Impara da e con i compagni di classe attraverso l'interazione strutturata\n• Condividi conoscenze e intuizioni in momenti di insegnamento reciproco\n• Beneficia di diverse prospettive e approcci interpretativi\n• Costruisci fiducia attraverso il supporto e l'incoraggiamento dei pari\n• Sviluppa capacità comunicative attraverso il dialogo collaborativo"
+      "skills": {
+        "title": "Cosa si impara",
+        "content": "Interpretare un punto di vista diverso dal proprio allena il pensiero storico e critico.",
+        "bullet1": "Empatia storica: capire scelte fatte in un altro contesto",
+        "bullet2": "Argomentare con prove e ragioni, non solo opinioni",
+        "bullet3": "Riconoscere i limiti e i pregiudizi di ogni posizione"
       },
-      "thinkAloudProtocols": {
-        "title": "Protocolli Think-Aloud per un Apprendimento Più Profondo",
-        "content": "• Verbalizza i tuoi processi di pensiero come personaggio storico\n• Rendi visibile l'apprendimento attraverso dichiarazioni di ragionamento esplicite\n• Esempio: 'Come Napoleone, credo questo perché...'\n• Esponi modelli di ragionamento e potenziali misconcezioni\n• Permetti a pari e insegnanti di fornire feedback e guida in tempo reale"
+      "reflection": {
+        "title": "Riflessione e valutazione",
+        "content": "Alla fine lo studente scrive una breve riflessione e riceve una valutazione dall'IA.",
+        "bullet1": "La riflessione chiede cosa ha capito del personaggio e del tema",
+        "bullet2": "La valutazione dà un voto alla conversazione e uno alla riflessione",
+        "bullet3": "Il docente vede la chat completa, i voti e può aggiungere un proprio feedback"
       },
-      "criticalThinking": {
-        "title": "Sviluppo delle Capacità di Pensiero Critico",
-        "content": "• Analizza eventi storici da multiple prospettive dei personaggi\n• Valuta la validità di affermazioni e interpretazioni storiche\n• Sviluppa capacità nell'empatia storica e nella presa di prospettiva\n• Pratica il ragionamento basato su prove in contesti storici\n• Costruisci consapevolezza metacognitiva dei processi di pensiero e apprendimento"
-      },
-      "collaborativeReview": {
-        "title": "Processi di Revisione e Feedback Collaborativi",
-        "content": "• Impegnati in sessioni di feedback strutturato tra pari dopo il gioco di ruolo\n• Fornisci osservazioni costruttive sui ritratti dei personaggi\n• Ricevi intuizioni da multiple prospettive dei pari\n• Partecipa alla riflessione di gruppo sull'accuratezza storica e l'interpretazione\n• Costruisci capacità nel dare e ricevere feedback accademico"
-      },
-      "teacherFacilitation": {
-        "title": "Strategie di Facilitazione dell'Insegnante",
-        "content": "• Gli insegnanti forniscono scaffolding per concetti storici complessi\n• La guida in tempo reale aiuta gli studenti a navigare prospettive difficili\n• Sessioni di debriefing strutturate massimizzano i risultati dell'apprendimento\n• Opportunità di valutazione attraverso l'osservazione dei processi di pensiero\n• Supporto per gli studenti nello sviluppo di capacità di pensiero storico"
-      },
-      "reflectionGrowth": {
-        "title": "Riflessione e Crescita Metacognitiva",
-        "content": "• Documenta il percorso di apprendimento attraverso attività di riflessione strutturate\n• Analizza la crescita nel pensiero storico e nelle capacità di presa di prospettiva\n• Identifica aree per lo sviluppo continuo e l'apprendimento\n• Costruisci auto-consapevolezza delle preferenze e strategie di apprendimento\n• Pianifica futuri obiettivi di apprendimento e argomenti di esplorazione storica"
-      },
-      "implementationExamples": {
-        "title": "Esempi di Implementazione Attraverso le Materie",
-        "content": "• Storia: Gioca il ruolo di figure storiche in eventi e decisioni chiave\n• Letteratura: Incarna autori o personaggi per comprendere le motivazioni\n• Studi Sociali: Esplora diverse prospettive culturali e visioni del mondo\n• Scienza: Assumi i ruoli di scienziati e inventori nei momenti di scoperta\n• Filosofia: Impegnati con grandi pensatori e le loro posizioni filosofiche"
+      "classroom": {
+        "title": "In classe",
+        "content": "Il docente può assegnare l'attività con personaggi, tema e obiettivi già scelti.",
+        "bullet1": "Storia: Cesare e Cicerone sulla repubblica",
+        "bullet2": "Scienze: Galileo e Bellarmino sul metodo scientifico",
+        "bullet3": "Letteratura: un autore e un suo critico",
+        "bullet4": "Con gli obiettivi del compito, JEV segnala quando lo studente li ha raggiunti"
       }
     }
   },
   "doppiaIntervista": {
     "title": "Tutorial Doppia Intervista",
-    "subtitle": "Impara a confrontare personaggi e sviluppare il pensiero critico",
+    "subtitle": "Intervista due personaggi insieme e confronta le loro risposte",
     "startApp": "Inizia Doppia Intervista",
     "slides": {
       "welcome": {
         "title": "Benvenuto in Doppia Intervista!",
-        "content": "Coinvolgi due personaggi diversi in conversazioni parallele per esplorare prospettive contrastanti e sviluppare capacità avanzate di analisi comparativa.",
-        "bullet1": "Seleziona due personaggi con background diversi",
-        "bullet2": "Fai le stesse domande a entrambi simultaneamente",
-        "bullet3": "Confronta le loro risposte in tempo reale",
-        "bullet4": "Sviluppa comprensione attraverso l'analisi comparativa"
+        "content": "Lo studente intervista due personaggi nella stessa conversazione e confronta come rispondono alle stesse domande.",
+        "bullet1": "Due personaggi diversi, interpretati dall'IA",
+        "bullet2": "Le domande possono andare a entrambi o a uno solo",
+        "bullet3": "Il confronto diretto fa emergere idee, valori e contesti diversi"
       },
       "howItWorks": {
-        "title": "Come Funziona",
-        "content": "• Seleziona due personaggi con background o punti di vista diversi\n• Fai le stesse domande a entrambi i personaggi simultaneamente\n• Confronta e contrasta le loro risposte in tempo reale\n• Analizza le differenze in prospettiva, ragionamento e conclusioni\n• Sviluppa comprensione sfumata attraverso il dialogo comparativo",
-        "bullet1": "Seleziona due personaggi con background o punti di vista diversi",
-        "bullet2": "Fai le stesse domande a entrambi i personaggi simultaneamente",
-        "bullet3": "Confronta e contrasta le loro risposte in tempo reale",
-        "bullet4": "Sviluppa comprensione sfumata attraverso il dialogo comparativo"
+        "title": "Come funziona",
+        "content": "Scegli due personaggi e fai le tue domande: ognuno risponde con la propria voce.",
+        "bullet1": "Scegli due personaggi (devono essere diversi)",
+        "bullet2": "Con \"Chiedi a\" scegli se la domanda va a entrambi o a uno solo",
+        "bullet3": "Ogni personaggio sente solo le domande rivolte a lui",
+        "bullet4": "Termina quando vuoi, dopo il numero minimo di turni"
       },
-      "characterComparison": {
-        "title": "Confronto tra Personaggi",
-        "content": "Impara a identificare e analizzare le differenze chiave tra personaggi storici, letterari o contemporanei attraverso domande mirate.",
-        "bullet1": "Confronta background storici e culturali",
-        "bullet2": "Analizza motivazioni e valori personali",
-        "bullet3": "Esamina approcci diversi ai problemi",
-        "bullet4": "Identifica influenze dell'epoca e del contesto"
+      "questions": {
+        "title": "Fare buone domande",
+        "content": "Le domande migliori costringono i due personaggi a prendere posizione.",
+        "bullet1": "Fai la stessa domanda a entrambi per confrontare le risposte",
+        "bullet2": "Preferisci domande aperte: \"Perché…?\", \"Cosa avresti fatto se…?\"",
+        "bullet3": "Chiedi a uno di commentare ciò che ha detto l'altro"
       },
-      "strategicQuestioning": {
-        "title": "Domande Strategiche",
-        "content": "Sviluppa l'arte di porre domande efficaci che rivelano differenze significative nelle prospettive dei personaggi.",
-        "bullet1": "Formula domande aperte che stimolano riflessione",
-        "bullet2": "Esplora valori e credenze fondamentali",
-        "bullet3": "Indaga su decisioni e scelte cruciali",
-        "bullet4": "Scopri influenze e ispirazioni personali"
-      },
-      "collaborativeAnalysis": {
-        "title": "Analisi Collaborativa",
-        "content": "Lavora con compagni e insegnanti per approfondire la comprensione attraverso discussioni guidate e osservazioni condivise.",
-        "bullet1": "Condividi osservazioni con compagni di classe",
-        "bullet2": "Ricevi feedback da insegnanti e pari",
-        "bullet3": "Partecipa a discussioni di gruppo strutturate",
-        "bullet4": "Costruisci comprensione attraverso prospettive multiple"
-      },
-      "comparativeAnalysis": {
-        "title": "Capacità di Analisi Comparativa",
-        "content": "• Identifica somiglianze e differenze nelle risposte dei personaggi\n• Analizza assunzioni sottostanti e visioni del mondo\n• Valuta la forza di diversi argomenti e prospettive\n• Riconosci bias e influenze culturali nelle risposte\n• Sviluppa capacità nel sintetizzare punti di vista multipli",
-        "bullet1": "Identifica somiglianze e differenze nelle risposte dei personaggi",
-        "bullet2": "Analizza assunzioni sottostanti e visioni del mondo",
-        "bullet3": "Valuta la forza di diversi argomenti e prospettive",
-        "bullet4": "Sviluppa capacità nel sintetizzare punti di vista multipli"
-      },
-      "criticalThinking": {
-        "title": "Sviluppo del Pensiero Critico",
-        "content": "• Pratica la valutazione di fonti multiple di informazione\n• Sviluppa capacità nella presa di prospettiva e nell'empatia\n• Impara a identificare fallacie logiche e argomenti deboli\n• Costruisci capacità di sintetizzare informazioni complesse e contraddittorie\n• Migliora il ragionamento analitico e le capacità di giudizio",
-        "bullet1": "Pratica la valutazione di fonti multiple di informazione",
-        "bullet2": "Sviluppa capacità nella presa di prospettiva e nell'empatia",
-        "bullet3": "Impara a identificare fallacie logiche e argomenti deboli",
-        "bullet4": "Migliora il ragionamento analitico e le capacità di giudizio"
-      },
-      "selfEvaluation": {
-        "title": "Autovalutazione e Metacognizione",
-        "content": "Rifletti sul tuo processo di apprendimento e sviluppa consapevolezza delle tue strategie di analisi e comprensione.",
-        "bullet1": "Valuta la qualità delle tue domande",
-        "bullet2": "Rifletti sui tuoi pregiudizi e assunzioni",
-        "bullet3": "Identifica aree di miglioramento nell'analisi",
-        "bullet4": "Documenta il tuo progresso nell'apprendimento"
+      "comparison": {
+        "title": "Confrontare le risposte",
+        "content": "Durante l'intervista e alla fine, osserva somiglianze e differenze.",
+        "bullet1": "Su cosa sono d'accordo e su cosa no?",
+        "bullet2": "Quanto conta l'epoca o la cultura di ciascuno?",
+        "bullet3": "Quali argomenti sono più convincenti e perché?"
       },
       "reflection": {
-        "title": "Riflessione e Sintesi",
-        "content": "Consolida l'apprendimento attraverso riflessioni strutturate e sintesi delle scoperte comparative.",
-        "bullet1": "Sintetizza le principali differenze scoperte",
-        "bullet2": "Collega le scoperte a concetti più ampi",
-        "bullet3": "Identifica pattern e temi ricorrenti",
-        "bullet4": "Pianifica future esplorazioni comparative"
+        "title": "Riflessione e valutazione",
+        "content": "Alla fine lo studente scrive una breve riflessione e riceve una valutazione dall'IA.",
+        "bullet1": "La riflessione chiede quali differenze sono emerse",
+        "bullet2": "La valutazione dà un voto alla conversazione e uno alla riflessione",
+        "bullet3": "Il docente vede la chat completa, i voti e può aggiungere un proprio feedback"
       },
-      "examples": {
-        "title": "Esempi Pratici",
-        "content": "Esplora esempi concreti di come utilizzare la doppia intervista in diversi contesti educativi e disciplinari.",
-        "bullet1": "Storia: Confronta leader di epoche diverse",
-        "bullet2": "Letteratura: Analizza stili di autori contrastanti",
-        "bullet3": "Scienza: Esamina teorie scientifiche alternative",
-        "bullet4": "Etica: Esplora dilemmi morali da prospettive multiple"
-      },
-      "educationalApplications": {
-        "title": "Applicazioni Educative",
-        "content": "• Storia: Confronta leader di diverse ere o culture\n• Letteratura: Contrasta stili e approcci filosofici degli autori\n• Scienza: Esplora diverse teorie scientifiche o metodologie\n• Studi Sociali: Esamina varie prospettive culturali sui problemi\n• Etica: Investiga dilemmi morali da punti di vista multipli"
-      },
-      "classroomBenefits": {
-        "title": "Benefici in Classe",
-        "content": "• Promuove comprensione più profonda attraverso il confronto\n• Incoraggia la valutazione critica delle fonti di informazione\n• Sviluppa tolleranza per l'ambiguità e la complessità\n• Costruisce capacità essenziali per la ricerca e l'analisi accademica\n• Prepara gli studenti per scenari decisionali del mondo reale"
-      },
-      "getStarted": {
-        "title": "Pronto a Confrontare?",
-        "content": "Inizia il tuo viaggio di analisi comparativa e scopri il potere delle prospettive multiple!"
+      "classroom": {
+        "title": "In classe",
+        "content": "Il docente può assegnare l'attività con i due personaggi e gli obiettivi già scelti.",
+        "bullet1": "Storia: Lincoln e Garibaldi sulla libertà",
+        "bullet2": "Filosofia: Platone e Aristotele sulla conoscenza",
+        "bullet3": "Scienze: Newton ed Einstein sulla gravità",
+        "bullet4": "Con gli obiettivi del compito, JEV segnala quando lo studente li ha raggiunti"
       }
     }
   }

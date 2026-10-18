@@ -41,7 +41,7 @@ interface WikiSearchSelectProps {
 const WikiSearchSelect = ({ onSelect }: WikiSearchSelectProps) => {
   const { t, i18n } = useTranslation();
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState("");
+
   const [inputValue, setInputValue] = useState("");
   const [searchResults, setSearchResults] = useState<WikiSearchResult[]>([]);
   const [loading, setLoading] = useState(false);
@@ -71,7 +71,7 @@ const WikiSearchSelect = ({ onSelect }: WikiSearchSelectProps) => {
       )}&format=json&origin=*&srlimit=10&srinfo=totalhits&srprop=snippet|titlesnippet`;
       
       const response = await fetch(endpoint);
-      if (!response.ok) throw new Error("Errore nella ricerca Wikipedia");
+      if (!response.ok) throw new Error(`Wikipedia ${response.status}`);
       
       const data: WikiSearchApiResponse = await response.json();
       
@@ -83,7 +83,7 @@ const WikiSearchSelect = ({ onSelect }: WikiSearchSelectProps) => {
       
       setSearchResults(results);
     } catch (error) {
-      console.error("Errore nella ricerca:", error);
+      console.error("Wikipedia search failed:", error);
       setSearchResults([]);
     } finally {
       setLoading(false);
@@ -107,15 +107,13 @@ const WikiSearchSelect = ({ onSelect }: WikiSearchSelectProps) => {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between"
+          className="w-full justify-between font-normal text-muted-foreground"
         >
-          {value
-            ? searchResults.find((result) => result.title === value)?.title
-            : t('common.searchHistoricalCharacter')}
+          {t('common.searchHistoricalCharacter')}
           <Search className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-full p-0">
+      <PopoverContent className="w-[--radix-popover-trigger-width] min-w-[280px] p-0" align="start">
         <Command>
           <CommandInput
             placeholder={t('common.searchOnWikipedia')}
@@ -129,21 +127,21 @@ const WikiSearchSelect = ({ onSelect }: WikiSearchSelectProps) => {
               </div>
             ) : (
               <>
-                <CommandEmpty className="text-education">{t('common.noResultsFound')}</CommandEmpty>
+                <CommandEmpty className="py-6 text-center text-sm text-muted-foreground">{t('common.noResultsFound')}</CommandEmpty>
                 <CommandGroup>
                   {searchResults.map((result) => (
                     <CommandItem
                       key={result.pageid}
                       value={result.title}
                       onSelect={() => {
-                        setValue(result.title);
+
                         onSelect(result);
                         setOpen(false);
                       }}
                     >
                       <div className="flex flex-col">
                         <span className="font-medium">{result.title}</span>
-                        <span className="text-xs text-education">
+                        <span className="line-clamp-2 text-xs text-muted-foreground">
                           {result.snippet + "..."}
                         </span>
                       </div>

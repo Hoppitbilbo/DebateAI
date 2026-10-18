@@ -1,138 +1,124 @@
-# AI-Debate.Tech - AI-Powered Educational Apps
+# AI-Debate.Tech
 
-Welcome to **AI-Debate.Tech**, a collection of interactive educational applications designed to make learning more engaging and fun through the power of Artificial Intelligence, powered by Google's Gemini API.
+Interactive, AI-powered learning activities for schools: students talk with historical figures and Wikipedia topics, reflect on the conversation and get feedback. Teachers create classes, invite students by e-mail, assign tasks and follow every student's progress. An administrator runs everything on the school's own server, chooses the AI models (free, paid or local) and keeps costs under control.
 
-## About the Project
+## What's inside
 
-AI-Debate.Tech transforms traditional homework and learning exercises into exciting, interactive experiences. Our mission is to make education more accessible, effective, and enjoyable for everyone. We believe in enhancing the learning process by providing AI-powered tools that support both students and teachers.
+| | |
+|---|---|
+| **6 learning apps** | Convince YOU, Double Interview, WikiChat AI, Mystery Character, You Impersonate, You Moderate. They all share the same flow and interface: *Setup → Conversation → Reflection → Feedback*. |
+| **Classes & assignments** | Teachers create classes, invite students (e-mail invites or a class code), and publish assignments with instructions, goals, turn limits, a due date and optional locked characters/topic. |
+| **JEV** | After every student turn, JEV checks the assignment goals and ends the conversation when they are reached. It uses [Jev](https://opencode.ai/docs/zen/) (TypeSafe AI's decision model on OpenCode, free tier `jev-1.13-free`) and falls back to any text model. The same router decides which provider/model serves each task, with automatic fallback. |
+| **Multi-provider AI gateway** | Google Gemini, OpenCode Zen (free models such as `big-pickle`), OpenRouter (`:free` models), Groq, Cerebras, Mistral, DeepSeek, OpenAI, Anthropic, and local models via **Ollama** / **LM Studio** / any OpenAI-compatible server. API keys stay on the server, encrypted. |
+| **Live voice** | Real-time voice conversations through the **Gemini Live API** (Google Gen AI SDK), using single-use ephemeral tokens minted by the server. |
+| **Cost monitoring** | Every request is logged with tokens and cost (USD). The dashboard breaks spending down by day, model, task, user and class. A monthly budget can block paid models (free/local models keep working), and there are rate limits for guests and students. |
+| **5 languages** | Italian, English, Spanish, French, German: UI, AI answers, e-mails. |
 
-Our applications are built on the principle that technology should be a tool to empower educators, not replace them. We provide personalized support to students while allowing teachers to guide and supervise the learning journey.
+## Architecture
 
-## Our Applications
-
-Here's a look at the different educational apps available on our platform:
-
-### 🗣️ Historical AI Dialogue
-Converse with AI characters based on real content from Wikipedia. This app transforms educational topics into interactive conversations, allowing you to engage with historical figures and learn about their lives and times.
-
-### 👥 Double Interview
-Interact simultaneously with two historical figures in parallel conversations. This unique educational dialogue allows you to compare and contrast different perspectives on a variety of topics.
-
-### 💬 WikiChat AI
-Chat with an AI that represents any Wikipedia topic. This is the perfect tool for in-depth, interactive learning on any subject you can imagine.
-
-### 🕵️ Guess the Mystery Character
-Challenge the AI by asking a limited number of questions to guess a chosen historical figure. This game tests your deductive reasoning and knowledge of history.
-
-### 💡 Teaching Prompt Creator
-This tool helps teachers and students create effective prompts for Artificial Intelligence in educational and learning activities.
-
-### 🤝 Convince YOU
-Challenge your persuasion skills by trying to convince historical figures of your ideas on various topics.
-
-### 🎭 You Impersonate
-Put yourself in the shoes of a historical figure and engage in a dialogue with another AI-powered character. This app is a great way to test your empathy and role-playing skills.
-
-## Technologies Used
-
-This project is built with a modern tech stack to provide a seamless and interactive user experience:
-
-- **Google Genai:** The powerful Google Gen AI SDK for TypeScript and JavaScript that powers our AI features using Gemini models.
-- **Vite:** A next-generation frontend tooling that provides a faster and leaner development experience.
-- **TypeScript:** A statically typed superset of JavaScript that adds type safety to our codebase.
-- **React:** A popular JavaScript library for building user interfaces.
-- **shadcn-ui:** A collection of re-usable components that helps us build beautiful and accessible user interfaces.
-- **Tailwind CSS:** A utility-first CSS framework that allows for rapid UI development.
-- **Wikipedia API:** Powers our historical and educational content, enabling interactive learning with accurate information from Wikipedia's vast knowledge base.
-
-## Getting Started
-
-To get started with this project locally, follow these steps:
-
-1.  **Clone the repository:**
-    ```sh
-    git clone <YOUR_GIT_URL>
-    ```
-
-2.  **Navigate to the project directory:**
-    ```sh
-    cd <YOUR_PROJECT_NAME>
-    ```
-
-3.  **Install the necessary dependencies:**
-    ```sh
-    npm i
-    ```
-
-4.  **Set up your Google AI Studio API Key:**
-    - Create an account on [Google AI Studio](https://makersuite.google.com/)
-    - Generate an API key for Gemini models
-    - Create a `.env` file in the root directory of the project
-    - Add your API key to the `.env` file:
-      ```
-      VITE_GEMINI_API_KEY="your-api-key-here"
-      ```
-    - Note: The `.env` file is already added to `.gitignore` to ensure your API key remains secure
-
-5.  **Start the development server:**
-    ```sh
-    npm run dev
-    ```
-This will start the development server with auto-reloading and an instant preview of your changes.
-
-> **Note:** For production environments, it's recommended to implement server-side API key handling for better security. Please refer to the [Google Gen AI SDK documentation](https://googleapis.github.io/js-genai/) for best practices.
-
-## Google Genai Integration
-
-This project leverages the powerful Google Gen AI SDK for TypeScript and JavaScript. The SDK supports both the Gemini Developer API and Vertex AI implementations.
-
-### Key Features
-
-- Works with Gemini 2.0 features
-- Supports streaming responses for more responsive interactions
-- Can be deployed on school servers or personal computers
-- No chat history collection - respects privacy
-
-### Deployment Options
-
-You can install this application on:
-- Your school server
-- Your personal computer
-
-Google's plans for AI Studio as of August 2025 are very generous, making this application accessible for educational institutions.
-
-### API Usage
-
-The application uses the Google Genai API through the `@google/genai` package:
-
-```javascript
-import {GoogleGenAI} from '@google/genai';
-const GEMINI_API_KEY = process.env.VITE_GEMINI_API_KEY;
-
-const ai = new GoogleGenAI({apiKey: GEMINI_API_KEY});
-
-async function main() {
-  const response = await ai.models.generateContent({
-    model: 'gemini-2.0-flash-001',
-    contents: 'Why is the sky blue?',
-  });
-  console.log(response.text);
-}
+```
+browser (React + Vite + shadcn/ui)
+   │  /api/*  (cookie session)
+   ▼
+Go server (single binary, embeds the built frontend)
+   ├─ SQLite (users, classes, assignments, sessions, usage log, settings)
+   ├─ AI gateway + JEV router → Gemini · OpenAI-compatible · Anthropic · Jev
+   ├─ JEV judge (goal checks per turn)
+   ├─ SMTP mailer (invites, welcome, password reset, assignment notices)
+   └─ Gemini Live ephemeral tokens  ──► browser ⇄ Gemini Live (WebSocket)
 ```
 
-For more detailed information and advanced usage, please refer to the [official documentation](https://googleapis.github.io/js-genai/).
+## Quick start (Docker, recommended for a school server)
 
-## How to Contribute
+```sh
+cp .env.example .env        # optional: PUBLIC_URL, OPENROUTER_API_KEY, TYPESAFE_API_KEY, GEMINI_API_KEY, SMTP_*
+docker compose up -d --build
+```
 
-We welcome contributions to AI-Debate.Tech! This is an open-source project, and we appreciate any help or suggestions for improvements. If you'd like to contribute, please fork the repository and submit a pull request with your changes.
+Open `http://<server>:8080`. On first launch you will be asked to create the administrator account, then:
 
----
+1. **Admin → AI & JEV → Add provider**: for example *OpenRouter* (free `:free` models for chat and evaluation), *TypeSafe Jev* (the JEV judge) and *Google Gemini* (required for live voice). Keys set in `.env` are added automatically on first start. The routing for each task is filled in automatically and you can reorder or extend it. If a model does not start answering within 25 s, the next one in the list is used.
+2. **Admin → Settings**: SMTP for e-mails, public URL, monthly budget, guest access.
+3. **Admin → Users**: invite the teachers. Teachers create their classes and invite the students.
 
-Thank you for your interest in AI-Debate.Tech! We hope you enjoy using our educational apps.
+All data lives in the `debateai-data` volume (`/data`): the SQLite database and `secret.key`, which encrypts the API keys. Back up both together, for example:
 
-**SPECIAL THANKS**
+```sh
+docker compose stop
+docker run --rm -v debateai-data:/data -v "$PWD":/backup alpine tar czf /backup/debateai-backup.tgz -C /data .
+docker compose start
+```
 
-- **Google** for providing the powerful Gemini API that makes these educational applications possible.
-- **Wikipedia** for their comprehensive API that enables access to a vast repository of knowledge, allowing users to chat about any topic available on Wikipedia.
+Update to a new version with `git pull && docker compose up -d --build` (the data volume is kept). The container runs as a non-root user and reports its health at `/api/health`.
 
-All our applications implement the Wikipedia API to provide accurate and up-to-date information, making learning interactive and engaging. You can chat with AI about virtually any topic covered in Wikipedia's extensive database.
+### Prebuilt image (no build needed)
+
+Every push is built by GitHub Actions and published to GitHub Packages for `linux/amd64` and `linux/arm64`:
+
+```sh
+docker run -d --name debateai --restart unless-stopped -p 8080:8080 \
+  -v debateai-data:/data --env-file .env -e DATA_DIR=/data \
+  ghcr.io/hoppitbilbo/debateai:latest      # or :go, or a version tag such as :1.0.0
+```
+
+Tags: `latest` (master), branch names (e.g. `go`), versions from `v*` git tags, and `sha-<commit>`.
+
+> **Hosting note:** SQLite needs a persistent disk. Use a VPS/droplet with Docker, or any host with persistent volumes. Platforms with an ephemeral filesystem would lose the data on every deploy.
+
+## Without Docker
+
+Requirements: Node 20+ and Go 1.26+.
+
+```sh
+npm install
+npm run build:server        # builds the frontend and a single binary in ./bin/debateai
+DATA_DIR=./data PUBLIC_URL=https://debate.myschool.it ./bin/debateai
+```
+
+The binary has no external dependencies (pure-Go SQLite), so you can copy it to any Linux/macOS/Windows server (cross-compile with `GOOS`/`GOARCH`).
+
+## Development
+
+```sh
+npm install
+npm run dev                 # Vite on :5173 + Go API on :8080 (proxied)
+npm run test:server         # Go unit + end-to-end tests (mock AI providers)
+npm run check:i18n          # every translation key exists in the 5 languages
+```
+
+## Configuration (environment)
+
+See [.env.example](.env.example). Everything except `PORT`, `DATA_DIR`, `APP_SECRET` can also be changed later from the admin panel.
+
+| Variable | Purpose |
+|---|---|
+| `PORT`, `DATA_DIR`, `DATABASE_PATH` | Listening port, data directory, SQLite path |
+| `PUBLIC_URL` | Base URL used in e-mail links |
+| `APP_SECRET` | Encrypts stored API keys (auto-generated in `DATA_DIR/secret.key` if empty) |
+| `ADMIN_EMAIL`, `ADMIN_PASSWORD` | Create the first admin non-interactively |
+| `OPENROUTER_API_KEY`, `TYPESAFE_API_KEY`, `GEMINI_API_KEY`, `OPENCODE_API_KEY` | Pre-configure providers and routing on first start |
+| `SMTP_*` | Default SMTP settings |
+
+## AI providers & routing
+
+Tasks routed independently (Admin → AI & JEV):
+
+| Task | Used for | Good choice |
+|---|---|---|
+| `chat` | characters' answers | fast free models (OpenRouter `:free` / `openrouter/free`, Groq, local Ollama); avoid slow reasoning models |
+| `evaluation` | final feedback & scores | a stronger model |
+| `utility` | voice casting, goal suggestions | small/free model |
+| `judge` | JEV goal checks | **Jev** (`jev-latest` on TypeSafe or OpenRouter, `jev-1.13-free` on OpenCode), fallback any text model |
+| `live` | real-time voice | Gemini Live model (e.g. `gemini-3.1-flash-live-preview`) |
+
+Each task has an ordered list of `provider/model` targets: on error or quota (429/5xx) the next one is used. Strategies: *ordered*, *free first*, *cheapest first*. When the monthly budget is exhausted, only free/local targets are used. Prices (USD per 1M tokens) are editable; OpenRouter prices are imported automatically and local models cost 0.
+
+For local models inside Docker use `http://host.docker.internal:11434/v1` (Ollama) or uncomment the `ollama` service in `docker-compose.yml`.
+
+## Privacy
+
+API keys never leave the server. Conversations are stored only for logged-in users doing activities (so that teachers can review assignments); guests' conversations are not stored. Wikipedia is queried directly from the browser.
+
+## License & contributions
+
+Open source: issues and pull requests are welcome on GitHub. Thanks to Google (Gemini), OpenCode/TypeSafe AI (Jev) and Wikipedia.

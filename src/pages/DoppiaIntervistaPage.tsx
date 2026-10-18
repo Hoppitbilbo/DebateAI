@@ -1,102 +1,129 @@
-import { useState } from "react";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import DoppiaIntervistaChat from "@/components/DoppiaIntervistaChat";
-import WikiSearchSelect from "@/components/WikiSearchSelect";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowRight, BookOpen } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-interface WikiSearchResult {
-  title: string;
-  snippet: string;
-  pageid: number;
-}
+import type { WikiRef } from "@/lib/api";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import ActivityRunner from "@/features/activity/components/ActivityRunner";
+import { CharacterPicker } from "@/features/activity/components/SetupCard";
+import { useActivityFlow } from "@/features/activity/useActivityFlow";
+import { toHistory } from "@/features/activity/useChatEngine";
+import { bioOf, useWikiSummaries } from "@/features/activity/wiki";
+import { prompts } from "@/features/activity/prompts";
+import { APPS } from "@/features/activity/types";
+
+const app = APPS["doppia-intervista"];
+type Target = "both" | "a" | "b";
+
+const SPEAKER_STYLES = {
+  a: "border-l-4 border-l-sky-400",
+  b: "border-l-4 border-l-amber-400",
+};
+
+/** The student interviews two historical characters at once. */
 const DoppiaIntervistaPage = () => {
   const { t } = useTranslation();
-  const [selectedCharacters, setSelectedCharacters] = useState<WikiSearchResult[]>([]);
-  const [showChat, setShowChat] = useState(false);
-  const handleCharacterSelect = (index: number, result: WikiSearchResult) => {
-    const newSelectedCharacters = [...selectedCharacters];
-    while (newSelectedCharacters.length <= index) {
-      newSelectedCharacters.push({} as WikiSearchResult);
-    }
-    newSelectedCharacters[index] = result;
-    setSelectedCharacters(newSelectedCharacters);
+  const [chars, setChars] = useState<[WikiRef | null, WikiRef | null]>([null, null]);
+  const [target, setTarget] = useState<Target>("both");
+  const [a, b] = chars;
+  const { summaries, loading } = useWikiSummaries(chars);
+
+  const flow = useActivityFlow(app.type, { context: { characters: [a?.title, b?.title] } });
+  const { preset, engine, session } = flow;
+
+  useEffect(() => {
+    if (preset.characters?.length === 2) setChars([preset.characters[0], preset.characters[1]]);
+  }, [preset.characters]);
+
+  const sameCharacter = !!a && !!b && a.title === b.title;
+
+  const start = async () => {
+    if (!a || !b) return;
+    await flow.begin(`${a.title} & ${b.title}`, { characters: [a, b] }, [
+      { id: "ga", role: "assistant", name: a.title, speakerKey: "a", content: t("platform.apps.doppiaIntervista.greeting", { name: a.title }) },
+      { id: "gb", role: "assistant", name: b.title, speakerKey: "b", content: t("platform.apps.doppiaIntervista.greeting", { name: b.title }) },
+    ]);
   };
-  const handleStartDialogue = () => {
-    if (selectedCharacters.length >= 2 && selectedCharacters[0] && selectedCharacters[1] && selectedCharacters[0].title && selectedCharacters[1].title && selectedCharacters[0].title !== selectedCharacters[1].title) {
-      setShowChat(true);
-    }
+
+  /** Each addressed character answers in turn, seeing only what was said to them. */
+  const send = (text: string) => {
+    if (!a || !b) return;
+    return engine.runTurn(
+      text,
+      async () => {
+        const speakers = target === "both" ? (["a", "b"] as const) : ([target] as const);
+        for (const key of speakers) {
+          const me = key === "a" ? a : b;
+          const other = key === "a" ? b : a;
+          await engine.respond({
+            system: prompts.interview(me.title, bioOf(me, summaries), other.title, session.assignment),
+            history: toHistory(engine.messagesRef.current, key),
+            name: me.title,
+            speakerKey: key,
+          });
+        }
+      },
+      undefined,
+      target === "both" ? undefined : target,
+    );
   };
-  return <div className="flex flex-col min-h-screen">
-      <Navbar />
-      
-      <main className="flex-1 py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-extrabold sm:text-4xl text-[#D8FF8F]">
-              {t('apps.doppiaIntervista.title')}
-            </h1>
-            <p className="mt-3 text-xl text-gray-500 dark:text-gray-400">
-              {t('apps.doppiaIntervista.description')}
-            </p>
-            <div className="mt-6">
-              <Button
-                variant="outline"
-                onClick={() => window.location.href = '/apps/doppia-intervista/tutorial'}
-                className="border-education text-education hover:bg-education hover:text-white"
-              >
-                <BookOpen className="w-4 h-4 mr-2" />
-                {t('apps.doppiaIntervista.tutorial')}
-              </Button>
+
+  const restart = () =>
+    flow.restart(() => {
+      if (!preset.characters) setChars([null, null]);
+      setTarget("both");
+    });
+
+  const both = `${a?.title} & ${b?.title}`;
+
+  return (
+    <ActivityRunner
+      app={app}
+      flow={flow}
+      onRestart={restart}
+      setup={{
+        title: t("platform.apps.doppiaIntervista.setupTitle"),
+        description: t("platform.apps.doppiaIntervista.setupDescription"),
+        canStart: !!a && !!b && !sameCharacter && !loading,
+        starting: loading,
+        onStart: start,
+        children: (
+          <>
+            <div className="grid gap-4 md:grid-cols-2">
+              <CharacterPicker label={t("platform.apps.common.characterN", { n: 1 })} value={a} onChange={(v) => setChars([v, b])} locked={!!preset.characters} />
+              <CharacterPicker label={t("platform.apps.common.characterN", { n: 2 })} value={b} onChange={(v) => setChars([a, v])} locked={!!preset.characters} />
             </div>
+            {sameCharacter && <p className="text-sm text-destructive">{t("platform.apps.common.differentCharacters")}</p>}
+          </>
+        ),
+      }}
+      chat={{
+        ready: !!a && !!b,
+        onSend: send,
+        placeholder: t("platform.apps.doppiaIntervista.placeholder"),
+        speakerStyles: SPEAKER_STYLES,
+        toolbar: a && b && (
+          <div className="flex flex-wrap items-center gap-2 text-sm">
+            <span className="text-muted-foreground">{t("platform.apps.doppiaIntervista.askTo")}</span>
+            <ToggleGroup type="single" size="sm" value={target} onValueChange={(v) => v && setTarget(v as Target)}>
+              <ToggleGroupItem value="both">{t("platform.apps.doppiaIntervista.both")}</ToggleGroupItem>
+              <ToggleGroupItem value="a" className="data-[state=on]:text-sky-300">{a.title}</ToggleGroupItem>
+              <ToggleGroupItem value="b" className="data-[state=on]:text-amber-300">{b.title}</ToggleGroupItem>
+            </ToggleGroup>
           </div>
-          
-          {!showChat ? <div className="max-w-2xl mx-auto">
-              <Card>
-                <CardHeader>
-                  <CardTitle>{t('apps.doppiaIntervista.setup.chooseCharacters')}</CardTitle>
-                  <CardDescription>
-                    {t('apps.doppiaIntervista.setup.selectDescription')}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-2 gap-4 mb-6">
-                    {[0, 1].map(index => <div key={index} className="space-y-2">
-                        <label className="block text-sm font-medium text-education">
-                          {t('apps.doppiaIntervista.setup.character')} {index + 1}
-                        </label>
-                        <WikiSearchSelect onSelect={result => handleCharacterSelect(index, result)} />
-                      </div>)}
-                  </div>
-                  
-                  <Button onClick={handleStartDialogue} disabled={selectedCharacters.length < 2 || !selectedCharacters[0]?.title || !selectedCharacters[1]?.title || selectedCharacters[0].title === selectedCharacters[1].title} className="w-full bg-education hover:bg-education-dark">
-                    {t('apps.doppiaIntervista.setup.startButton')} <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </CardContent>
-              </Card>
-            </div> : <div className="max-w-6xl mx-auto">
-              <div className="mb-4 flex justify-between items-center">
-                <h2 className="text-xl font-bold">
-                  {t('apps.doppiaIntervista.chat.dialogueTitle')}: {selectedCharacters[0]?.title} & {selectedCharacters[1]?.title}
-                </h2>
-                <Button variant="outline" onClick={() => setShowChat(false)} className="border-education text-education hover:bg-education hover:text-white">
-                  {t('apps.doppiaIntervista.chat.changeCharacters')}
-                </Button>
-              </div>
-              <DoppiaIntervistaChat character1={{
-            name: selectedCharacters[0]?.title || "",
-            snippet: selectedCharacters[0]?.snippet || ""
-          }} character2={{
-            name: selectedCharacters[1]?.title || "",
-            snippet: selectedCharacters[1]?.snippet || ""
-          }} />
-            </div>}
-        </div>
-      </main>
-      
-      <Footer />
-    </div>;
+        ),
+      }}
+      reflection={{
+        prompt: t("platform.apps.doppiaIntervista.reflectionPrompt", { a: a?.title, b: b?.title }),
+        brief: () => ({
+          activity: `${t("apps.doppiaIntervista.title")}: ${t("platform.apps.doppiaIntervista.evalActivity", { a: a?.title, b: b?.title })}`,
+          characters: both,
+        }),
+      }}
+      feedback={{
+        title: `${t("apps.doppiaIntervista.title")} - ${both}`,
+        facts: [{ label: t("platform.apps.common.characters"), value: both }],
+      }}
+    />
+  );
 };
+
 export default DoppiaIntervistaPage;

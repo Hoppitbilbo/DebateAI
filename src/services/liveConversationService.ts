@@ -1,9 +1,8 @@
-import { GoogleGenAI, LiveServerMessage, MediaResolution, Modality, Session } from "@google/genai";
-
-const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-const liveChatModel =
-  import.meta.env.VITE_GEMINI_LIVE_CHAT_MODEL ||
-  "models/gemini-3.1-flash-live-preview";
+// Real-time voice conversation through the Gemini Live API (Google Gen AI SDK).
+// The server mints a single-use ephemeral token (model, voice and system
+// instruction are locked in it), so the real API key never reaches the browser.
+import { GoogleGenAI, LiveServerMessage, Modality, Session } from "@google/genai";
+import { api } from "@/lib/api";
 
 export interface LiveAudioChunk {
   data: string;
@@ -11,232 +10,167 @@ export interface LiveAudioChunk {
 }
 
 export interface StartLiveConversationOptions {
-  languageCode?: string;
   systemInstruction?: string;
   voiceName?: string;
+  sessionId?: number | null;
   onText?: (text: string) => void;
   onAudioChunk?: (audio: LiveAudioChunk) => void;
   onUserTranscription?: (text: string, isFinal: boolean) => void;
   onTurnComplete?: () => void;
+  onInterrupted?: () => void;
   onError?: (errorMessage: string) => void;
+  onClose?: () => void;
 }
 
 export interface LiveConversationController {
   sendTextTurn: (text: string) => void;
+  setMicMuted: (muted: boolean) => void;
   close: () => void;
 }
 
-export const isLiveConversationAvailable = (): boolean => {
-  return !!apiKey && typeof window !== "undefined" && !!navigator.mediaDevices?.getUserMedia;
-};
+interface LiveTokenResponse {
+  token: string;
+  model: string;
+  providerId: number;
+  voiceName: string;
+}
 
-const getTextFromMessage = (message: LiveServerMessage): string | undefined => {
-  // Ignore parts that are model thoughts
-  const parts = message.serverContent?.modelTurn?.parts || [];
-  return parts
-    .filter((part: any) => !part.thought)
-    .map((part) => part.text)
-    .find((text): text is string => !!text && text.trim().length > 0);
-};
+export const isLiveSupportedByBrowser = (): boolean =>
+  typeof window !== "undefined" && !!navigator.mediaDevices?.getUserMedia && typeof AudioContext !== "undefined";
 
-const getUserTranscriptionFromMessage = (message: LiveServerMessage): { text: string, isFinal: boolean } | undefined => {
-  const transcription = message.serverContent?.interrupted ? undefined : message.serverContent?.modelTurn ? undefined : message.serverContent?.turnComplete ? undefined : (message as any).serverContent?.inputTranscription; // The typedef might be missing inputTranscription in LiveServerMessage, but it exists
-  if (transcription?.text) {
-    return { text: transcription.text, isFinal: !!transcription.finished };
+const floatTo16BitBase64 = (input: Float32Array): string => {
+  const pcm16 = new Int16Array(input.length);
+  for (let i = 0; i < input.length; i++) {
+    const s = Math.max(-1, Math.min(1, input[i]));
+    pcm16[i] = s < 0 ? s * 0x8000 : s * 0x7fff;
   }
-  return undefined;
+  const bytes = new Uint8Array(pcm16.buffer);
+  let binary = "";
+  for (let i = 0; i < bytes.length; i += 0x8000) {
+    binary += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+  }
+  return btoa(binary);
 };
 
-const getAudioChunkFromMessage = (message: LiveServerMessage): LiveAudioChunk | undefined => {
-  const inlineData = message.serverContent?.modelTurn?.parts
-    ?.map((part) => part.inlineData)
-    .find((data) => !!data?.data);
+export const startLiveConversation = async (options: StartLiveConversationOptions): Promise<LiveConversationController> => {
+  const tokenInfo = await api.post<LiveTokenResponse>("/api/ai/live/token", {
+    sessionId: options.sessionId ?? 0,
+    systemInstruction: options.systemInstruction ?? "",
+    voiceName: options.voiceName ?? "",
+  });
 
-  if (!inlineData?.data) {
-    return undefined;
-  }
-
-  return {
-    data: inlineData.data,
-    mimeType: inlineData.mimeType || "audio/pcm",
-  };
-};
-
-export const startLiveConversation = async (
-  options: StartLiveConversationOptions,
-): Promise<LiveConversationController> => {
-  if (!isLiveConversationAvailable()) {
-    throw new Error("Live conversation is not available because API key is missing.");
-  }
-
-  const ai = new GoogleGenAI({ apiKey });
+  const ai = new GoogleGenAI({ apiKey: tokenInfo.token, httpOptions: { apiVersion: "v1alpha" } });
   let session: Session | null = null;
   let manuallyClosed = false;
+  let micMuted = false;
+  const usage = { input: 0, output: 0 };
+  const startedAt = Date.now();
 
   let stream: MediaStream | null = null;
   let audioContext: AudioContext | null = null;
-  let scriptProcessor: ScriptProcessorNode | null = null;
-  let gainNode: GainNode | null = null;
+  let processor: ScriptProcessorNode | null = null;
+  let gain: GainNode | null = null;
   let source: MediaStreamAudioSourceNode | null = null;
 
+  const reportUsage = () => {
+    void api.post("/api/ai/live/usage", {
+      sessionId: options.sessionId ?? 0,
+      providerId: tokenInfo.providerId,
+      model: tokenInfo.model,
+      inputTokens: usage.input,
+      outputTokens: usage.output,
+      seconds: Math.round((Date.now() - startedAt) / 1000),
+    }).catch(() => undefined);
+  };
+
   session = await ai.live.connect({
-    model: liveChatModel,
+    model: tokenInfo.model,
     config: {
-      responseModalities: [Modality.AUDIO], // Native Audio models only support AUDIO modality, transcript is included automatically
-      mediaResolution: MediaResolution.MEDIA_RESOLUTION_MEDIUM,
-      inputAudioTranscription: {}, 
-      speechConfig: {
-        voiceConfig: {
-          prebuiltVoiceConfig: {
-            voiceName: options.voiceName || "Aoede",
-          },
-        },
-      },
-      ...(options.systemInstruction || options.languageCode ? {
-        systemInstruction: {
-          parts: [{ text: options.systemInstruction || `Use language ${options.languageCode} for this conversation unless user asks differently.` }]
-        }
-      } : {}),
-      contextWindowCompression: {
-        triggerTokens: "104857",
-        slidingWindow: { targetTokens: "52428" },
-      },
+      responseModalities: [Modality.AUDIO],
+      inputAudioTranscription: {},
+      outputAudioTranscription: {},
+      speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: tokenInfo.voiceName || "Aoede" } } },
+      ...(options.systemInstruction ? { systemInstruction: { parts: [{ text: options.systemInstruction }] } } : {}),
     },
     callbacks: {
       onmessage: (message: LiveServerMessage) => {
-        const text = getTextFromMessage(message);
-        if (text) {
-          options.onText?.(text);
+        const sc = message.serverContent;
+        if (sc?.interrupted) options.onInterrupted?.();
+        const out = sc?.outputTranscription?.text;
+        if (out) options.onText?.(out);
+        for (const part of sc?.modelTurn?.parts ?? []) {
+          if (part.inlineData?.data) {
+            options.onAudioChunk?.({ data: part.inlineData.data, mimeType: part.inlineData.mimeType || "audio/pcm;rate=24000" });
+          }
         }
-
-        const audioChunk = getAudioChunkFromMessage(message);
-        if (audioChunk) {
-          options.onAudioChunk?.(audioChunk);
+        const input = sc?.inputTranscription;
+        if (input?.text) options.onUserTranscription?.(input.text, !!input.finished);
+        if (message.usageMetadata) {
+          usage.input += message.usageMetadata.promptTokenCount ?? 0;
+          usage.output += message.usageMetadata.responseTokenCount ?? 0;
         }
-
-        const userTranscription = getUserTranscriptionFromMessage(message);
-        if (userTranscription && options.onUserTranscription) {
-          options.onUserTranscription(userTranscription.text, userTranscription.isFinal);
-        }
-
-        if (message.serverContent?.turnComplete) {
-          options.onTurnComplete?.();
-        }
+        if (sc?.turnComplete) options.onTurnComplete?.();
       },
-      onerror: (event: ErrorEvent) => {
-        options.onError?.(event.message || "Live API conversation error.");
-      },
+      onerror: (event: ErrorEvent) => options.onError?.(event.message || "Live API error"),
       onclose: (event: CloseEvent) => {
         if (!manuallyClosed) {
-          options.onError?.(`Live conversation closed: ${event.reason || "unknown reason"}`);
+          options.onError?.(event.reason || "Live connection closed");
+          reportUsage();
         }
+        options.onClose?.();
       },
     },
   });
 
   try {
-    stream = await navigator.mediaDevices.getUserMedia({ 
-      audio: {
-        echoCancellation: true,
-        noiseSuppression: true,
-        autoGainControl: true,
-      } 
+    stream = await navigator.mediaDevices.getUserMedia({
+      audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
     });
-
-    audioContext = new (window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext)({
-      sampleRate: 16000,
-    });
-
+    audioContext = new AudioContext({ sampleRate: 16000 });
     source = audioContext.createMediaStreamSource(stream);
-    scriptProcessor = audioContext.createScriptProcessor(4096, 1, 1);
-    gainNode = audioContext.createGain();
-    gainNode.gain.value = 0; // Prevent feedback loop
-
-    scriptProcessor.onaudioprocess = (audioProcessingEvent) => {
-      if (!session) return;
-      
-      const inputBuffer = audioProcessingEvent.inputBuffer;
-      const inputData = inputBuffer.getChannelData(0);
-
-      const pcm16 = new Int16Array(inputData.length);
-      for (let i = 0; i < inputData.length; i++) {
-        let sample = Math.max(-1, Math.min(1, inputData[i]));
-        pcm16[i] = sample < 0 ? sample * 0x8000 : sample * 0x7FFF;
-      }
-
-      const uint8Array = new Uint8Array(pcm16.buffer);
-      let binaryString = '';
-      for (let i = 0; i < uint8Array.length; i++) {
-          binaryString += String.fromCharCode(uint8Array[i]);
-      }
-      const base64Data = btoa(binaryString);
-
+    processor = audioContext.createScriptProcessor(4096, 1, 1);
+    gain = audioContext.createGain();
+    gain.gain.value = 0; // keep the graph running without echoing the mic
+    processor.onaudioprocess = (e) => {
+      if (!session || micMuted) return;
       try {
-        session.sendRealtimeInput({
-          audio: {
-            mimeType: "audio/pcm;rate=16000",
-            data: base64Data
-          }
-        });
-      } catch (e) {
-        // Ignore errors if session is closing
+        session.sendRealtimeInput({ audio: { mimeType: "audio/pcm;rate=16000", data: floatTo16BitBase64(e.inputBuffer.getChannelData(0)) } });
+      } catch {
+        /* session closing */
       }
     };
-
-    source.connect(scriptProcessor);
-    scriptProcessor.connect(gainNode);
-    gainNode.connect(audioContext.destination);
+    source.connect(processor);
+    processor.connect(gain);
+    gain.connect(audioContext.destination);
   } catch (err) {
-    console.error("Failed to initialize microphone for live conversation:", err);
-    options.onError?.("Microphone access denied or unavailable.");
+    console.error("Microphone unavailable for live conversation:", err);
+    options.onError?.("microphone");
   }
 
   return {
     sendTextTurn: (text: string) => {
-      if (!session || !text.trim()) {
-        return;
-      }
-
-      session.sendClientContent({
-        turns: [{ role: "user", parts: [{ text }] }],
-        turnComplete: true,
-      });
+      if (!session || !text.trim()) return;
+      session.sendClientContent({ turns: [{ role: "user", parts: [{ text }] }], turnComplete: true });
+    },
+    setMicMuted: (muted: boolean) => {
+      micMuted = muted;
     },
     close: () => {
-      if (!session) {
-        return;
-      }
-
+      if (!session) return;
       manuallyClosed = true;
-
-      if (scriptProcessor) {
-        scriptProcessor.disconnect();
-      }
-      if (gainNode) {
-        gainNode.disconnect();
-      }
-      if (source) {
-        source.disconnect();
-      }
-      if (audioContext) {
-        void audioContext.close();
-      }
-
-      stream?.getTracks().forEach((track) => track.stop());
-
+      processor?.disconnect();
+      gain?.disconnect();
+      source?.disconnect();
+      void audioContext?.close();
+      stream?.getTracks().forEach((t) => t.stop());
       try {
         session.sendRealtimeInput({ audioStreamEnd: true });
-      } catch (error) {
-        // ignore
+      } catch {
+        /* ignore */
       }
-
       session.close();
       session = null;
-      scriptProcessor = null;
-      source = null;
-      gainNode = null;
-      audioContext = null;
-      stream = null;
+      reportUsage();
     },
   };
 };

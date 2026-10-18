@@ -13,10 +13,6 @@
     "slides": {
       "welcome": {
         "title": "Willkommen bei Geheimnisvolle Persönlichkeit!",
-        "content": "Ein interaktives Ratespiel, bei dem Sie historische Figuren durch strategische Fragen entdecken."
-      },
-      "welcome": {
-        "title": "Willkommen bei Geheimnisvolle Persönlichkeit!",
         "content": "Ein interaktives Ratespiel, bei dem Sie historische Figuren durch strategische Fragen entdecken.",
         "bullet1": "Interaktives Lernspiel für alle Altersgruppen",
         "bullet2": "Entdecken Sie berühmte historische Persönlichkeiten",
@@ -214,147 +210,103 @@
   },
   "impersonaTu": {
     "title": "VerkörpereDich Tutorial",
-    "subtitle": "Meistern Sie Peer-Learning durch historisches Rollenspiel und kritisches Denken",
+    "subtitle": "Die Schülerin oder der Schüler spielt eine historische Figur und debattiert mit einer anderen Figur, die die KI spielt",
     "startApp": "VerkörpereDich starten",
     "slides": {
       "welcome": {
-        "title": "Willkommen bei VerkörpereDich!",
-        "content": "Engagieren Sie sich in kollaborativem historischem Rollenspiel, wo Sie berühmte Figuren verkörpern, während Gleichaltrige und Lehrer Ihre Lernreise durch Think-Aloud-Protokolle und kritische Analyse erleichtern.",
-        "bullet1": "Verkörpern Sie berühmte historische Figuren durch kollaboratives Rollenspiel",
-        "bullet2": "Entwickeln Sie kritisches Denken und historische Analysefähigkeiten",
-        "bullet3": "Lernen Sie durch Think-Aloud-Protokolle und Peer-Feedback",
-        "bullet4": "Bauen Sie Verständnis durch kollaboratives Lernen auf"
+        "title": "Willkommen bei ImpersonaTu!",
+        "content": "Die Lernenden werden zu einer historischen Figur und diskutieren ein Thema mit einer anderen Figur, die von der künstlichen Intelligenz gespielt wird.",
+        "bullet1": "Die Lernenden sprechen in der Ich-Form, wie ihre Figur es täte",
+        "bullet2": "Die KI antwortet in der Rolle der anderen Figur",
+        "bullet3": "Am Ende folgen eine Reflexion und eine Bewertung"
       },
-      "peerLearning": {
-        "title": "Peer-Learning und Facilitation",
-        "content": "Entdecken Sie, wie kollaboratives Lernen und Peer-Facilitation die Bildungserfahrung durch gegenseitige Unterstützung und Wissensaustausch verbessern.",
-        "bullet1": "Arbeiten Sie mit Klassenkameraden in Facilitator- und Beobachterrollen zusammen",
-        "bullet2": "Teilen Sie Wissen und Perspektiven durch strukturierte Interaktion",
-        "bullet3": "Erhalten Sie konstruktives Feedback und Unterstützung von Peers",
-        "bullet4": "Bauen Sie Vertrauen durch kollaboratives Lernen auf"
+      "howItWorks": {
+        "title": "So funktioniert es",
+        "content": "Drei Entscheidungen genügen: wen du spielst, mit wem du sprichst und worüber ihr diskutiert.",
+        "bullet1": "Wähle deine Figur und die der KI (sie müssen verschieden sein)",
+        "bullet2": "Schreibe das Thema, zum Beispiel „Ist Krieg jemals gerecht?“",
+        "bullet3": "Sprich per Text, per Diktat oder, falls aktiviert, per Stimme",
+        "bullet4": "Beende das Gespräch, wann du willst, nach der Mindestzahl an Runden"
       },
-      "collaborativeRolePlay": {
-        "title": "Kollaboratives Rollenspiel mit Peer-/Lehrererleichterung",
-        "content": "Arbeiten Sie mit Klassenkameraden zusammen, die sich als Erleichterer und Beobachter abwechseln, während Sie Echtzeit-Führung von Lehrern erhalten.",
-        "bullet1": "Arbeiten Sie mit Klassenkameraden, die sich als Erleichterer und Beobachter abwechseln",
-        "bullet2": "Erhalten Sie Echtzeit-Führung von Lehrern während Rollenspiel-Sitzungen",
-        "bullet3": "Erleben Sie verschiedene Lernperspektiven durch Rollentausch",
-        "bullet4": "Bauen Sie unterstützende Lerngemeinschaft durch geteilte Erfahrungen auf"
+      "inRole": {
+        "title": "In der Rolle bleiben",
+        "content": "Der Wert der Aktivität liegt darin, wie die Figur zu denken, nicht sie zu zitieren.",
+        "bullet1": "Verwende die Ideen und die Sprache ihrer Zeit",
+        "bullet2": "Begründe deine Positionen: „Als Galilei behaupte ich, dass … weil …“",
+        "bullet3": "Antworte auf Einwände, ohne aus der Rolle zu fallen"
       },
-      "peerLearningPrinciples": {
-        "title": "Peer-Learning-Prinzipien in Aktion",
-        "content": "Lernen Sie von und mit Klassenkameraden durch strukturierte Interaktion und reziproke Lehrmomente.",
-        "bullet1": "Lernen Sie von und mit Klassenkameraden durch strukturierte Interaktion",
-        "bullet2": "Teilen Sie Wissen und Einsichten in reziproken Lehrmomenten",
-        "bullet3": "Profitieren Sie von verschiedenen Perspektiven und Interpretationsansätzen",
-        "bullet4": "Bauen Sie Vertrauen durch Peer-Unterstützung und Ermutigung auf"
+      "skills": {
+        "title": "Was man lernt",
+        "content": "Eine fremde Sichtweise zu vertreten, trainiert historisches und kritisches Denken.",
+        "bullet1": "Historische Empathie: Entscheidungen aus einem anderen Kontext verstehen",
+        "bullet2": "Mit Belegen und Gründen argumentieren, nicht nur mit Meinungen",
+        "bullet3": "Grenzen und Vorurteile jeder Position erkennen"
       },
-      "thinkAloudProtocols": {
-        "title": "Think-Aloud-Protokolle für tieferes Lernen",
-        "content": "Verbalisieren Sie Ihre Denkprozesse als historischer Charakter und machen Sie Lernen durch explizite Begründungsaussagen sichtbar.",
-        "bullet1": "Verbalisieren Sie Ihre Denkprozesse als historischer Charakter",
-        "bullet2": "Machen Sie Lernen durch explizite Begründungsaussagen sichtbar",
-        "bullet3": "Beispiel: 'Als Napoleon glaube ich das, weil...'",
-        "bullet4": "Ermöglichen Sie Gleichaltrigen und Lehrern, Echtzeit-Feedback zu geben"
+      "reflection": {
+        "title": "Reflexion und Bewertung",
+        "content": "Am Ende schreiben die Lernenden eine kurze Reflexion und erhalten eine Bewertung der KI.",
+        "bullet1": "Die Reflexion fragt, was sie über die Figur und das Thema verstanden haben",
+        "bullet2": "Die Bewertung benotet das Gespräch und die Reflexion",
+        "bullet3": "Die Lehrkraft sieht den ganzen Chat und die Noten und kann eigenes Feedback geben"
       },
-      "criticalThinking": {
-        "title": "Entwicklung kritischer Denkfähigkeiten",
-        "content": "Analysieren Sie historische Ereignisse aus mehreren Charakterperspektiven und entwickeln Sie evidenzbasiertes Denken.",
-        "bullet1": "Analysieren Sie historische Ereignisse aus mehreren Charakterperspektiven",
-        "bullet2": "Bewerten Sie die Gültigkeit historischer Behauptungen und Interpretationen",
-        "bullet3": "Entwickeln Sie Fähigkeiten in historischer Empathie und Perspektivenübernahme",
-        "bullet4": "Bauen Sie metakognitive Bewusstheit für Denk- und Lernprozesse auf"
-      },
-      "collaborativeReview": {
-        "title": "Kollaborative Überprüfungs- und Feedback-Prozesse",
-        "content": "Engagieren Sie sich in strukturierten Peer-Feedback-Sitzungen nach dem Rollenspiel und bauen Sie Fähigkeiten im akademischen Feedback auf.",
-        "bullet1": "Engagieren Sie sich in strukturierten Peer-Feedback-Sitzungen nach dem Rollenspiel",
-        "bullet2": "Geben Sie konstruktive Beobachtungen zu Charakterdarstellungen",
-        "bullet3": "Erhalten Sie Einsichten aus mehreren Peer-Perspektiven",
-        "bullet4": "Bauen Sie Fähigkeiten im Geben und Erhalten akademischen Feedbacks auf"
-      },
-      "teacherFacilitation": {
-        "title": "Lehrererleichterungsstrategien",
-        "content": "Lehrer bieten Gerüst für komplexe historische Konzepte und helfen Schülern durch Echtzeit-Führung.",
-        "bullet1": "Lehrer bieten Gerüst für komplexe historische Konzepte",
-        "bullet2": "Echtzeit-Führung hilft Schülern, herausfordernde Perspektiven zu navigieren",
-        "bullet3": "Strukturierte Nachbesprechungssitzungen maximieren Lernergebnisse",
-        "bullet4": "Unterstützung für Schüler bei der Entwicklung historischer Denkfähigkeiten"
-       },
-       "reflectionGrowth": {
-        "title": "Reflexion und metakognitives Wachstum",
-        "content": "Dokumentieren Sie die Lernreise durch strukturierte Reflexionsaktivitäten und analysieren Sie Ihr Wachstum.",
-        "bullet1": "Dokumentieren Sie die Lernreise durch strukturierte Reflexionsaktivitäten",
-        "bullet2": "Analysieren Sie Wachstum in historischem Denken und Perspektivenübernahmefähigkeiten",
-        "bullet3": "Identifizieren Sie Bereiche für kontinuierliche Entwicklung und Lernen",
-        "bullet4": "Planen Sie zukünftige Lernziele und historische Erkundungsthemen"
-      },
-      "implementationExamples": {
-        "title": "Implementierungsbeispiele über Fächer hinweg",
-        "content": "Erkunden Sie verschiedene Anwendungsmöglichkeiten des historischen Rollenspiels in unterschiedlichen Fächern.",
-        "bullet1": "Geschichte: Spielen Sie historische Figuren in Schlüsselereignissen und Entscheidungen",
-        "bullet2": "Literatur: Verkörpern Sie Autoren oder Charaktere, um Motivationen zu verstehen",
-        "bullet3": "Wissenschaft: Übernehmen Sie Rollen von Wissenschaftlern und Erfindern in Entdeckungsmomenten",
-        "bullet4": "Philosophie: Engagieren Sie sich mit großen Denkern und ihren philosophischen Positionen"
+      "classroom": {
+        "title": "Im Unterricht",
+        "content": "Die Lehrkraft kann die Aktivität mit bereits gewählten Figuren, Thema und Zielen zuweisen.",
+        "bullet1": "Geschichte: Caesar und Cicero über die Republik",
+        "bullet2": "Naturwissenschaften: Galilei und Bellarmin über die wissenschaftliche Methode",
+        "bullet3": "Literatur: ein Autor und einer seiner Kritiker",
+        "bullet4": "Mit Aufgabenzielen meldet JEV, wann die Lernenden sie erreicht haben"
       }
     }
   },
   "doppiaIntervista": {
     "title": "Doppelinterview Tutorial",
-    "subtitle": "Lernen Sie Charaktere zu vergleichen und kritisches Denken zu entwickeln",
+    "subtitle": "Interviewe zwei Figuren zugleich und vergleiche ihre Antworten",
     "startApp": "Doppelinterview starten",
     "slides": {
       "welcome": {
         "title": "Willkommen beim Doppelinterview!",
-        "content": "Führen Sie zwei verschiedene Charaktere in parallelen Gesprächen, um kontrastierende Perspektiven zu erkunden und fortgeschrittene vergleichende Analysefähigkeiten zu entwickeln.",
-        "bullet1": "Wählen Sie zwei Charaktere mit unterschiedlichen Hintergründen",
-        "bullet2": "Stellen Sie dieselben Fragen beiden gleichzeitig",
-        "bullet3": "Vergleichen Sie ihre Antworten in Echtzeit",
-        "bullet4": "Entwickeln Sie Verständnis durch vergleichende Analyse"
+        "content": "Die Lernenden interviewen zwei Figuren im selben Gespräch und vergleichen ihre Antworten auf dieselben Fragen.",
+        "bullet1": "Zwei verschiedene Figuren, gespielt von der KI",
+        "bullet2": "Fragen können an beide oder nur an eine gehen",
+        "bullet3": "Der direkte Vergleich zeigt unterschiedliche Ideen, Werte und Kontexte"
       },
       "howItWorks": {
-        "title": "Wie es funktioniert",
-        "content": "Wählen Sie zwei Charaktere mit unterschiedlichen Hintergründen und stellen Sie dieselben Fragen beiden gleichzeitig.",
-        "bullet1": "Wählen Sie zwei Charaktere mit unterschiedlichen Hintergründen oder Standpunkten",
-        "bullet2": "Stellen Sie dieselben Fragen beiden Charakteren gleichzeitig",
-        "bullet3": "Vergleichen und kontrastieren Sie ihre Antworten in Echtzeit",
-        "bullet4": "Entwickeln Sie nuanciertes Verständnis durch vergleichenden Dialog"
+        "title": "So funktioniert es",
+        "content": "Wähle zwei Figuren und stelle deine Fragen: Jede antwortet mit ihrer eigenen Stimme.",
+        "bullet1": "Wähle zwei Figuren (sie müssen verschieden sein)",
+        "bullet2": "Mit „Fragen an“ entscheidest du, ob die Frage an beide oder an eine geht",
+        "bullet3": "Jede Figur hört nur die Fragen, die an sie gerichtet sind",
+        "bullet4": "Beende das Gespräch, wann du willst, nach der Mindestzahl an Runden"
       },
-      "comparativeAnalysis": {
-        "title": "Vergleichende Analysefähigkeiten",
-        "content": "Identifizieren Sie Ähnlichkeiten und Unterschiede in Charakterantworten und analysieren Sie zugrundeliegende Annahmen.",
-        "bullet1": "Identifizieren Sie Ähnlichkeiten und Unterschiede in Charakterantworten",
-        "bullet2": "Analysieren Sie zugrundeliegende Annahmen und Weltanschauungen",
-        "bullet3": "Bewerten Sie die Stärke verschiedener Argumente und Perspektiven",
-        "bullet4": "Entwickeln Sie Fähigkeiten im Synthetisieren mehrerer Standpunkte"
-       },
-       "criticalThinking": {
-        "title": "Entwicklung kritischen Denkens",
-        "content": "Üben Sie die Bewertung mehrerer Informationsquellen und entwickeln Sie Fähigkeiten in Perspektivenübernahme.",
-        "bullet1": "Üben Sie die Bewertung mehrerer Informationsquellen",
-        "bullet2": "Entwickeln Sie Fähigkeiten in Perspektivenübernahme und Empathie",
-        "bullet3": "Lernen Sie, logische Trugschlüsse und schwache Argumente zu identifizieren",
-        "bullet4": "Verbessern Sie analytisches Denken und Urteilsfähigkeiten"
+      "questions": {
+        "title": "Gute Fragen stellen",
+        "content": "Die besten Fragen zwingen beide Figuren, Stellung zu beziehen.",
+        "bullet1": "Stelle beiden dieselbe Frage, um die Antworten zu vergleichen",
+        "bullet2": "Bevorzuge offene Fragen: „Warum …?“, „Was hättest du getan, wenn …?“",
+        "bullet3": "Bitte eine Figur, zu kommentieren, was die andere gesagt hat"
       },
-      "educationalApplications": {
-        "title": "Bildungsanwendungen",
-        "content": "Erkunden Sie verschiedene Anwendungsmöglichkeiten des Doppelinterviews in unterschiedlichen Fächern.",
-        "bullet1": "Geschichte: Vergleichen Sie Führer aus verschiedenen Epochen oder Kulturen",
-        "bullet2": "Literatur: Kontrastieren Sie Autorenstile und philosophische Ansätze",
-        "bullet3": "Wissenschaft: Erkunden Sie verschiedene wissenschaftliche Theorien oder Methodologien",
-        "bullet4": "Ethik: Erforschen Sie moralische Dilemmata aus mehreren Blickwinkeln"
+      "comparison": {
+        "title": "Antworten vergleichen",
+        "content": "Achte während des Interviews und am Ende auf Gemeinsamkeiten und Unterschiede.",
+        "bullet1": "Worin sind sie sich einig, worin nicht?",
+        "bullet2": "Welche Rolle spielen ihre Zeit oder Kultur?",
+        "bullet3": "Welche Argumente überzeugen mehr und warum?"
       },
-      "classroomBenefits": {
-        "title": "Klassenzimmervorteile",
-        "content": "Fördert tieferes Verständnis durch Vergleich und ermutigt kritische Bewertung von Informationsquellen.",
-        "bullet1": "Fördert tieferes Verständnis durch Vergleich",
-        "bullet2": "Ermutigt kritische Bewertung von Informationsquellen",
-        "bullet3": "Entwickelt Toleranz für Mehrdeutigkeit und Komplexität",
-        "bullet4": "Bereitet Schüler auf reale Entscheidungsszenarien vor"
-       },
-       "getStarted": {
-        "title": "Bereit zu vergleichen?",
-        "content": "Beginnen Sie Ihre vergleichende Analysereise und entdecken Sie die Macht mehrerer Perspektiven!"
+      "reflection": {
+        "title": "Reflexion und Bewertung",
+        "content": "Am Ende schreiben die Lernenden eine kurze Reflexion und erhalten eine Bewertung der KI.",
+        "bullet1": "Die Reflexion fragt, welche Unterschiede sichtbar wurden",
+        "bullet2": "Die Bewertung benotet das Gespräch und die Reflexion",
+        "bullet3": "Die Lehrkraft sieht den ganzen Chat und die Noten und kann eigenes Feedback geben"
+      },
+      "classroom": {
+        "title": "Im Unterricht",
+        "content": "Die Lehrkraft kann die Aktivität mit den zwei Figuren und den Zielen bereits gewählt zuweisen.",
+        "bullet1": "Geschichte: Lincoln und Garibaldi über die Freiheit",
+        "bullet2": "Philosophie: Platon und Aristoteles über das Wissen",
+        "bullet3": "Naturwissenschaften: Newton und Einstein über die Schwerkraft",
+        "bullet4": "Mit Aufgabenzielen meldet JEV, wann die Lernenden sie erreicht haben"
       }
     }
   }

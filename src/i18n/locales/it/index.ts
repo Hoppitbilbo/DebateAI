@@ -13,8 +13,14 @@ import aboutPage from './aboutPage.json';
 import footer from './footer.json';
 import homepage from './homepage.json';
 import tutorialsPage from './tutorialsPage.json';
+import platform from './platform.json';
+import teacherGuidePage from './teacherGuidePage.json';
+import notFound from './notFound.json';
 
 export default {
+  platform,
+  teacherGuidePage,
+  notFound,
   apps,
   common,
   navigation,

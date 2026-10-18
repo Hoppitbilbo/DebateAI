@@ -1,0 +1,13 @@
+node_modules
+dist
+bin
+data
+server/data
+server/webui/dist/*
+!server/webui/dist/.keep
+.git
+.env
+jules-scratch
+docs
+*.md
+!README.md

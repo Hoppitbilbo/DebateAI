@@ -1,4 +1,4 @@
-import { aiFacade } from "./aiFacade";
+import { complete } from "./aiService";
 
 const VOICES = [
   "Zephyr (Bright, Higher pitch, Female)",
@@ -37,9 +37,11 @@ export const getBestVoiceForCharacter = async (characterName: string, characterD
   if (!characterName) return "Aoede";
 
   const cacheKey = `voice_cache_${characterName}`;
-  const cachedVoice = localStorage.getItem(cacheKey);
-  if (cachedVoice) {
-    return cachedVoice;
+  try {
+    const cachedVoice = localStorage.getItem(cacheKey);
+    if (cachedVoice) return cachedVoice;
+  } catch {
+    /* storage unavailable */
   }
 
   const systemInstruction = `You are a voice casting director. Based on the character's name and description, select the single most appropriate voice from the provided list. 
@@ -54,8 +56,7 @@ ${VOICES.join("\n")}
 Respond ONLY with the name of the voice (e.g. Zephyr, Puck, Charon). Do not include any other text or reasoning.`;
 
   try {
-    const chat = aiFacade.text.startChat({ systemInstructionText: systemInstruction });
-    const response = await aiFacade.text.sendMessage(chat, `Select the best voice for ${characterName}.`);
+    const response = await complete(`Select the best voice for ${characterName}.`, systemInstruction, "utility");
     
     // Clean up response to ensure it's just the name
     const rawVoiceName = response?.trim() || "Aoede";
@@ -66,7 +67,11 @@ Respond ONLY with the name of the voice (e.g. Zephyr, Puck, Charon). Do not incl
     const isValid = VOICES.some(v => v.startsWith(voiceName));
     const finalVoice = isValid ? voiceName : "Aoede";
 
-    localStorage.setItem(cacheKey, finalVoice);
+    try {
+      localStorage.setItem(cacheKey, finalVoice);
+    } catch {
+      /* storage unavailable */
+    }
     return finalVoice;
   } catch (error) {
     console.error("Error determining character voice:", error);

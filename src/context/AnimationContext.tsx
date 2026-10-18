@@ -1,15 +1,6 @@
 
-import React, { createContext, useContext, useState } from 'react';
-
-interface AnimationContextType {
-  isAnimating: boolean;
-  startAnimation: (callback: () => void) => void;
-}
-
-const AnimationContext = createContext<AnimationContextType>({
-  isAnimating: false,
-  startAnimation: () => {},
-});
+import React, { useState } from 'react';
+import { AnimationContext } from './animation';
 
 export const AnimationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isAnimating, setIsAnimating] = useState(false);
@@ -34,5 +25,3 @@ export const AnimationProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     </AnimationContext.Provider>
   );
 };
-
-export const useAnimation = () => useContext(AnimationContext);

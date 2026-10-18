@@ -1,0 +1,158 @@
+// Package ai contains the provider adapters used by the AI gateway.
+// Every provider exposes the same small interface so the router can
+// switch between Gemini, OpenAI-compatible endpoints (OpenCode, OpenRouter,
+// Groq, Ollama, LM Studio, ...), Anthropic and the Jev decision model.
+package ai
+
+import (
+	"context"
+	"fmt"
+	"net/http"
+	"strings"
+	"time"
+)
+
+// Provider kinds understood by the gateway.
+const (
+	KindGemini    = "gemini"
+	KindOpenAI    = "openai"
+	KindAnthropic = "anthropic"
+	KindJev       = "jev"
+)
+
+type Message struct {
+	Role    string `json:"role"` // "user" | "assistant"
+	Content string `json:"content"`
+}
+
+type Request struct {
+	Model       string
+	System      string
+	Messages    []Message
+	Temperature *float64
+	MaxTokens   int
+	JSON        bool
+	// ReasoningEffort ("low", "medium", "high") limits hidden thinking on
+	// reasoning models; empty leaves the provider default.
+	ReasoningEffort string
+}
+
+type Usage struct {
+	InputTokens  int `json:"inputTokens"`
+	OutputTokens int `json:"outputTokens"`
+	// CostUSD is the exact cost when the provider reports it (OpenRouter
+	// does); it takes precedence over the price table. Needed for routers
+	// such as typesafe/jev-router whose price depends on the routed model.
+	CostUSD *float64 `json:"costUsd,omitempty"`
+}
+
+type Response struct {
+	Text  string
+	Usage Usage
+}
+
+// ModelInfo is returned by ListModels. Prices are USD per 1M tokens when the
+// upstream API exposes them (OpenRouter does), otherwise nil.
+type ModelInfo struct {
+	ID          string   `json:"id"`
+	Name        string   `json:"name,omitempty"`
+	InputPerM   *float64 `json:"inputPerM,omitempty"`
+	OutputPerM  *float64 `json:"outputPerM,omitempty"`
+	Free        bool     `json:"free"`
+	SupportLive bool     `json:"supportLive,omitempty"`
+}
+
+type Config struct {
+	ID      int64
+	Name    string
+	Kind    string
+	BaseURL string
+	APIKey  string
+}
+
+// Capabilities are small interfaces (Interface Segregation): a provider
+// implements only what it can do, and callers ask for the capability they
+// need with a type assertion instead of checking the provider kind.
+
+// ModelLister lists the models a provider serves.
+type ModelLister interface {
+	ListModels(ctx context.Context) ([]ModelInfo, error)
+}
+
+// Generator produces a complete text answer.
+type Generator interface {
+	Generate(ctx context.Context, req Request) (*Response, error)
+}
+
+// Streamer produces a text answer delta by delta.
+type Streamer interface {
+	Stream(ctx context.Context, req Request, onDelta func(string) error) (*Response, error)
+}
+
+// TextModel is a provider that can chat: Gemini, OpenAI-compatible, Anthropic.
+type TextModel interface {
+	ModelLister
+	Generator
+	Streamer
+}
+
+// Provider is what every adapter offers; see TextModel and Decider for the
+// optional capabilities.
+type Provider interface {
+	ModelLister
+}
+
+// HTTPError carries the upstream status so the router can decide whether a
+// fallback makes sense (429/5xx) or not.
+type HTTPError struct {
+	Status int
+	Body   string
+}
+
+func (e *HTTPError) Error() string {
+	body := e.Body
+	if len(body) > 400 {
+		body = body[:400] + "..."
+	}
+	return fmt.Sprintf("upstream error %d: %s", e.Status, body)
+}
+
+// factories is the provider registry (Factory pattern): adding a provider
+// kind means writing its adapter and registering it here, nothing else.
+var factories = map[string]func(Config) Provider{
+	KindGemini:    func(c Config) Provider { return newGemini(c) },
+	KindOpenAI:    func(c Config) Provider { return newOpenAI(c) },
+	KindAnthropic: func(c Config) Provider { return newAnthropic(c) },
+	KindJev:       func(c Config) Provider { return newJev(c) },
+}
+
+// KnownKind reports whether a provider kind is registered.
+func KnownKind(kind string) bool {
+	_, ok := factories[kind]
+	return ok
+}
+
+// New builds the adapter for cfg.Kind.
+func New(cfg Config) (Provider, error) {
+	f, ok := factories[cfg.Kind]
+	if !ok {
+		return nil, fmt.Errorf("unknown provider kind %q", cfg.Kind)
+	}
+	return f(cfg), nil
+}
+
+var httpClient = &http.Client{Timeout: 180 * time.Second}
+
+// IsLikelyFree guesses whether a model costs nothing: local servers and the
+// "free" variants published by OpenRouter / OpenCode.
+func IsLikelyFree(baseURL, model string) bool {
+	u := strings.ToLower(baseURL)
+	if strings.Contains(u, "localhost") || strings.Contains(u, "127.0.0.1") || strings.Contains(u, "0.0.0.0") ||
+		strings.Contains(u, "host.docker.internal") || strings.Contains(u, ":11434") || strings.Contains(u, ":1234") {
+		return true
+	}
+	m := strings.ToLower(model)
+	return strings.HasSuffix(m, ":free") || strings.HasSuffix(m, "-free") || m == "big-pickle"
+}
+
+func trimSlash(s string) string { return strings.TrimRight(strings.TrimSpace(s), "/") }
