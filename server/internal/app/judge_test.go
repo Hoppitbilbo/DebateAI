@@ -18,10 +18,12 @@ type fakeDecider struct {
 	err       error
 	state     any
 	questions map[string]ai.JevQuestion
+	decisions int
 }
 
 func (d *fakeDecider) Decide(ctx context.Context, model string, state any, qs map[string]ai.JevQuestion) (*ai.JevResult, error) {
 	d.state, d.questions = state, qs
+	d.decisions++
 	if d.err != nil {
 		return nil, d.err
 	}
