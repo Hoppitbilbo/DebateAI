@@ -39,7 +39,7 @@ func (s *Server) autoRoute(providerID int64, kind string) {
 	_ = json.Unmarshal([]byte(raw), &models)
 	rt := s.routing()
 	routePolicyFor(kind)(&rt, providerID, models)
-	if err := putSetting(s.db, "routing", rt); err != nil {
+	if err := s.settings.Save("routing", rt); err != nil {
 		log.Printf("auto-route provider %d: %v", providerID, err)
 	}
 }

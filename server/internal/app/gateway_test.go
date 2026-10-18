@@ -69,7 +69,7 @@ func useProvider(s *Server, id int64, kind string, p ai.Provider) {
 
 func setChatRoute(t *testing.T, s *Server, strategy string, targets ...RouteTarget) {
 	t.Helper()
-	if err := putSetting(s.db, "routing", RoutingSettings{Strategy: strategy, Tasks: map[string][]RouteTarget{TaskChat: targets}}); err != nil {
+	if err := s.settings.Save("routing", RoutingSettings{Strategy: strategy, Tasks: map[string][]RouteTarget{TaskChat: targets}}); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -228,7 +228,7 @@ func TestTargetsFallBackToChatRoute(t *testing.T) {
 
 func TestBudgetExceededKeepsOnlyFreeTargets(t *testing.T) {
 	s := newTestServer(t)
-	if err := putSetting(s.db, "budget", BudgetSettings{MonthlyUSD: 1, BlockPaidWhenExceeded: true}); err != nil {
+	if err := s.settings.Save("budget", BudgetSettings{MonthlyUSD: 1, BlockPaidWhenExceeded: true}); err != nil {
 		t.Fatal(err)
 	}
 	if _, err := s.db.Exec(`INSERT INTO usage_log(created_at, provider_id, provider_name, model, task, input_tokens, output_tokens, cost_usd, ok, latency_ms, error)

@@ -306,13 +306,13 @@ func (s *Server) handlePutSetting(w http.ResponseWriter, r *http.Request) {
 		v := defaultGeneral()
 		if err = readJSON(r, &v); err == nil {
 			v.DefaultLocale = normLocale(v.DefaultLocale)
-			err = putSetting(s.db, key, v)
+			err = s.settings.Save(key, v)
 		}
 	case "smtp":
 		var v SMTPSettings
 		if err = readJSON(r, &v); err == nil {
 			if v.Password == "" { // keep the stored password unless a new one is sent
-				old := getSetting(s.db, "smtp", SMTPSettings{})
+				old := loadSetting(s.settings, "smtp", SMTPSettings{})
 				v.Password = old.Password
 			} else {
 				v.Password = s.crypto.Encrypt(v.Password)
@@ -320,12 +320,12 @@ func (s *Server) handlePutSetting(w http.ResponseWriter, r *http.Request) {
 			if v.Port == 0 {
 				v.Port = 587
 			}
-			err = putSetting(s.db, key, v)
+			err = s.settings.Save(key, v)
 		}
 	case "budget":
 		var v BudgetSettings
 		if err = readJSON(r, &v); err == nil {
-			err = putSetting(s.db, key, v)
+			err = s.settings.Save(key, v)
 		}
 	case "routing":
 		var v RoutingSettings
@@ -333,12 +333,12 @@ func (s *Server) handlePutSetting(w http.ResponseWriter, r *http.Request) {
 			if v.Tasks == nil {
 				v.Tasks = map[string][]RouteTarget{}
 			}
-			err = putSetting(s.db, key, v)
+			err = s.settings.Save(key, v)
 		}
 	case "jev":
 		v := defaultJev()
 		if err = readJSON(r, &v); err == nil {
-			err = putSetting(s.db, key, v)
+			err = s.settings.Save(key, v)
 		}
 	default:
 		writeErr(w, 404, "not_found", "unknown setting")
@@ -514,7 +514,7 @@ func (s *Server) handleDeleteProvider(w http.ResponseWriter, r *http.Request) {
 		}
 		rt.Tasks[task] = kept
 	}
-	if err := putSetting(s.db, "routing", rt); err != nil {
+	if err := s.settings.Save("routing", rt); err != nil {
 		writeErr(w, 500, "internal", err.Error())
 		return
 	}

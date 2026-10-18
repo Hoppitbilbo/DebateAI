@@ -50,7 +50,7 @@ func (p *scriptedLLM) Generate(ctx context.Context, req ai.Request) (*ai.Respons
 
 func setJudgeRoute(t *testing.T, s *Server, targets ...RouteTarget) {
 	t.Helper()
-	if err := putSetting(s.db, "routing", RoutingSettings{Strategy: "ordered", Tasks: map[string][]RouteTarget{TaskJudge: targets}}); err != nil {
+	if err := s.settings.Save("routing", RoutingSettings{Strategy: "ordered", Tasks: map[string][]RouteTarget{TaskJudge: targets}}); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -76,7 +76,7 @@ func TestJudgeWithoutGoalsOrInstructionsDoesNothing(t *testing.T) {
 
 func TestJudgeDisabledDoesNothing(t *testing.T) {
 	s := newTestServer(t)
-	if err := putSetting(s.db, "jev", JevSettings{Enabled: false}); err != nil {
+	if err := s.settings.Save("jev", JevSettings{Enabled: false}); err != nil {
 		t.Fatal(err)
 	}
 	d := &fakeDecider{}
@@ -188,7 +188,7 @@ func TestJudgeAllTargetsFailing(t *testing.T) {
 
 func TestJudgeInvalidThresholdFallsBackToDefault(t *testing.T) {
 	s := newTestServer(t)
-	if err := putSetting(s.db, "jev", JevSettings{Enabled: true, Threshold: 1.5}); err != nil {
+	if err := s.settings.Save("jev", JevSettings{Enabled: true, Threshold: 1.5}); err != nil {
 		t.Fatal(err)
 	}
 	useProvider(s, 1, ai.KindJev, &fakeDecider{scores: map[string]float64{"goal_0": 0.75}})

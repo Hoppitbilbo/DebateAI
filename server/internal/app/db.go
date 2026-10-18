@@ -232,29 +232,6 @@ func hashToken(t string) string {
 	return hex.EncodeToString(h[:])
 }
 
-// ---------- settings ----------
-
-func getSetting[T any](db *sql.DB, key string, def T) T {
-	var raw string
-	if err := db.QueryRow(`SELECT value FROM settings WHERE key = ?`, key).Scan(&raw); err != nil {
-		return def
-	}
-	out := def
-	if err := json.Unmarshal([]byte(raw), &out); err != nil {
-		return def
-	}
-	return out
-}
-
-func putSetting(db *sql.DB, key string, v any) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-	_, err = db.Exec(`INSERT INTO settings(key, value) VALUES(?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value`, key, string(b))
-	return err
-}
-
 // execOrLog runs a statement whose failure must not fail the request
 // (housekeeping, counters, best-effort caches); the error is logged.
 func execOrLog(db *sql.DB, what, query string, args ...any) {

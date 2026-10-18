@@ -174,7 +174,7 @@ func (s *Server) handleSetup(w http.ResponseWriter, r *http.Request) {
 	if in.Locale != "" {
 		g := s.general()
 		g.DefaultLocale = normLocale(in.Locale)
-		if err := putSetting(s.db, "general", g); err != nil {
+		if err := s.settings.Save("general", g); err != nil {
 			log.Printf("setup: default locale: %v", err)
 		}
 	}

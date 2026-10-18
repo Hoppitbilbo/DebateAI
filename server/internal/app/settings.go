@@ -2,6 +2,21 @@ package app
 
 import "database/sql"
 
+// settingsStore persists the settings documents (implemented by store.Settings).
+type settingsStore interface {
+	Load(key string, dst any) bool
+	Save(key string, v any) error
+}
+
+// loadSetting returns the stored value of key, or def when it is missing or invalid.
+func loadSetting[T any](st settingsStore, key string, def T) T {
+	out := def
+	if !st.Load(key, &out) {
+		return def
+	}
+	return out
+}
+
 // Task names the router knows about. Each task has its own ordered list of
 // provider/model targets so the admin can, for example, use a free model for
 // character chat, a stronger one for evaluations and Jev as the judge.
@@ -81,15 +96,15 @@ func defaultJev() JevSettings {
 }
 
 func (s *Server) general() GeneralSettings {
-	return getSetting(s.db, "general", defaultGeneral())
+	return loadSetting(s.settings, "general", defaultGeneral())
 }
 
 func (s *Server) budget() BudgetSettings {
-	return getSetting(s.db, "budget", BudgetSettings{MonthlyUSD: 0, WarnPercent: 80, BlockPaidWhenExceeded: true})
+	return loadSetting(s.settings, "budget", BudgetSettings{MonthlyUSD: 0, WarnPercent: 80, BlockPaidWhenExceeded: true})
 }
 
 func (s *Server) routing() RoutingSettings {
-	r := getSetting(s.db, "routing", RoutingSettings{Strategy: StrategyOrdered, Tasks: map[string][]RouteTarget{}, DefaultVoice: "Aoede"})
+	r := loadSetting(s.settings, "routing", RoutingSettings{Strategy: StrategyOrdered, Tasks: map[string][]RouteTarget{}, DefaultVoice: "Aoede"})
 	if r.Tasks == nil {
 		r.Tasks = map[string][]RouteTarget{}
 	}
@@ -97,11 +112,11 @@ func (s *Server) routing() RoutingSettings {
 }
 
 func (s *Server) jevSettings() JevSettings {
-	return getSetting(s.db, "jev", defaultJev())
+	return loadSetting(s.settings, "jev", defaultJev())
 }
 
 func (s *Server) smtp() SMTPSettings {
-	st := getSetting(s.db, "smtp", s.cfg.SMTP)
+	st := loadSetting(s.settings, "smtp", s.cfg.SMTP)
 	if st.Host == "" {
 		st = s.cfg.SMTP
 		return st

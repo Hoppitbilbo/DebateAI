@@ -155,7 +155,7 @@ func TestSaveTranscriptTurnLimit(t *testing.T) {
 
 func TestSaveTranscriptEvaluateEvery(t *testing.T) {
 	f := newTranscriptFixture(t, map[string]any{"maxTurns": 3, "autoEnd": false}, 0.1)
-	if err := putSetting(f.s.db, "jev", JevSettings{Enabled: true, Threshold: 0.7, EvaluateEvery: 2, MaxStateChars: 24000}); err != nil {
+	if err := f.s.settings.Save("jev", JevSettings{Enabled: true, Threshold: 0.7, EvaluateEvery: 2, MaxStateChars: 24000}); err != nil {
 		t.Fatal(err)
 	}
 	f.save(t, map[string]any{"messages": userTurns(1)})
@@ -177,7 +177,7 @@ func TestSaveTranscriptJudgeFlagOverridesSchedule(t *testing.T) {
 	if out := f.save(t, map[string]any{"messages": userTurns(1), "judge": false}); out["jev"] != nil || f.judge.decisions != 0 {
 		t.Fatalf("judge:false must skip judging: %v", out)
 	}
-	if err := putSetting(f.s.db, "jev", JevSettings{Enabled: true, Threshold: 0.7, EvaluateEvery: 5, MaxStateChars: 24000}); err != nil {
+	if err := f.s.settings.Save("jev", JevSettings{Enabled: true, Threshold: 0.7, EvaluateEvery: 5, MaxStateChars: 24000}); err != nil {
 		t.Fatal(err)
 	}
 	f.save(t, map[string]any{"messages": userTurns(1), "judge": true})

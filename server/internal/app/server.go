@@ -15,13 +15,16 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/Hoppitbilbo/DebateAI/server/internal/store"
 )
 
 type Server struct {
-	cfg    Config
-	db     *sql.DB
-	crypto *Crypto
-	static fs.FS
+	cfg      Config
+	db       *sql.DB
+	settings settingsStore
+	crypto   *Crypto
+	static   fs.FS
 
 	limiter *rateLimiter
 	provMu  sync.Mutex
@@ -30,12 +33,13 @@ type Server struct {
 
 func NewServer(cfg Config, db *sql.DB, static fs.FS) *Server {
 	s := &Server{
-		cfg:     cfg,
-		db:      db,
-		crypto:  NewCrypto(cfg.Secret),
-		static:  static,
-		limiter: newRateLimiter(),
-		provs:   map[int64]cachedProvider{},
+		cfg:      cfg,
+		db:       db,
+		settings: store.NewSettings(db),
+		crypto:   NewCrypto(cfg.Secret),
+		static:   static,
+		limiter:  newRateLimiter(),
+		provs:    map[int64]cachedProvider{},
 	}
 	s.bootstrap()
 	return s
@@ -83,7 +87,7 @@ func (s *Server) bootstrap() {
 			for _, task := range []string{TaskChat, TaskEvaluation, TaskUtility, TaskJudge} {
 				rt.Tasks[task] = []RouteTarget{{id, "openrouter/free"}}
 			}
-			if err := putSetting(s.db, "routing", rt); err != nil {
+			if err := s.settings.Save("routing", rt); err != nil {
 				log.Printf("bootstrap OpenRouter routing: %v", err)
 			}
 		}
