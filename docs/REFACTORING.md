@@ -36,7 +36,7 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto · `[-]` scartato (spieg
 ## Stato attuale
 
 - **Fase in corso:** 1 (interventi veloci)
-- **Prossimo task:** 1.2
+- **Prossimo task:** 1.3
 - **Lavoro a metà:** nessuno
 - **Test:** Go 33 test nuovi + quelli esistenti verdi; Vitest 18 test verdi; lint 0 errori (18 warning preesistenti)
 
@@ -147,7 +147,7 @@ main.go        composition root (costruisce e inietta le dipendenze)
 ### Fase 1: interventi veloci
 
 - [x] **1.1** (`585116c`) Rimuovere il codice morto del debug i18n (verificare prima con grep che nulla lo importi).
-- [ ] **1.2** Gestire gli errori oggi ignorati (`_, _ =`): restituirli o loggarli con contesto.
+- [x] **1.2** (`999aa75`) Gestire gli errori oggi ignorati (`_, _ =`): restituirli o loggarli con contesto.
 - [ ] **1.3** Sostituire i numeri magici con costanti nominate.
 - [ ] **1.4** DTO tipizzati al posto di `map[string]any` nelle risposte (stesso JSON).
 
@@ -197,6 +197,7 @@ Un'area per task, spostando l'SQL in `internal/store`:
 
 - Go non ha ereditarietà: Template Method si realizza con funzioni o interfacce passate come parametro (composizione).
 - L'API HTTP e lo schema SQLite non cambiano durante il refactoring.
+- Task 1.2: unica eccezione voluta alla regola "nessun cambio di comportamento". Solo quando una scrittura sul DB fallisce: le scritture principali rispondono 500 invece di un falso OK, quelle di contorno (ultimo login, pulizia sessioni, costi, prezzi importati, `email_sent`) vengono loggate con `execOrLog`, e gli handler con più update usano `sqlBatch`. Restano volutamente le letture `_ = ...QueryRow(...).Scan(...)` che hanno un valore di default sensato (nome classe, somme dei costi): verranno riviste nei repository (fase 3).
 - La risposta di `PUT /api/sessions/{id}/transcript` ha tre forme diverse (sessione libera o già chiusa: `ended,progress,status,turns`; compito attivo: in più `jev,maxTurns,reason`). È fissata da `TestSaveTranscript*`: il DTO del task 1.4 deve mantenerla, usando `omitempty` dove serve.
 
 ---
@@ -213,3 +214,4 @@ Un'area per task, spostando l'SQL in `internal/store`:
 | 2026-10-18 | 0.5 | `c1b591b` | Claude Code | `.github/workflows/docker.yml`: `go vet` nel job `test`, nuovo job `web` (lint, i18n, Vitest, Node 22 come nel Dockerfile); `image` dipende da entrambi. Non ancora verificato su GitHub (nessun push). |
 | 2026-10-18 | — | — | Claude Code | Push di `go` su GitHub e tag `pre-refactoring`. |
 | 2026-10-18 | 1.1 | `585116c` | Claude Code | Rimossi 7 file, 2.441 righe: `src/utils/i18nDebugger.ts`, `visualErrorDetector.ts`, `i18nAnalyzer.ts`, `src/components/debug/*`, `src/hooks/useTranslationWithDebug.tsx`. |
+| 2026-10-18 | 1.2 | `999aa75` | Claude Code | Helper `execOrLog` e `sqlBatch` in `server/internal/app/db.go`. Corretti due bug: reset password (link riutilizzabile se l'update falliva) e forgot (mail con token non salvato). |
