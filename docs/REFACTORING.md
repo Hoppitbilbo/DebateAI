@@ -38,7 +38,7 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto · `[-]` scartato (spieg
 ## Stato attuale
 
 - **Fase in corso:** 6 (resto del frontend)
-- **Prossimo task:** 6.2
+- **Prossimo task:** 6.3
 - **Lavoro a metà:** nessuno
 - **Test:** Go 33 test nuovi + quelli esistenti verdi; Vitest 18 test verdi; lint 0 errori (18 warning preesistenti)
 
@@ -201,7 +201,7 @@ Un'area per task, spostando l'SQL in `internal/store`:
 ### Fase 6: resto del frontend
 
 - [x] **6.1** (`6bc9dbf`) Tutorial guidati dai dati + `TutorialSlides`.
-- [ ] **6.2** Dividere `AdminAI.tsx` e `AdminPage.tsx` in hook dati e componenti.
+- [x] **6.2** (`1fca02f`) Dividere `AdminAI.tsx` e `AdminPage.tsx` in hook dati e componenti.
 - [ ] **6.3** Dividere `TeacherPages.tsx`.
 
 ---
@@ -263,3 +263,4 @@ Un'area per task, spostando l'SQL in `internal/store`:
 | 2026-10-18 | 5.3 | `7d1e0f4` | Claude Code | DoppiaIntervista 175 → 129 righe, YouModerate 214 → 166, PersonaggioMisterioso 268 → 215 (+ `src/features/activity/mystery.ts` con `isCorrectGuess` e `RANDOM_CHARACTERS`, test `mystery.test.ts`). Il personaggio misterioso usa `chat.replacement` per il tentativo finale, `onEnded` personalizzato e `showEndReason: false`. Le sei pagine attività ora usano tutte `ActivityRunner`. Test delle pagine estesi alle tre app (stub di `ResizeObserver` per lo slider Radix). Vitest: 31 test; lint 17 avvisi (uno in meno). |
 | 2026-10-18 | 5.4 | `cb060a2` | Claude Code | `src/services/aiClient.ts` (interfaccia `AiClient`, `httpAiClient`, `AiClientContext`, `useAiClient`) e `src/services/AiClientProvider.tsx`. Usato da `useChatEngine`, `useEvaluationFlow` (che lo passa a `evaluateActivity`) e `ActivityShell`; il default è il client HTTP, quindi l'app non ha bisogno del provider. I test iniettano un client finto invece di `vi.mock` sul modulo. Il Live vocale (`liveConversationService`, WebSocket diretto a Google) resta fuori dall'interfaccia. Fase 5 completata. |
 | 2026-10-18 | 6.1 | `6bc9dbf` | Claude Code | `src/features/tutorials/tutorials.ts` (dati: `ns`, slide con icona e numero di punti), `TutorialSlides.tsx`, `src/pages/TutorialPage.tsx` (una pagina per tutte le rotte `/apps/*/tutorial`). Rimossi 5 componenti + 5 pagine (−1197/+252 righe). Scelto il layout dei 4 tutorial uguali: ImpersonaTu perde la barra di avanzamento e il titolo "Slide N". Bug corretti: i pulsanti Indietro/Avanti mostravano l'italiano in tutte le lingue (chiavi assenti nel namespace `tutorial`, fallback a it); il pulsante finale ricaricava la pagina con `window.location`, ora usa il router. Test `tutorials.test.tsx`: copertura delle traduzioni (con gap noto, vedi Note) e navigazione fino all'avvio dell'app. |
+| 2026-10-18 | 6.2 | `1fca02f` | Claude Code | Livello dati `src/features/admin/adminApi.ts` (overview, utenti, inviti, classi, settings, costi) e `aiAdminApi.ts` (provider, routing, JEV, prezzi; tipo `ModelInfo` spostato qui da `ModelPicker`), dati statici in `aiPresets.ts`. `AdminPage.tsx` 419 → 37 righe (schede in `pages/admin/tabs/`), `AdminAI.tsx` 425 → 42 (componenti in `pages/admin/ai/`). Nessun componente admin chiama più `api` o `useQuery` direttamente. Test `AdminPage.test.tsx`: render delle 7 schede su risposte API finte. Vitest 40 test, lint 16 avvisi. |
