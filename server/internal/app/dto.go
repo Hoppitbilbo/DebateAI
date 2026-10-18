@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/Hoppitbilbo/DebateAI/server/internal/ai"
+	"github.com/Hoppitbilbo/DebateAI/server/internal/domain"
 )
 
 // Response bodies of the HTTP API. The JSON tags are the contract with the
@@ -63,18 +64,8 @@ func invitedResult(inv *inviteRow) inviteResult {
 
 // ---------- classes ----------
 
-type classProgressCell struct {
-	AssignmentID int64   `json:"assignmentId"`
-	UserID       int64   `json:"userId"`
-	Status       string  `json:"status"`
-	Progress     int     `json:"progress"`
-	SessionID    int64   `json:"sessionId"`
-	Score        *int    `json:"score,omitempty"`
-	CostUSD      float64 `json:"costUsd"`
-}
-
 type classProgressResponse struct {
-	Cells []classProgressCell `json:"cells"`
+	Cells []domain.ProgressCell `json:"cells"`
 }
 
 type classDetailResponse struct {

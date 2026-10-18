@@ -29,7 +29,7 @@ func (s *Server) handleAdminOverview(w http.ResponseWriter, r *http.Request) {
 		},
 		Classes:         s.classes.CountActive(),
 		Assignments:     s.assignments.Count(),
-		Sessions:        countRows(s.db, `SELECT COUNT(*) FROM activity_sessions WHERE turns > 0`),
+		Sessions:        s.sessions.CountWithTurns(),
 		PendingInvites:  s.invites.CountPending(),
 		Providers:       countRows(s.db, `SELECT COUNT(*) FROM providers WHERE enabled = 1`),
 		MonthSpendUSD:   spend,

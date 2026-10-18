@@ -2,7 +2,6 @@ package app
 
 import (
 	"context"
-	"database/sql"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -48,8 +47,8 @@ func (s *Server) handleListAssignments(w http.ResponseWriter, r *http.Request) {
 	for _, a := range out {
 		a.Stats = &AssignStats{
 			Students:  students,
-			Started:   countRows(s.db, `SELECT COUNT(DISTINCT user_id) FROM activity_sessions WHERE assignment_id = ?`, a.ID),
-			Completed: countRows(s.db, `SELECT COUNT(DISTINCT user_id) FROM activity_sessions WHERE assignment_id = ? AND status IN ('completed','goal_reached')`, a.ID),
+			Started:   s.sessions.CountStarted(a.ID),
+			Completed: s.sessions.CountFinished(a.ID),
 		}
 	}
 	writeJSON(w, 200, out)
@@ -249,7 +248,7 @@ func (s *Server) handleAssignmentProgress(w http.ResponseWriter, r *http.Request
 	}
 	for i := range out {
 		out[i].Session = s.bestSession(out[i].UserID, a.ID)
-		out[i].AttemptCount = countRows(s.db, `SELECT COUNT(*) FROM activity_sessions WHERE user_id = ? AND assignment_id = ?`, out[i].UserID, a.ID)
+		out[i].AttemptCount = s.sessions.CountAttempts(out[i].UserID, a.ID)
 	}
 	if out == nil {
 		out = []StudentProgress{}
@@ -265,86 +264,22 @@ func (s *Server) handleClassProgress(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 403, "forbidden", "not your class")
 		return
 	}
-	// best session per (user, assignment): completed first, then highest progress
-	rows, err := s.db.Query(`SELECT s.assignment_id, s.user_id, s.status, s.progress, s.id, s.score_conversation, s.cost_usd FROM activity_sessions s
-		JOIN assignments a ON a.id = s.assignment_id WHERE a.class_id = ?
-		ORDER BY CASE s.status WHEN 'completed' THEN 0 WHEN 'goal_reached' THEN 1 ELSE 2 END, s.progress DESC, s.updated_at DESC`, classID)
+	cells, err := s.sessions.BestPerStudent(classID)
 	if err != nil {
 		writeErr(w, 500, "internal", err.Error())
 		return
-	}
-	defer rows.Close()
-	seen := map[string]bool{}
-	cells := []classProgressCell{}
-	for rows.Next() {
-		var c classProgressCell
-		var score sql.NullInt64
-		if rows.Scan(&c.AssignmentID, &c.UserID, &c.Status, &c.Progress, &c.SessionID, &score, &c.CostUSD) != nil {
-			continue
-		}
-		k := fmt.Sprintf("%d:%d", c.AssignmentID, c.UserID)
-		if seen[k] {
-			continue
-		}
-		seen[k] = true
-		if score.Valid {
-			v := int(score.Int64)
-			c.Score = &v
-		}
-		cells = append(cells, c)
 	}
 	writeJSON(w, 200, classProgressResponse{Cells: cells})
 }
 
 // ---------- sessions ----------
 
-const sessionSummaryCols = `s.id, s.user_id, COALESCE(u.name,''), s.assignment_id, COALESCE(a.title,''), s.app_type, s.title, s.status, s.turns, s.progress,
-	s.score_conversation, s.score_reflection, s.cost_usd, s.started_at, s.updated_at, s.completed_at`
-const sessionFrom = ` FROM activity_sessions s LEFT JOIN users u ON u.id = s.user_id LEFT JOIN assignments a ON a.id = s.assignment_id`
-
-func scanSummary(row interface{ Scan(...any) error }, extra ...any) (*SessionSummary, error) {
-	var ss SessionSummary
-	var uid, aid, sc, sr sql.NullInt64
-	var comp sql.NullString
-	dest := []any{&ss.ID, &uid, &ss.UserName, &aid, &ss.AssignmentTitle, &ss.AppType, &ss.Title, &ss.Status, &ss.Turns, &ss.Progress, &sc, &sr, &ss.CostUSD, &ss.StartedAt, &ss.UpdatedAt, &comp}
-	if err := row.Scan(append(dest, extra...)...); err != nil {
-		return nil, err
-	}
-	if uid.Valid {
-		ss.UserID = &uid.Int64
-	}
-	if aid.Valid {
-		ss.AssignmentID = &aid.Int64
-	}
-	if sc.Valid {
-		v := int(sc.Int64)
-		ss.ScoreConversation = &v
-	}
-	if sr.Valid {
-		v := int(sr.Int64)
-		ss.ScoreReflection = &v
-	}
-	if comp.Valid {
-		ss.CompletedAt = &comp.String
-	}
-	return &ss, nil
-}
-
 func (s *Server) latestSession(userID, assignmentID int64) *SessionSummary {
-	ss, err := scanSummary(s.db.QueryRow(`SELECT `+sessionSummaryCols+sessionFrom+` WHERE s.user_id = ? AND s.assignment_id = ? ORDER BY s.started_at DESC LIMIT 1`, userID, assignmentID))
-	if err != nil {
-		return nil
-	}
-	return ss
+	return s.sessions.Latest(userID, assignmentID)
 }
 
 func (s *Server) bestSession(userID, assignmentID int64) *SessionSummary {
-	ss, err := scanSummary(s.db.QueryRow(`SELECT `+sessionSummaryCols+sessionFrom+` WHERE s.user_id = ? AND s.assignment_id = ?
-		ORDER BY CASE s.status WHEN 'completed' THEN 0 WHEN 'goal_reached' THEN 1 ELSE 2 END, s.progress DESC, s.updated_at DESC LIMIT 1`, userID, assignmentID))
-	if err != nil {
-		return nil
-	}
-	return ss
+	return s.sessions.Best(userID, assignmentID)
 }
 
 func (s *Server) handleCreateSession(w http.ResponseWriter, r *http.Request) {
@@ -363,7 +298,7 @@ func (s *Server) handleCreateSession(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 400, "bad_request", "invalid appType")
 		return
 	}
-	var aid any
+	n := domain.NewSession{UserID: u.ID, AppType: in.AppType, Title: truncate(in.Title, maxSessionTitleChars), Context: "{}"}
 	if in.AssignmentID > 0 {
 		a, err := s.getAssignment(in.AssignmentID)
 		if err != nil || (!s.canManageClass(u, a.ClassID) && (!s.isClassMember(u, a.ClassID) || !a.Published)) {
@@ -374,22 +309,19 @@ func (s *Server) handleCreateSession(w http.ResponseWriter, r *http.Request) {
 			writeErr(w, 400, "bad_request", "assignment is for another app")
 			return
 		}
-		aid = a.ID
+		n.AssignmentID = &a.ID
 		// Previous unfinished attempts are closed when a new one starts.
-		execOrLog(s.db, "abandon empty sessions", `UPDATE activity_sessions SET status = 'abandoned', updated_at = ? WHERE user_id = ? AND assignment_id = ? AND status = 'active' AND turns = 0`, now(), u.ID, a.ID)
+		logIfErr("abandon empty sessions", s.sessions.AbandonEmpty(u.ID, a.ID))
 	}
-	ctx := "{}"
 	if len(in.Context) > 0 {
-		ctx = string(in.Context)
+		n.Context = string(in.Context)
 	}
-	res, err := s.db.Exec(`INSERT INTO activity_sessions(user_id, assignment_id, app_type, title, context_json, started_at, updated_at) VALUES(?,?,?,?,?,?,?)`,
-		u.ID, aid, in.AppType, truncate(in.Title, maxSessionTitleChars), ctx, now(), now())
+	id, err := s.sessions.Create(n)
 	if err != nil {
 		writeErr(w, 500, "internal", err.Error())
 		return
 	}
-	id, _ := res.LastInsertId()
-	ss, _ := scanSummary(s.db.QueryRow(`SELECT `+sessionSummaryCols+sessionFrom+` WHERE s.id = ?`, id))
+	ss, _ := s.sessions.Summary(id)
 	writeJSON(w, 201, ss)
 }
 
@@ -401,27 +333,23 @@ func truncate(s string, n int) string {
 }
 
 func (s *Server) loadSessionForUser(u *User, id int64) (*SessionDetail, bool, error) {
-	var d SessionDetail
-	var ctx, tr, jev string
-	ss, err := scanSummary(s.db.QueryRow(`SELECT `+sessionSummaryCols+`, s.context_json, s.transcript_json, s.jev_json, s.reflection, s.evaluation`+sessionFrom+` WHERE s.id = ?`, id),
-		&ctx, &tr, &jev, &d.Reflection, &d.Evaluation)
+	d, err := s.sessions.Detail(id)
 	if err != nil {
 		return nil, false, err
 	}
-	d.SessionSummary = *ss
-	d.Context, d.Transcript, d.Jev = json.RawMessage(ctx), json.RawMessage(tr), json.RawMessage(jev)
+	ss := &d.SessionSummary
 	owner := ss.UserID != nil && *ss.UserID == u.ID
-	if owner || u.Role == "admin" {
-		return &d, owner, nil
+	if owner || u.Role == domain.RoleAdmin {
+		return d, owner, nil
 	}
 	if ss.AssignmentID != nil {
 		if a, err := s.getAssignment(*ss.AssignmentID); err == nil && s.canManageClass(u, a.ClassID) {
-			return &d, false, nil
+			return d, false, nil
 		}
 	}
 	// teachers can see free sessions of students in their classes
 	if u.Role == domain.RoleTeacher && ss.UserID != nil && s.classes.TeachesStudent(u.ID, *ss.UserID) {
-		return &d, false, nil
+		return d, false, nil
 	}
 	return nil, false, fmt.Errorf("forbidden")
 }
@@ -437,17 +365,10 @@ func (s *Server) handleGetSession(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) handleMySessions(w http.ResponseWriter, r *http.Request) {
 	u := currentUser(r)
-	rows, err := s.db.Query(`SELECT `+sessionSummaryCols+sessionFrom+` WHERE s.user_id = ? AND (s.turns > 0 OR s.status != 'abandoned') ORDER BY s.started_at DESC LIMIT 100`, u.ID)
+	out, err := s.sessions.ListForUser(u.ID, maxListedSessions)
 	if err != nil {
 		writeErr(w, 500, "internal", err.Error())
 		return
-	}
-	defer rows.Close()
-	out := []*SessionSummary{}
-	for rows.Next() {
-		if ss, err := scanSummary(rows); err == nil {
-			out = append(out, ss)
-		}
 	}
 	writeJSON(w, 200, out)
 }
@@ -481,12 +402,11 @@ func (s *Server) handleSaveTranscript(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	status := d.Status
-	b := sqlBatch{db: s.db}
-	b.exec(`UPDATE activity_sessions SET transcript_json = ?, turns = ?, updated_at = ? WHERE id = ?`, mustJSON(in.Messages), turns, now(), d.ID)
+	var newContext *string
 	if len(in.Context) > 0 {
-		b.exec(`UPDATE activity_sessions SET context_json = ? WHERE id = ?`, string(in.Context), d.ID)
+		newContext = ptr(string(in.Context))
 	}
-	if err := b.err; err != nil {
+	if err := s.sessions.SaveTranscript(d.ID, mustJSON(in.Messages), turns, newContext); err != nil {
 		writeErr(w, 500, "internal", err.Error())
 		return
 	}
@@ -526,7 +446,7 @@ func (s *Server) handleSaveTranscript(w http.ResponseWriter, r *http.Request) {
 		cancel()
 		resp.Jev = &jr
 		if jr.Engine != "none" {
-			if _, err := s.db.Exec(`UPDATE activity_sessions SET jev_json = ?, progress = ? WHERE id = ?`, mustJSON(jr), jr.Progress, d.ID); err != nil {
+			if err := s.sessions.SaveJudgement(d.ID, mustJSON(jr), jr.Progress); err != nil {
 				writeErr(w, 500, "internal", err.Error())
 				return
 			}
@@ -540,7 +460,7 @@ func (s *Server) handleSaveTranscript(w http.ResponseWriter, r *http.Request) {
 		status, reason = "turn_limit", "turn_limit"
 	}
 	if status != "active" {
-		if _, err := s.db.Exec(`UPDATE activity_sessions SET status = ?, updated_at = ? WHERE id = ?`, status, now(), d.ID); err != nil {
+		if err := s.sessions.SetStatus(d.ID, status); err != nil {
 			writeErr(w, 500, "internal", err.Error())
 			return
 		}
@@ -568,8 +488,10 @@ func (s *Server) handleCompleteSession(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 400, "bad_request", err.Error())
 		return
 	}
-	_, err = s.db.Exec(`UPDATE activity_sessions SET status = 'completed', reflection = ?, evaluation = ?, score_conversation = ?, score_reflection = ?, completed_at = ?, updated_at = ? WHERE id = ?`,
-		truncate(in.Reflection, maxReflectionChars), truncate(in.Evaluation, maxEvaluationChars), in.ScoreConversation, in.ScoreReflection, now(), now(), d.ID)
+	err = s.sessions.Complete(d.ID, domain.SessionCompletion{
+		Reflection: truncate(in.Reflection, maxReflectionChars), Evaluation: truncate(in.Evaluation, maxEvaluationChars),
+		ScoreConversation: in.ScoreConversation, ScoreReflection: in.ScoreReflection,
+	})
 	if err != nil {
 		writeErr(w, 500, "internal", err.Error())
 		return

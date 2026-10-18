@@ -150,7 +150,7 @@ func (s *Server) logUsage(e usageEntry) float64 {
 		log.Printf("usage log: %v", err)
 	}
 	if e.SessionID != nil && cost > 0 {
-		execOrLog(s.db, "add session cost", `UPDATE activity_sessions SET cost_usd = cost_usd + ? WHERE id = ?`, cost, *e.SessionID)
+		logIfErr("add session cost", s.sessions.AddCost(*e.SessionID, cost))
 	}
 	return cost
 }
@@ -258,12 +258,11 @@ func (s *Server) sessionFor(u *User, sessionID int64) (*int64, string, error) {
 	if sessionID == 0 || u == nil {
 		return nil, "", nil
 	}
-	var owner sql.NullInt64
-	var status string
-	if err := s.db.QueryRow(`SELECT user_id, status FROM activity_sessions WHERE id = ?`, sessionID).Scan(&owner, &status); err != nil {
+	owner, status, err := s.sessions.Owner(sessionID)
+	if err != nil {
 		return nil, "", errors.New("session not found")
 	}
-	if !owner.Valid || owner.Int64 != u.ID {
+	if owner == nil || *owner != u.ID {
 		return nil, "", errors.New("session does not belong to you")
 	}
 	return &sessionID, status, nil

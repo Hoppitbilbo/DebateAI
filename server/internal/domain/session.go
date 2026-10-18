@@ -39,3 +39,30 @@ type SessionDetail struct {
 	Evaluation string          `json:"evaluation"`
 }
 
+// NewSession holds the values of an activity attempt to start.
+type NewSession struct {
+	UserID       int64
+	AssignmentID *int64 // nil for free practice
+	AppType      string
+	Title        string
+	Context      string // JSON object
+}
+
+// SessionCompletion is what the student hands in at the end of an activity.
+type SessionCompletion struct {
+	Reflection        string
+	Evaluation        string
+	ScoreConversation *int
+	ScoreReflection   *int
+}
+
+// ProgressCell is the best attempt of one student on one assignment.
+type ProgressCell struct {
+	AssignmentID int64   `json:"assignmentId"`
+	UserID       int64   `json:"userId"`
+	Status       string  `json:"status"`
+	Progress     int     `json:"progress"`
+	SessionID    int64   `json:"sessionId"`
+	Score        *int    `json:"score,omitempty"`
+	CostUSD      float64 `json:"costUsd"`
+}

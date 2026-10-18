@@ -92,3 +92,24 @@ type assignmentStore interface {
 	Delete(id int64) error
 	Count() int
 }
+
+type sessionStore interface {
+	Summary(id int64) (*domain.SessionSummary, error)
+	Detail(id int64) (*domain.SessionDetail, error)
+	Latest(userID, assignmentID int64) *domain.SessionSummary
+	Best(userID, assignmentID int64) *domain.SessionSummary
+	ListForUser(userID int64, limit int) ([]*domain.SessionSummary, error)
+	BestPerStudent(classID int64) ([]domain.ProgressCell, error)
+	Owner(id int64) (userID *int64, status string, err error)
+	Create(n domain.NewSession) (int64, error)
+	AbandonEmpty(userID, assignmentID int64) error
+	SaveTranscript(id int64, transcriptJSON string, turns int, context *string) error
+	SaveJudgement(id int64, judgementJSON string, progress int) error
+	SetStatus(id int64, status string) error
+	Complete(id int64, c domain.SessionCompletion) error
+	AddCost(id int64, usd float64) error
+	CountWithTurns() int
+	CountStarted(assignmentID int64) int
+	CountFinished(assignmentID int64) int
+	CountAttempts(userID, assignmentID int64) int
+}

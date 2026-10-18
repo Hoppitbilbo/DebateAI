@@ -28,6 +28,7 @@ type Server struct {
 	invites     inviteStore
 	classes     classStore
 	assignments assignmentStore
+	sessions    sessionStore
 	crypto      *Crypto
 	static      fs.FS
 
@@ -46,6 +47,7 @@ func NewServer(cfg Config, db *sql.DB, static fs.FS) *Server {
 		invites:     store.NewInvites(db),
 		classes:     store.NewClasses(db),
 		assignments: store.NewAssignments(db),
+		sessions:    store.NewActivitySessions(db),
 		crypto:      NewCrypto(cfg.Secret),
 		static:      static,
 		limiter:     newRateLimiter(),

@@ -18,6 +18,7 @@ const (
 	maxListedUsers          = 500
 	maxListedInvites        = 500
 	maxListedTeacherInvites = 200
+	maxListedSessions       = 100 // a student's own attempts
 )
 
 // JEV judge.
