@@ -20,15 +20,16 @@ import (
 )
 
 type Server struct {
-	cfg      Config
-	db       *sql.DB
-	settings settingsStore
-	users    userStore
-	logins   authSessionStore
-	invites  inviteStore
-	classes  classStore
-	crypto   *Crypto
-	static   fs.FS
+	cfg         Config
+	db          *sql.DB
+	settings    settingsStore
+	users       userStore
+	logins      authSessionStore
+	invites     inviteStore
+	classes     classStore
+	assignments assignmentStore
+	crypto      *Crypto
+	static      fs.FS
 
 	limiter *rateLimiter
 	provMu  sync.Mutex
@@ -37,17 +38,18 @@ type Server struct {
 
 func NewServer(cfg Config, db *sql.DB, static fs.FS) *Server {
 	s := &Server{
-		cfg:      cfg,
-		db:       db,
-		settings: store.NewSettings(db),
-		users:    store.NewUsers(db),
-		logins:   store.NewAuthSessions(db),
-		invites:  store.NewInvites(db),
-		classes:  store.NewClasses(db),
-		crypto:   NewCrypto(cfg.Secret),
-		static:   static,
-		limiter:  newRateLimiter(),
-		provs:    map[int64]cachedProvider{},
+		cfg:         cfg,
+		db:          db,
+		settings:    store.NewSettings(db),
+		users:       store.NewUsers(db),
+		logins:      store.NewAuthSessions(db),
+		invites:     store.NewInvites(db),
+		classes:     store.NewClasses(db),
+		assignments: store.NewAssignments(db),
+		crypto:      NewCrypto(cfg.Secret),
+		static:      static,
+		limiter:     newRateLimiter(),
+		provs:       map[int64]cachedProvider{},
 	}
 	s.bootstrap()
 	return s

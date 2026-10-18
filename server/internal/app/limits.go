@@ -7,7 +7,6 @@ import "time"
 
 // Activity sessions and assignments.
 const (
-	maxAssignmentGoals    = 12
 	maxSessionTitleChars  = 200
 	maxTranscriptMessages = 1000 // older messages are dropped when saving
 	maxReflectionChars    = 20000

@@ -12,67 +12,9 @@ import (
 	"github.com/Hoppitbilbo/DebateAI/server/internal/domain"
 )
 
-var appTypes = map[string]bool{
-	"convinci-tu": true, "doppia-intervista": true, "wiki-chatbot": true,
-	"personaggio-misterioso": true, "impersona-tu": true, "you-moderate": true,
-}
+var appTypes = domain.AppTypes
 
-type Assignment struct {
-	ID                int64           `json:"id"`
-	ClassID           int64           `json:"classId"`
-	ClassName         string          `json:"className"`
-	Title             string          `json:"title"`
-	Instructions      string          `json:"instructions"`
-	AppType           string          `json:"appType"`
-	Config            json.RawMessage `json:"config"`
-	Goals             []string        `json:"goals"`
-	MinTurns          int             `json:"minTurns"`
-	MaxTurns          int             `json:"maxTurns"`
-	AutoEnd           bool            `json:"autoEnd"`
-	RequireReflection bool            `json:"requireReflection"`
-	AllowLive         bool            `json:"allowLive"`
-	Published         bool            `json:"published"`
-	DueAt             *string         `json:"dueAt,omitempty"`
-	CreatedAt         string          `json:"createdAt"`
-	UpdatedAt         string          `json:"updatedAt"`
-	MySession         *SessionSummary `json:"mySession,omitempty"`
-	Stats             *AssignStats    `json:"stats,omitempty"`
-}
-
-type AssignStats struct {
-	Students  int `json:"students"`
-	Started   int `json:"started"`
-	Completed int `json:"completed"`
-}
-
-const assignSelect = `SELECT a.id, a.class_id, c.name, a.title, a.instructions, a.app_type, a.config_json, a.goals_json,
-	a.min_turns, a.max_turns, a.auto_end, a.require_reflection, a.allow_live, a.published, a.due_at, a.created_at, a.updated_at
-	FROM assignments a JOIN classes c ON c.id = a.class_id`
-
-func scanAssignment(row interface{ Scan(...any) error }) (*Assignment, error) {
-	var a Assignment
-	var cfg, goals string
-	var autoEnd, reqRefl, allowLive, pub int
-	var due sql.NullString
-	if err := row.Scan(&a.ID, &a.ClassID, &a.ClassName, &a.Title, &a.Instructions, &a.AppType, &cfg, &goals,
-		&a.MinTurns, &a.MaxTurns, &autoEnd, &reqRefl, &allowLive, &pub, &due, &a.CreatedAt, &a.UpdatedAt); err != nil {
-		return nil, err
-	}
-	a.Config = json.RawMessage(cfg)
-	_ = json.Unmarshal([]byte(goals), &a.Goals)
-	if a.Goals == nil {
-		a.Goals = []string{}
-	}
-	a.AutoEnd, a.RequireReflection, a.AllowLive, a.Published = autoEnd == 1, reqRefl == 1, allowLive == 1, pub == 1
-	if due.Valid && due.String != "" {
-		a.DueAt = &due.String
-	}
-	return &a, nil
-}
-
-func (s *Server) getAssignment(id int64) (*Assignment, error) {
-	return scanAssignment(s.db.QueryRow(assignSelect+` WHERE a.id = ?`, id))
-}
+func (s *Server) getAssignment(id int64) (*Assignment, error) { return s.assignments.Get(id) }
 
 type assignmentIn struct {
 	Title             *string          `json:"title"`
@@ -90,19 +32,6 @@ type assignmentIn struct {
 	Notify            bool             `json:"notify"`
 }
 
-func cleanGoals(g []string) []string {
-	out := []string{}
-	for _, s := range g {
-		if s = strings.TrimSpace(s); s != "" {
-			out = append(out, s)
-		}
-	}
-	if len(out) > maxAssignmentGoals {
-		out = out[:maxAssignmentGoals]
-	}
-	return out
-}
-
 func (s *Server) handleListAssignments(w http.ResponseWriter, r *http.Request) {
 	u := currentUser(r)
 	classID := pathID(r, "id")
@@ -110,19 +39,11 @@ func (s *Server) handleListAssignments(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 403, "forbidden", "not your class")
 		return
 	}
-	rows, err := s.db.Query(assignSelect+` WHERE a.class_id = ? ORDER BY a.created_at DESC`, classID)
+	out, err := s.assignments.ListForClass(classID)
 	if err != nil {
 		writeErr(w, 500, "internal", err.Error())
 		return
 	}
-	defer rows.Close()
-	out := []*Assignment{}
-	for rows.Next() {
-		if a, err := scanAssignment(rows); err == nil {
-			out = append(out, a)
-		}
-	}
-	rows.Close()
 	students := s.classes.CountStudents(classID)
 	for _, a := range out {
 		a.Stats = &AssignStats{
@@ -150,43 +71,27 @@ func (s *Server) handleCreateAssignment(w http.ResponseWriter, r *http.Request) 
 		writeErr(w, 400, "bad_request", "title and a valid appType are required")
 		return
 	}
-	cfg := "{}"
+	n := domain.NewAssignment{
+		ClassID: classID, Title: strings.TrimSpace(*in.Title), AppType: *in.AppType, Config: "{}", Goals: []string{},
+		MinTurns: valueOr(in.MinTurns, 0), MaxTurns: valueOr(in.MaxTurns, 0),
+		AutoEnd: valueOr(in.AutoEnd, true), RequireReflection: valueOr(in.RequireReflection, true),
+		AllowLive: valueOr(in.AllowLive, true), Published: valueOr(in.Published, true),
+		DueAt: in.DueAt, CreatedBy: u.ID,
+	}
 	if in.Config != nil && len(*in.Config) > 0 {
-		cfg = string(*in.Config)
+		n.Config = string(*in.Config)
 	}
-	goals := []string{}
 	if in.Goals != nil {
-		goals = cleanGoals(*in.Goals)
+		n.Goals = domain.CleanGoals(*in.Goals)
 	}
-	get := func(p *int, d int) int {
-		if p == nil {
-			return d
-		}
-		return *p
-	}
-	getb := func(p *bool, d bool) int {
-		if p == nil {
-			return boolInt(d)
-		}
-		return boolInt(*p)
-	}
-	instr := ""
 	if in.Instructions != nil {
-		instr = strings.TrimSpace(*in.Instructions)
+		n.Instructions = strings.TrimSpace(*in.Instructions)
 	}
-	var due any
-	if in.DueAt != nil && *in.DueAt != "" {
-		due = *in.DueAt
-	}
-	res, err := s.db.Exec(`INSERT INTO assignments(class_id, title, instructions, app_type, config_json, goals_json, min_turns, max_turns, auto_end, require_reflection, allow_live, published, due_at, created_by, created_at, updated_at)
-		VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
-		classID, strings.TrimSpace(*in.Title), instr, *in.AppType, cfg, mustJSON(goals), get(in.MinTurns, 0), get(in.MaxTurns, 0),
-		getb(in.AutoEnd, true), getb(in.RequireReflection, true), getb(in.AllowLive, true), getb(in.Published, true), due, u.ID, now(), now())
+	id, err := s.assignments.Create(n)
 	if err != nil {
 		writeErr(w, 500, "internal", err.Error())
 		return
 	}
-	id, _ := res.LastInsertId()
 	a, _ := s.getAssignment(id)
 	if in.Notify && a.Published {
 		s.notifyAssignment(r, a)
@@ -235,51 +140,26 @@ func (s *Server) handleUpdateAssignment(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 	wasPublished := a.Published
-	b := sqlBatch{db: s.db}
-	set := func(col string, v any) {
-		b.exec(`UPDATE assignments SET `+col+` = ?, updated_at = ? WHERE id = ?`, v, now(), a.ID)
+	p := domain.AssignmentPatch{
+		MinTurns: in.MinTurns, MaxTurns: in.MaxTurns, AutoEnd: in.AutoEnd, RequireReflection: in.RequireReflection,
+		AllowLive: in.AllowLive, Published: in.Published, DueAt: in.DueAt,
 	}
 	if in.Title != nil && strings.TrimSpace(*in.Title) != "" {
-		set("title", strings.TrimSpace(*in.Title))
+		p.Title = ptr(strings.TrimSpace(*in.Title))
 	}
 	if in.Instructions != nil {
-		set("instructions", strings.TrimSpace(*in.Instructions))
+		p.Instructions = ptr(strings.TrimSpace(*in.Instructions))
 	}
 	if in.AppType != nil && appTypes[*in.AppType] {
-		set("app_type", *in.AppType)
+		p.AppType = in.AppType
 	}
 	if in.Config != nil {
-		set("config_json", string(*in.Config))
+		p.Config = ptr(string(*in.Config))
 	}
 	if in.Goals != nil {
-		set("goals_json", mustJSON(cleanGoals(*in.Goals)))
+		p.Goals = ptr(domain.CleanGoals(*in.Goals))
 	}
-	if in.MinTurns != nil {
-		set("min_turns", *in.MinTurns)
-	}
-	if in.MaxTurns != nil {
-		set("max_turns", *in.MaxTurns)
-	}
-	if in.AutoEnd != nil {
-		set("auto_end", boolInt(*in.AutoEnd))
-	}
-	if in.RequireReflection != nil {
-		set("require_reflection", boolInt(*in.RequireReflection))
-	}
-	if in.AllowLive != nil {
-		set("allow_live", boolInt(*in.AllowLive))
-	}
-	if in.Published != nil {
-		set("published", boolInt(*in.Published))
-	}
-	if in.DueAt != nil {
-		if *in.DueAt == "" {
-			set("due_at", nil)
-		} else {
-			set("due_at", *in.DueAt)
-		}
-	}
-	if err := b.err; err != nil {
+	if err := s.assignments.Update(a.ID, p); err != nil {
 		writeErr(w, 500, "internal", err.Error())
 		return
 	}
@@ -301,7 +181,7 @@ func (s *Server) handleDeleteAssignment(w http.ResponseWriter, r *http.Request) 
 		writeErr(w, 403, "forbidden", "not your class")
 		return
 	}
-	if _, err := s.db.Exec(`DELETE FROM assignments WHERE id = ?`, a.ID); err != nil {
+	if err := s.assignments.Delete(a.ID); err != nil {
 		writeErr(w, 500, "internal", err.Error())
 		return
 	}
@@ -326,20 +206,11 @@ func (s *Server) handleGetAssignment(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) handleMyAssignments(w http.ResponseWriter, r *http.Request) {
 	u := currentUser(r)
-	rows, err := s.db.Query(assignSelect+` WHERE a.published = 1 AND c.archived = 0 AND a.class_id IN (SELECT class_id FROM class_members WHERE user_id = ? AND role = 'student')
-		ORDER BY CASE WHEN a.due_at IS NULL THEN 1 ELSE 0 END, a.due_at, a.created_at DESC`, u.ID)
+	out, err := s.assignments.ListForStudent(u.ID)
 	if err != nil {
 		writeErr(w, 500, "internal", err.Error())
 		return
 	}
-	defer rows.Close()
-	out := []*Assignment{}
-	for rows.Next() {
-		if a, err := scanAssignment(rows); err == nil {
-			out = append(out, a)
-		}
-	}
-	rows.Close()
 	for _, a := range out {
 		a.MySession = s.latestSession(u.ID, a.ID)
 	}
@@ -426,34 +297,6 @@ func (s *Server) handleClassProgress(w http.ResponseWriter, r *http.Request) {
 }
 
 // ---------- sessions ----------
-
-type SessionSummary struct {
-	ID                int64   `json:"id"`
-	UserID            *int64  `json:"userId,omitempty"`
-	UserName          string  `json:"userName,omitempty"`
-	AssignmentID      *int64  `json:"assignmentId,omitempty"`
-	AssignmentTitle   string  `json:"assignmentTitle,omitempty"`
-	AppType           string  `json:"appType"`
-	Title             string  `json:"title"`
-	Status            string  `json:"status"`
-	Turns             int     `json:"turns"`
-	Progress          int     `json:"progress"`
-	ScoreConversation *int    `json:"scoreConversation,omitempty"`
-	ScoreReflection   *int    `json:"scoreReflection,omitempty"`
-	CostUSD           float64 `json:"costUsd"`
-	StartedAt         string  `json:"startedAt"`
-	UpdatedAt         string  `json:"updatedAt"`
-	CompletedAt       *string `json:"completedAt,omitempty"`
-}
-
-type SessionDetail struct {
-	SessionSummary
-	Context    json.RawMessage `json:"context"`
-	Transcript json.RawMessage `json:"transcript"`
-	Jev        json.RawMessage `json:"jev"`
-	Reflection string          `json:"reflection"`
-	Evaluation string          `json:"evaluation"`
-}
 
 const sessionSummaryCols = `s.id, s.user_id, COALESCE(u.name,''), s.assignment_id, COALESCE(a.title,''), s.app_type, s.title, s.status, s.turns, s.progress,
 	s.score_conversation, s.score_reflection, s.cost_usd, s.started_at, s.updated_at, s.completed_at`

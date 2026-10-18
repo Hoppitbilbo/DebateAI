@@ -28,7 +28,7 @@ func (s *Server) handleAdminOverview(w http.ResponseWriter, r *http.Request) {
 			Student: s.users.Count(domain.RoleStudent),
 		},
 		Classes:         s.classes.CountActive(),
-		Assignments:     countRows(s.db, `SELECT COUNT(*) FROM assignments`),
+		Assignments:     s.assignments.Count(),
 		Sessions:        countRows(s.db, `SELECT COUNT(*) FROM activity_sessions WHERE turns > 0`),
 		PendingInvites:  s.invites.CountPending(),
 		Providers:       countRows(s.db, `SELECT COUNT(*) FROM providers WHERE enabled = 1`),

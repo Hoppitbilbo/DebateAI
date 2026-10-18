@@ -8,10 +8,14 @@ import "github.com/Hoppitbilbo/DebateAI/server/internal/domain"
 
 // Transitional aliases while handlers move to the domain types.
 type (
-	User      = domain.User
-	inviteRow = domain.Invite
-	Class     = domain.Class
-	Member    = domain.Member
+	User           = domain.User
+	inviteRow      = domain.Invite
+	Class          = domain.Class
+	Member         = domain.Member
+	Assignment     = domain.Assignment
+	AssignStats    = domain.AssignStats
+	SessionSummary = domain.SessionSummary
+	SessionDetail  = domain.SessionDetail
 )
 
 // settingsStore persists the settings documents.
@@ -77,4 +81,14 @@ type classStore interface {
 	IsOwner(classID, userID int64) bool
 	Teaches(classID, userID int64) bool
 	TeachesStudent(teacherID, studentID int64) bool
+}
+
+type assignmentStore interface {
+	Get(id int64) (*domain.Assignment, error)
+	ListForClass(classID int64) ([]*domain.Assignment, error)
+	ListForStudent(userID int64) ([]*domain.Assignment, error)
+	Create(n domain.NewAssignment) (int64, error)
+	Update(id int64, p domain.AssignmentPatch) error
+	Delete(id int64) error
+	Count() int
 }

@@ -87,6 +87,14 @@ func logIfErr(what string, err error) {
 
 func ptr[T any](v T) *T { return &v }
 
+// valueOr returns *p, or def when p is nil.
+func valueOr[T any](p *T, def T) T {
+	if p == nil {
+		return def
+	}
+	return *p
+}
+
 // execOrLog runs a statement whose failure must not fail the request
 // (housekeeping, counters, best-effort caches); the error is logged.
 func execOrLog(db *sql.DB, what, query string, args ...any) {
