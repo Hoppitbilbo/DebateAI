@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { CalendarClock, Play, RotateCcw, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
-import { api, ApiError, Assignment, ClassInfo, SessionSummary } from "@/lib/api";
+import { ApiError, Assignment } from "@/lib/api";
+import { useJoinClass, useMyAssignments, useMyClasses, useMySessions } from "@/features/student/studentApi";
 import { useAuth } from "@/context/AuthContext";
 import { APPS } from "@/features/activity/types";
 import { AppName, DashboardLayout, EmptyState, formatDate, Panel, Spinner, StatusBadge } from "./common";
@@ -15,20 +15,19 @@ import { AppName, DashboardLayout, EmptyState, formatDate, Panel, Spinner, Statu
 const StudentDashboard = () => {
   const { t, i18n } = useTranslation();
   const { user, config } = useAuth();
-  const qc = useQueryClient();
   const [params] = useSearchParams();
   const [code, setCode] = useState((params.get("join") || "").toUpperCase());
 
-  const assignments = useQuery({ queryKey: ["my-assignments"], queryFn: () => api.get<Assignment[]>("/api/me/assignments") });
-  const classes = useQuery({ queryKey: ["my-classes"], queryFn: () => api.get<ClassInfo[]>("/api/me/classes") });
-  const sessions = useQuery({ queryKey: ["my-sessions"], queryFn: () => api.get<SessionSummary[]>("/api/me/sessions") });
+  const assignments = useMyAssignments();
+  const classes = useMyClasses();
+  const sessions = useMySessions();
+  const joinClass = useJoinClass();
 
   const join = async () => {
     try {
-      const res = await api.post<{ name: string }>("/api/classes/join", { code });
+      const res = await joinClass(code);
       toast.success(t("platform.student.joined", { name: res.name }));
       setCode("");
-      void qc.invalidateQueries();
     } catch (e) {
       toast.error(e instanceof ApiError && e.code === "invalid_code" ? t("platform.student.invalidCode") : String((e as Error).message));
     }

@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Copy, RefreshCw, UserMinus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { ClassDetail } from "@/features/teacher/teacherApi";
+import { ClassDetail, inviteToClass } from "@/features/teacher/teacherApi";
 import { EmptyState, formatDate, Panel } from "../common";
 import ConfirmButton from "../ConfirmButton";
 import InviteForm, { copy } from "../InviteForm";
@@ -60,7 +60,7 @@ const ClassMembers = ({ detail, onRemoveMember, onRegenerateCode, onInvited }: C
       </Panel>
       <div className="space-y-6">
         <Panel title={t("platform.teacher.inviteStudents")}>
-          <InviteForm endpoint={`/api/classes/${classId}/invite`} roles={["student", "teacher"]} onDone={onInvited} />
+          <InviteForm invite={inviteToClass(classId)} roles={["student", "teacher"]} onDone={onInvited} />
         </Panel>
         <Panel title={t("platform.teacher.joinCode")}>
           <p className="mb-3 text-sm text-muted-foreground">{t("platform.teacher.joinCodeHint")}</p>

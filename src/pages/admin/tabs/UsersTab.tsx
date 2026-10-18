@@ -14,6 +14,7 @@ import { NewUser, useInviteActions, useUserActions, useUsers } from "@/features/
 import { EmptyState, formatDate, Panel, Spinner, usd } from "../../dashboard/common";
 import ConfirmButton from "../../dashboard/ConfirmButton";
 import InviteForm from "../../dashboard/InviteForm";
+import { inviteToPlatform } from "@/features/teacher/teacherApi";
 import { LOCALES } from "../../auth/AuthPages";
 
 const CreateUserDialog = ({ open, onOpenChange, onDone }: { open: boolean; onOpenChange: (o: boolean) => void; onDone: () => void }) => {
@@ -131,7 +132,7 @@ const UsersTab = () => {
         )}
       </Panel>
       <Panel title={t("platform.admin.users.invite")}>
-        <InviteForm endpoint="/api/admin/invites" roles={["teacher", "student", "admin"]} onDone={refreshInvites} />
+        <InviteForm invite={inviteToPlatform} roles={["teacher", "student", "admin"]} onDone={refreshInvites} />
       </Panel>
       <CreateUserDialog open={creating} onOpenChange={setCreating} onDone={refresh} />
     </div>

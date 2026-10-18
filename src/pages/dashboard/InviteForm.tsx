@@ -6,15 +6,15 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { api, InviteResult, Role } from "@/lib/api";
+import type { InviteResult, Role } from "@/lib/api";
+import type { InviteSender } from "@/features/teacher/teacherApi";
 import { useAuth } from "@/context/AuthContext";
 import { LOCALES } from "../auth/AuthPages";
 
 interface Props {
-  /** POST endpoint: class invite or admin invite. */
-  endpoint: string;
+  /** Who receives the invitations: a class (inviteToClass) or the platform (inviteToPlatform). */
+  invite: InviteSender;
   roles: Role[];
-  extraBody?: Record<string, unknown>;
   onDone?: () => void;
 }
 
@@ -28,7 +28,7 @@ export const copy = async (text: string, okMsg: string) => {
 };
 
 /** Bulk invite by e-mail. Shows registration links when SMTP is not configured. */
-const InviteForm = ({ endpoint, roles, extraBody, onDone }: Props) => {
+const InviteForm = ({ invite, roles, onDone }: Props) => {
   const { t, i18n } = useTranslation();
   const { config } = useAuth();
   const [emails, setEmails] = useState("");
@@ -40,9 +40,9 @@ const InviteForm = ({ endpoint, roles, extraBody, onDone }: Props) => {
   const submit = async () => {
     setBusy(true);
     try {
-      const res = await api.post<{ results: InviteResult[] }>(endpoint, { emails: [emails], role, locale, ...extraBody });
-      setResults(res.results);
-      const ok = res.results.filter((r) => r.status !== "error").length;
+      const res = await invite({ emails: [emails], role, locale });
+      setResults(res);
+      const ok = res.filter((r) => r.status !== "error").length;
       toast.success(t("platform.invite.done", { count: ok }));
       setEmails("");
       onDone?.();

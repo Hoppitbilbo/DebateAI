@@ -9,8 +9,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { api, AppType, Assignment, AssignmentConfig, WikiRef } from "@/lib/api";
-import { generateJSON, formatAiError } from "@/services/aiService";
+import type { AppType, Assignment, AssignmentConfig, WikiRef } from "@/lib/api";
+import { saveAssignment } from "@/features/teacher/teacherApi";
+import { useAiClient } from "@/services/aiClient";
 import { CharacterPicker } from "@/features/activity/components/SetupCard";
 import { uiLanguage } from "@/features/activity/prompts";
 import { APP_TYPES, AppName } from "./common";
@@ -42,6 +43,7 @@ const ToggleRow = ({ label, hint, checked, onChange }: { label: string; hint?: s
 
 /** Create / edit an assignment: app, presets, teacher instructions and JEV goals. */
 const AssignmentForm = ({ classId, open, onOpenChange, initial, onSaved }: Props) => {
+  const ai = useAiClient();
   const { t } = useTranslation();
   const [title, setTitle] = useState("");
   const [appType, setAppType] = useState<AppType>("wiki-chatbot");
@@ -89,14 +91,14 @@ const AssignmentForm = ({ classId, open, onOpenChange, initial, onSaved }: Props
     if (!instructions.trim()) return toast.error(t("platform.teacher.form.writeInstructionsFirst"));
     setSuggesting(true);
     try {
-      const res = await generateJSON<{ goals: string[] }>({
+      const res = await ai.generateJSON<{ goals: string[] }>({
         task: "utility",
         system: `You help teachers. From the assignment, write 2-5 short, observable goals that a judge can verify in a student's conversation with AI characters (e.g. "Asks why X happened", "Gives at least two arguments about Y"). Write them in ${uiLanguage()}. Answer with JSON: {"goals": ["..."]}`,
         messages: [{ role: "user", content: `App: ${t(`platform.appNames.${appType}`)}\nTitle: ${title}\nInstructions: ${instructions}` }],
       });
       if (res.goals?.length) setGoals(res.goals.slice(0, 8));
     } catch (e) {
-      toast.error(formatAiError(e));
+      toast.error(ai.formatError(e));
     } finally {
       setSuggesting(false);
     }
@@ -122,9 +124,7 @@ const AssignmentForm = ({ classId, open, onOpenChange, initial, onSaved }: Props
       dueAt: dueAt ? new Date(dueAt).toISOString() : "",
     };
     try {
-      const a = initial
-        ? await api.patch<Assignment>(`/api/assignments/${initial.id}`, body)
-        : await api.post<Assignment>(`/api/classes/${classId}/assignments`, body);
+      const a = await saveAssignment(classId, initial, body);
       toast.success(t("platform.common.saved"));
       onSaved(a);
       onOpenChange(false);

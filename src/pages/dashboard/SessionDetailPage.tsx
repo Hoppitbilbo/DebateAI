@@ -1,10 +1,9 @@
 import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useQuery } from "@tanstack/react-query";
 import { CheckCircle2, Circle } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import MarkdownViewer from "@/components/shared/MarkdownViewer";
-import { api, SessionDetail } from "@/lib/api";
+import { useSession } from "@/features/student/studentApi";
 import { useAuth } from "@/context/AuthContext";
 import { AppName, DashboardLayout, EmptyState, formatDate, Panel, Spinner, StatTile, StatusBadge, usd } from "./common";
 
@@ -13,7 +12,7 @@ const SessionDetailPage = () => {
   const { id } = useParams();
   const { t, i18n } = useTranslation();
   const { user } = useAuth();
-  const q = useQuery({ queryKey: ["session", id], queryFn: () => api.get<SessionDetail>(`/api/sessions/${id}`) });
+  const q = useSession(id);
 
   if (q.isLoading) return <DashboardLayout title="…"><Spinner /></DashboardLayout>;
   if (q.error || !q.data) return <DashboardLayout title={t("platform.errors.notFound")}><EmptyState>{t("platform.errors.notFound")}</EmptyState></DashboardLayout>;

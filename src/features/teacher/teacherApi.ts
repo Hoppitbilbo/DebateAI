@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { api, Assignment, ClassInfo, Invite, Member, SessionSummary } from "@/lib/api";
+import { api, Assignment, ClassInfo, Invite, InviteResult, Member, Role, SessionSummary } from "@/lib/api";
 
 // Data layer of the teacher pages: classes, their members and assignments,
 // and the students' progress.
@@ -58,3 +58,22 @@ export const useAssignmentProgress = (id: string | undefined) =>
     queryFn: () => api.get<{ assignment: Assignment; students: ProgressRow[] }>(`/api/assignments/${id}/progress`),
     refetchInterval: 20000,
   });
+
+/** Creates an assignment in a class, or updates `existing`. */
+export const saveAssignment = (classId: number, existing: Assignment | null, form: Record<string, unknown>) =>
+  existing ? api.patch<Assignment>(`/api/assignments/${existing.id}`, form) : api.post<Assignment>(`/api/classes/${classId}/assignments`, form);
+
+/** A bulk invitation: e-mails separated by commas, spaces or new lines. */
+export interface InviteRequest { emails: string[]; role: Role; locale: string }
+
+/** Sends invitations and returns one result per address. */
+export type InviteSender = (req: InviteRequest) => Promise<InviteResult[]>;
+
+const sendInvites = (endpoint: string): InviteSender => async (req) =>
+  (await api.post<{ results: InviteResult[] }>(endpoint, req)).results;
+
+/** Invites into a class (existing accounts are added at once). */
+export const inviteToClass = (classId: number) => sendInvites(`/api/classes/${classId}/invite`);
+
+/** Invites new accounts to the platform (admin). */
+export const inviteToPlatform: InviteSender = sendInvites("/api/admin/invites");
