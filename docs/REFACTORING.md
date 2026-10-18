@@ -37,9 +37,9 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto · `[-]` scartato (spieg
 
 ## Stato attuale
 
-- **Fase in corso:** 4 (service, State, Observer, backend)
-- **Prossimo task:** 4.4d
-- **Lavoro a metà:** 4.4 (resta 4.4d)
+- **Fase in corso:** 5 (attività, frontend)
+- **Prossimo task:** 5.1
+- **Lavoro a metà:** nessuno
 - **Test:** Go 33 test nuovi + quelli esistenti verdi; Vitest 18 test verdi; lint 0 errori (18 warning preesistenti)
 
 ---
@@ -101,15 +101,19 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto · `[-]` scartato (spieg
 
 ### Backend
 
+Struttura reale a fine fase 4 (diversa dal piano iniziale: `service/` e `notify/` sono confluiti in `app/`, che è il livello applicativo).
+
 ```
-server/internal/
-  ai/          provider, decorator, registry, routing
-  domain/      User, Class, Assignment, Session (+ macchina a stati), errori di dominio
-  store/       repository SQLite (unico posto con SQL)
-  service/     auth, classes, assignments, sessions, judge, gateway
-  httpapi/     handler sottili, middleware, DTO
-  notify/      mail e observer degli eventi
-main.go        composition root (costruisce e inietta le dipendenze)
+server/
+  main.go          composition root: config → store.Open → app.NewServices → Bootstrap → httpapi.NewServer
+  internal/
+    ai/            adapter dei provider (Gemini, OpenAI-compatibili, Anthropic, Jev), decorator, registry
+    domain/        entità (User, Class, Assignment, Session, Invite, Provider, ...), State della sessione
+    store/         repository SQLite + schema (unico posto con SQL)
+    app/           livello applicativo: Services, authService, classService, assignmentService,
+                   sessionService, settingsService, aiGateway (routing, fallback, metering, judge),
+                   smtpMailer, mailNotifier (Observer); interfacce dei repository in repositories.go
+    httpapi/       Server (router, middleware, rate limit), handler, DTO; parla solo con app.Services
 ```
 
 | Pattern | Applicazione |
@@ -181,11 +185,11 @@ Un'area per task, spostando l'SQL in `internal/store`:
   - [x] **4.2b** (`a07cc6a`) `classService`
   - [x] **4.2c** (`a11df2e`) `assignmentService` (+ `sessionService.Start/Load/Complete`)
 - [x] **4.3** (`ec6a61d`) Observer per le notifiche mail.
-- [~] **4.4** `main.go` come composition root; `Server` ridotto a router e middleware; handler spostati in `httpapi/`.
+- [x] **4.4** `main.go` come composition root; `Server` ridotto a router e middleware; handler spostati in `httpapi/`.
   - [x] **4.4a** (`795d8e0`) `settingsService`
   - [x] **4.4b** (`58d1b40`) `aiGateway` (provider, prezzi, budget, routing, generate, judge fuori da `Server`)
   - [x] **4.4c** (`c924d7c`) composition root: `app.NewServices` costruito da `main.go`
-  - [ ] **4.4d** handler HTTP nel pacchetto `httpapi`
+  - [x] **4.4d** (`d9ca955`, `b00ca5a`) handler HTTP nel pacchetto `httpapi`
 
 ### Fase 5: attività (frontend)
 
@@ -250,3 +254,4 @@ Un'area per task, spostando l'SQL in `internal/store`:
 | 2026-10-18 | 4.4a | `795d8e0` | Claude Code | `settingsService` in `settings.go`: `General`, `Budget`, `Routing`, `Jev`, `SMTP`, `MailConfigured`, `Save*` con le regole di normalizzazione (prima nell'handler). Costanti delle chiavi (`settingGeneral`, ...). Campo `Server.settingsSvc`; rimossi i metodi `Server.general/budget/routing/jevSettings/smtp`. |
 | 2026-10-18 | 4.4b | `58d1b40` | Claude Code | `aiGateway` (in `gateway.go`, costruttore `newAIGateway`) con 16 metodi spostati da `Server`: cache dei provider, `priceFor`, `monthSpend`, `budgetExceeded`, `logUsage`, `recordUsage`, `meterText`, `meterDecider`, `runFallbackChain`, `targets`, `generate`, `judge`, `autoRoute`, `storeModels`, `insertProvider`, `invalidateProvider`. `aiGateway` implementa `priceBook` e `goalEvaluator`. I test usano `s.gateway.*`. Race detector verde. |
 | 2026-10-18 | 4.4c | `c924d7c` | Claude Code | `server/internal/app/services.go`: struct `Services` (repository e service con campi esportati) e `NewServices(cfg, db)`; `Bootstrap(cfg)` spostato lì e chiamato da `main.go`. `Server` = `cfg` + `*Services` incorporato + `static` + `limiter`. `smtpMailer` in `mail.go` sostituisce `Server` come mailer. Campi rinominati (`s.users` → `s.Users`, `s.settingsSvc` → `s.Settings`, `s.gateway` → `s.Gateway`, ...). Avviato il binario vero: health e public config ok, admin creato dal bootstrap. |
+| 2026-10-18 | 4.4d | `d9ca955`, `b00ca5a` | Claude Code | (1/2) `gateway_admin.go`: `AddProvider`, `UpdateProvider`, `DeleteProvider`, `RefreshModels`, `TestProvider`, `LiveToken`, `RecordLiveUsage`, `ProviderView`; il bootstrap usa `AddProvider`. (2/2) Nuovo pacchetto `server/internal/httpapi` (server, middleware, handler, DTO, limiti HTTP); `app` esporta service, errori (`ErrX`) e input. Opzione `app.WithProviderFactory` (DI della factory dei provider) usata dai test HTTP per i modelli finti. Rimossi gli alias temporanei: si usano i tipi di `domain`. Test spostati senza perderne nessuno (55 prima, 55 dopo); `TestResponseShapes` e il suo golden ora in `httpapi`. `httpapi` non importa `store` né `database/sql`. Verificato con il binario vero (login, overview admin). **Fase 4 completata: il backend è finito.** |
