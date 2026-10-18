@@ -336,3 +336,16 @@ html, body {
     transform: translateY(-4px);
   }
 }
+
+/* Printing a session (Print / PDF): dark theme off, readable black on white. */
+@media print {
+  body,
+  .bg-background,
+  .bg-card {
+    background: #fff !important;
+  }
+  * {
+    color: #000 !important;
+    box-shadow: none !important;
+  }
+}

@@ -316,7 +316,16 @@
     "emptyTranscript": "Aucun message.",
     "noReflection": "Aucune réflexion.",
     "noEvaluation": "Aucune évaluation.",
-    "scoreHint": "conversation / réflexion"
+    "scoreHint": "conversation / réflexion",
+    "print": "Imprimer / PDF",
+    "teacherFeedback": "Retour de l'enseignant",
+    "feedbackPlaceholder": "Écris ce que l'élève a bien fait et ce qu'il peut améliorer…",
+    "teacherScore": "Note de l'enseignant",
+    "noScore": "Pas de note",
+    "saveFeedback": "Envoyer le retour",
+    "feedbackSaved": "Retour envoyé à l'élève",
+    "feedbackHint": "L'élève le verra sur cette page et recevra un e-mail.",
+    "givenOn": "Écrit le {{date}}"
   },
   "teacher": {
     "title": "Mes classes",
@@ -395,7 +404,9 @@
       "publishedHint": "Visible par les élèves de la classe.",
       "notify": "Prévenir les élèves par e-mail",
       "notifyHint": "Envoie un e-mail à chaque élève de la classe."
-    }
+    },
+    "exportExcel": "Exporter les notes (Excel)",
+    "teacherScore": "Note enseignant"
   },
   "invite": {
     "emails": "Adresses e-mail",

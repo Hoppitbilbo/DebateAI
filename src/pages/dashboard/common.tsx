@@ -22,7 +22,9 @@ export const AppName = ({ type }: { type: AppType }) => {
 
 export const DashboardLayout = ({ title, subtitle, actions, children }: { title: string; subtitle?: string; actions?: React.ReactNode; children: React.ReactNode }) => (
   <div className="flex min-h-screen flex-col bg-background text-foreground">
-    <Navbar />
+    <div className="print:hidden">
+      <Navbar />
+    </div>
     <main className="flex-1">
       <div className="mx-auto w-full max-w-7xl space-y-6 px-4 py-8 sm:px-6">
         <header className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">

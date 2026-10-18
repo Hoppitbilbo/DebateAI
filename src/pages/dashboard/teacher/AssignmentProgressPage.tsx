@@ -2,7 +2,8 @@ import { Link, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { useAssignmentProgress } from "@/features/teacher/teacherApi";
+import { FileSpreadsheet } from "lucide-react";
+import { gradesUrl, useAssignmentProgress } from "@/features/teacher/teacherApi";
 import { DashboardLayout, EmptyState, Panel, Spinner, StatusBadge } from "../common";
 import { formatDate, usd } from "@/lib/format";
 
@@ -25,7 +26,14 @@ const AssignmentProgressPage = () => {
     <DashboardLayout
       title={a.title}
       subtitle={`${a.className} · ${t(`platform.appNames.${a.appType}`)}`}
-      actions={<Button variant="outline" asChild><Link to={`/teacher/classes/${a.classId}`}>{t("platform.teacher.backToClass")}</Link></Button>}
+      actions={
+        <>
+          <Button variant="outline" asChild>
+            <a href={gradesUrl.ofAssignment(a.id)} download><FileSpreadsheet className="mr-2 h-4 w-4" />{t("platform.teacher.exportExcel")}</a>
+          </Button>
+          <Button variant="outline" asChild><Link to={`/teacher/classes/${a.classId}`}>{t("platform.teacher.backToClass")}</Link></Button>
+        </>
+      }
     >
       <div className="grid gap-4 sm:grid-cols-4">
         <div className="rounded-lg border border-border bg-card p-4"><p className="text-xs uppercase text-muted-foreground">{t("platform.teacher.completed")}</p><p className="font-heading text-2xl font-bold">{completed}/{students.length}</p></div>
@@ -52,6 +60,7 @@ const AssignmentProgressPage = () => {
                   <th className="py-2 pr-3 w-40">{t("platform.assignment.progress")}</th>
                   <th className="py-2 pr-3">{t("platform.common.turns")}</th>
                   <th className="py-2 pr-3">{t("platform.common.score")}</th>
+                  <th className="py-2 pr-3">{t("platform.teacher.teacherScore")}</th>
                   <th className="py-2 pr-3">{t("platform.teacher.attempts")}</th>
                   <th className="py-2 pr-3">{t("platform.common.updated")}</th>
                   <th />
@@ -65,6 +74,7 @@ const AssignmentProgressPage = () => {
                     <td className="py-2 pr-3"><Progress value={s.session?.progress ?? 0} /></td>
                     <td className="py-2 pr-3">{s.session?.turns ?? "–"}</td>
                     <td className="py-2 pr-3">{s.session?.scoreConversation ?? "–"} / {s.session?.scoreReflection ?? "–"}</td>
+                    <td className="py-2 pr-3 font-semibold">{s.session?.teacherScore ?? "–"}</td>
                     <td className="py-2 pr-3">{s.attemptCount}</td>
                     <td className="py-2 pr-3 whitespace-nowrap text-muted-foreground">{formatDate(s.session?.updatedAt, i18n.language)}</td>
                     <td className="py-2 text-right">{s.session && <Link to={`/sessions/${s.session.id}`} className="text-primary hover:underline">{t("platform.common.open")}</Link>}</td>

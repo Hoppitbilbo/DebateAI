@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { api, Assignment, ClassInfo, Invite, InviteResult, Member, Role, SessionSummary } from "@/lib/api";
+import { api, Assignment, ClassInfo, Invite, InviteResult, Member, Role, SessionDetail, SessionSummary } from "@/lib/api";
 
 // Data layer of the teacher pages: classes, their members and assignments,
 // and the students' progress.
@@ -7,7 +7,7 @@ import { api, Assignment, ClassInfo, Invite, InviteResult, Member, Role, Session
 export interface ClassDetail { class: ClassInfo; members: Member[]; invites: Invite[] }
 
 /** The best attempt of a student on an assignment. */
-export interface ProgressCell { assignmentId: number; userId: number; status: SessionSummary["status"]; progress: number; sessionId: number; score?: number; costUsd: number }
+export interface ProgressCell { assignmentId: number; userId: number; status: SessionSummary["status"]; progress: number; sessionId: number; score?: number; teacherScore?: number; costUsd: number }
 
 export interface ProgressRow { userId: number; name: string; email: string; session?: SessionSummary; attemptCount: number }
 
@@ -77,3 +77,19 @@ export const inviteToClass = (classId: number) => sendInvites(`/api/classes/${cl
 
 /** Invites new accounts to the platform (admin). */
 export const inviteToPlatform: InviteSender = sendInvites("/api/admin/invites");
+
+/** Writes (or replaces) the teacher's feedback on an attempt; the student gets an e-mail. */
+export const useGiveFeedback = (sessionId: number) => {
+  const qc = useQueryClient();
+  return async (feedback: string, score: number | null) => {
+    const d = await api.put<SessionDetail>(`/api/sessions/${sessionId}/feedback`, { feedback, score });
+    qc.setQueryData(["session", String(sessionId)], d);
+    return d;
+  };
+};
+
+/** Download links of the grade workbooks. */
+export const gradesUrl = {
+  ofClass: (classId: number) => `/api/classes/${classId}/grades.xlsx`,
+  ofAssignment: (assignmentId: number) => `/api/assignments/${assignmentId}/grades.xlsx`,
+};

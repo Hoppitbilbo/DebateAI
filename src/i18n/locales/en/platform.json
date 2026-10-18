@@ -316,7 +316,16 @@
     "emptyTranscript": "No messages.",
     "noReflection": "No reflection.",
     "noEvaluation": "No evaluation.",
-    "scoreHint": "conversation / reflection"
+    "scoreHint": "conversation / reflection",
+    "print": "Print / PDF",
+    "teacherFeedback": "Teacher feedback",
+    "feedbackPlaceholder": "Write what the student did well and what they can improve…",
+    "teacherScore": "Teacher score",
+    "noScore": "No score",
+    "saveFeedback": "Send feedback",
+    "feedbackSaved": "Feedback sent to the student",
+    "feedbackHint": "The student will see it on this page and get an e-mail.",
+    "givenOn": "Written on {{date}}"
   },
   "teacher": {
     "title": "My classes",
@@ -395,7 +404,9 @@
       "publishedHint": "Visible to the students of the class.",
       "notify": "Notify students by email",
       "notifyHint": "Sends an email to every student in the class."
-    }
+    },
+    "exportExcel": "Export grades (Excel)",
+    "teacherScore": "Teacher score"
   },
   "invite": {
     "emails": "Email addresses",

@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Plus } from "lucide-react";
+import { FileSpreadsheet, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Assignment } from "@/lib/api";
-import { useClass } from "@/features/teacher/teacherApi";
+import { gradesUrl, useClass } from "@/features/teacher/teacherApi";
 import { DashboardLayout, EmptyState, Spinner } from "../common";
 import AssignmentForm from "../AssignmentForm";
 import ClassAssignments from "./ClassAssignments";
@@ -38,6 +38,9 @@ const ClassPage = () => {
       actions={
         <>
           <Button variant="outline" asChild><Link to="/teacher">{t("platform.teacher.allClasses")}</Link></Button>
+          <Button variant="outline" asChild>
+            <a href={gradesUrl.ofClass(classId)} download><FileSpreadsheet className="mr-2 h-4 w-4" />{t("platform.teacher.exportExcel")}</a>
+          </Button>
           <Button onClick={() => { setEditing(null); setFormOpen(true); }}><Plus className="mr-2 h-4 w-4" />{t("platform.teacher.newAssignment")}</Button>
         </>
       }

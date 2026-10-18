@@ -105,6 +105,8 @@ export interface SessionSummary {
   progress: number;
   scoreConversation?: number;
   scoreReflection?: number;
+  /** 0-10, given by the teacher. */
+  teacherScore?: number;
   costUsd: number;
   startedAt: string;
   updatedAt: string;
@@ -141,6 +143,8 @@ export interface SessionDetail extends SessionSummary {
   jev: Partial<JudgeResult>;
   reflection: string;
   evaluation: string;
+  teacherFeedback: string;
+  teacherFeedbackAt?: string;
 }
 
 export interface Assignment {

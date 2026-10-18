@@ -316,7 +316,16 @@
     "emptyTranscript": "Sin mensajes.",
     "noReflection": "Sin reflexión.",
     "noEvaluation": "Sin evaluación.",
-    "scoreHint": "conversación / reflexión"
+    "scoreHint": "conversación / reflexión",
+    "print": "Imprimir / PDF",
+    "teacherFeedback": "Comentario del docente",
+    "feedbackPlaceholder": "Escribe qué hizo bien el estudiante y qué puede mejorar…",
+    "teacherScore": "Nota del docente",
+    "noScore": "Sin nota",
+    "saveFeedback": "Enviar comentario",
+    "feedbackSaved": "Comentario enviado al estudiante",
+    "feedbackHint": "El estudiante lo verá en esta página y recibirá un correo.",
+    "givenOn": "Escrito el {{date}}"
   },
   "teacher": {
     "title": "Mis clases",
@@ -395,7 +404,9 @@
       "publishedHint": "Visible para los estudiantes de la clase.",
       "notify": "Avisar a los estudiantes por correo",
       "notifyHint": "Envía un correo a cada estudiante de la clase."
-    }
+    },
+    "exportExcel": "Exportar notas (Excel)",
+    "teacherScore": "Nota docente"
   },
   "invite": {
     "emails": "Direcciones de correo",

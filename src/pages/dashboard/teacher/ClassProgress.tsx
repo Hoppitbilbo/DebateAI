@@ -43,6 +43,7 @@ const ClassProgress = ({ students, assignments, progress }: ClassProgressProps) 
                             c.status === "completed" || c.status === "goal_reached" ? "bg-primary text-primary-foreground" : "bg-sky-500/20 text-sky-200")}
                             title={t(`platform.status.${c.status}`)}>
                             {c.progress}%{c.score !== undefined ? ` · ${c.score}` : ""}
+                            {c.teacherScore !== undefined && <span className="ml-1 underline" title={t("platform.teacher.teacherScore")}>{c.teacherScore}</span>}
                           </Link>
                         ) : <span className="block text-center text-muted-foreground">–</span>}
                       </td>

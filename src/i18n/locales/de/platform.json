@@ -316,7 +316,16 @@
     "emptyTranscript": "Keine Nachrichten.",
     "noReflection": "Keine Reflexion.",
     "noEvaluation": "Keine Bewertung.",
-    "scoreHint": "Gespräch / Reflexion"
+    "scoreHint": "Gespräch / Reflexion",
+    "print": "Drucken / PDF",
+    "teacherFeedback": "Feedback der Lehrkraft",
+    "feedbackPlaceholder": "Schreibe, was gut gelungen ist und was sich verbessern lässt…",
+    "teacherScore": "Note der Lehrkraft",
+    "noScore": "Keine Note",
+    "saveFeedback": "Feedback senden",
+    "feedbackSaved": "Feedback an die Schülerin / den Schüler gesendet",
+    "feedbackHint": "Die Lernenden sehen es auf dieser Seite und erhalten eine E-Mail.",
+    "givenOn": "Geschrieben am {{date}}"
   },
   "teacher": {
     "title": "Meine Klassen",
@@ -395,7 +404,9 @@
       "publishedHint": "Für die Schüler/innen der Klasse sichtbar.",
       "notify": "Schüler/innen per E-Mail benachrichtigen",
       "notifyHint": "Sendet allen Schüler/innen der Klasse eine E-Mail."
-    }
+    },
+    "exportExcel": "Noten exportieren (Excel)",
+    "teacherScore": "Note Lehrkraft"
   },
   "invite": {
     "emails": "E-Mail-Adressen",
