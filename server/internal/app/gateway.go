@@ -168,6 +168,17 @@ type GenResult struct {
 // the next target is tried. Free models are often queued for minutes.
 var firstTokenTimeout = 25 * time.Second
 
+// conversationStart opens a history that begins with the character speaking:
+// Anthropic and Gemini require the first message to come from the user.
+const conversationStart = "(The conversation begins.)"
+
+func userFirst(msgs []ai.Message) []ai.Message {
+	if len(msgs) == 0 || msgs[0].Role == "user" {
+		return msgs
+	}
+	return append([]ai.Message{{Role: "user", Content: conversationStart}}, msgs...)
+}
+
 var ErrNoTargets = errors.New("no AI model is configured for this task (ask the administrator to configure providers)")
 
 // generate runs a request through the fallback chain. When onDelta is non-nil
@@ -180,8 +191,11 @@ func (g *aiGateway) Generate(ctx context.Context, task string, req ai.Request, u
 		}
 		return nil, ErrNoTargets
 	}
+	req.Messages = userFirst(req.Messages)
 	var out *GenResult
 	var started atomic.Bool
+	// When every model refuses, the last refusal is still better than an error.
+	var refused *GenResult
 	err := g.runFallbackChain("ai "+task, targets, func(t RouteTarget, cp *cachedProvider) error {
 		tm, ok := cp.p.(ai.TextModel)
 		if !ok {
@@ -192,7 +206,7 @@ func (g *aiGateway) Generate(ctx context.Context, task string, req ai.Request, u
 		if r.ReasoningEffort == "" && (task == TaskChat || task == TaskUtility) {
 			r.ReasoningEffort = "low" // characters must answer quickly
 		}
-		model := g.meterText(ai.WithFirstTokenTimeout(tm, firstTokenTimeout),
+		model := g.meterText(screenAnswers(ai.WithFirstTokenTimeout(tm, firstTokenTimeout), task),
 			usageEntry{UserID: userID, SessionID: sessionID, ProviderID: t.ProviderID, Provider: cp.name, Model: t.Model, Task: task})
 		var res *ai.Response
 		var err error
@@ -204,6 +218,10 @@ func (g *aiGateway) Generate(ctx context.Context, task string, req ai.Request, u
 		} else {
 			res, err = model.Generate(ctx, r)
 		}
+		var refusal refusedAnswer
+		if errors.As(err, &refusal) {
+			refused = &GenResult{Text: refusal.text, ProviderID: t.ProviderID, Provider: cp.name, Model: t.Model}
+		}
 		if err != nil {
 			return err
 		}
@@ -214,6 +232,14 @@ func (g *aiGateway) Generate(ctx context.Context, task string, req ai.Request, u
 		// errors another model may not have (a silent model is one).
 		return started.Load() || !retryable(err) || ctx.Err() != nil
 	})
+	if err != nil && refused != nil && !started.Load() && errors.Is(err, errRefusal) {
+		if onDelta != nil {
+			if sendErr := onDelta(refused.Text); sendErr != nil {
+				return nil, sendErr
+			}
+		}
+		return refused, nil
+	}
 	if err != nil {
 		return nil, err
 	}

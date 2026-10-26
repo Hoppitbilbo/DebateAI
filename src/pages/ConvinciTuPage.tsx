@@ -7,7 +7,7 @@ import ActivityRunner from "@/features/activity/components/ActivityRunner";
 import { CharacterPicker } from "@/features/activity/components/SetupCard";
 import { useActivityFlow } from "@/features/activity/useActivityFlow";
 import { bioOf, useWikiSummaries } from "@/features/activity/wiki";
-import { prompts } from "@/features/activity/prompts";
+import { openings, prompts } from "@/features/activity/prompts";
 import { APPS } from "@/features/activity/types";
 
 const app = APPS["convinci-tu"];
@@ -37,9 +37,13 @@ const ConvinciTuPage = () => {
 
   const start = async () => {
     if (!character || !topic.trim()) return;
-    await flow.begin(`${character.title}: ${topic}`, { character, topic }, [
-      { id: "intro", role: "system", content: t("platform.apps.convinciTu.intro", { name: character.title, topic }) },
-    ]);
+    await flow.begin(`${character.title}: ${topic}`, { character, topic }, []);
+    await engine.open({
+      system,
+      cue: openings.convinciTu(topic),
+      name: character.title,
+      fallback: { role: "system", content: t("platform.apps.convinciTu.intro", { name: character.title, topic }) },
+    });
   };
 
   const restart = () =>

@@ -5,7 +5,7 @@ import ActivityRunner from "@/features/activity/components/ActivityRunner";
 import { CharacterPicker } from "@/features/activity/components/SetupCard";
 import { useActivityFlow } from "@/features/activity/useActivityFlow";
 import { bioOf, useWikiSummaries } from "@/features/activity/wiki";
-import { prompts } from "@/features/activity/prompts";
+import { openings, prompts } from "@/features/activity/prompts";
 import { APPS } from "@/features/activity/types";
 
 const app = APPS["wiki-chatbot"];
@@ -33,9 +33,13 @@ const WikiChatbotPage = () => {
 
   const start = async () => {
     if (!page) return;
-    await flow.begin(page.title, { page }, [
-      { id: "welcome", role: "assistant", name: page.title, content: t("platform.apps.wikiChatbot.welcome", { title: page.title }) },
-    ]);
+    await flow.begin(page.title, { page }, []);
+    await engine.open({
+      system,
+      cue: openings.wikiChat(),
+      name: page.title,
+      fallback: { role: "assistant", content: t("platform.apps.wikiChatbot.welcome", { title: page.title }) },
+    });
   };
 
   const restart = () =>

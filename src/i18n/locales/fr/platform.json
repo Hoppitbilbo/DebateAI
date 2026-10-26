@@ -73,7 +73,8 @@
     "session_ended": "Cette activité est terminée.",
     "live_disabled": "La conversation vocale n'est pas activée pour votre compte.",
     "live_unavailable": "La conversation vocale n'est pas disponible pour le moment.",
-    "server_unreachable": "Le serveur est injoignable."
+    "server_unreachable": "Le serveur est injoignable.",
+    "ai_error": "Le personnage ne peut pas répondre pour le moment. Réessaie dans un instant ; si le problème continue, préviens ton enseignant."
   },
   "auth": {
     "login": "Se connecter",
@@ -145,7 +146,8 @@
     "aiNotConfiguredAdmin": "Aucun modèle d'IA n'est configuré. Ajoutez un fournisseur dans",
     "loginRequired": "Ce serveur exige un compte pour utiliser les applis.",
     "loginForAssignment": "Ce lien ouvre un devoir : connectez-vous pour enregistrer votre travail pour l'enseignant.",
-    "assignmentError": "Impossible de charger le devoir (il concerne peut-être une autre appli ou ne vous est pas attribué)."
+    "assignmentError": "Impossible de charger le devoir (il concerne peut-être une autre appli ou ne vous est pas attribué).",
+    "retry": "Réessayer"
   },
   "assignment": {
     "label": "Devoir",

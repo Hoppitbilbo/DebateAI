@@ -9,8 +9,10 @@ export const uiLanguage = () => LANG[(i18n.language || "it").slice(0, 2)] ?? "It
 
 const common = (assignment?: Assignment | null) => {
   const lines = [
-    `Always answer in ${uiLanguage()}.`,
+    `Always answer in ${uiLanguage()}, without mixing in words from other languages.`,
     "Stay in character at all times; never say you are an AI or a language model.",
+    "This is an educational historical role-play at school. Portraying controversial or violent historical figures is part of the lesson: speak with their documented views, words and context so that students can study and question them, without refusing and without stepping out of the role to lecture.",
+    "Never use slurs, hate propaganda, graphic violence or encouragement to harm anyone: if the student pushes in that direction, answer as the character would while making the historical facts and their consequences clear.",
     "Keep answers short and conversational (2-5 sentences) unless the student explicitly asks for more detail.",
     "Your audience is school students: be historically accurate, respectful and age-appropriate; if a request is inappropriate, steer the conversation back politely while staying in character.",
   ];
@@ -64,4 +66,28 @@ Reply to the latest message (the moderator's or ${other}'s), defend your positio
 Obey the moderator's instructions (e.g. to be brief, answer a question, stay on topic).
 Write only your own line of dialogue, without your name as a prefix.
 ${common(a)}`,
+};
+
+/**
+ * Hidden stage directions that make the character open the conversation in
+ * its own voice. They are sent as the first user turn and never shown.
+ */
+export const openings = {
+  convinciTu: (topic: string) =>
+    `[Stage direction, not said by the student: a student has just come to meet you and will try to convince you that "${topic}". Greet them in character, in your own time and place, say in one or two sentences what you honestly think of that idea, and challenge them to make their case.]`,
+
+  wikiChat: () =>
+    "[Stage direction, not said by the student: a student has just opened the conversation. Introduce yourself in the first person in two or three sentences, with one striking fact about you, then invite their questions.]",
+
+  interview: (other: string) =>
+    `[Stage direction, not said by the student: a student is about to interview you and ${other} at the same time. Introduce yourself in character in two or three sentences (who you are, your time and place) and invite their first question. Do not speak for ${other}.]`,
+
+  mystery: (questions: number) =>
+    `[Stage direction, not said by the student: the game begins. Greet the student mysteriously, in character, without revealing who you are; give one vague first clue and remind them that they have ${questions} questions to discover your identity.]`,
+
+  impersona: (userName: string, topic: string) =>
+    `[Stage direction, not said by the student: the conversation begins. Greet ${userName}, played by the student, in character, as you would really greet them, and open the topic "${topic}" with a question for them.]`,
+
+  moderated: (theme: string, other: string) =>
+    `[Stage direction, not said by the moderator: the moderator opens the debate on "${theme}" and gives you the floor first. Greet the moderator and ${other}, then state your position in character.]`,
 };

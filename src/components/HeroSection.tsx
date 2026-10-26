@@ -3,9 +3,11 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useMemo, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useMorphClick } from "@/features/navigation/morph";
 
 const HeroSection = () => {
   const { t } = useTranslation();
+  const morph = useMorphClick();
   
   // Define available apps to randomly choose from
   const apps = useMemo(() => [{
@@ -57,14 +59,14 @@ const HeroSection = () => {
               </p>
               <div className={`mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start reveal-animation reveal-delay-2 ${isLoaded ? 'revealed' : ''}`}>
                 <div className="rounded-md shadow">
-                  <Link to="/apps">
+                  <Link to="/apps" onClick={morph("/apps")}>
                     <Button className="w-full flex items-center justify-center px-8 py-3 bg-education hover:bg-education/90 text-education-dark">
                       {t('hero.tryApps')}
                     </Button>
                   </Link>
                 </div>
                 <div className="mt-3 sm:mt-0 sm:ml-3">
-                  <Link to={randomApp.path}>
+                  <Link to={randomApp.path} onClick={morph(randomApp.path)}>
                     <Button variant="outline" className="w-full flex items-center justify-center px-8 py-3 border-education bg-transparent text-education-light hover:bg-education hover:text-education-dark">
                       {randomApp.name}
                     </Button>

@@ -73,7 +73,8 @@
     "session_ended": "This activity has ended.",
     "live_disabled": "Voice conversation is not enabled for your account.",
     "live_unavailable": "Voice conversation is not available right now.",
-    "server_unreachable": "The server is not reachable."
+    "server_unreachable": "The server is not reachable.",
+    "ai_error": "The character can't answer right now. Try again in a moment; if it keeps happening, tell your teacher."
   },
   "auth": {
     "login": "Log in",
@@ -145,7 +146,8 @@
     "aiNotConfiguredAdmin": "No AI model is configured yet. Add a provider in",
     "loginRequired": "This server requires an account to use the apps.",
     "loginForAssignment": "This link opens an assignment: log in to save your work for your teacher.",
-    "assignmentError": "This assignment could not be loaded (it may be for another app or not assigned to you)."
+    "assignmentError": "This assignment could not be loaded (it may be for another app or not assigned to you).",
+    "retry": "Try again"
   },
   "assignment": {
     "label": "Assignment",

@@ -7,7 +7,7 @@ import { CharacterPicker } from "@/features/activity/components/SetupCard";
 import { useActivityFlow } from "@/features/activity/useActivityFlow";
 import { toHistory } from "@/features/activity/useChatEngine";
 import { bioOf, useWikiSummaries } from "@/features/activity/wiki";
-import { prompts } from "@/features/activity/prompts";
+import { openings, prompts } from "@/features/activity/prompts";
 import { APPS } from "@/features/activity/types";
 
 const app = APPS["doppia-intervista"];
@@ -37,10 +37,17 @@ const DoppiaIntervistaPage = () => {
 
   const start = async () => {
     if (!a || !b) return;
-    await flow.begin(`${a.title} & ${b.title}`, { characters: [a, b] }, [
-      { id: "ga", role: "assistant", name: a.title, speakerKey: "a", content: t("platform.apps.doppiaIntervista.greeting", { name: a.title }) },
-      { id: "gb", role: "assistant", name: b.title, speakerKey: "b", content: t("platform.apps.doppiaIntervista.greeting", { name: b.title }) },
-    ]);
+    await flow.begin(`${a.title} & ${b.title}`, { characters: [a, b] }, []);
+    // each character introduces itself in its own voice
+    for (const [key, me, other] of [["a", a, b], ["b", b, a]] as const) {
+      await engine.open({
+        system: prompts.interview(me.title, bioOf(me, summaries), other.title, session.assignment),
+        cue: openings.interview(other.title),
+        name: me.title,
+        speakerKey: key,
+        fallback: { role: "assistant", content: t("platform.apps.doppiaIntervista.greeting", { name: me.title }) },
+      });
+    }
   };
 
   /** Each addressed character answers in turn, seeing only what was said to them. */

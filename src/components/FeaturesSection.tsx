@@ -2,9 +2,12 @@
 import { Book, School, Users, Link, User } from "lucide-react";
 import { useScrollReveal } from "@/hooks/use-scroll-reveal";
 import { useTranslation } from "react-i18next";
+import { Link as RouterLink } from "react-router-dom";
+import { appMorph, useMorphClick } from "@/features/navigation/morph";
 
 const FeaturesSection = () => {
   const { t } = useTranslation();
+  const morph = useMorphClick();
   
   const features = [
     {
@@ -63,23 +66,30 @@ const FeaturesSection = () => {
         <div className="mt-10">
           <div className="space-y-10 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-8">
             {features.map((feature, index) => (
-              <a 
-                key={feature.name} 
-                href={feature.link}
+              <RouterLink
+                key={feature.name}
+                to={feature.link}
+                onClick={morph(feature.link)}
                 className={`block h-full group reveal-animation revealed reveal-delay-${index % 3 + 1}`}
               >
-                <div className="flex h-full flex-col items-center p-6 bg-card border border-border rounded-lg transition-all duration-300 hover:shadow-lg hover:scale-105">
+                <div
+                  className="flex h-full flex-col items-center p-6 bg-card border border-border rounded-lg transition-[transform,box-shadow] duration-300 hover:shadow-lg hover:scale-105"
+                  {...appMorph(feature.link, "card")}
+                >
                   <div className="flex items-center justify-center h-12 w-12 rounded-md bg-education text-education-dark">
                     {feature.icon}
                   </div>
-                  <h3 className="mt-5 text-lg leading-6 font-semibold text-education-light group-hover:text-education text-center">
+                  <h3
+                    className="mt-5 text-lg leading-6 font-semibold text-education-light group-hover:text-education text-center"
+                    {...appMorph(feature.link, "title")}
+                  >
                     {feature.name}
                   </h3>
                   <p className="mt-2 text-base text-foreground/80 text-center">
                     {feature.description}
                   </p>
                 </div>
-              </a>
+              </RouterLink>
             ))}
           </div>
         </div>
