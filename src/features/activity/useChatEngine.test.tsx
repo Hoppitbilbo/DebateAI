@@ -159,4 +159,31 @@ describe("useChatEngine", () => {
     expect(mocks.live.stopLive).toHaveBeenCalled();
     expect(result.current.messagesRef.current).toEqual([msg("system", "intro")]);
   });
+
+  it("lets the student retry a failed reply and syncs the turn again", async () => {
+    const session = fakeSession();
+    const { result } = renderHook(() => useChatEngine({ session }), { wrapper: withAi });
+    mocks.generateStream.mockRejectedValueOnce(new Error("down")).mockResolvedValueOnce("eccomi");
+    await act(() => result.current.runTurn("ciao", () => result.current.respond({ system: "s", name: "N" })));
+    const failed = result.current.messages[1];
+    expect(failed).toMatchObject({ error: true, content: "ERR: down" });
+    expect(result.current.canRetry(failed.id)).toBe(true);
+
+    await act(() => result.current.retry(failed.id));
+    expect(result.current.messages.map((m) => m.content)).toEqual(["ciao", "eccomi"]);
+    expect(session.sync).toHaveBeenCalledTimes(2);
+  });
+
+  it("opens with the character's own words from a hidden stage direction", async () => {
+    const { result } = renderHook(() => useChatEngine({ session: fakeSession() }), { wrapper: withAi });
+    mocks.generateStream.mockResolvedValueOnce("Sono Napoleone!");
+    await act(() => result.current.open({ system: "s", cue: "[apri]", name: "Napoleone", fallback: { role: "system", content: "intro" } }));
+    expect(mocks.generateStream.mock.calls[0][0].messages).toEqual([{ role: "user", content: "[apri]" }]);
+    expect(result.current.messages).toMatchObject([{ role: "assistant", name: "Napoleone", content: "Sono Napoleone!" }]);
+
+    mocks.generateStream.mockRejectedValueOnce(new Error("down"));
+    await act(() => result.current.open({ system: "s", cue: "[apri]", name: "Napoleone", fallback: { role: "system", content: "intro" } }));
+    expect(result.current.messages[1]).toMatchObject({ role: "system", content: "intro" });
+    expect(mocks.toastError).not.toHaveBeenCalled();
+  });
 });

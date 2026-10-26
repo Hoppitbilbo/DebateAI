@@ -19,7 +19,15 @@ import (
 type fakeProvider struct {
 	errs  map[string]error
 	slow  map[string]time.Duration
+	texts map[string]string // answer of a model, when not "answer from <model>"
 	calls []string
+}
+
+func (f *fakeProvider) answer(model string) string {
+	if text, ok := f.texts[model]; ok {
+		return text
+	}
+	return "answer from " + model
 }
 
 func (f *fakeProvider) Generate(ctx context.Context, req ai.Request) (*ai.Response, error) {
@@ -27,7 +35,7 @@ func (f *fakeProvider) Generate(ctx context.Context, req ai.Request) (*ai.Respon
 	if err := f.errs[req.Model]; err != nil {
 		return nil, err
 	}
-	return &ai.Response{Text: "answer from " + req.Model, Usage: ai.Usage{InputTokens: 10, OutputTokens: 5}}, nil
+	return &ai.Response{Text: f.answer(req.Model), Usage: ai.Usage{InputTokens: 10, OutputTokens: 5}}, nil
 }
 
 func (f *fakeProvider) Stream(ctx context.Context, req ai.Request, onDelta func(string) error) (*ai.Response, error) {
@@ -42,9 +50,12 @@ func (f *fakeProvider) Stream(ctx context.Context, req ai.Request, onDelta func(
 	if err := f.errs[req.Model]; err != nil {
 		return nil, err
 	}
-	text := "answer from " + req.Model
-	if err := onDelta(text); err != nil {
-		return nil, err
+	// a few words at a time, like a real stream
+	text := f.answer(req.Model)
+	for _, word := range strings.SplitAfter(text, " ") {
+		if err := onDelta(word); err != nil {
+			return nil, err
+		}
 	}
 	return &ai.Response{Text: text}, nil
 }
@@ -188,7 +199,7 @@ func TestGenerateNoFallbackAfterFirstDelta(t *testing.T) {
 type failAfterDelta struct{ *fakeProvider }
 
 func (failAfterDelta) Stream(ctx context.Context, req ai.Request, onDelta func(string) error) (*ai.Response, error) {
-	_ = onDelta("partial")
+	_ = onDelta(strings.Repeat("partial ", refusalProbeChars/4))
 	return nil, &ai.HTTPError{Status: 500, Body: "broken mid-stream"}
 }
 
@@ -316,4 +327,116 @@ func TestDefaultRoutePolicies(t *testing.T) {
 	if rt.Tasks[TaskChat][0].Model != "x:free" || rt.Tasks[TaskJudge][0].Model != "x:free" || len(rt.Tasks[TaskLive]) != 0 {
 		t.Fatalf("openai routes: %+v", rt.Tasks)
 	}
+}
+
+func streamChat(t *testing.T, s *Services) (*GenResult, string, error) {
+	t.Helper()
+	var got strings.Builder
+	res, err := s.Gateway.Generate(context.Background(), TaskChat, chatRequest(), nil, nil, func(d string) error {
+		got.WriteString(d)
+		return nil
+	})
+	return res, got.String(), err
+}
+
+func TestGenerateFallsBackOnRefusal(t *testing.T) {
+	s := newTestServer(t)
+	fp := &fakeProvider{texts: map[string]string{"prude": "I'm sorry, but I can't role-play as this historical figure."}}
+	useProvider(s, 1, ai.KindOpenAI, fp)
+	setChatRoute(t, s, "ordered", RouteTarget{1, "prude"}, RouteTarget{1, "actor"})
+
+	res, got, err := streamChat(t, s)
+	if err != nil || res.Model != "actor" || got != "answer from actor" {
+		t.Fatalf("the student must only see the second model: %v %+v %q", err, res, got)
+	}
+	if ok, failed := usageRows(t, s); ok != 1 || failed != 1 {
+		t.Fatalf("the refusal must be logged as a failure: ok=%d failed=%d", ok, failed)
+	}
+}
+
+func TestGenerateFallsBackOnEmptyAnswer(t *testing.T) {
+	s := newTestServer(t)
+	fp := &fakeProvider{texts: map[string]string{"thinker": "  "}}
+	useProvider(s, 1, ai.KindOpenAI, fp)
+	setChatRoute(t, s, "ordered", RouteTarget{1, "thinker"}, RouteTarget{1, "talker"})
+
+	if res, err := s.Gateway.Generate(context.Background(), TaskChat, chatRequest(), nil, nil, nil); err != nil || res.Model != "talker" {
+		t.Fatalf("an empty answer must fall back: %v %+v", err, res)
+	}
+	if res, got, err := streamChat(t, s); err != nil || res.Model != "talker" || got != "answer from talker" {
+		t.Fatalf("an empty stream must fall back: %v %+v %q", err, res, got)
+	}
+}
+
+func TestGenerateKeepsInCharacterRefusals(t *testing.T) {
+	answers := []string{
+		"Non posso accettare la tua proposta, giovane: la Francia viene prima di tutto!",
+		"Mai! Non cederò a questi argomenti. " + strings.Repeat("La gloria dell'Impero non si discute. ", 6),
+		"I cannot accept such an idea, my friend.",
+	}
+	for _, text := range answers {
+		s := newTestServer(t)
+		useProvider(s, 1, ai.KindOpenAI, &fakeProvider{texts: map[string]string{"napoleon": text}})
+		setChatRoute(t, s, "ordered", RouteTarget{1, "napoleon"}, RouteTarget{1, "other"})
+		if res, got, err := streamChat(t, s); err != nil || res.Model != "napoleon" || got != text {
+			t.Fatalf("a character refusing in the story is a valid answer: %v %+v %q", err, res, got)
+		}
+	}
+}
+
+func TestGenerateShowsLastRefusalWhenAllRefuse(t *testing.T) {
+	s := newTestServer(t)
+	refusal := "Mi dispiace, ma come intelligenza artificiale non posso interpretare questo personaggio."
+	useProvider(s, 1, ai.KindOpenAI, &fakeProvider{texts: map[string]string{"a": refusal, "b": refusal}})
+	setChatRoute(t, s, "ordered", RouteTarget{1, "a"}, RouteTarget{1, "b"})
+
+	if res, got, err := streamChat(t, s); err != nil || res.Model != "b" || got != refusal {
+		t.Fatalf("a refusal is better than an error: %v %+v %q", err, res, got)
+	}
+}
+
+func TestIsRefusal(t *testing.T) {
+	refusals := []string{
+		"As an AI language model, I cannot portray Hitler.",
+		"Mi dispiace, ma non posso impersonare questa figura storica.",
+		"Come modello linguistico non posso esprimere opinioni.",
+		"Lo siento, pero no puedo interpretar a este personaje.",
+		"Je ne peux pas incarner ce personnage.",
+		"Als KI kann ich das nicht tun.",
+	}
+	for _, r := range refusals {
+		if !isRefusal(r) {
+			t.Errorf("not recognised as a refusal: %q", r)
+		}
+	}
+	for _, ok := range []string{"Non posso permettere che l'Italia resti divisa!", "I can't believe you said that, young man.", "Come Imperatore, io decido."} {
+		if isRefusal(ok) {
+			t.Errorf("in-character line taken for a refusal: %q", ok)
+		}
+	}
+}
+
+func TestGenerateStartsHistoryWithUser(t *testing.T) {
+	s := newTestServer(t)
+	var first ai.Message
+	useProvider(s, 1, ai.KindAnthropic, firstMessageProvider{&fakeProvider{}, &first})
+	setChatRoute(t, s, "ordered", RouteTarget{1, "m"})
+
+	req := ai.Request{Messages: []ai.Message{{Role: "assistant", Content: "Bonjour, je suis Napoléon."}, {Role: "user", Content: "Ciao"}}}
+	if _, err := s.Gateway.Generate(context.Background(), TaskChat, req, nil, nil, nil); err != nil {
+		t.Fatal(err)
+	}
+	if first.Role != "user" {
+		t.Fatalf("history must start with the user, got %+v", first)
+	}
+}
+
+type firstMessageProvider struct {
+	*fakeProvider
+	first *ai.Message
+}
+
+func (f firstMessageProvider) Generate(ctx context.Context, req ai.Request) (*ai.Response, error) {
+	*f.first = req.Messages[0]
+	return f.fakeProvider.Generate(ctx, req)
 }

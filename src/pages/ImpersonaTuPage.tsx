@@ -7,7 +7,7 @@ import ActivityRunner from "@/features/activity/components/ActivityRunner";
 import { CharacterPicker } from "@/features/activity/components/SetupCard";
 import { useActivityFlow } from "@/features/activity/useActivityFlow";
 import { bioOf, useWikiSummaries } from "@/features/activity/wiki";
-import { prompts } from "@/features/activity/prompts";
+import { openings, prompts } from "@/features/activity/prompts";
 import { APPS } from "@/features/activity/types";
 
 const app = APPS["impersona-tu"];
@@ -42,10 +42,13 @@ const ImpersonaTuPage = () => {
 
   const start = async () => {
     if (!aiChar || !userChar) return;
-    await flow.begin(`${userChar.title} ↔ ${aiChar.title}`, { aiCharacter: aiChar, userCharacter: userChar, topic }, [
-      { id: "role", role: "system", content: t("platform.apps.impersonaTu.roleNotice", { user: userChar.title, ai: aiChar.title, topic }) },
-      { id: "greet", role: "assistant", name: aiChar.title, content: t("platform.apps.impersonaTu.greeting", { ai: aiChar.title, user: userChar.title, topic }) },
-    ]);
+    await flow.begin(`${userChar.title} ↔ ${aiChar.title}`, { aiCharacter: aiChar, userCharacter: userChar, topic }, []);
+    await engine.open({
+      system,
+      cue: openings.impersona(userChar.title, topic),
+      name: aiChar.title,
+      fallback: { role: "assistant", content: t("platform.apps.impersonaTu.greeting", { ai: aiChar.title, user: userChar.title, topic }) },
+    });
   };
 
   const restart = () =>

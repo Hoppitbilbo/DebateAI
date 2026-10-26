@@ -72,6 +72,8 @@ const ActivityRunner = ({ app, flow, onRestart, phaseLabels, setup, chat, reflec
           onEnd={flow.finishChat}
           canEnd={session.turns >= minTurns}
           footerNote={session.turns < minTurns ? t("platform.activity.minTurnsNote", { count: minTurns - session.turns }) : null}
+          onRetry={(id) => void engine.retry(id)}
+          canRetry={engine.canRetry}
           {...chatProps}
         />
       ))}

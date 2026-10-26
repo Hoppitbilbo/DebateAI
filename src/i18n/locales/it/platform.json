@@ -73,7 +73,8 @@
     "session_ended": "Questa attività è terminata.",
     "live_disabled": "La conversazione vocale non è abilitata per il tuo account.",
     "live_unavailable": "La conversazione vocale non è disponibile al momento.",
-    "server_unreachable": "Il server non è raggiungibile."
+    "server_unreachable": "Il server non è raggiungibile.",
+    "ai_error": "Il personaggio non riesce a rispondere in questo momento. Riprova tra poco: se il problema continua, avvisa il docente."
   },
   "auth": {
     "login": "Accedi",
@@ -145,7 +146,8 @@
     "aiNotConfiguredAdmin": "Nessun modello di IA è configurato. Aggiungi un provider in",
     "loginRequired": "Questo server richiede un account per usare le app.",
     "loginForAssignment": "Questo link apre un compito: accedi per salvare il tuo lavoro per il docente.",
-    "assignmentError": "Impossibile caricare il compito (potrebbe essere per un'altra app o non assegnato a te)."
+    "assignmentError": "Impossibile caricare il compito (potrebbe essere per un'altra app o non assegnato a te).",
+    "retry": "Riprova"
   },
   "assignment": {
     "label": "Compito",
