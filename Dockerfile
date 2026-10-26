@@ -6,17 +6,24 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --no-audit --no-fund
 COPY . .
-RUN npm run build
+ARG VITE_SENTRY_DSN
+ARG SENTRY_RELEASE
+RUN --mount=type=secret,id=sentry_auth_token \
+    if [ -f /run/secrets/sentry_auth_token ]; then \
+      export SENTRY_AUTH_TOKEN="$(cat /run/secrets/sentry_auth_token)"; \
+    fi; \
+    npm run build
 
 # --- 2. server (embeds the frontend) ---
 FROM --platform=$BUILDPLATFORM golang:1.26-alpine AS server
 ARG TARGETOS TARGETARCH
+ARG SENTRY_RELEASE
 WORKDIR /src
 COPY server/go.mod server/go.sum ./
 RUN go mod download
 COPY server/ ./
 COPY --from=web /app/server/webui/dist ./webui/dist
-RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -trimpath -ldflags="-s -w" -o /debateai .
+RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -trimpath -ldflags="-s -w -X main.buildRelease=$SENTRY_RELEASE" -o /debateai .
 
 # --- 3. runtime ---
 FROM alpine:3.22
