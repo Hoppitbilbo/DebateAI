@@ -221,6 +221,7 @@ Un'area per task, spostando l'SQL in `internal/store`:
 
 ## Note e decisioni
 
+- **Giochi e transizioni (2026-10-26):** modifiche funzionali richieste dall'utente. (1) Ogni gioco si apre con il personaggio che parla nella propria voce, generato da una direzione di scena nascosta (`openings` in `prompts.ts`, `engine.open`); se nessun modello risponde compare il vecchio testo fisso. (2) Il gateway scarta le risposte vuote e i rifiuti "da IA" (`answer_check.go`, controllo sui primi 160 caratteri prima di mostrarli) e passa al modello successivo; se rifiutano tutti, mostra l'ultimo rifiuto. Le cronologie che iniziano con il personaggio ricevono un primo messaggio utente (Anthropic e Gemini lo richiedono). Errori del gateway mostrati allo studente con un testo comprensibile e pulsante "Riprova". (3) Transizioni con View Transitions API (`src/features/navigation/`): pagina precaricata prima di navigare (`lazyPage`), card dell'app che si apre nell'intestazione, scroll in cima; rimossi `AnimationContext` e `PageFlipAnimation`.
 - Schema della fase 3: il repository vive in `server/internal/store` (tipo concreto, es. `store.Settings`), mentre l'interfaccia la definisce chi la usa in `app` (es. `settingsStore` in `settings.go`). `Server` ha un campo per repository, inizializzato in `NewServer` (spostato in `main.go` al task 4.4). Ogni repository ha i suoi test in `store` con un DB temporaneo.
 - Entità condivise in `server/internal/domain` (`User`, `Invite`, `UserPatch`, ruoli, `Now`/`ParseTime`). In `app/repositories.go` ci sono le interfacce dei repository e gli alias temporanei (`User`, `inviteRow`, `Class`, `Member`, `Assignment`, `AssignStats`, `SessionSummary`, `SessionDetail`), da rimuovere quando gli handler useranno direttamente `domain` (fase 4). Lo schema SQL e `Open` sono in `store/schema.go`.
 - (Fatto nel task 8.2) `isCorrectGuess` del personaggio misterioso accetta anche tentativi cortissimi contenuti nel nome (es. "Da" per "Leonardo da Vinci"); fissato da `mystery.test.ts`.
@@ -236,6 +237,7 @@ Un'area per task, spostando l'SQL in `internal/store`:
 
 | Data | Task | Commit | Chi | Note |
 |---|---|---|---|---|
+| 2026-10-26 | Giochi e transizioni | — | Claude Code | Apertura in personaggio, controllo risposte vuote/rifiuti con fallback, "Riprova", transizioni con morph. Nei dati locali la chiave OpenRouter risulta scaduta (401) e Nemotron free va in timeout. Go test verdi, Vitest 55 test, lint 0, build e 687 chiavi i18n verificati. |
 | 2026-10-18 | — | `fb57987` | Claude Code | Creato il documento. Go test verdi. |
 | 2026-10-18 | 0.1 | `2aae325` | Claude Code | `server/internal/app/gateway_test.go`: 11 test. Helper riusabili: `newTestServer`, `useProvider` (inietta un provider finto nella cache), `setChatRoute`, `fakeProvider`. |
 | 2026-10-18 | 0.2 | `b3d71ec` | Claude Code | `server/internal/app/judge_test.go`: 10 test (Jev, LLM, fallback, soglia, `minTurns`). Fake: `fakeDecider`, `scriptedLLM`, helper `setJudgeRoute`. |

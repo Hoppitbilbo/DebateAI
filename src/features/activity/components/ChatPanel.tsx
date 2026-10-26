@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Bot, Flag, Loader2, Mic, MicOff, Radio, Send, User } from "lucide-react";
+import { Bot, Flag, Loader2, Mic, MicOff, Radio, RotateCcw, Send, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
@@ -28,6 +28,9 @@ interface ChatPanelProps {
   toolbar?: React.ReactNode;
   footerNote?: React.ReactNode;
   heightClass?: string;
+  /** Asks again for a failed AI reply (shown on the error bubble). */
+  onRetry?: (id: string) => void;
+  canRetry?: (id: string) => boolean;
 }
 
 /** The one chat component used by every app. */
@@ -47,6 +50,8 @@ const ChatPanel = ({
   toolbar,
   footerNote,
   heightClass = "h-[min(60vh,560px)]",
+  onRetry,
+  canRetry,
 }: ChatPanelProps) => {
   const { t, i18n } = useTranslation();
   const [input, setInput] = useState("");
@@ -121,6 +126,12 @@ const ChatPanel = ({
                     <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-primary [animation-delay:0.15s]" />
                     <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-primary [animation-delay:0.3s]" />
                   </span>
+                )}
+                {m.error && onRetry && canRetry?.(m.id) && (
+                  <Button size="sm" variant="outline" className="mt-2 h-7" onClick={() => onRetry(m.id)} disabled={busy}>
+                    <RotateCcw className="mr-1.5 h-3.5 w-3.5" />
+                    {t("platform.activity.retry")}
+                  </Button>
                 )}
               </div>
               {m.role === "user" && <User className="mb-1 h-5 w-5 shrink-0 text-primary" aria-hidden />}

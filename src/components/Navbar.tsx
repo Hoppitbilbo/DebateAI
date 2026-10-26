@@ -14,12 +14,14 @@ import {
 import LanguageSwitcher from "@/components/shared/LanguageSwitcher";
 import { cn } from "@/lib/utils";
 import { dashboardPath, useAuth } from "@/context/auth";
+import { useMorphClick } from "@/features/navigation/morph";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
   const { t } = useTranslation();
   const { user, logout, config } = useAuth();
   const navigate = useNavigate();
+  const morph = useMorphClick();
 
   const links = [
     { to: "/", label: t("navigation.home"), end: true },
@@ -37,14 +39,14 @@ const Navbar = () => {
   };
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border/60 bg-education-dark/95 backdrop-blur">
+    <header className="sticky top-0 z-40 border-b border-border/60 bg-education-dark/95 backdrop-blur" style={{ viewTransitionName: "site-nav" }}>
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Link to="/" className="logo text-xl font-bold text-education">
+        <Link to="/" onClick={morph("/")} className="logo text-xl font-bold text-education">
           {config?.siteName && config.siteName !== "AiDebate.tech" ? config.siteName : <>AiDebate<span className="text-foreground">.tech</span></>}
         </Link>
 
         <nav className="hidden items-center gap-1 md:flex" aria-label={t("platform.nav.main")}>
-          {links.map((l) => <NavLink key={l.to} to={l.to} end={l.end} className={linkClass}>{l.label}</NavLink>)}
+          {links.map((l) => <NavLink key={l.to} to={l.to} end={l.end} className={linkClass} onClick={morph(l.to)}>{l.label}</NavLink>)}
         </nav>
 
         <div className="flex items-center gap-1">
@@ -87,7 +89,7 @@ const Navbar = () => {
       {open && (
         <nav className="space-y-1 border-t border-border/60 px-4 pb-4 pt-2 md:hidden" aria-label={t("platform.nav.main")}>
           {links.map((l) => (
-            <NavLink key={l.to} to={l.to} end={l.end} className={(s) => cn(linkClass(s), "block")} onClick={() => setOpen(false)}>{l.label}</NavLink>
+            <NavLink key={l.to} to={l.to} end={l.end} className={(s) => cn(linkClass(s), "block")} onClick={morph(l.to, () => setOpen(false))}>{l.label}</NavLink>
           ))}
           {!user && (
             <NavLink to="/login" className={(s) => cn(linkClass(s), "block")} onClick={() => setOpen(false)}>{t("platform.auth.login")}</NavLink>

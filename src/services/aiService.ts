@@ -53,6 +53,8 @@ export const formatAiError = (error: unknown): string => {
     if (i18n.exists(key)) return i18n.t(key);
     return error.message;
   }
+  // fetch() failing means the network or the server, never a useful message for students
+  if (error instanceof TypeError) return i18n.t("platform.aiErrors.server_unreachable");
   if (error instanceof Error) return error.message;
   return i18n.t("platform.aiErrors.generic");
 };

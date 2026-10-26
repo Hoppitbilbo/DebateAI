@@ -148,7 +148,19 @@ describe("PersonaggioMisteriosoPage", () => {
     pickAll();
     await start();
     expect(mocks.begin).toHaveBeenCalledWith(expect.any(String), { character: expect.stringMatching(/^Person /), questions: 7 });
-    expect(screen.getByText(/7 questions/)).toBeTruthy(); // the intro
+    // the hidden character opens the game in its own voice, prompted by a stage direction
+    const [opening] = mocks.generateStream.mock.calls[0];
+    expect(opening.messages[0].content).toMatch(/7 questions/);
+    expect(screen.getByText("risposta")).toBeTruthy();
+    expect(screen.getByText("???")).toBeTruthy();
+  });
+
+  it("falls back to the written intro when no model answers the opening", async () => {
+    mocks.generateStream.mockRejectedValueOnce(new Error("down"));
+    render(<PersonaggioMisteriosoPage />);
+    pickAll();
+    await start();
+    expect(screen.getByText(/7 questions/)).toBeTruthy();
   });
 });
 

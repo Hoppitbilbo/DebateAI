@@ -12,6 +12,7 @@ import { useAuth } from "@/context/auth";
 import type { ActivityPhase, AppMeta } from "../types";
 import type { ActivitySession } from "../useActivitySession";
 import AssignmentPanel from "./AssignmentPanel";
+import { appMorph, useMorphClick } from "@/features/navigation/morph";
 
 interface ActivityShellProps {
   app: AppMeta;
@@ -30,6 +31,7 @@ const ActivityShell = ({ app, phase, session, onReset, children, phaseLabels }: 
   const { t } = useTranslation();
   const { user } = useAuth();
   const ai = useAiClient();
+  const morph = useMorphClick();
   const [status, setStatus] = useState<AiStatus | null>(null);
 
   useEffect(() => {
@@ -45,14 +47,14 @@ const ActivityShell = ({ app, phase, session, onReset, children, phaseLabels }: 
       <Navbar />
       <main className="flex-1">
         <div className="mx-auto w-full max-w-6xl space-y-6 px-4 py-8 sm:px-6">
-          <header className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <header className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between" {...appMorph(app.path, "card")}>
             <div className="space-y-2">
               <nav className="flex items-center gap-1 text-sm text-muted-foreground">
-                <Link to="/apps" className="hover:text-primary">{t("navigation.apps")}</Link>
+                <Link to="/apps" onClick={morph("/apps")} className="hover:text-primary">{t("navigation.apps")}</Link>
                 <ChevronRight className="h-3 w-3" />
                 <span className="text-foreground">{title}</span>
               </nav>
-              <h1 className="font-heading text-3xl font-bold text-primary sm:text-4xl">{title}</h1>
+              <h1 className="font-heading text-3xl font-bold text-primary sm:text-4xl" {...appMorph(app.path, "title")}>{title}</h1>
               {description && <p className="max-w-3xl text-muted-foreground">{description}</p>}
             </div>
             <div className="flex shrink-0 gap-2">

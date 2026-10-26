@@ -73,7 +73,8 @@
     "session_ended": "Esta actividad ha terminado.",
     "live_disabled": "La conversación por voz no está habilitada para tu cuenta.",
     "live_unavailable": "La conversación por voz no está disponible ahora.",
-    "server_unreachable": "No se puede contactar con el servidor."
+    "server_unreachable": "No se puede contactar con el servidor.",
+    "ai_error": "El personaje no puede responder en este momento. Vuelve a intentarlo en un momento; si sigue pasando, avisa a tu docente."
   },
   "auth": {
     "login": "Iniciar sesión",
@@ -145,7 +146,8 @@
     "aiNotConfiguredAdmin": "No hay ningún modelo de IA configurado. Añade un proveedor en",
     "loginRequired": "Este servidor requiere una cuenta para usar las apps.",
     "loginForAssignment": "Este enlace abre una tarea: inicia sesión para guardar tu trabajo para el docente.",
-    "assignmentError": "No se pudo cargar la tarea (puede ser de otra app o no estar asignada a ti)."
+    "assignmentError": "No se pudo cargar la tarea (puede ser de otra app o no estar asignada a ti).",
+    "retry": "Reintentar"
   },
   "assignment": {
     "label": "Tarea",

@@ -22,6 +22,16 @@ interface Options {
   onEnded?: (reason: EndReason) => void;
 }
 
+interface RespondArgs {
+  system: string;
+  history?: ChatMessage[];
+  name?: string;
+  speakerKey?: string;
+  maxTokens?: number;
+  /** Replaces the reply if it fails, instead of an error (e.g. the old canned intro). */
+  fallback?: Pick<ActivityMessage, "role" | "content">;
+}
+
 /** Converts the visible conversation into the history seen by one AI speaker. */
 export const toHistory = (messages: ActivityMessage[], speakerKey?: string): ChatMessage[] =>
   messages
@@ -68,8 +78,15 @@ export const useChatEngine = ({ session, live, context, onEnded }: Options) => {
     setMessages((prev) => prev.map((m) => (m.id === id ? { ...m, ...patch } : m)));
   }, [setMessages]);
 
-  /** Streams one assistant reply into the conversation. Returns the text or null on error. */
-  const respond = useCallback(async (args: { system: string; history?: ChatMessage[]; name?: string; speakerKey?: string; maxTokens?: number }) => {
+  /** Failed replies the student can ask again, by message id. */
+  const retries = useRef(new Map<string, () => Promise<unknown>>());
+  const respondRef = useRef<(args: RespondArgs) => Promise<string | null>>();
+
+  /**
+   * Streams one assistant reply into the conversation. Returns the text or
+   * null on error; with `fallback` a failure shows that text instead.
+   */
+  const respond = useCallback(async (args: RespondArgs) => {
     const msg = addMessage({ role: "assistant", content: "", name: args.name, speakerKey: args.speakerKey, streaming: true });
     try {
       const text = await ai.generateStream(
@@ -79,11 +96,30 @@ export const useChatEngine = ({ session, live, context, onEnded }: Options) => {
       patchMessage(msg.id, { content: text || "…", streaming: false });
       return text;
     } catch (e) {
+      if (args.fallback) {
+        patchMessage(msg.id, { ...args.fallback, streaming: false });
+        return null;
+      }
       patchMessage(msg.id, { content: ai.formatError(e), streaming: false, error: true });
+      retries.current.set(msg.id, () => respondRef.current!(args));
       toast.error(ai.formatError(e));
       return null;
     }
   }, [addMessage, patchMessage, session, ai]);
+  respondRef.current = respond;
+
+  /**
+   * The character speaks first, in its own voice, prompted by a hidden stage
+   * direction; `fallback` is shown if no model answers.
+   */
+  const open = useCallback(async (args: Omit<RespondArgs, "history"> & { cue: string; fallback: RespondArgs["fallback"] }) => {
+    setBusy(true);
+    try {
+      await respond({ ...args, history: [{ role: "user", content: args.cue }] });
+    } finally {
+      setBusy(false);
+    }
+  }, [respond]);
 
   // ----- Live voice mode -----
   const liveAssistantId = useRef<string | null>(null);
@@ -141,8 +177,24 @@ export const useChatEngine = ({ session, live, context, onEnded }: Options) => {
     if (ended && liveCtl.liveMode) liveCtl.stopLive();
   }, [ended, liveCtl]);
 
+  /** Asks again for a reply that failed, then syncs the turn with the server. */
+  const retry = useCallback(async (id: string) => {
+    const again = retries.current.get(id);
+    if (!again || busy) return;
+    retries.current.delete(id);
+    setMessages((prev) => prev.filter((m) => m.id !== id));
+    setBusy(true);
+    try {
+      await again();
+    } finally {
+      setBusy(false);
+    }
+    await afterTurn();
+  }, [busy, setMessages, afterTurn]);
+
   const reset = useCallback((initial: ActivityMessage[] = []) => {
     liveCtl.stopLive();
+    retries.current.clear();
     setMessages(initial);
     setBusy(false);
   }, [liveCtl, setMessages]);
@@ -154,6 +206,10 @@ export const useChatEngine = ({ session, live, context, onEnded }: Options) => {
     addMessage,
     patchMessage,
     respond,
+    open,
+    retry,
+    /** Whether a failed reply can be asked again. */
+    canRetry: (id: string) => retries.current.has(id),
     runTurn,
     afterTurn,
     busy,

@@ -13,7 +13,7 @@ import { CharacterPicker, SetupCard } from "@/features/activity/components/Setup
 import { useActivityFlow } from "@/features/activity/useActivityFlow";
 import type { EndReason } from "@/features/activity/useActivitySession";
 import { bioOf, useWikiSummaries } from "@/features/activity/wiki";
-import { prompts } from "@/features/activity/prompts";
+import { openings, prompts } from "@/features/activity/prompts";
 import { APPS } from "@/features/activity/types";
 import { isCorrectGuess, RANDOM_CHARACTERS } from "@/features/activity/mystery";
 
@@ -83,9 +83,13 @@ const PersonaggioMisteriosoPage = () => {
     setResult(null);
     setGuess("");
     setReasoning("");
-    await flow.begin(t("apps.personaggioMisterioso.title"), { character: character.title, questions: maxQuestions }, [
-      { id: "intro", role: "assistant", name: "???", content: t("platform.apps.personaggioMisterioso.intro", { count: maxQuestions }) },
-    ]);
+    await flow.begin(t("apps.personaggioMisterioso.title"), { character: character.title, questions: maxQuestions }, []);
+    await engine.open({
+      system,
+      cue: openings.mystery(maxQuestions),
+      name: "???",
+      fallback: { role: "assistant", content: t("platform.apps.personaggioMisterioso.intro", { count: maxQuestions }) },
+    });
   };
 
   const submitGuess = () => {

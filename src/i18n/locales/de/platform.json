@@ -73,7 +73,8 @@
     "session_ended": "Diese Aktivität ist beendet.",
     "live_disabled": "Die Sprachunterhaltung ist für dein Konto nicht aktiviert.",
     "live_unavailable": "Die Sprachunterhaltung ist gerade nicht verfügbar.",
-    "server_unreachable": "Der Server ist nicht erreichbar."
+    "server_unreachable": "Der Server ist nicht erreichbar.",
+    "ai_error": "Die Figur kann gerade nicht antworten. Versuche es gleich noch einmal; wenn es weiter passiert, sag deiner Lehrkraft Bescheid."
   },
   "auth": {
     "login": "Anmelden",
@@ -145,7 +146,8 @@
     "aiNotConfiguredAdmin": "Es ist noch kein KI-Modell eingerichtet. Füge einen Anbieter hinzu unter",
     "loginRequired": "Dieser Server erfordert ein Konto, um die Apps zu nutzen.",
     "loginForAssignment": "Dieser Link öffnet eine Aufgabe: melde dich an, um deine Arbeit für die Lehrkraft zu speichern.",
-    "assignmentError": "Die Aufgabe konnte nicht geladen werden (sie gehört vielleicht zu einer anderen App oder ist dir nicht zugewiesen)."
+    "assignmentError": "Die Aufgabe konnte nicht geladen werden (sie gehört vielleicht zu einer anderen App oder ist dir nicht zugewiesen).",
+    "retry": "Erneut versuchen"
   },
   "assignment": {
     "label": "Aufgabe",
