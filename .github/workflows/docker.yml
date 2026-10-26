@@ -78,3 +78,8 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          build-args: |
+            VITE_SENTRY_DSN=${{ vars.VITE_SENTRY_DSN }}
+            SENTRY_RELEASE=${{ github.sha }}
+          secrets: |
+            sentry_auth_token=${{ secrets.SENTRY_AUTH_TOKEN }}

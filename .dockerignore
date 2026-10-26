@@ -6,7 +6,8 @@ server/data
 server/webui/dist/*
 !server/webui/dist/.keep
 .git
-.env
+.env*
+!.env.example
 jules-scratch
 docs
 *.md

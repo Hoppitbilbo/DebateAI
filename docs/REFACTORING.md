@@ -1,6 +1,6 @@
 # Refactoring: Clean Code + Design Pattern
 
-Ultimo aggiornamento: 18 ottobre 2026 · Branch: `go`
+Ultimo aggiornamento: 26 ottobre 2026 · Branch: `go`
 
 Questo documento è il **punto di passaggio di consegne** tra agenti di coding (e persone).
 Chi riprende il lavoro legge prima la sezione *Stato attuale*, poi esegue il primo task `[ ]` della fase in corso.
@@ -38,7 +38,7 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto · `[-]` scartato (spieg
 ## Stato attuale
 
 - **Piano completato** (fasi 0-8) il 2026-10-18 e unito in `master` (PR #9, merge `c0246a3`).
-- **Lavoro a metà:** nessuno
+- **Lavoro a metà:** nessuno.
 - **Test:** Go (pacchetti `ai`, `app`, `domain`, `httpapi`, `store`) verdi anche con `-race`; Vitest 52 test verdi; lint 0 errori e 0 avvisi.
 - **Punti aperti:** nessuno.
 
@@ -221,6 +221,7 @@ Un'area per task, spostando l'SQL in `internal/store`:
 
 ## Note e decisioni
 
+- **Sentry (2026-10-19):** aggiunta funzionale richiesta dall'utente, fuori dalle fasi 0-8. Progetti `aidebate-sx/debateai-web` e `aidebate-sx/debateai-server`; init nel frontend prima dell'app e nel composition root Go, middleware ufficiale `net/http` con hub per richiesta. Errori e tracing (100% sviluppo, 10% produzione), raccolta automatica di dati personali/corpi/header/cookie/query disattivata. DSN opzionali; source map private tramite plugin Vite e secret BuildKit, mai emesse senza token. SHA condiviso tra build web e Go. Il test Go verifica privacy, acquisizione panic e stack leggibile; verificato il 2026-10-26 con errori reali dall'app in esecuzione in entrambi i progetti. Nessun deploy eseguito.
 - Schema della fase 3: il repository vive in `server/internal/store` (tipo concreto, es. `store.Settings`), mentre l'interfaccia la definisce chi la usa in `app` (es. `settingsStore` in `settings.go`). `Server` ha un campo per repository, inizializzato in `NewServer` (spostato in `main.go` al task 4.4). Ogni repository ha i suoi test in `store` con un DB temporaneo.
 - Entità condivise in `server/internal/domain` (`User`, `Invite`, `UserPatch`, ruoli, `Now`/`ParseTime`). In `app/repositories.go` ci sono le interfacce dei repository e gli alias temporanei (`User`, `inviteRow`, `Class`, `Member`, `Assignment`, `AssignStats`, `SessionSummary`, `SessionDetail`), da rimuovere quando gli handler useranno direttamente `domain` (fase 4). Lo schema SQL e `Open` sono in `store/schema.go`.
 - (Fatto nel task 8.2) `isCorrectGuess` del personaggio misterioso accetta anche tentativi cortissimi contenuti nel nome (es. "Da" per "Leonardo da Vinci"); fissato da `mystery.test.ts`.
@@ -236,6 +237,8 @@ Un'area per task, spostando l'SQL in `internal/store`:
 
 | Data | Task | Commit | Chi | Note |
 |---|---|---|---|---|
+| 2026-10-26 | Sentry `[x]` | — | Claude Code | Verifica nell'app in esecuzione (porte e dati isolati): `DEBATEAI-WEB-1` e `DEBATEAI-SERVER-1` arrivati con stack leggibile (`sentry-verify.ts:4`, `sentry_verify.go:18`), release uguale nei due progetti, environment `development`, nessun header/cookie/corpo. Suite Go completa verde. Trigger temporanei e script di verifica rimossi. Upload delle source map: restano da impostare `VITE_SENTRY_DSN` e `SENTRY_AUTH_TOKEN` su GitHub. |
+| 2026-10-19 | Sentry (avvio) | — | Codex | Installati SDK React 11.8.0, plugin Vite 11.8.0 e sentry-go 0.50.0; configurazione locale, Docker/CI, privacy e guida `docs/SENTRY.md`. Lint, 52 test frontend, build e 687 chiavi i18n verificati; Go vet e test del middleware passano. Suite Go completa bloccata dalla sandbox sulle porte di `httptest`; verifica Sentry reale ancora da completare. |
 | 2026-10-18 | — | `fb57987` | Claude Code | Creato il documento. Go test verdi. |
 | 2026-10-18 | 0.1 | `2aae325` | Claude Code | `server/internal/app/gateway_test.go`: 11 test. Helper riusabili: `newTestServer`, `useProvider` (inietta un provider finto nella cache), `setChatRoute`, `fakeProvider`. |
 | 2026-10-18 | 0.2 | `b3d71ec` | Claude Code | `server/internal/app/judge_test.go`: 10 test (Jev, LLM, fallback, soglia, `minTurns`). Fake: `fakeDecider`, `scriptedLLM`, helper `setJudgeRoute`. |

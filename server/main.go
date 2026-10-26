@@ -15,9 +15,15 @@ import (
 	"github.com/Hoppitbilbo/DebateAI/server/internal/app"
 	"github.com/Hoppitbilbo/DebateAI/server/internal/httpapi"
 	"github.com/Hoppitbilbo/DebateAI/server/webui"
+	"github.com/getsentry/sentry-go"
 )
 
 func main() {
+	if err := initSentry(); err != nil {
+		log.Fatalf("sentry: %v", err)
+	}
+	defer sentry.Flush(2 * time.Second)
+
 	cfg := app.LoadConfig()
 	db, err := app.OpenDB(cfg.DatabasePath)
 	if err != nil {
@@ -31,7 +37,7 @@ func main() {
 	srv := httpapi.NewServer(cfg, services, webui.FS())
 	httpSrv := &http.Server{
 		Addr:              ":" + cfg.Port,
-		Handler:           srv.Handler(),
+		Handler:           monitorHTTP(srv.Handler()),
 		ReadHeaderTimeout: 15 * time.Second,
 	}
 
