@@ -103,3 +103,6 @@ server/data/
 !server/webui/dist/
 server/webui/dist/*
 !server/webui/dist/.keep
+
+# Student tutorial videos (npm run render:tutorials)
+tutorial-videos/

@@ -646,5 +646,20 @@
       "s4h": "Software de código abierto",
       "s4p": "El código está publicado en GitHub. El software se ofrece tal cual, sin garantías; la institución que lo instala es responsable de su gestión."
     }
+  },
+  "tutorialPlayer": {
+    "start": "PULSA START",
+    "replay": "JUGAR DE NUEVO",
+    "play": "Reproducir",
+    "pause": "Pausa",
+    "mute": "Silenciar",
+    "unmute": "Activar sonido",
+    "slides": "Diapositivas del tutorial",
+    "fullscreen": "Pantalla completa",
+    "presentation": "Modo presentación",
+    "openApp": "Abrir la app",
+    "exit": "Salir de la presentación",
+    "forStudents": "Para el estudiante",
+    "forTeachers": "Para el docente"
   }
 }

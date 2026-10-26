@@ -7,6 +7,7 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "@/context/AuthContext";
 import { dashboardPath, useAuth } from "@/context/auth";
 import { lazyPage } from "@/lib/lazyPage";
+import { APP_TYPES } from "@/features/activity/appCatalog";
 import MorphGate from "@/features/navigation/MorphGate";
 
 import Index from "./pages/Index";
@@ -22,7 +23,8 @@ const PersonaggioMisteriosoPage = lazyPage(() => import("./pages/PersonaggioMist
 const TeacherGuidePage = lazyPage(() => import("./pages/TeacherGuidePage"), ["/teacher-guide"]);
 const ImpersonaTuPage = lazyPage(() => import("./pages/ImpersonaTuPage"), ["/apps/impersona-tu"]);
 const TutorialsPage = lazyPage(() => import("./pages/TutorialsPage"), ["/tutorials"]);
-const TutorialPage = lazyPage(() => import("./pages/TutorialPage"), ["/apps/you-moderate/tutorial", "/apps/doppia-intervista/tutorial", "/apps/convinci-tu/tutorial", "/apps/personaggio-misterioso/tutorial", "/apps/impersona-tu/tutorial"]);
+const TutorialPage = lazyPage(() => import("./pages/TutorialPage"), APP_TYPES.map((a) => `/apps/${a}/tutorial`));
+const TutorialPlayerPage = lazyPage(() => import("./pages/TutorialPlayerPage"), APP_TYPES.map((a) => `/tutorial-player/${a}`));
 const named = <T extends string>(loader: () => Promise<Record<T, React.ComponentType>>, key: T, paths: string[] = []) =>
   lazyPage(() => loader().then((m) => ({ default: m[key] })), paths);
 const authPages = () => import("./pages/auth/AuthPages");
@@ -64,6 +66,7 @@ const App = () => (
               <Route path="/apps/you-moderate" element={<YouModeratePage />} />
               <Route path="/apps/you-moderate/tutorial" element={<TutorialPage app="you-moderate" />} />
               <Route path="/apps/wiki-chatbot" element={<WikiChatbotPage />} />
+              <Route path="/apps/wiki-chatbot/tutorial" element={<TutorialPage app="wiki-chatbot" />} />
               <Route path="/apps/doppia-intervista" element={<DoppiaIntervistaPage />} />
               <Route path="/apps/doppia-intervista/tutorial" element={<TutorialPage app="doppia-intervista" />} />
               <Route path="/apps/convinci-tu" element={<ConvinciTuPage />} />
@@ -73,6 +76,7 @@ const App = () => (
               <Route path="/apps/impersona-tu" element={<ImpersonaTuPage />} />
               <Route path="/apps/impersona-tu/tutorial" element={<TutorialPage app="impersona-tu" />} />
               <Route path="/tutorials" element={<TutorialsPage />} />
+              <Route path="/tutorial-player/:app" element={<TutorialPlayerPage />} />
               <Route path="/about" element={<AboutPage />} />
               <Route path="/teacher-guide" element={<TeacherGuidePage />} />
               <Route path="/privacy" element={<LegalPage kind="privacy" />} />

@@ -1,0 +1,249 @@
+{
+  "characters": {
+    "napoleon": "Napoleone",
+    "galileo": "Galileo",
+    "aristotle": "Aristotele",
+    "shadow": "???",
+    "cleopatra": "Cleopatra",
+    "leonardo": "Leonardo",
+    "curie": "Marie Curie",
+    "einstein": "Einstein",
+    "ada": "Ada Lovelace",
+    "colosseum": "Colosseo",
+    "student": "Tu"
+  },
+  "common": {
+    "taskTitle": "LA TUA CONSEGNA",
+    "tipsTitle": "CONSIGLI",
+    "pressStart": "PREMI START",
+    "path": {
+      "title": "IL PERCORSO",
+      "levels": ["PREPARAZIONE", "CONVERSAZIONE", "RIFLESSIONE", "FEEDBACK"],
+      "voice": "Il percorso ha quattro livelli. Prepari la partita, chatti, scrivi una riflessione e ricevi il feedback. Ogni livello conta."
+    },
+    "progress": {
+      "title": "LA BARRA AVANZAMENTO",
+      "barLabel": "AVANZAMENTO",
+      "warning": "FUORI TEMA? Torna alla traccia",
+      "lines": [
+        "Obiettivo raggiunto: compare la spunta",
+        "Avanzamento: obiettivi raggiunti in %",
+        "Fuori tema: ricevi un avviso"
+      ],
+      "voice": "Se il tuo docente ti ha assegnato un compito, vedi la lista degli obiettivi. Dopo ogni tuo messaggio un giudice automatico controlla a che punto sei. Quando raggiungi un obiettivo, compare la spunta. Conta quello che fai tu: se è il personaggio a dire tutto, l'obiettivo resta aperto. Se esci dal tema, o provi a far uscire il personaggio dal suo ruolo, ricevi un avviso."
+    },
+    "grading": {
+      "title": "COME VIENI VALUTATO",
+      "conversation": "CONVERSAZIONE",
+      "reflection": "RIFLESSIONE",
+      "sample": "esempio",
+      "reflectionTitle": "La domanda di riflessione",
+      "voice": "Alla fine ricevi due voti da zero a dieci: uno per la conversazione, uno per la riflessione. Il feedback cita momenti concreti della tua chat, ti dice cosa migliorare e controlla ogni obiettivo del docente. Un lavoro breve o superficiale prende un voto basso.",
+      "reflectionVoice": "Nella riflessione rispondi a questa domanda:"
+    }
+  },
+  "convinciTu": {
+    "mission": {
+      "title": "MISSIONE: CONVINCI L'IMPERATORE",
+      "lines": ["Scegli un personaggio storico.", "Convincilo di un'idea."],
+      "voice": "Sono Napoleone. Ho conquistato mezza Europa e cambio idea raramente. Vuoi convincermi? Ti servono argomenti solidi."
+    },
+    "task": {
+      "lines": [
+        "1. Scegli il personaggio",
+        "2. Scrivi l'idea da sostenere",
+        "3. Argomenta e rispondi alle obiezioni",
+        "4. Scrivi la riflessione finale"
+      ],
+      "voice": "Scegli chi convincere e scrivi l'idea. Io difenderò il punto di vista della mia epoca e ti farò domande difficili. Cambierò idea poco alla volta, e solo davanti a ragioni forti."
+    },
+    "path": { "extra": "Il personaggio cede poco alla volta: ogni buon argomento conta." },
+    "progress": { "goal": "Usa un argomento legato all'epoca del personaggio" },
+    "grading": {
+      "plus": [
+        "Argomenti adatti al suo tempo e ai suoi valori",
+        "Risposte alle sue obiezioni",
+        "Prove ed esempi concreti"
+      ],
+      "reflection": "Come hai cercato di convincere Napoleone? Quali argomenti hanno funzionato e perché?"
+    },
+    "tips": {
+      "lines": [
+        "Parla dei suoi interessi: gloria, ordine, Francia",
+        "Una tesi per messaggio",
+        "Le sue domande ti mostrano il punto debole"
+      ],
+      "voice": "Parla di ciò che mi sta a cuore. Porta una tesi alla volta. E ascolta le mie domande: ti indicano dove colpire. All'attacco, soldato! Premi start."
+    }
+  },
+  "doppiaIntervista": {
+    "mission": {
+      "title": "MISSIONE: UNA DOMANDA, DUE RISPOSTE",
+      "lines": ["Intervisti due personaggi insieme.", "Confronti ciò che dicono."],
+      "voice": "Io sono Galileo, lui è Aristotele. Sul cielo la pensiamo in modo opposto. Fai a entrambi la stessa domanda e guarda cosa succede."
+    },
+    "task": {
+      "lines": [
+        "1. Scegli due personaggi",
+        "2. Fai le domande: rispondono entrambi",
+        "3. Confronta le risposte",
+        "4. Nella riflessione spiega le differenze"
+      ],
+      "voice": "Ogni domanda arriva a tutti e due. Le risposte compaiono una accanto all'altra. Il tuo lavoro è notare dove siamo d'accordo e dove no."
+    },
+    "path": { "extra": "Due colonne, due punti di vista." },
+    "progress": { "goal": "Fai una domanda che metta in contrasto le due visioni" },
+    "grading": {
+      "plus": [
+        "Domande aperte, che fanno emergere differenze",
+        "Domande di approfondimento sulle risposte",
+        "Un confronto preciso nella riflessione"
+      ],
+      "reflection": "In cosa differivano i punti di vista di Galileo e Aristotele? Cosa hai imparato confrontandoli?"
+    },
+    "tips": {
+      "lines": [
+        "Preferisci perché e come alle domande sì/no",
+        "Riprendi una frase di uno e chiedila all'altro",
+        "Annota le differenze mentre leggi"
+      ],
+      "voice": "Chiedi perché e come. Riporta all'uno ciò che ha detto l'altro. Annota le differenze. Osserva, confronta, ragiona. Premi start."
+    }
+  },
+  "personaggioMisterioso": {
+    "mission": {
+      "title": "MISSIONE: CHI SONO?",
+      "lines": ["Indovina il personaggio segreto.", "Hai un numero limitato di domande."],
+      "voice": "Chi sono? Non te lo dirò. Ti darò indizi. Hai poche domande: usale bene."
+    },
+    "task": {
+      "lines": [
+        "1. Il personaggio è segreto",
+        "2. Hai da 3 a 15 domande (di solito 7)",
+        "3. Raccogli indizi: epoca, luogo, mestiere",
+        "4. Indovina e spiega il ragionamento"
+      ],
+      "voice": "Il personaggio lo sceglie il docente, oppure arriva a sorpresa. Rispondo sempre in modo vero, con indizi indiretti. Se mi chiedi se sono una certa persona, rispondo solo sì o no. Per indovinare basta una parola del nome scritta bene, come Cesare o Leonardo."
+    },
+    "path": { "extra": "Il contatore delle domande scende a ogni messaggio." },
+    "progress": { "goal": "Usa domande che restringono il campo" },
+    "grading": {
+      "plus": [
+        "Domande strategiche, dal generale al particolare",
+        "Poche domande usate e il nome indovinato",
+        "Un ragionamento chiaro, anche se sbagli"
+      ],
+      "reflection": "Quali domande ti sono state più utili? Come cambieresti la tua strategia?"
+    },
+    "tips": {
+      "lines": [
+        "Prima l'epoca, poi il luogo, poi il campo",
+        "Non ripetere un indizio già avuto",
+        "Tieni il tentativo per quando sei sicuro"
+      ],
+      "voice": "Ero Cleopatra! Parti dall'epoca, poi il luogo, poi il campo. Non sprecare domande su indizi che hai già. Ora tocca a te. Premi start."
+    }
+  },
+  "impersonaTu": {
+    "mission": {
+      "title": "MISSIONE: DIVENTA UN ALTRO",
+      "lines": ["Interpreti un personaggio storico.", "Dialoghi con un altro personaggio."],
+      "voice": "Oggi indossi una maschera. Diventi un personaggio e parli come lui. Io sarò il tuo interlocutore e ti metterò alla prova."
+    },
+    "task": {
+      "lines": [
+        "1. Scegli chi interpreti tu",
+        "2. Scegli il personaggio dell'IA",
+        "3. Scegli l'argomento",
+        "4. Resta nel ruolo fino alla fine"
+      ],
+      "voice": "Parla in prima persona, con le idee e il linguaggio del tuo personaggio. Se dici qualcosa di sbagliato sulla sua vita, me ne accorgo e te lo faccio notare."
+    },
+    "path": { "extra": "Ogni tuo messaggio è una battuta del tuo personaggio." },
+    "progress": { "goal": "Cita un fatto vero della vita del tuo personaggio" },
+    "grading": {
+      "plus": [
+        "Fatti storici corretti",
+        "Coerenza con le idee del personaggio",
+        "Risposte pronte alle domande dell'IA"
+      ],
+      "reflection": "Come hai interpretato il tuo personaggio? Come ha reagito Leonardo e cosa hai imparato su entrambi?"
+    },
+    "tips": {
+      "lines": [
+        "Leggi la sua biografia prima di iniziare",
+        "Usa io: io ho scoperto, io ho scritto",
+        "Se non sai una cosa, rispondi come farebbe lui"
+      ],
+      "voice": "Studia la biografia prima di entrare in scena. Parla sempre in prima persona. E se non sai una cosa, pensa a come risponderebbe il tuo personaggio. Sipario! Premi start."
+    }
+  },
+  "youModerate": {
+    "mission": {
+      "title": "MISSIONE: GUIDA IL DIBATTITO",
+      "lines": ["Due personaggi discutono.", "Tu sei il moderatore."],
+      "voice": "Io ed Einstein abbiamo idee forti. Senza un moderatore parleremmo per ore. Il microfono è tuo."
+    },
+    "task": {
+      "lines": [
+        "1. Scegli due personaggi e il tema",
+        "2. Dai la parola e fai domande",
+        "3. Chiedi brevità, riporta in tema",
+        "4. Chiudi e scrivi la riflessione"
+      ],
+      "voice": "Puoi farci domande, chiedere a uno di rispondere all'altro, dirci di essere brevi. Noi seguiamo le tue indicazioni."
+    },
+    "path": { "extra": "Tu decidi chi parla e di cosa." },
+    "progress": { "goal": "Fai una domanda che costringa i due a confrontarsi" },
+    "grading": {
+      "plus": [
+        "Domande che accendono il confronto",
+        "Equilibrio: entrambi hanno spazio",
+        "Interventi quando il dibattito si perde"
+      ],
+      "reflection": "Come hai moderato il dibattito tra Curie ed Einstein? Quali domande lo hanno reso più interessante?"
+    },
+    "tips": {
+      "lines": [
+        "Apri con una domanda che divide",
+        "Chiedi a uno di rispondere all'altro",
+        "Riassumi prima di cambiare argomento"
+      ],
+      "voice": "Apri con una domanda che ci divide. Fai rispondere uno all'altro. Riassumi prima di passare oltre. Il tempo è relativo, il tuo turno no. Premi start."
+    }
+  },
+  "wikiChatbot": {
+    "mission": {
+      "title": "MISSIONE: PARLA CON UN ARGOMENTO",
+      "lines": ["Scegli una voce di Wikipedia.", "Diventa un personaggio con cui parlare."],
+      "voice": "Sono Ada Lovelace. Qui ogni voce di Wikipedia prende la parola: una persona, un luogo, un evento, un'idea. Guarda: il Colosseo ti saluta."
+    },
+    "task": {
+      "lines": [
+        "1. Cerca e scegli una voce di Wikipedia",
+        "2. Fai domande all'argomento",
+        "3. Approfondisci e collega altri temi",
+        "4. Scrivi cosa hai imparato"
+      ],
+      "voice": "Chiedimi chi mi ha costruito, a cosa servivo, cosa ho visto. Rispondo con i fatti della mia voce di Wikipedia."
+    },
+    "path": { "extra": "Più domande precise fai, più scopri." },
+    "progress": { "goal": "Chiedi le cause e le conseguenze di un evento" },
+    "grading": {
+      "plus": [
+        "Domande che vanno in profondità",
+        "Collegamenti con altri argomenti",
+        "Fatti appresi e nuove domande nella riflessione"
+      ],
+      "reflection": "Cosa hai imparato sul Colosseo? Cosa ti ha sorpreso? Cosa vorresti ancora sapere?"
+    },
+    "tips": {
+      "lines": [
+        "Parti da una curiosità vera",
+        "Chiedi perché dopo ogni risposta",
+        "Controlla i fatti importanti su Wikipedia"
+      ],
+      "voice": "Parti da una curiosità vera. Dopo ogni risposta interessante chiedi perché. E controlla i fatti importanti sulla voce di Wikipedia. Esegui il programma: premi start."
+    }
+  }
+}

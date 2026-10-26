@@ -646,5 +646,20 @@
       "s4h": "Open source software",
       "s4p": "The code is published on GitHub. The software is provided as is, without warranty; the institution that installs it is responsible for running it."
     }
+  },
+  "tutorialPlayer": {
+    "start": "PRESS START",
+    "replay": "PLAY AGAIN",
+    "play": "Play",
+    "pause": "Pause",
+    "mute": "Mute",
+    "unmute": "Unmute",
+    "slides": "Tutorial slides",
+    "fullscreen": "Full screen",
+    "presentation": "Presentation mode",
+    "openApp": "Open the app",
+    "exit": "Leave the presentation",
+    "forStudents": "For students",
+    "forTeachers": "For teachers"
   }
 }

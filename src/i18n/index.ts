@@ -23,6 +23,9 @@ import frTutorialsPage from './locales/fr/tutorialsPage.json';
 import deTutorialsPage from './locales/de/tutorialsPage.json';
 import itTutorialsPage from './locales/it/tutorialsPage.json';
 
+// Student tutorials (8-bit videos): Italian only for now, the other languages fall back to it
+import itStudentTutorials from './studentTutorials/it.json';
+
 const resources = {
   en: { 
     translation: en,
@@ -47,7 +50,8 @@ const resources = {
   it: { 
     translation: it,
     tutorial: itTutorials,
-    tutorialsPage: itTutorialsPage
+    tutorialsPage: itTutorialsPage,
+    studentTutorial: itStudentTutorials
   },
 };
 
@@ -59,7 +63,7 @@ i18n
     lng: undefined, // Let the language detector determine the language
     fallbackLng: 'it',
     defaultNS: 'translation',
-    ns: ['translation', 'tutorial', 'tutorialsPage'],
+    ns: ['translation', 'tutorial', 'tutorialsPage', 'studentTutorial'],
     debug: false,
     saveMissing: true, // This is useful for development to discover missing keys
     interpolation: {

@@ -646,5 +646,20 @@
       "s4h": "Open-Source-Software",
       "s4p": "Der Code ist auf GitHub veröffentlicht. Die Software wird ohne Gewähr bereitgestellt; die installierende Einrichtung ist für den Betrieb verantwortlich."
     }
+  },
+  "tutorialPlayer": {
+    "start": "START DRÜCKEN",
+    "replay": "NOCHMAL",
+    "play": "Abspielen",
+    "pause": "Pause",
+    "mute": "Ton aus",
+    "unmute": "Ton an",
+    "slides": "Folien des Tutorials",
+    "fullscreen": "Vollbild",
+    "presentation": "Präsentationsmodus",
+    "openApp": "App öffnen",
+    "exit": "Präsentation verlassen",
+    "forStudents": "Für Lernende",
+    "forTeachers": "Für Lehrkräfte"
   }
 }
