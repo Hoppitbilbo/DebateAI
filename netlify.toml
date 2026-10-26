@@ -1,0 +1,23 @@
+# Netlify hosts only the frontend (previews of pull requests): the Go server
+# with the database and the AI is not available there.
+
+[build]
+  command = "npm run build:web"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+  # Playwright is only used locally to export the tutorial videos
+  PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = "1"
+
+# No backend on Netlify: API calls fail fast instead of receiving the page
+[[redirects]]
+  from = "/api/*"
+  to = "/404"
+  status = 404
+
+# Single-page app: every other path is handled by the router
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
