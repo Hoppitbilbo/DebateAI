@@ -221,6 +221,7 @@ Un'area per task, spostando l'SQL in `internal/store`:
 
 ## Note e decisioni
 
+- **Tutorial video per studenti (2026-10-26):** aggiunta funzionale richiesta dall'utente, fuori dalle fasi 0-8. Sei tutorial in pixel art 8-bit (uno per app, sei slide ciascuno: missione, consegna, percorso, barra Avanzamento, valutazione, consigli) con un personaggio storico guida, un PC retrò e un morph orizzontale tra le slide. Codice in `src/features/tutorials/student/`: dati in `studentTutorials.ts`, testi in `src/i18n/studentTutorials/it.json` (namespace `studentTutorial`, solo italiano: le altre lingue ricadono sull'italiano), clock puro in `timeline.ts` (lo stesso frame si disegna dal vivo e per il video). Nell'app: scheda "Per lo studente" in `/apps/<app>/tutorial` (anche per WikiChat, che prima non aveva tutorial), con voce sintetica del browser ed effetti chiptune; modalità presentazione in `/tutorial-player/:app`. Video MP4: `npm run render:tutorials` (voci macOS `say`, frame con Playwright, ffmpeg) in `tutorial-videos/`, ignorata da git. Il piano dei testi è in `docs/TUTORIAL_STUDENTI_PIANO.md`.
 - Schema della fase 3: il repository vive in `server/internal/store` (tipo concreto, es. `store.Settings`), mentre l'interfaccia la definisce chi la usa in `app` (es. `settingsStore` in `settings.go`). `Server` ha un campo per repository, inizializzato in `NewServer` (spostato in `main.go` al task 4.4). Ogni repository ha i suoi test in `store` con un DB temporaneo.
 - Entità condivise in `server/internal/domain` (`User`, `Invite`, `UserPatch`, ruoli, `Now`/`ParseTime`). In `app/repositories.go` ci sono le interfacce dei repository e gli alias temporanei (`User`, `inviteRow`, `Class`, `Member`, `Assignment`, `AssignStats`, `SessionSummary`, `SessionDetail`), da rimuovere quando gli handler useranno direttamente `domain` (fase 4). Lo schema SQL e `Open` sono in `store/schema.go`.
 - (Fatto nel task 8.2) `isCorrectGuess` del personaggio misterioso accetta anche tentativi cortissimi contenuti nel nome (es. "Da" per "Leonardo da Vinci"); fissato da `mystery.test.ts`.
@@ -236,6 +237,7 @@ Un'area per task, spostando l'SQL in `internal/store`:
 
 | Data | Task | Commit | Chi | Note |
 |---|---|---|---|---|
+| 2026-10-26 | Tutorial studenti | — | Claude Code | Tutorial 8-bit per studenti in app (player con voce ed effetti, modalità presentazione) ed export MP4. Nuove dipendenze `@fontsource/press-start-2p`, `@fontsource/vt323`, dev `playwright`. Lint 0 problemi, Vitest 77 test, build e 700 chiavi i18n verificati. Branch `feat/tutorial-studenti-8bit`. |
 | 2026-10-18 | — | `fb57987` | Claude Code | Creato il documento. Go test verdi. |
 | 2026-10-18 | 0.1 | `2aae325` | Claude Code | `server/internal/app/gateway_test.go`: 11 test. Helper riusabili: `newTestServer`, `useProvider` (inietta un provider finto nella cache), `setChatRoute`, `fakeProvider`. |
 | 2026-10-18 | 0.2 | `b3d71ec` | Claude Code | `server/internal/app/judge_test.go`: 10 test (Jev, LLM, fallback, soglia, `minTurns`). Fake: `fakeDecider`, `scriptedLLM`, helper `setJudgeRoute`. |

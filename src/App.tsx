@@ -23,6 +23,7 @@ const TeacherGuidePage = lazy(() => import("./pages/TeacherGuidePage"));
 const ImpersonaTuPage = lazy(() => import("./pages/ImpersonaTuPage"));
 const TutorialsPage = lazy(() => import("./pages/TutorialsPage"));
 const TutorialPage = lazy(() => import("./pages/TutorialPage"));
+const TutorialPlayerPage = lazy(() => import("./pages/TutorialPlayerPage"));
 const named = <T extends string>(loader: () => Promise<Record<T, React.ComponentType>>, key: T) => lazy(() => loader().then((m) => ({ default: m[key] })));
 const authPages = () => import("./pages/auth/AuthPages");
 const LoginPage = named(authPages, "LoginPage");
@@ -64,6 +65,7 @@ const App = () => (
                 <Route path="/apps/you-moderate" element={<YouModeratePage />} />
                 <Route path="/apps/you-moderate/tutorial" element={<TutorialPage app="you-moderate" />} />
                 <Route path="/apps/wiki-chatbot" element={<WikiChatbotPage />} />
+                <Route path="/apps/wiki-chatbot/tutorial" element={<TutorialPage app="wiki-chatbot" />} />
                 <Route path="/apps/doppia-intervista" element={<DoppiaIntervistaPage />} />
                 <Route path="/apps/doppia-intervista/tutorial" element={<TutorialPage app="doppia-intervista" />} />
                 <Route path="/apps/convinci-tu" element={<ConvinciTuPage />} />
@@ -73,6 +75,7 @@ const App = () => (
                 <Route path="/apps/impersona-tu" element={<ImpersonaTuPage />} />
                 <Route path="/apps/impersona-tu/tutorial" element={<TutorialPage app="impersona-tu" />} />
                 <Route path="/tutorials" element={<TutorialsPage />} />
+                <Route path="/tutorial-player/:app" element={<TutorialPlayerPage />} />
                 <Route path="/about" element={<AboutPage />} />
                 <Route path="/teacher-guide" element={<TeacherGuidePage />} />
                 <Route path="/privacy" element={<LegalPage kind="privacy" />} />
