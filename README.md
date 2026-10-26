@@ -67,7 +67,7 @@ Tags: `latest` (master), branch names (e.g. `go`), versions from `v*` git tags, 
 
 ## Without Docker
 
-Requirements: Node 20+ and Go 1.26+.
+Requirements: Node 22.12+ and Go 1.26+.
 
 ```sh
 npm install
@@ -88,7 +88,7 @@ npm run check:i18n          # every translation key exists in the 5 languages
 
 ## Configuration (environment)
 
-See [.env.example](.env.example). Everything except `PORT`, `DATA_DIR`, `APP_SECRET` can also be changed later from the admin panel.
+See [.env.example](.env.example). Application settings except `PORT`, `DATA_DIR`, `APP_SECRET` can also be changed later from the admin panel. Sentry is configured through the environment and build, as described below.
 
 | Variable | Purpose |
 |---|---|
@@ -114,6 +114,14 @@ Tasks routed independently (Admin → AI & JEV):
 Each task has an ordered list of `provider/model` targets: on error or quota (429/5xx) the next one is used. Strategies: *ordered*, *free first*, *cheapest first*. When the monthly budget is exhausted, only free/local targets are used. Prices (USD per 1M tokens) are editable; OpenRouter prices are imported automatically and local models cost 0.
 
 For local models inside Docker use `http://host.docker.internal:11434/v1` (Ollama) or uncomment the `ollama` service in `docker-compose.yml`.
+
+## Sentry monitoring (optional)
+
+Set `VITE_SENTRY_DSN` before building the frontend and `SENTRY_DSN` in the Go server's runtime environment. Blank DSNs disable monitoring. Errors and HTTP/browser tracing are enabled, with 100% tracing in development and 10% in production. Automatic collection of request bodies, cookies, headers, query values, and user identity is disabled; Session Replay is not enabled.
+
+The Docker/GitHub Actions build passes the commit SHA to both SDKs. Configure the repository variable `VITE_SENTRY_DSN` and secret `SENTRY_AUTH_TOKEN` to enable the browser SDK and private source-map uploads in published images. The API DSN stays in the deployment environment. Source maps are removed after upload and are never included in ordinary builds without an upload token.
+
+See [docs/SENTRY.md](docs/SENTRY.md) for the configured projects, local setup, Docker builds, and verification.
 
 ## Privacy
 

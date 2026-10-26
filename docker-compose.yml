@@ -2,7 +2,11 @@
 # Then open http://localhost:8080 (or your domain) and create the admin account.
 services:
   debateai:
-    build: .
+    build:
+      context: .
+      args:
+        VITE_SENTRY_DSN: ${VITE_SENTRY_DSN:-}
+        SENTRY_RELEASE: ${SENTRY_RELEASE:-}
     image: debateai:latest
     restart: unless-stopped
     ports:
