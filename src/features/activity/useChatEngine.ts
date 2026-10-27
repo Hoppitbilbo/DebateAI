@@ -78,6 +78,16 @@ export const useChatEngine = ({ session, live, context, onEnded }: Options) => {
     setMessages((prev) => prev.map((m) => (m.id === id ? { ...m, ...patch } : m)));
   }, [setMessages]);
 
+  /** Keeps the chat busy (input disabled) while `work` runs. */
+  const withBusy = useCallback(async <T,>(work: () => Promise<T>) => {
+    setBusy(true);
+    try {
+      return await work();
+    } finally {
+      setBusy(false);
+    }
+  }, []);
+
   /** Failed replies the student can ask again, by message id. */
   const retries = useRef(new Map<string, () => Promise<unknown>>());
   const respondRef = useRef<(args: RespondArgs) => Promise<string | null>>();
@@ -112,14 +122,11 @@ export const useChatEngine = ({ session, live, context, onEnded }: Options) => {
    * The character speaks first, in its own voice, prompted by a hidden stage
    * direction; `fallback` is shown if no model answers.
    */
-  const open = useCallback(async (args: Omit<RespondArgs, "history"> & { cue: string; fallback: RespondArgs["fallback"] }) => {
-    setBusy(true);
-    try {
-      await respond({ ...args, history: [{ role: "user", content: args.cue }] });
-    } finally {
-      setBusy(false);
-    }
-  }, [respond]);
+  const open = useCallback(
+    (args: Omit<RespondArgs, "history"> & { cue: string; fallback: RespondArgs["fallback"] }) =>
+      withBusy(() => respond({ ...args, history: [{ role: "user", content: args.cue }] })),
+    [withBusy, respond],
+  );
 
   // ----- Live voice mode -----
   const liveAssistantId = useRef<string | null>(null);
@@ -164,14 +171,9 @@ export const useChatEngine = ({ session, live, context, onEnded }: Options) => {
     if (!text.trim() || busy || ended) return;
     addMessage({ role: "user", content: text.trim(), name: userName, speakerKey: target });
     if (liveCtl.liveMode && liveCtl.sendLiveText(text.trim())) return;
-    setBusy(true);
-    try {
-      await reply();
-    } finally {
-      setBusy(false);
-    }
+    await withBusy(reply);
     await afterTurn();
-  }, [busy, ended, addMessage, afterTurn, liveCtl]);
+  }, [busy, ended, addMessage, afterTurn, liveCtl, withBusy]);
 
   useEffect(() => {
     if (ended && liveCtl.liveMode) liveCtl.stopLive();
@@ -183,14 +185,9 @@ export const useChatEngine = ({ session, live, context, onEnded }: Options) => {
     if (!again || busy) return;
     retries.current.delete(id);
     setMessages((prev) => prev.filter((m) => m.id !== id));
-    setBusy(true);
-    try {
-      await again();
-    } finally {
-      setBusy(false);
-    }
+    await withBusy(again);
     await afterTurn();
-  }, [busy, setMessages, afterTurn]);
+  }, [busy, setMessages, afterTurn, withBusy]);
 
   const reset = useCallback((initial: ActivityMessage[] = []) => {
     liveCtl.stopLive();
@@ -213,7 +210,7 @@ export const useChatEngine = ({ session, live, context, onEnded }: Options) => {
     runTurn,
     afterTurn,
     busy,
-    setBusy,
+    withBusy,
     ended,
     live: liveCtl,
     reset,

@@ -47,37 +47,41 @@ const YouModeratePage = () => {
     if (preset.topic) setTheme(preset.topic);
   }, [preset.characters, preset.topic]);
 
-  /** One debater speaks, then the floor passes to the other; `cue` opens the debate. */
-  const speak = async (key: Key, cue?: string) => {
-    if (!a || !b) return;
-    const me = key === "a" ? a : b;
-    const other = key === "a" ? b : a;
+  /** The system prompt of one debater. */
+  const systemOf = (key: Key, me: WikiRef, other: WikiRef) => {
     const style = key === "a" ? t("platform.apps.youModerate.styleA") : t("platform.apps.youModerate.styleB");
+    return prompts.moderated(me.title, bioOf(me, summaries), other.title, theme, style, session.assignment);
+  };
+
+  /** One debater speaks, then the floor passes to the other. */
+  const speak = async (key: Key) => {
+    if (!a || !b) return;
+    const [me, other] = key === "a" ? [a, b] : [b, a];
     await engine.respond({
-      system: prompts.moderated(me.title, bioOf(me, summaries), other.title, theme, style, session.assignment),
-      history: cue ? [{ role: "user", content: cue }] : debateHistory(engine.messagesRef.current, key, moderator),
+      system: systemOf(key, me, other),
+      history: debateHistory(engine.messagesRef.current, key, moderator),
       name: me.title,
       speakerKey: key,
-      fallback: cue ? { role: "system", content: t("platform.apps.youModerate.intro", { a: a.title, b: b.title, theme }) } : undefined,
     });
     setNextSpeaker(key === "a" ? "b" : "a");
   };
 
   /** Lets a debater speak without a moderator message (the chat stays busy meanwhile). */
-  const speakAlone = async (key: Key, cue?: string) => {
-    engine.setBusy(true);
-    try {
-      await speak(key, cue);
-    } finally {
-      engine.setBusy(false);
-    }
-  };
+  const speakAlone = (key: Key) => engine.withBusy(() => speak(key));
 
+  /** The first debater opens, then the floor passes to the second. */
   const start = async () => {
     if (!a || !b) return;
     setNextSpeaker("a");
     await flow.begin(`${a.title} vs ${b.title}: ${theme}`, { characters: [a, b], theme }, []);
-    await speakAlone("a", openings.moderated(theme, b.title));
+    await engine.open({
+      system: systemOf("a", a, b),
+      cue: openings.moderated(theme, b.title),
+      name: a.title,
+      speakerKey: "a",
+      fallback: { role: "system", content: t("platform.apps.youModerate.intro", { a: a.title, b: b.title, theme }) },
+    });
+    setNextSpeaker("b");
   };
 
   const send = (text: string) => engine.runTurn(text, () => speak(target === "next" ? nextSpeaker : target), moderator);
