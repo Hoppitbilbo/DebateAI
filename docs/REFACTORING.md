@@ -1,6 +1,6 @@
 # Refactoring: Clean Code + Design Pattern
 
-Ultimo aggiornamento: 26 ottobre 2026 · Branch: `go`
+Ultimo aggiornamento: 26 ottobre 2026 · Branch: `feat/tutorial-studenti-8bit` (fasi 0-8 sul branch `go`)
 
 Questo documento è il **punto di passaggio di consegne** tra agenti di coding (e persone).
 Chi riprende il lavoro legge prima la sezione *Stato attuale*, poi esegue il primo task `[ ]` della fase in corso.
@@ -37,10 +37,10 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto · `[-]` scartato (spieg
 
 ## Stato attuale
 
-- **Piano completato** (fasi 0-8) il 2026-10-18 e unito in `master` (PR #9, merge `c0246a3`).
+- **Fasi 0-8 completate** il 2026-10-18 e unite in `master` (PR #9, merge `c0246a3`).
+- **Fase 9 in corso** (revisione del codice aggiunto dopo il piano: Sentry, giochi e transizioni, tutorial studenti). Primo task aperto: vedi la fase 9.
 - **Lavoro a metà:** nessuno.
-- **Test:** Go (pacchetti `ai`, `app`, `domain`, `httpapi`, `store`) verdi anche con `-race`; Vitest 52 test verdi; lint 0 errori e 0 avvisi.
-- **Punti aperti:** nessuno.
+- **Test:** Go (pacchetti `ai`, `app`, `domain`, `httpapi`, `store`, `main`) verdi; Vitest 80 test verdi; lint 0 errori e 0 avvisi; 701 chiavi i18n in 5 lingue.
 
 ---
 
@@ -217,6 +217,18 @@ Un'area per task, spostando l'SQL in `internal/store`:
 - [x] **8.4** (`7567de7`, `a734dc0`, `4250894`) Docente: stampa/PDF della chat, feedback scritto a mano (visibile allo studente), export dei voti in Excel. Voti in dashboard e revisione della chat in qualsiasi momento esistono già (pagina di avanzamento del compito e `/sessions/{id}`).
 - [x] **8.5** Pull request da `go` a `master`: esisteva già la #9 (https://github.com/Hoppitbilbo/DebateAI/pull/9), che include tutti i commit; aggiunto un commento con il riepilogo del refactoring e delle nuove funzioni.
 
+### Fase 9: revisione del codice aggiunto dopo il piano (richiesta del 2026-10-26)
+
+Il codice di Sentry (`845ef66`), dei tutorial studenti (`982debd`) e di giochi e transizioni (`dcfa299`) è stato scritto fuori dal piano. Controllato con le stesse regole: test verdi, ma alcuni punti tornano indietro rispetto alle fasi 1-7.
+
+- [x] **9.0** Registro: hash reali dei commit delle tre funzioni e della correzione Netlify (`1a95712`); *Stato attuale* aggiornato.
+- [ ] **9.1** Costanti `ai.RoleUser`, `ai.RoleAssistant`, `ai.EffortLow` al posto delle stringhe sparse negli adapter, nel gateway, nel giudice e nel service delle sessioni (numeri e stringhe magiche, fase 1.3).
+- [ ] **9.2** `aiGateway.Generate` (circa 65 righe, quattro compiti): tentativo su un target in un metodo a parte, ripiego sull'ultimo rifiuto in una funzione; `refusalProbeChars*2` diventa una costante con nome.
+- [ ] **9.3** `server/sentry.go`: `sentryOptions` fa tre cose (environment, release, opzioni). Estrarre `releaseName` e `tracesSampleRate`; costanti per i campionamenti e per il timeout di `Flush`.
+- [ ] **9.4** `useChatEngine`: il blocco `setBusy(true) / try / finally` è ripetuto in `open`, `retry`, `runTurn` e in `YouModeratePage.speakAlone` (DRY). Un unico `withBusy`; YouModerate apre il dibattito con `engine.open` come le altre cinque app invece del parametro `cue` dentro `speak`.
+- [ ] **9.5** `TutorialPlayerPage.tsx` contiene la modalità di rendering per il video (API su `window`, timeline, WAV in base64): spostarla in `src/features/tutorials/student/` così la pagina resta solo instradamento (fase 7).
+- [ ] **9.6** Test di `src/lib/lazyPage.ts` (precaricamento, nuovo tentativo dopo un errore di rete, `preloadPath` con query e hash), oggi senza rete di sicurezza.
+
 ---
 
 ## Note e decisioni
@@ -239,9 +251,9 @@ Un'area per task, spostando l'SQL in `internal/store`:
 
 | Data | Task | Commit | Chi | Note |
 |---|---|---|---|---|
-| 2026-10-26 | Tutorial studenti | — | Claude Code | Tutorial 8-bit per studenti in app (player con voce ed effetti, modalità presentazione) ed export MP4. Nuove dipendenze `@fontsource/press-start-2p`, `@fontsource/vt323`, dev `playwright`. Lint 0 problemi, Vitest 77 test, build e 700 chiavi i18n verificati. Branch `feat/tutorial-studenti-8bit`. |
-| 2026-10-26 | Giochi e transizioni | — | Claude Code | Apertura in personaggio, controllo risposte vuote/rifiuti con fallback, "Riprova", transizioni con morph. Nei dati locali la chiave OpenRouter risulta scaduta (401) e Nemotron free va in timeout. Go test verdi, Vitest 55 test, lint 0, build e 687 chiavi i18n verificati. |
-| 2026-10-26 | Sentry `[x]` | — | Claude Code | Verifica nell'app in esecuzione (porte e dati isolati): `DEBATEAI-WEB-1` e `DEBATEAI-SERVER-1` arrivati con stack leggibile (`sentry-verify.ts:4`, `sentry_verify.go:18`), release uguale nei due progetti, environment `development`, nessun header/cookie/corpo. Suite Go completa verde. Trigger temporanei e script di verifica rimossi. Upload delle source map: restano da impostare `VITE_SENTRY_DSN` e `SENTRY_AUTH_TOKEN` su GitHub. |
+| 2026-10-26 | Tutorial studenti | `982debd` | Claude Code | Tutorial 8-bit per studenti in app (player con voce ed effetti, modalità presentazione) ed export MP4. Nuove dipendenze `@fontsource/press-start-2p`, `@fontsource/vt323`, dev `playwright`. Lint 0 problemi, Vitest 77 test, build e 700 chiavi i18n verificati. Branch `feat/tutorial-studenti-8bit`. |
+| 2026-10-26 | Giochi e transizioni | `dcfa299` | Claude Code | Apertura in personaggio, controllo risposte vuote/rifiuti con fallback, "Riprova", transizioni con morph. Nei dati locali la chiave OpenRouter risulta scaduta (401) e Nemotron free va in timeout. Go test verdi, Vitest 55 test, lint 0, build e 687 chiavi i18n verificati. |
+| 2026-10-26 | Sentry `[x]` | `845ef66` | Claude Code | Verifica nell'app in esecuzione (porte e dati isolati): `DEBATEAI-WEB-1` e `DEBATEAI-SERVER-1` arrivati con stack leggibile (`sentry-verify.ts:4`, `sentry_verify.go:18`), release uguale nei due progetti, environment `development`, nessun header/cookie/corpo. Suite Go completa verde. Trigger temporanei e script di verifica rimossi. Upload delle source map: restano da impostare `VITE_SENTRY_DSN` e `SENTRY_AUTH_TOKEN` su GitHub. |
 | 2026-10-19 | Sentry (avvio) | — | Codex | Installati SDK React 11.8.0, plugin Vite 11.8.0 e sentry-go 0.50.0; configurazione locale, Docker/CI, privacy e guida `docs/SENTRY.md`. Lint, 52 test frontend, build e 687 chiavi i18n verificati; Go vet e test del middleware passano. Suite Go completa bloccata dalla sandbox sulle porte di `httptest`; verifica Sentry reale ancora da completare. |
 | 2026-10-18 | — | `fb57987` | Claude Code | Creato il documento. Go test verdi. |
 | 2026-10-18 | 0.1 | `2aae325` | Claude Code | `server/internal/app/gateway_test.go`: 11 test. Helper riusabili: `newTestServer`, `useProvider` (inietta un provider finto nella cache), `setChatRoute`, `fakeProvider`. |
@@ -298,3 +310,5 @@ Un'area per task, spostando l'SQL in `internal/store`:
 | 2026-10-18 | 8.5 | — | Claude Code | La PR #9 (`go` → `master`, aperta in precedenza) contiene tutto il lavoro; commento di riepilogo: https://github.com/Hoppitbilbo/DebateAI/pull/9#issuecomment-6254869651 |
 | 2026-10-18 | — | — | Claude Code | CI GitHub verde su `4abb18e` (fine fase 8: `test`, `web`, `image`). |
 | 2026-10-18 | — | `c0246a3` | Claude Code | PR #9 unita in `master` (merge commit, su richiesta). |
+| 2026-10-26 | Netlify | `1a95712` | — | Netlify costruisce il frontend invece di pubblicare i sorgenti (registrato a posteriori nel task 9.0). |
+| 2026-10-26 | 9.0 | vedi `git log` | Claude Code | Revisione del codice aggiunto dopo il piano: suite verde (Go, Vitest 80, lint 0, i18n 701), aperta la fase 9 con 6 task. Hash mancanti presi da `git log`. |
