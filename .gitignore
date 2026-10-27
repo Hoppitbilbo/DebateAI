@@ -106,3 +106,6 @@ server/webui/dist/*
 
 # Student tutorial videos (npm run render:tutorials)
 tutorial-videos/
+.vercel
+.env*
+!.env.example

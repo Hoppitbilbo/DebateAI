@@ -41,8 +41,11 @@ docker run -d --rm --name libsql -p 8089:8080 ghcr.io/tursodatabase/libsql-serve
 cd server && TURSO_DATABASE_URL=http://127.0.0.1:8089 APP_SECRET=dev go run .
 ```
 
+## Verified
+
+- A real Vercel deployment (2026-10-26): project `debateai`, Turso from the Marketplace, `https://debateai-steel.vercel.app`; the frontend and `/api/*` answer 200 and the server logs `database: remote libSQL`. The project's first deployment always goes to production.
+
 ## Not verified yet
 
-- A real Vercel deployment (services and the Go runtime are in beta).
 - Streaming of AI answers (`text/event-stream` from `POST /api/ai/generate`) through Vercel's Go runtime.
 - In-memory state (rate limiter, provider cache) is per instance on Vercel, so limits are looser than on a single Docker server.
