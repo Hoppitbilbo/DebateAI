@@ -5,6 +5,7 @@ import { useAiClient } from "@/services/aiClient";
 import { useLiveAi } from "@/hooks/useLiveAi";
 import type { ActivitySession, EndReason } from "./useActivitySession";
 import { ActivityMessage, newId } from "./types";
+import { useMessageState } from "./useMessageState";
 
 interface LiveConfig {
   systemInstruction?: string;
@@ -47,26 +48,19 @@ export const toHistory = (messages: ActivityMessage[], speakerKey?: string): Cha
  */
 export const useChatEngine = ({ session, live, context, onEnded }: Options) => {
   const ai = useAiClient();
-  const [messages, setMessagesState] = useState<ActivityMessage[]>([]);
+  const { messages, messagesRef, setMessages, streamMessages } = useMessageState();
   const [busy, setBusy] = useState(false);
-  const messagesRef = useRef<ActivityMessage[]>([]);
   const contextRef = useRef(context);
   contextRef.current = context;
   const onEndedRef = useRef(onEnded);
   onEndedRef.current = onEnded;
-
-  const setMessages = useCallback((next: ActivityMessage[] | ((prev: ActivityMessage[]) => ActivityMessage[])) => {
-    const value = typeof next === "function" ? next(messagesRef.current) : next;
-    messagesRef.current = value;
-    setMessagesState(value);
-  }, []);
 
   const ended = session.endReason === "goal_reached" || session.endReason === "turn_limit";
 
   const afterTurn = useCallback(async () => {
     const reason = await session.sync(messagesRef.current, contextRef.current);
     if (reason) onEndedRef.current?.(reason);
-  }, [session]);
+  }, [session, messagesRef]);
 
   const addMessage = useCallback((m: Omit<ActivityMessage, "id">) => {
     const msg = { ...m, id: newId() };
@@ -101,7 +95,7 @@ export const useChatEngine = ({ session, live, context, onEnded }: Options) => {
     try {
       const text = await ai.generateStream(
         { task: "chat", system: args.system, messages: args.history ?? toHistory(messagesRef.current.filter((m) => m.id !== msg.id), args.speakerKey), sessionId: session.getSessionId(), maxTokens: args.maxTokens },
-        (_d, full) => patchMessage(msg.id, { content: full }),
+        (_d, full) => streamMessages((prev) => prev.map((m) => m.id === msg.id ? { ...m, content: full } : m)),
       );
       patchMessage(msg.id, { content: text || "…", streaming: false });
       return text;
@@ -115,7 +109,7 @@ export const useChatEngine = ({ session, live, context, onEnded }: Options) => {
       toast.error(ai.formatError(e));
       return null;
     }
-  }, [addMessage, patchMessage, session, ai]);
+  }, [addMessage, patchMessage, streamMessages, messagesRef, session, ai]);
   respondRef.current = respond;
 
   /**
@@ -144,14 +138,15 @@ export const useChatEngine = ({ session, live, context, onEnded }: Options) => {
         liveAssistantId.current = addMessage({ role: "assistant", content: text, name: live?.characterName, streaming: true }).id;
       } else {
         const id = liveAssistantId.current;
-        setMessages((prev) => prev.map((m) => (m.id === id ? { ...m, content: m.content + text } : m)));
+        streamMessages((prev) => prev.map((m) => (m.id === id ? { ...m, content: m.content + text } : m)));
       }
     },
     onUserText: (text) => {
       if (!liveUserId.current) {
         liveUserId.current = addMessage({ role: "user", content: text }).id;
       } else {
-        patchMessage(liveUserId.current, { content: text });
+        const id = liveUserId.current;
+        streamMessages((prev) => prev.map((m) => m.id === id ? { ...m, content: text } : m));
       }
     },
     onTurnComplete: () => {

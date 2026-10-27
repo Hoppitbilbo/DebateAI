@@ -389,8 +389,24 @@ html, body {
   }
 }
 
+/* Let the browser skip offscreen message layout while retaining selection,
+   find-in-page and the accessibility tree. Remember measured row heights. */
+.chat-message {
+  content-visibility: auto;
+  contain-intrinsic-block-size: auto 12rem;
+}
+
+/* The growing reply must always contribute its real height to autoscroll. */
+.chat-message:last-child {
+  content-visibility: visible;
+}
+
 /* Printing a session (Print / PDF): dark theme off, readable black on white. */
 @media print {
+  .chat-message {
+    content-visibility: visible;
+    contain-intrinsic-block-size: none;
+  }
   body,
   .bg-background,
   .bg-card {

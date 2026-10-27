@@ -1,21 +1,26 @@
 import type { ReactNode } from "react";
-import { act, renderHook } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { act, cleanup, renderHook } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { ActivityMessage } from "./types";
 import { toHistory, useChatEngine } from "./useChatEngine";
 import type { ActivitySession } from "./useActivitySession";
 import type { AiClient } from "@/services/aiClient";
 import AiClientProvider from "@/services/AiClientProvider";
+import type { UseLiveAiOptions } from "@/hooks/useLiveAi";
 
 // Characterization tests for useChatEngine (refactoring task 0.4).
 
 const mocks = vi.hoisted(() => ({
   generateStream: vi.fn(),
   toastError: vi.fn(),
+  liveOptions: vi.fn(),
   live: { liveMode: false, liveState: "off", liveAvailable: false, toggleLive: vi.fn(), stopLive: vi.fn(), sendLiveText: vi.fn() },
 }));
 
-vi.mock("@/hooks/useLiveAi", () => ({ useLiveAi: () => mocks.live }));
+vi.mock("@/hooks/useLiveAi", () => ({ useLiveAi: (options: UseLiveAiOptions) => {
+  mocks.liveOptions(options);
+  return mocks.live;
+} }));
 vi.mock("sonner", () => ({ toast: { error: mocks.toastError } }));
 
 // The AI gateway is replaced through AiClientProvider, not by mocking modules.
@@ -46,6 +51,7 @@ beforeEach(() => {
   vi.clearAllMocks();
   mocks.live.liveMode = false;
 });
+afterEach(() => { cleanup(); vi.useRealTimers(); });
 
 describe("toHistory", () => {
   it("drops system, error and empty messages and maps roles", () => {
@@ -72,6 +78,48 @@ describe("toHistory", () => {
 });
 
 describe("useChatEngine", () => {
+  it("batches streaming renders and syncs the full answer before the next frame", async () => {
+    vi.useFakeTimers();
+    let onDelta: Parameters<AiClient["generateStream"]>[1];
+    let finish: (value: string) => void;
+    mocks.generateStream.mockImplementation((_options, callback) => {
+      onDelta = callback;
+      return new Promise<string>((resolve) => { finish = resolve; });
+    });
+    const session = fakeSession();
+    const { result } = renderHook(() => useChatEngine({ session }), { wrapper: withAi });
+    let turn: Promise<void>;
+    act(() => { turn = result.current.runTurn("Ciao", () => result.current.respond({ system: "s" })); });
+    act(() => onDelta("Uno", "Uno"));
+    act(() => onDelta(" due", "Uno due"));
+    expect(result.current.messages[1].content).toBe("");
+    expect(result.current.messagesRef.current[1].content).toBe("Uno due");
+    act(() => vi.advanceTimersToNextFrame());
+    expect(result.current.messages[1].content).toBe("Uno due");
+    act(() => onDelta(" tre", "Uno due tre"));
+    await act(async () => { finish("Uno due tre"); await turn; });
+    expect(result.current.messages[1]).toMatchObject({ content: "Uno due tre", streaming: false });
+    expect(session.sync).toHaveBeenCalledWith(result.current.messagesRef.current, undefined);
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it("flushes live transcriptions at turn end without losing buffered words", async () => {
+    vi.useFakeTimers();
+    const session = fakeSession();
+    const { result } = renderHook(() => useChatEngine({ session, live: { characterName: "Dante" } }), { wrapper: withAi });
+    const live = (): UseLiveAiOptions => mocks.liveOptions.mock.lastCall![0];
+    act(() => live().onUserText!("La", false));
+    act(() => live().onUserText!("La domanda", true));
+    act(() => live().onAssistantText("La", true));
+    act(() => live().onAssistantText(" risposta", false));
+    expect(result.current.messagesRef.current.map((m) => m.content)).toEqual(["La domanda", "La risposta"]);
+    await act(async () => live().onTurnComplete!());
+    expect(result.current.messages.map((m) => m.content)).toEqual(["La domanda", "La risposta"]);
+    expect(result.current.messages[1].streaming).toBe(false);
+    expect(session.sync).toHaveBeenCalledWith(result.current.messagesRef.current, undefined);
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
   it("runs a turn: user message, reply, then sync with context", async () => {
     const session = fakeSession({ sync: vi.fn().mockResolvedValue("goal_reached") });
     const onEnded = vi.fn();

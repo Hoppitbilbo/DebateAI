@@ -1,10 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Bot, Flag, Loader2, Mic, MicOff, Radio, RotateCcw, Send, User } from "lucide-react";
+import { Flag, Loader2, Mic, MicOff, Radio, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
-import MarkdownViewer from "@/components/shared/MarkdownViewer";
+import ChatMessages from "./ChatMessages";
 import { useSpeechDictation } from "@/hooks/useSpeechDictation";
 import type { LiveControls } from "@/hooks/useLiveAi";
 import type { ActivityMessage } from "../types";
@@ -55,13 +55,7 @@ const ChatPanel = ({
 }: ChatPanelProps) => {
   const { t, i18n } = useTranslation();
   const [input, setInput] = useState("");
-  const scrollRef = useRef<HTMLDivElement>(null);
   const dictation = useSpeechDictation(i18n.language, setInput);
-
-  useEffect(() => {
-    const el = scrollRef.current;
-    if (el) el.scrollTop = el.scrollHeight;
-  }, [messages]);
 
   const submit = () => {
     const text = input.trim();
@@ -90,55 +84,15 @@ const ChatPanel = ({
         </div>
       )}
 
-      <div ref={scrollRef} className={cn("space-y-4 overflow-y-auto p-4", heightClass)} aria-live="polite">
-        {messages.length === 0 && (
-          <p className="flex h-full items-center justify-center text-center text-muted-foreground">{t("platform.activity.emptyChat")}</p>
-        )}
-        {messages.map((m) =>
-          m.role === "system" ? (
-            <div key={m.id} className="mx-auto max-w-[90%] rounded-md bg-muted/60 px-3 py-2 text-center text-xs text-muted-foreground">
-              {m.content}
-            </div>
-          ) : (
-            <div key={m.id} className={cn("flex items-end gap-2", m.role === "user" ? "justify-end" : "justify-start")}>
-              {m.role !== "user" && <Bot className="mb-1 h-5 w-5 shrink-0 text-primary" aria-hidden />}
-              <div
-                className={cn(
-                  "max-w-[80%] rounded-2xl px-4 py-2.5 shadow-sm",
-                  m.role === "user"
-                    ? "rounded-br-sm bg-primary text-primary-foreground"
-                    : cn("rounded-bl-sm border border-border bg-background/60", m.speakerKey && speakerStyles?.[m.speakerKey]),
-                  m.error && "border-destructive/60 bg-destructive/10",
-                )}
-              >
-                <p className="mb-0.5 text-xs font-semibold opacity-80">
-                  {m.role === "user" ? m.name || userLabel || t("platform.common.you") : m.name || "AI"}
-                </p>
-                {m.content ? (
-                  m.role === "user" ? (
-                    <p className="whitespace-pre-wrap text-sm">{m.content}</p>
-                  ) : (
-                    <MarkdownViewer content={m.content} className="prose-sm prose-invert" />
-                  )
-                ) : (
-                  <span className="flex gap-1 py-1" aria-label={t("platform.activity.typing")}>
-                    <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-primary" />
-                    <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-primary [animation-delay:0.15s]" />
-                    <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-primary [animation-delay:0.3s]" />
-                  </span>
-                )}
-                {m.error && onRetry && canRetry?.(m.id) && (
-                  <Button size="sm" variant="outline" className="mt-2 h-7" onClick={() => onRetry(m.id)} disabled={busy}>
-                    <RotateCcw className="mr-1.5 h-3.5 w-3.5" />
-                    {t("platform.activity.retry")}
-                  </Button>
-                )}
-              </div>
-              {m.role === "user" && <User className="mb-1 h-5 w-5 shrink-0 text-primary" aria-hidden />}
-            </div>
-          ),
-        )}
-      </div>
+      <ChatMessages
+        messages={messages}
+        heightClass={heightClass}
+        userLabel={userLabel}
+        speakerStyles={speakerStyles}
+        busy={busy}
+        onRetry={onRetry}
+        canRetry={canRetry}
+      />
 
       {toolbar && <div className="border-t border-border px-4 py-2">{toolbar}</div>}
 
