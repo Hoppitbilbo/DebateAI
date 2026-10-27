@@ -38,9 +38,10 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto · `[-]` scartato (spieg
 ## Stato attuale
 
 - **Fasi 0-8 completate** il 2026-10-18 e unite in `master` (PR #9, merge `c0246a3`).
-- **Fase 9 in corso** (revisione del codice aggiunto dopo il piano: Sentry, giochi e transizioni, tutorial studenti). Primo task aperto: vedi la fase 9.
+- **Fase 9 completata** il 2026-10-26 (revisione del codice aggiunto dopo il piano: Sentry, giochi e transizioni, tutorial studenti), sul branch `feat/tutorial-studenti-8bit`, non ancora pushata.
 - **Lavoro a metà:** nessuno.
-- **Test:** Go (pacchetti `ai`, `app`, `domain`, `httpapi`, `store`, `main`) verdi; Vitest 80 test verdi; lint 0 errori e 0 avvisi; 701 chiavi i18n in 5 lingue.
+- **Punti aperti (fuori dalla fase 9):** `AuthPages.tsx`, `AddProviderDialog.tsx` e `InviteForm.tsx` ripetono lo stesso `setBusy(true) / try / finally` per i form; `src/features/navigation/morph.ts` non ha test (usa la View Transitions API, assente in jsdom); `anthropic.go` antepone ancora un proprio messaggio utente `(start)`, ormai coperto da `userFirst` nel gateway ma lasciato perché l'adapter deve funzionare anche da solo.
+- **Test:** Go (pacchetti `ai`, `app`, `domain`, `httpapi`, `store`, `main`) verdi anche con `-race`; Vitest 86 test verdi; lint 0 errori e 0 avvisi; 701 chiavi i18n in 5 lingue.
 
 ---
 
@@ -221,13 +222,13 @@ Un'area per task, spostando l'SQL in `internal/store`:
 
 Il codice di Sentry (`845ef66`), dei tutorial studenti (`982debd`) e di giochi e transizioni (`dcfa299`) è stato scritto fuori dal piano. Controllato con le stesse regole: test verdi, ma alcuni punti tornano indietro rispetto alle fasi 1-7.
 
-- [x] **9.0** Registro: hash reali dei commit delle tre funzioni e della correzione Netlify (`1a95712`); *Stato attuale* aggiornato.
-- [ ] **9.1** Costanti `ai.RoleUser`, `ai.RoleAssistant`, `ai.EffortLow` al posto delle stringhe sparse negli adapter, nel gateway, nel giudice e nel service delle sessioni (numeri e stringhe magiche, fase 1.3).
-- [ ] **9.2** `aiGateway.Generate` (circa 65 righe, quattro compiti): tentativo su un target in un metodo a parte, ripiego sull'ultimo rifiuto in una funzione; `refusalProbeChars*2` diventa una costante con nome.
-- [ ] **9.3** `server/sentry.go`: `sentryOptions` fa tre cose (environment, release, opzioni). Estrarre `releaseName` e `tracesSampleRate`; costanti per i campionamenti e per il timeout di `Flush`.
-- [ ] **9.4** `useChatEngine`: il blocco `setBusy(true) / try / finally` è ripetuto in `open`, `retry`, `runTurn` e in `YouModeratePage.speakAlone` (DRY). Un unico `withBusy`; YouModerate apre il dibattito con `engine.open` come le altre cinque app invece del parametro `cue` dentro `speak`.
-- [ ] **9.5** `TutorialPlayerPage.tsx` contiene la modalità di rendering per il video (API su `window`, timeline, WAV in base64): spostarla in `src/features/tutorials/student/` così la pagina resta solo instradamento (fase 7).
-- [ ] **9.6** Test di `src/lib/lazyPage.ts` (precaricamento, nuovo tentativo dopo un errore di rete, `preloadPath` con query e hash), oggi senza rete di sicurezza.
+- [x] **9.0** (`8599747`) Registro: hash reali dei commit delle tre funzioni e della correzione Netlify (`1a95712`); *Stato attuale* aggiornato.
+- [x] **9.1** (`cc5c5b4`) Costanti `ai.RoleUser`, `ai.RoleAssistant`, `ai.EffortLow` al posto delle stringhe sparse negli adapter, nel gateway, nel giudice e nel service delle sessioni (numeri e stringhe magiche, fase 1.3).
+- [x] **9.2** (`89e5909`) `aiGateway.Generate` (circa 65 righe, quattro compiti): tentativo su un target in un metodo a parte, ripiego sull'ultimo rifiuto in una funzione; `refusalProbeChars*2` diventa una costante con nome.
+- [x] **9.3** (`7042fdc`) `server/sentry.go`: `sentryOptions` fa tre cose (environment, release, opzioni). Estrarre `releaseName` e `tracesSampleRate`; costanti per i campionamenti e per il timeout di `Flush`.
+- [x] **9.4** (`8ca6486`) `useChatEngine`: il blocco `setBusy(true) / try / finally` è ripetuto in `open`, `retry`, `runTurn` e in `YouModeratePage.speakAlone` (DRY). Un unico `withBusy`; YouModerate apre il dibattito con `engine.open` come le altre cinque app invece del parametro `cue` dentro `speak`.
+- [x] **9.5** (`6840710`) `TutorialPlayerPage.tsx` contiene la modalità di rendering per il video (API su `window`, timeline, WAV in base64): spostarla in `src/features/tutorials/student/` così la pagina resta solo instradamento (fase 7).
+- [x] **9.6** (`653f22a`) Test di `src/lib/lazyPage.ts` (precaricamento, nuovo tentativo dopo un errore di rete, `preloadPath` con query e hash), oggi senza rete di sicurezza.
 
 ---
 
@@ -311,4 +312,10 @@ Il codice di Sentry (`845ef66`), dei tutorial studenti (`982debd`) e di giochi e
 | 2026-10-18 | — | — | Claude Code | CI GitHub verde su `4abb18e` (fine fase 8: `test`, `web`, `image`). |
 | 2026-10-18 | — | `c0246a3` | Claude Code | PR #9 unita in `master` (merge commit, su richiesta). |
 | 2026-10-26 | Netlify | `1a95712` | — | Netlify costruisce il frontend invece di pubblicare i sorgenti (registrato a posteriori nel task 9.0). |
-| 2026-10-26 | 9.0 | vedi `git log` | Claude Code | Revisione del codice aggiunto dopo il piano: suite verde (Go, Vitest 80, lint 0, i18n 701), aperta la fase 9 con 6 task. Hash mancanti presi da `git log`. |
+| 2026-10-26 | 9.0 | `8599747` | Claude Code | Revisione del codice aggiunto dopo il piano: suite verde (Go, Vitest 80, lint 0, i18n 701), aperta la fase 9 con 6 task. Hash mancanti presi da `git log`. |
+| 2026-10-26 | 9.1 | `cc5c5b4` | Claude Code | `ai.RoleUser`, `ai.RoleAssistant`, `ai.EffortLow` negli adapter (Anthropic, Gemini, OpenAI), gateway, giudice e `countStudentTurns`; `roleSystem` in `app/judge.go` per gli avvisi dell'app nel transcript. Nessuna stringa di ruolo rimasta fuori dai test. |
+| 2026-10-26 | 9.2 | `89e5909` | Claude Code | `Generate` da 65 a 42 righe: `genCall`, `tryTarget` (timeout, screening, log dell'uso; in caso di rifiuto restituisce la risposta insieme all'errore) e `deliver`. Costante `refusalScanChars`. `go test -race ./internal/app` verde. |
+| 2026-10-26 | 9.3 | `7042fdc` | Claude Code | `releaseName`, `tracesSampleRate`, costanti `defaultEnvironment`, `devTracesSampleRate`, `prodTracesSampleRate`, `sentryFlushTimeout` (usata da `main.go`). Valori invariati; test di `sentry_test.go` verdi. |
+| 2026-10-26 | 9.4 | `8ca6486` | Claude Code | `withBusy` in `useChatEngine` usato da `open`, `runTurn`, `retry` e da `YouModeratePage.speakAlone`; il motore esporta `withBusy` al posto di `setBusy`. YouModerate apre con `engine.open` (helper `systemOf`); `speak` non ha più il parametro `cue`. |
+| 2026-10-26 | 9.5 | `6840710` | Claude Code | `RenderStage`, `TutorialRenderApi` e `toBase64` in `src/features/tutorials/student/RenderStage.tsx`; la pagina sceglie solo tra player, render e 404. Verificato in Chromium headless (Playwright, server Vite): `window.__tutorial` pronto, 6 voci, timeline ricalcolata, WAV generato, nessun errore di pagina. |
+| 2026-10-26 | 9.6 | `653f22a` | Claude Code | `src/lib/lazyPage.test.ts` (6 test): sospensione e render immediato, un solo download, nuovo tentativo dopo un errore, `preloadPath` con query/hash e mai in errore, `preloadPrefix`. Suite completa: Go verde (anche `-race`), Vitest 86, lint 0, build ok, 701 chiavi i18n. Fase 9 completata. |
