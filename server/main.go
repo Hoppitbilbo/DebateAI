@@ -22,7 +22,7 @@ func main() {
 	if err := initSentry(); err != nil {
 		log.Fatalf("sentry: %v", err)
 	}
-	defer sentry.Flush(2 * time.Second)
+	defer sentry.Flush(sentryFlushTimeout)
 
 	cfg := app.LoadConfig()
 	db, err := app.OpenDB(cfg.DatabasePath)
