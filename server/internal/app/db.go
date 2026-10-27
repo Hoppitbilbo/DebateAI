@@ -18,8 +18,14 @@ import (
 	"github.com/Hoppitbilbo/DebateAI/server/internal/store"
 )
 
-// OpenDB opens the database and applies the schema (see store.Open).
-func OpenDB(path string) (*sql.DB, error) { return store.Open(path) }
+// OpenDB opens the configured database, remote (libSQL) or a local SQLite
+// file, and applies the schema.
+func OpenDB(cfg Config) (*sql.DB, error) {
+	if cfg.DatabaseURL != "" {
+		return store.OpenRemote(cfg.DatabaseURL, cfg.DatabaseToken)
+	}
+	return store.Open(cfg.DatabasePath)
+}
 
 func now() string { return domain.Now() }
 

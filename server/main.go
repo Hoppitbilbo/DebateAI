@@ -25,7 +25,7 @@ func main() {
 	defer sentry.Flush(sentryFlushTimeout)
 
 	cfg := app.LoadConfig()
-	db, err := app.OpenDB(cfg.DatabasePath)
+	db, err := app.OpenDB(cfg)
 	if err != nil {
 		log.Fatalf("database: %v", err)
 	}
@@ -42,7 +42,7 @@ func main() {
 	}
 
 	go func() {
-		log.Printf("DebateAI listening on http://localhost:%s (data: %s)", cfg.Port, cfg.DataDir)
+		log.Printf("DebateAI listening on http://localhost:%s (database: %s)", cfg.Port, cfg.Storage())
 		if err := httpSrv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			log.Fatal(err)
 		}

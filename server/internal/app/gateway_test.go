@@ -66,7 +66,7 @@ func newTestServer(t *testing.T) *Services {
 	t.Helper()
 	dir := t.TempDir()
 	cfg := Config{DataDir: dir, DatabasePath: filepath.Join(dir, "t.db"), Secret: "test-secret"}
-	db, err := OpenDB(cfg.DatabasePath)
+	db, err := OpenDB(cfg)
 	if err != nil {
 		t.Fatal(err)
 	}

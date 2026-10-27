@@ -10,9 +10,13 @@ import (
 )
 
 type Config struct {
-	Port          string
-	DataDir       string
-	DatabasePath  string
+	Port         string
+	DataDir      string
+	DatabasePath string
+	// DatabaseURL selects a remote libSQL database (Turso) instead of the
+	// SQLite file in DataDir; DatabaseToken is its auth token.
+	DatabaseURL   string
+	DatabaseToken string
 	Secret        string
 	PublicURL     string
 	StaticDir     string
@@ -55,15 +59,33 @@ func LoadConfig() Config {
 			Security: env("SMTP_SECURITY", "starttls"),
 		},
 	}
+	c.DatabaseURL = env("TURSO_DATABASE_URL", "")
+	c.DatabaseToken = env("TURSO_AUTH_TOKEN", "")
+	c.Secret = env("APP_SECRET", "")
+	if c.DatabaseURL != "" {
+		// Nothing is kept on disk: the host may have none (Vercel). A secret
+		// generated here would be lost, and with it every stored API key.
+		if c.Secret == "" {
+			log.Fatal("APP_SECRET is required with TURSO_DATABASE_URL")
+		}
+		return c
+	}
 	if err := os.MkdirAll(c.DataDir, 0o750); err != nil {
 		log.Fatalf("cannot create data dir %s: %v", c.DataDir, err)
 	}
 	c.DatabasePath = env("DATABASE_PATH", filepath.Join(c.DataDir, "debateai.db"))
-	c.Secret = env("APP_SECRET", "")
 	if c.Secret == "" {
 		c.Secret = loadOrCreateSecret(filepath.Join(c.DataDir, "secret.key"))
 	}
 	return c
+}
+
+// Storage describes where the data lives, for the startup log (never the token).
+func (c Config) Storage() string {
+	if c.DatabaseURL != "" {
+		return "remote libSQL"
+	}
+	return c.DatabasePath
 }
 
 // loadOrCreateSecret keeps a random secret in the data dir so encrypted API

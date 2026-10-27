@@ -20,7 +20,7 @@ func newTestAPI(t *testing.T) *testAPI {
 	t.Helper()
 	dir := t.TempDir()
 	cfg := app.Config{DataDir: dir, DatabasePath: filepath.Join(dir, "t.db"), Secret: "test-secret"}
-	db, err := app.OpenDB(cfg.DatabasePath)
+	db, err := app.OpenDB(cfg)
 	if err != nil {
 		t.Fatal(err)
 	}

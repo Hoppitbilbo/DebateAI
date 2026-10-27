@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/tursodatabase/libsql-client-go/libsql"
 	_ "modernc.org/sqlite"
 )
 
@@ -160,10 +161,33 @@ func Open(path string) (*sql.DB, error) {
 	}
 	// SQLite allows one writer: a single connection avoids SQLITE_BUSY storms.
 	db.SetMaxOpenConns(1)
+	return prepare(db)
+}
+
+// OpenRemote opens a libSQL database over the network (Turso: a libsql://
+// URL and its auth token; a local sqld: an http:// URL and no token) and
+// applies the schema. It is the same SQL as Open, for hosts without a
+// persistent disk such as Vercel.
+func OpenRemote(url, authToken string) (*sql.DB, error) {
+	var opts []libsql.Option
+	if authToken != "" {
+		opts = append(opts, libsql.WithAuthToken(authToken))
+	}
+	connector, err := libsql.NewConnector(url, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return prepare(sql.OpenDB(connector))
+}
+
+// prepare applies the schema and the migrations to a freshly opened database.
+func prepare(db *sql.DB) (*sql.DB, error) {
 	if _, err := db.Exec(schema); err != nil {
+		db.Close()
 		return nil, fmt.Errorf("migrate: %w", err)
 	}
 	if err := applyMigrations(db); err != nil {
+		db.Close()
 		return nil, err
 	}
 	return db, nil
