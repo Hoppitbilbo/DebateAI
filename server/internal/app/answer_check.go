@@ -24,6 +24,10 @@ var (
 // it: refusals always start with the very first sentence.
 const refusalProbeChars = 160
 
+// refusalScanChars is how much of an answer isRefusal reads: twice the probe,
+// so a refusal phrase that straddles the end of the probe is still found.
+const refusalScanChars = 2 * refusalProbeChars
+
 // The phrases models use when they step out of the role, in the five
 // interface languages and in English (models often refuse in English).
 var refusalRE = regexp.MustCompile(`(?i)` + strings.Join([]string{
@@ -44,8 +48,8 @@ var refusalRE = regexp.MustCompile(`(?i)` + strings.Join([]string{
 
 // isRefusal checks only the opening of the answer, where refusals are.
 func isRefusal(text string) bool {
-	if utf8.RuneCountInString(text) > refusalProbeChars*2 {
-		text = string([]rune(text)[:refusalProbeChars*2])
+	if utf8.RuneCountInString(text) > refusalScanChars {
+		text = string([]rune(text)[:refusalScanChars])
 	}
 	return refusalRE.MatchString(text)
 }

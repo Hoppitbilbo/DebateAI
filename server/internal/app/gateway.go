@@ -191,41 +191,26 @@ func (g *aiGateway) Generate(ctx context.Context, task string, req ai.Request, u
 		}
 		return nil, ErrNoTargets
 	}
-	req.Messages = userFirst(req.Messages)
-	var out *GenResult
+	call := genCall{task: task, req: req, userID: userID, sessionID: sessionID}
+	call.req.Messages = userFirst(req.Messages)
 	var started atomic.Bool
+	if onDelta != nil {
+		call.onDelta = func(d string) error {
+			started.Store(true)
+			return onDelta(d)
+		}
+	}
 	// When every model refuses, the last refusal is still better than an error.
-	var refused *GenResult
+	var out, refused *GenResult
 	err := g.runFallbackChain("ai "+task, targets, func(t RouteTarget, cp *cachedProvider) error {
-		tm, ok := cp.p.(ai.TextModel)
-		if !ok {
-			return errSkipTarget // e.g. Jev only answers structured questions (see judge.go)
-		}
-		r := req
-		r.Model = t.Model
-		if r.ReasoningEffort == "" && (task == TaskChat || task == TaskUtility) {
-			r.ReasoningEffort = ai.EffortLow // characters must answer quickly
-		}
-		model := g.meterText(screenAnswers(ai.WithFirstTokenTimeout(tm, firstTokenTimeout), task),
-			usageEntry{UserID: userID, SessionID: sessionID, ProviderID: t.ProviderID, Provider: cp.name, Model: t.Model, Task: task})
-		var res *ai.Response
-		var err error
-		if onDelta != nil {
-			res, err = model.Stream(ctx, r, func(d string) error {
-				started.Store(true)
-				return onDelta(d)
-			})
-		} else {
-			res, err = model.Generate(ctx, r)
-		}
-		var refusal refusedAnswer
-		if errors.As(err, &refusal) {
-			refused = &GenResult{Text: refusal.text, ProviderID: t.ProviderID, Provider: cp.name, Model: t.Model}
-		}
+		res, err := g.tryTarget(ctx, call, t, cp)
 		if err != nil {
+			if res != nil { // only a refusal comes with an answer
+				refused = res
+			}
 			return err
 		}
-		out = &GenResult{Text: res.Text, ProviderID: t.ProviderID, Provider: cp.name, Model: t.Model}
+		out = res
 		return nil
 	}, func(err error) bool {
 		// Fall back only before the student saw any text, and only for
@@ -233,15 +218,63 @@ func (g *aiGateway) Generate(ctx context.Context, task string, req ai.Request, u
 		return started.Load() || !retryable(err) || ctx.Err() != nil
 	})
 	if err != nil && refused != nil && !started.Load() && errors.Is(err, errRefusal) {
-		if onDelta != nil {
-			if sendErr := onDelta(refused.Text); sendErr != nil {
-				return nil, sendErr
-			}
-		}
-		return refused, nil
+		return deliver(refused, onDelta)
 	}
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
+}
+
+// genCall is one Generate request, tried on each route target in turn.
+type genCall struct {
+	task              string
+	req               ai.Request
+	userID, sessionID *int64
+	onDelta           func(string) error
+}
+
+// tryTarget sends the request to one route target, with the first-token
+// timeout, the answer screening and the usage log. On a refusal it returns
+// the refused answer together with the error.
+func (g *aiGateway) tryTarget(ctx context.Context, c genCall, t RouteTarget, cp *cachedProvider) (*GenResult, error) {
+	tm, ok := cp.p.(ai.TextModel)
+	if !ok {
+		return nil, errSkipTarget // e.g. Jev only answers structured questions (see judge.go)
+	}
+	r := c.req
+	r.Model = t.Model
+	if r.ReasoningEffort == "" && (c.task == TaskChat || c.task == TaskUtility) {
+		r.ReasoningEffort = ai.EffortLow // characters must answer quickly
+	}
+	model := g.meterText(screenAnswers(ai.WithFirstTokenTimeout(tm, firstTokenTimeout), c.task),
+		usageEntry{UserID: c.userID, SessionID: c.sessionID, ProviderID: t.ProviderID, Provider: cp.name, Model: t.Model, Task: c.task})
+	var res *ai.Response
+	var err error
+	if c.onDelta != nil {
+		res, err = model.Stream(ctx, r, c.onDelta)
+	} else {
+		res, err = model.Generate(ctx, r)
+	}
+	result := func(text string) *GenResult {
+		return &GenResult{Text: text, ProviderID: t.ProviderID, Provider: cp.name, Model: t.Model}
+	}
+	var refusal refusedAnswer
+	if errors.As(err, &refusal) {
+		return result(refusal.text), err
+	}
+	if err != nil {
+		return nil, err
+	}
+	return result(res.Text), nil
+}
+
+// deliver sends a result that was held back (a refusal) to the stream, if any.
+func deliver(res *GenResult, onDelta func(string) error) (*GenResult, error) {
+	if onDelta != nil {
+		if err := onDelta(res.Text); err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
 }
