@@ -6,6 +6,7 @@ import (
 	"errors"
 	"strings"
 
+	"github.com/Hoppitbilbo/DebateAI/server/internal/ai"
 	"github.com/Hoppitbilbo/DebateAI/server/internal/domain"
 )
 
@@ -231,7 +232,7 @@ func lastMessages(msgs []TranscriptMessage, n int) []TranscriptMessage {
 func countStudentTurns(msgs []TranscriptMessage) int {
 	turns := 0
 	for _, m := range msgs {
-		if m.Role == "user" && strings.TrimSpace(m.Content) != "" {
+		if m.Role == ai.RoleUser && strings.TrimSpace(m.Content) != "" {
 			turns++
 		}
 	}

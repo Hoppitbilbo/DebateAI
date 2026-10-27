@@ -173,10 +173,10 @@ var firstTokenTimeout = 25 * time.Second
 const conversationStart = "(The conversation begins.)"
 
 func userFirst(msgs []ai.Message) []ai.Message {
-	if len(msgs) == 0 || msgs[0].Role == "user" {
+	if len(msgs) == 0 || msgs[0].Role == ai.RoleUser {
 		return msgs
 	}
-	return append([]ai.Message{{Role: "user", Content: conversationStart}}, msgs...)
+	return append([]ai.Message{{Role: ai.RoleUser, Content: conversationStart}}, msgs...)
 }
 
 var ErrNoTargets = errors.New("no AI model is configured for this task (ask the administrator to configure providers)")
@@ -204,7 +204,7 @@ func (g *aiGateway) Generate(ctx context.Context, task string, req ai.Request, u
 		r := req
 		r.Model = t.Model
 		if r.ReasoningEffort == "" && (task == TaskChat || task == TaskUtility) {
-			r.ReasoningEffort = "low" // characters must answer quickly
+			r.ReasoningEffort = ai.EffortLow // characters must answer quickly
 		}
 		model := g.meterText(screenAnswers(ai.WithFirstTokenTimeout(tm, firstTokenTimeout), task),
 			usageEntry{UserID: userID, SessionID: sessionID, ProviderID: t.ProviderID, Provider: cp.name, Model: t.Model, Task: task})

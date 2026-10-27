@@ -20,8 +20,17 @@ const (
 	KindJev       = "jev"
 )
 
+// Message roles. Any role other than RoleAssistant is sent as RoleUser.
+const (
+	RoleUser      = "user"
+	RoleAssistant = "assistant"
+)
+
+// EffortLow is the ReasoningEffort for quick answers.
+const EffortLow = "low"
+
 type Message struct {
-	Role    string `json:"role"` // "user" | "assistant"
+	Role    string `json:"role"` // RoleUser | RoleAssistant
 	Content string `json:"content"`
 }
 

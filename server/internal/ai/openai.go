@@ -65,8 +65,8 @@ func (p *openAIProvider) body(req Request, stream bool) oaRequest {
 	}
 	for _, m := range req.Messages {
 		role := m.Role
-		if role != "assistant" {
-			role = "user"
+		if role != RoleAssistant {
+			role = RoleUser
 		}
 		msgs = append(msgs, oaMessage{Role: role, Content: m.Content})
 	}

@@ -37,7 +37,7 @@ func (p *geminiProvider) build(req Request) ([]*genai.Content, *genai.GenerateCo
 	contents := make([]*genai.Content, 0, len(req.Messages))
 	for _, m := range req.Messages {
 		role := genai.Role(genai.RoleUser)
-		if m.Role == "assistant" {
+		if m.Role == RoleAssistant {
 			role = genai.RoleModel
 		}
 		// Gemini rejects consecutive turns with the same role: merge them.

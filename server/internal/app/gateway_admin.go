@@ -197,7 +197,7 @@ func (g *aiGateway) TestProvider(ctx context.Context, id int64, model string, us
 	if !ok {
 		return nil, fmt.Errorf("%w: %v", ErrProviderSetup, ErrNoText)
 	}
-	res, err := g.meterText(tm, entry).Generate(ctx, ai.Request{Model: model, Messages: []ai.Message{{Role: "user", Content: "Reply with the single word: ok"}}, MaxTokens: 50})
+	res, err := g.meterText(tm, entry).Generate(ctx, ai.Request{Model: model, Messages: []ai.Message{{Role: ai.RoleUser, Content: "Reply with the single word: ok"}}, MaxTokens: 50})
 	if err != nil {
 		return nil, err
 	}

@@ -45,9 +45,9 @@ func (p *anthropicProvider) base() string {
 func (p *anthropicProvider) build(req Request, stream bool) anRequest {
 	msgs := make([]anMessage, 0, len(req.Messages))
 	for _, m := range req.Messages {
-		role := "user"
-		if m.Role == "assistant" {
-			role = "assistant"
+		role := RoleUser
+		if m.Role == RoleAssistant {
+			role = RoleAssistant
 		}
 		if n := len(msgs); n > 0 && msgs[n-1].Role == role {
 			msgs[n-1].Content += "\n\n" + m.Content
@@ -56,8 +56,8 @@ func (p *anthropicProvider) build(req Request, stream bool) anRequest {
 		msgs = append(msgs, anMessage{Role: role, Content: m.Content})
 	}
 	// The Messages API requires the first turn to come from the user.
-	if len(msgs) == 0 || msgs[0].Role != "user" {
-		msgs = append([]anMessage{{Role: "user", Content: "(start)"}}, msgs...)
+	if len(msgs) == 0 || msgs[0].Role != RoleUser {
+		msgs = append([]anMessage{{Role: RoleUser, Content: "(start)"}}, msgs...)
 	}
 	system := req.System
 	if req.JSON {
