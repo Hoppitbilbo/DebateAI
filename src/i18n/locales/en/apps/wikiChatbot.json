@@ -1,8 +1,8 @@
 {
   "name": "Wiki Chatbot",
-  "title": "WikiChat AI",
+  "title": "WikiChat",
   "subtitle": "Chat with historical figures",
-  "description": "Converse with characters and concepts based on Wikipedia",
+  "description": "Talk to a Wikipedia page: a person, place, event or idea answers you in the first person.",
   "setup": {
     "chooseWikiTopic": "Choose a Wikipedia Topic",
     "selectDescription": "Select a Wikipedia page to start a conversation",

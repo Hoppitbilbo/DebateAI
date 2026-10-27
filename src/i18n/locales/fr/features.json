@@ -1,27 +1,27 @@
 {
-  "title": "Fonctionnalités",
-  "subtitle": "Outils Éducatifs Basés sur l'IA",
-  "description": "Explorez notre collection d'applications d'IA conçues pour transformer l'apprentissage en une expérience interactive et engageante.",
+  "title": "Les apps",
+  "subtitle": "Cinq façons de faire parler l'histoire",
+  "description": "Chaque app entraîne une compétence différente : questionner, modérer, argumenter, se mettre à la place de l'autre.",
   "items": {
     "youModerate": {
-      "name": "C’est toi qui modères",
-      "description": "Simule des conversations avec des personnages historiques à travers le contenu de Wikipédia, rendant l'apprentissage interactif et engageant."
+      "name": "Modère toi",
+      "description": "Deux personnages débattent d'un sujet que tu choisis. Tu modères : tu donnes la parole, poses des questions, les ramènes au sujet."
     },
     "personaggioMisterioso": {
-      "name": "Personnage Mystérieux",
-      "description": "Jouez à deviner des personnages historiques et littéraires à travers des questions et réponses avec l'IA."
+      "name": "Personnage mystère",
+      "description": "Un personnage cache son identité. Tu as peu de questions pour la découvrir, puis tu tentes ta chance."
     },
     "doppiaIntervista": {
-      "name": "Double Interview",
-      "description": "Modérez un dialogue entre deux personnages historiques sur un sujet spécifique, explorant différentes perspectives."
+      "name": "Double interview",
+      "description": "Pose les mêmes questions à deux personnages et compare leurs réponses, comme dans une double interview à la télé."
     },
     "convinciTu": {
-      "name": "Convainquez Vous",
-      "description": "Défiez vos compétences de persuasion en essayant de faire changer d'avis des personnages historiques sur des sujets controversés."
+      "name": "Convaincs-le",
+      "description": "Choisis une idée et essaie de convaincre un personnage historique. Il ne change d'avis que si tes arguments tiennent."
     },
     "impersonaTu": {
-      "name": "Incarnez Vous",
-      "description": "Dialoguez avec un personnage historique en en interprétant un autre. Testez vos compétences d'incarnation !"
+      "name": "Incarne-le",
+      "description": "Joue un personnage historique pendant que l'IA en joue un autre. Elle te pose des questions pour voir si tu le connais bien."
     }
   }
 }

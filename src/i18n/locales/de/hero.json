@@ -1,11 +1,31 @@
 {
-  "title": "Interaktives Lernen mit",
-  "subtitle": "KI-gestützten Gesprächen",
-  "description": "Sprechen Sie mit den brillantesten Köpfen aller Zeiten! Treffen Sie Wissenschaftler, Schriftsteller, Mathematiker, Entdecker, Künstler und Philosophen. Entdecken Sie ihre Geheimnisse, ihre Leidenschaften und verwandeln Sie das Lernen in ein außergewöhnliches Abenteuer!",
-  "tryApps": "Probieren Sie unsere Apps",
-  "sampleChat": {
-    "bot1": "Nun gut, junger Mann, wer sind Sie? Man sagte mir, Sie müssen mich für die Schule interviewen. Kommen Sie, verschwenden wir keine Zeit!",
-    "user": "Leonardo DaVinci, schien es Ihnen normal, Waffen für Leute zu erschaffen, die nur mehr Macht wollten?",
-    "bot2": "Böse von Anfang an, das gefällt mir, Sie scheinen mir toskanisch zu sein. Mein Lieber, leider konnte ich nicht anders. Wir Künstler mussten uns in dieser Zeit den Mäzenen unterwerfen, sonst wären wir verhungert. Aber keine Sorge, fast keine meiner Waffen wurde gebaut. Es waren nur Skizzen. Ein bisschen wie wenn Sie im Lebenslauf-Portfolio übertreiben"
+  "title": "Interviewe die Menschen,",
+  "subtitle": "die Geschichte gemacht haben",
+  "description": "Wähle eine Figur aus Wikipedia und sprich im Unterricht mit ihr: Forscherinnen, Künstler, Entdecker, Philosophinnen. Stell Fragen, hinterfrage Antworten, versuche zu überzeugen. Am Ende bekommst du Feedback zu deinem Denken.",
+  "tryApps": "App wählen",
+  "story": {
+    "kicker": "So funktioniert's",
+    "title": "Ein Unterricht, der antwortet",
+    "galileo": "Galileo Galilei",
+    "student": "Du",
+    "typing": "schreibt…",
+    "cta": "Probier es selbst",
+    "steps": {
+      "1": "Wähle eine Figur",
+      "2": "Stell deine Fragen",
+      "3": "Hinterfrage die Antworten",
+      "4": "Reflektiere und erhalte Feedback"
+    },
+    "messages": {
+      "s1": "Hallo Galileo! Darf ich dich wirklich interviewen?",
+      "g1": "Natürlich! Wähle jemanden aus Wikipedia, und ich antworte als diese Person, mit dem, was wir über ihr Leben wissen.",
+      "s2": "Dann sag mir: Warum hast du dein Fernrohr auf den Himmel gerichtet?",
+      "g2": "Ich wollte es mit eigenen Augen sehen. Und ich entdeckte vier Monde, die um Jupiter kreisen!",
+      "s3": "Bist du sicher? Viele haben dir damals nicht geglaubt.",
+      "g3": "Guter Einwand! Hier argumentiert man mit Belegen: Eine Antwort abzuschreiben reicht nicht.",
+      "s4": "Und was passiert am Ende?",
+      "g4": "Du schreibst auf, was du gelernt hast, und bekommst Feedback zu deinem Denken. Bereit?"
+    },
+    "online": "online"
   }
 }

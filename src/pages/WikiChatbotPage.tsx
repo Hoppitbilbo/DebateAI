@@ -70,6 +70,7 @@ const WikiChatbotPage = () => {
         onSend: (text) => engine.runTurn(text, () => engine.respond({ system, name: page?.title })),
         placeholder: t("platform.apps.wikiChatbot.placeholder", { title: page?.title }),
         live: engine.live,
+        avatarFallback: "page",
       }}
       reflection={{
         prompt: t("platform.apps.wikiChatbot.reflectionPrompt", { title: page?.title }),

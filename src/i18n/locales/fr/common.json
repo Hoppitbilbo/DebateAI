@@ -3,7 +3,7 @@
   "searchPlaceholder": "Rechercher...",
   "noResults": "Aucun résultat trouvé",
   "loading": "Chargement...",
-  "error": "Erreur",
+  "error": "Un problème de notre côté a empêché la page de se charger. Recharge la page pour réessayer.",
   "tryAgain": "Réessayer",
   "retry": "Réessayer",
   "cancel": "Annuler",

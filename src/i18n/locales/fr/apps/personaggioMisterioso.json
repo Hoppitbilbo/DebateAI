@@ -1,8 +1,8 @@
 {
   "name": "Personnage Mystérieux",
-  "title": "Personnage Mystérieux",
+  "title": "Personnage mystère",
   "subtitle": "Devinez la figure historique",
-  "description": "Posez des questions pour découvrir qui est le personnage mystérieux",
+  "description": "Un personnage cache son identité. Tu as peu de questions pour la découvrir, puis tu tentes ta chance.",
   "setup": {
     "selectCharacterLabel": "Choisissez le Personnage à Deviner",
     "selectCharacterError": "Vous devez sélectionner un personnage pour commencer le jeu",

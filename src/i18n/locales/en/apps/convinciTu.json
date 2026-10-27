@@ -1,8 +1,8 @@
 {
   "name": "PersuadeMe",
-  "title": "PersuadeMe",
+  "title": "Convince them",
   "subtitle": "Try to convince a historical figure on a specific topic",
-  "description": "Try to convince historical figures of your ideas",
+  "description": "Pick an idea and try to win over a historical character. They only change their mind if your arguments hold up.",
   "newChatSuccess": "New chat started!",
   "errors": {
     "responseGeneration": "Error generating response.",

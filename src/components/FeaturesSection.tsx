@@ -1,5 +1,6 @@
 
-import { Book, School, Users, Link, User } from "lucide-react";
+import AppArt from "@/components/AppArt";
+import { appArtSlug } from "@/lib/appArt";
 import { useScrollReveal } from "@/hooks/use-scroll-reveal";
 import { useTranslation } from "react-i18next";
 import { Link as RouterLink } from "react-router-dom";
@@ -13,31 +14,26 @@ const FeaturesSection = () => {
     {
       name: t('features.items.youModerate.name'),
       description: t('features.items.youModerate.description'),
-      icon: <Book className="h-6 w-6" />,
       link: "/apps/you-moderate"
     },
     {
       name: t('features.items.personaggioMisterioso.name'),
       description: t('features.items.personaggioMisterioso.description'),
-      icon: <Users className="h-6 w-6" />,
       link: "/apps/personaggio-misterioso"
     },
     {
       name: t('features.items.doppiaIntervista.name'),
       description: t('features.items.doppiaIntervista.description'),
-      icon: <Link className="h-6 w-6" />,
       link: "/apps/doppia-intervista"
     },
     {
       name: t('features.items.convinciTu.name'),
       description: t('features.items.convinciTu.description'),
-      icon: <School className="h-6 w-6" />,
       link: "/apps/convinci-tu"
     },
     {
       name: t('features.items.impersonaTu.name'),
       description: t('features.items.impersonaTu.description'),
-      icon: <User className="h-6 w-6" />,
       link: "/apps/impersona-tu"
     }
   ];
@@ -46,25 +42,25 @@ const FeaturesSection = () => {
   const headerReveal = useScrollReveal({ threshold: 0.1 });
 
   return (
-    <div className="py-16 bg-secondary">
+    <div className="py-16 sm:py-24 bg-secondary border-y border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div 
           ref={headerReveal.ref as React.RefObject<HTMLDivElement>}
           className={`lg:text-center reveal-animation ${headerReveal.isVisible ? 'revealed' : ''}`}
         >
-          <h2 className="text-base text-education font-semibold tracking-wide uppercase">
+          <h2 className="font-body text-sm font-medium uppercase tracking-[0.14em] text-education">
             {t('features.title')}
           </h2>
-          <p className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-foreground sm:text-4xl">
+          <p className="mt-3 font-heading text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
             {t('features.subtitle')}
           </p>
-          <p className="mt-4 max-w-2xl text-xl text-muted-foreground lg:mx-auto">
+          <p className="mt-4 max-w-2xl text-lg text-muted-foreground lg:mx-auto">
             {t('features.description')}
           </p>
         </div>
 
         <div className="mt-10">
-          <div className="space-y-10 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-8">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {features.map((feature, index) => (
               <RouterLink
                 key={feature.name}
@@ -73,19 +69,17 @@ const FeaturesSection = () => {
                 className={`block h-full group reveal-animation revealed reveal-delay-${index % 3 + 1}`}
               >
                 <div
-                  className="flex h-full flex-col items-center p-6 bg-card border border-border rounded-lg transition-[transform,box-shadow] duration-300 hover:shadow-lg hover:scale-105"
+                  className="flex h-full flex-col items-start p-6 bg-card border border-border rounded-xl transition-[transform,box-shadow,border-color] duration-200 group-hover:-translate-y-1 group-hover:border-foreground/60 group-hover:shadow-[4px_4px_0_0_hsl(var(--foreground))]"
                   {...appMorph(feature.link, "card")}
                 >
-                  <div className="flex items-center justify-center h-12 w-12 rounded-md bg-education text-education-dark">
-                    {feature.icon}
-                  </div>
+                  <AppArt slug={appArtSlug(feature.link)} className="w-full" />
                   <h3
-                    className="mt-5 text-lg leading-6 font-semibold text-education-light group-hover:text-education text-center"
+                    className="mt-3 text-xl font-semibold text-foreground group-hover:text-education"
                     {...appMorph(feature.link, "title")}
                   >
                     {feature.name}
                   </h3>
-                  <p className="mt-2 text-base text-foreground/80 text-center">
+                  <p className="mt-2 text-base text-muted-foreground">
                     {feature.description}
                   </p>
                 </div>

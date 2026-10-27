@@ -1,14 +1,14 @@
 {
-  "description": "KI-Bildungstools zur Erstellung effektiver Bildungsszenarien",
+  "description": "KI-Apps, die kritisches Denken im Unterricht trainieren.",
   "resources": {
     "title": "Ressourcen",
     "allApps": "Alle Apps",
-    "aboutUs": "Über Uns"
+    "aboutUs": "Über uns"
   },
   "legal": {
     "title": "Rechtliches",
-    "privacy": "Datenschutzrichtlinie",
+    "privacy": "Datenschutz",
     "terms": "Nutzungsbedingungen"
   },
-  "copyright": "© {{year}} AI-Debate.Tech. Alle Rechte vorbehalten."
+  "copyright": "© {{year}} AiDebate.tech. Alle Rechte vorbehalten."
 }

@@ -1,8 +1,8 @@
 {
   "name": "Mystery Character",
-  "title": "Mystery Character",
+  "title": "Mystery character",
   "subtitle": "Guess the historical figure",
-  "description": "Ask questions to discover who the mystery character is",
+  "description": "A character hides who they are. You get a few questions to find out, then you make your guess.",
   "setup": {
     "selectCharacterLabel": "Choose the Character to Guess",
     "selectCharacterError": "You must select a character to start the game",

@@ -47,7 +47,7 @@ const TutorialSlides = ({ tutorial, appPath }: TutorialSlidesProps) => {
         </div>
       </div>
 
-      <Card className="border-border bg-card shadow-lg">
+      <Card className="border-border bg-card">
         <CardContent className="p-8">
           <div className="flex items-start space-x-6">
             <div className="flex-shrink-0">
@@ -77,7 +77,7 @@ const TutorialSlides = ({ tutorial, appPath }: TutorialSlidesProps) => {
         <span className="text-sm text-muted-foreground">
           {current + 1} / {slides.length}
         </span>
-        <Button onClick={() => setCurrent(current + 1)} disabled={isLast} className="flex items-center space-x-2 bg-education hover:bg-education-dark">
+        <Button onClick={() => setCurrent(current + 1)} disabled={isLast} className="flex items-center space-x-2 bg-education text-education-dark hover:bg-education-muted">
           <span>{tc("common.next")}</span>
           <ChevronRight className="h-4 w-4" />
         </Button>

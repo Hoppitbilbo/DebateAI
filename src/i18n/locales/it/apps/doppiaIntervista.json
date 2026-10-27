@@ -1,6 +1,6 @@
 {
   "name": "Doppia Intervista",
-  "title": "Doppia Intervista",
+  "title": "Doppia intervista",
   "subtitle": "Dialoga con due personaggi",
   "setup": {
     "chooseCharacters": "Scegli i Personaggi",
@@ -13,7 +13,7 @@
     "defaultCharacterName": "il personaggio",
     "placeholder": "Scrivi a {{target}}..."
   },
-  "description": "Dialoga simultaneamente con due personaggi storici",
+  "description": "Fai le stesse domande a due personaggi e confronta le risposte, come nelle doppie interviste in TV.",
   "greeting1": "Ciao, sono {{name}}. Fai la tua domanda.",
   "greeting2": "Ciao, sono {{name}}. Sono pronto per la tua domanda.",
   "placeholder": "Scrivi {{target}}..."

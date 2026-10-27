@@ -1,11 +1,31 @@
 {
-  "title": "Aprendizaje Interactivo con",
-  "subtitle": "Conversaciones Potenciadas por IA",
-  "description": "¡Dialoga con las mentes más brillantes de cada época! Conoce científicos, escritores, matemáticos, exploradores, artistas y filósofos. Descubre sus secretos, sus pasiones y transforma el estudio en una aventura extraordinaria!",
-  "tryApps": "Prueba nuestras apps",
-  "sampleChat": {
-    "bot1": "Muy bien jovencito, ¿quién eres? Me dijeron que me tienes que hacer una entrevista por la escuela. ¡Vamos, no perdamos tiempo!",
-    "user": "Leonardo DaVinci, ¿te parecía normal crear armas para gente que solo quería más poder?",
-    "bot2": "Malo desde el principio, me gusta, me pareces toscano. Querido mío, desafortunadamente no podía hacer otra cosa. Nosotros los artistas en esta época teníamos que someternos a los mecenatos o habríamos muerto de hambre. Pero tranquilo, casi ninguna de mis armas fue construida. Eran solo bocetos. Un poco como cuando exageras en el portafolio del currículum"
+  "title": "Entrevista a quienes",
+  "subtitle": "hicieron la historia",
+  "description": "Elige un personaje de Wikipedia y habla con él en clase: científicos, artistas, exploradores, filósofos. Hazle preguntas, ponlo en duda, intenta convencerlo. Al final recibes comentarios sobre tu razonamiento.",
+  "tryApps": "Elige una app",
+  "story": {
+    "kicker": "Cómo funciona",
+    "title": "Una clase que te responde",
+    "galileo": "Galileo Galilei",
+    "student": "Tú",
+    "typing": "escribiendo…",
+    "cta": "Pruébalo tú",
+    "steps": {
+      "1": "Elige un personaje",
+      "2": "Haz tus preguntas",
+      "3": "Pon en duda las respuestas",
+      "4": "Reflexiona y recibe comentarios"
+    },
+    "messages": {
+      "s1": "¡Hola, Galileo! ¿De verdad puedo entrevistarte?",
+      "g1": "¡Claro! Elige a quien quieras de Wikipedia: respondo como él, con lo que sabemos de su vida.",
+      "s2": "Entonces dime: ¿por qué apuntaste el telescopio al cielo?",
+      "g2": "Quería verlo con mis propios ojos. ¡Y descubrí cuatro lunas que giran alrededor de Júpiter!",
+      "s3": "¿Estás seguro? Mucha gente de tu época no te creía.",
+      "g3": "¡Buena objeción! Aquí se razona con pruebas: no basta con copiar una respuesta.",
+      "s4": "¿Y qué pasa al final?",
+      "g4": "Escribes lo que has aprendido y recibes comentarios sobre tu razonamiento. ¿Listo para probar?"
+    },
+    "online": "online"
   }
 }

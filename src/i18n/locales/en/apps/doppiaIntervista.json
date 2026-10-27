@@ -1,6 +1,6 @@
 {
   "name": "Double Interview",
-  "title": "Double Interview",
+  "title": "Double interview",
   "subtitle": "Simultaneous interview with two historical figures",
   "setup": {
     "chooseCharacters": "Choose Characters",
@@ -12,7 +12,7 @@
     "dialogueTitle": "Dialogue",
     "changeCharacters": "Change Characters"
   },
-  "description": "Compare the responses of two historical figures",
+  "description": "Ask two characters the same questions and compare their answers, like a TV double interview.",
   "greeting1": "Hello, I'm {{name}}. Ask your question.",
   "greeting2": "Hello, I'm {{name}}. I'm ready for your question.",
   "placeholder": "Write to {{target}}...",

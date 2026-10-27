@@ -1,27 +1,27 @@
 {
-  "title": "Funzionalità",
-  "subtitle": "Strumenti Educativi Basati su IA",
-  "description": "Esplora la nostra collezione di applicazioni AI progettate per trasformare l'apprendimento in un'esperienza interattiva e coinvolgente.",
+  "title": "Le app",
+  "subtitle": "Cinque modi per far parlare la storia",
+  "description": "Ogni app allena un'abilità diversa: fare domande, moderare, argomentare, immedesimarsi.",
   "items": {
     "youModerate": {
       "name": "Modera tu",
-      "description": "Simula conversazioni con personaggi storici attraverso contenuti Wikipedia, rendendo l'apprendimento interattivo e coinvolgente."
+      "description": "Due personaggi discutono su un tema che scegli tu. Tu fai il moderatore: dai la parola, fai domande, riporti la discussione in tema."
     },
     "personaggioMisterioso": {
-      "name": "Personaggio Misterioso",
-      "description": "Gioca a indovinare personaggi storici e letterari attraverso domande e risposte con l'IA."
+      "name": "Personaggio misterioso",
+      "description": "Un personaggio nasconde chi è. Hai poche domande per scoprirlo, poi provi a indovinare."
     },
     "doppiaIntervista": {
-      "name": "Doppia Intervista",
-      "description": "Modera un dialogo tra due personaggi storici su un tema specifico, esplorando diverse prospettive."
+      "name": "Doppia intervista",
+      "description": "Fai le stesse domande a due personaggi e confronta le risposte, come nelle doppie interviste in TV."
     },
     "convinciTu": {
-      "name": "Convinci Tu",
-      "description": "Sfida le tue capacità di persuasione cercando di far cambiare idea a personaggi storici su temi controversi."
+      "name": "Convinci tu",
+      "description": "Scegli un'idea e prova a convincere un personaggio storico. Cambia idea solo se i tuoi argomenti reggono."
     },
     "impersonaTu": {
-      "name": "Impersona Tu",
-      "description": "Dialoga con un personaggio storico interpretandone un altro. Metti alla prova le tue capacità di immedesimazione!"
+      "name": "Impersona tu",
+      "description": "Interpreta un personaggio storico mentre l'AI ne interpreta un altro. Ti fa domande per capire quanto lo conosci."
     }
   }
 }

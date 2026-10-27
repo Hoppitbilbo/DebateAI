@@ -1,8 +1,8 @@
 {
   "name": "Überzeuge mich",
-  "title": "Überzeuge mich",
+  "title": "Überzeuge sie",
   "subtitle": "Versuche, eine historische Figur zu einem bestimmten Thema zu überzeugen",
-  "description": "Versuchen Sie, historische Figuren von Ihren Ideen zu überzeugen",
+  "description": "Wähle eine Idee und versuche, eine historische Figur zu überzeugen. Sie ändert ihre Meinung nur, wenn deine Argumente tragen.",
   "newChatSuccess": "Neuer Chat gestartet!",
   "errors": {
     "responseGeneration": "Fehler beim Erstellen der Antwort.",

@@ -80,7 +80,7 @@ const SessionDetailPage = () => {
             {s.reflection ? <p className="whitespace-pre-wrap text-sm">{s.reflection}</p> : <EmptyState>{t("platform.session.noReflection")}</EmptyState>}
           </Panel>
           <Panel title={t("platform.feedback.aiFeedback")}>
-            {s.evaluation ? <MarkdownViewer content={s.evaluation} className="prose-invert prose-sm" /> : <EmptyState>{t("platform.session.noEvaluation")}</EmptyState>}
+            {s.evaluation ? <MarkdownViewer content={s.evaluation} className="prose-sm" /> : <EmptyState>{t("platform.session.noEvaluation")}</EmptyState>}
           </Panel>
         </div>
       </div>

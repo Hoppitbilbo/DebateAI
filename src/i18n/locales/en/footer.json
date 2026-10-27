@@ -1,14 +1,14 @@
 {
-  "description": "AI Educational Tools to create effective educational scenarios",
+  "description": "AI apps that train critical thinking in class.",
   "resources": {
     "title": "Resources",
-    "allApps": "All Apps",
-    "aboutUs": "About Us"
+    "allApps": "All apps",
+    "aboutUs": "About us"
   },
   "legal": {
     "title": "Legal",
-    "privacy": "Privacy Policy",
-    "terms": "Terms of Service"
+    "privacy": "Privacy",
+    "terms": "Terms of service"
   },
-  "copyright": "© {{year}} AI-Debate.Tech. All rights reserved."
+  "copyright": "© {{year}} AiDebate.tech. All rights reserved."
 }

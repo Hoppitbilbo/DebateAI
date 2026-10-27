@@ -1,11 +1,31 @@
 {
-  "title": "Apprendimento interattivo con",
-  "subtitle": "conversazioni basate sull'IA",
-  "description": "Dialoga con le menti più brillanti di ogni epoca! Incontra scienziati, letterati, matematici, esploratori, artisti e filosofi. Scopri i loro segreti, le loro passioni e trasforma lo studio in un'avventura straordinaria!",
-  "tryApps": "Prova le nostre app",
-  "sampleChat": {
-    "bot1": "Or bene giovinotto, chi sei? Mi hanno detto che mi devi fare una intervista per via della scuola, Su non perdiamo tempo!",
-    "user": "Leonardo DaVinci, ti sembrava normale creare armi per gente che voleva solo più potere?",
-    "bot2": "Cattivo sin da subito, mi piace mi sembri un toscano. Mio caro purtoppo non potevo fare altrimenti, Noi artisti in quest'epoca dovevamo sottostare ai mecenati altrimenti saremmo morti di fame. Ma tranquillo delle mie armi quasi nessuna è stata costruita. erano solo bozzetti. Un po come quando esageri nel portfolio del curriculum"
+  "title": "Fai un'intervista a",
+  "subtitle": "chi ha fatto la storia",
+  "description": "Scegli un personaggio da Wikipedia e parlaci in classe: scienziati, artisti, esploratori, filosofi. Fagli domande, mettilo in dubbio, prova a convincerlo. Alla fine ricevi un feedback sul tuo ragionamento.",
+  "tryApps": "Scegli un'app",
+  "story": {
+    "kicker": "Come funziona",
+    "title": "Una lezione che ti risponde",
+    "galileo": "Galileo Galilei",
+    "student": "Tu",
+    "typing": "sta scrivendo…",
+    "cta": "Prova anche tu",
+    "steps": {
+      "1": "Scegli un personaggio",
+      "2": "Fai le tue domande",
+      "3": "Metti in dubbio le risposte",
+      "4": "Rifletti e ricevi un feedback"
+    },
+    "messages": {
+      "s1": "Ciao Galileo! Posso davvero farti un'intervista?",
+      "g1": "Certo! Scegli chi vuoi da Wikipedia: io rispondo come lui, con quello che sappiamo della sua vita.",
+      "s2": "Allora dimmi: perché hai puntato il cannocchiale verso il cielo?",
+      "g2": "Volevo vedere con i miei occhi. E ho scoperto quattro lune che girano attorno a Giove!",
+      "s3": "Ma sei sicuro? Molti ai tuoi tempi non ti credevano.",
+      "g3": "Ottima obiezione! Qui si ragiona con le prove: non basta copiare una risposta.",
+      "s4": "E alla fine cosa succede?",
+      "g4": "Scrivi cosa hai imparato e ricevi un feedback sul tuo ragionamento. Pronto a provare?"
+    },
+    "online": "online"
   }
 }

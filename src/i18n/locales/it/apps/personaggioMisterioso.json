@@ -1,8 +1,8 @@
 {
   "name": "Personaggio Misterioso",
-  "title": "Indovina il Personaggio Misterioso",
+  "title": "Personaggio misterioso",
   "subtitle": "Fai domande per indovinare il personaggio storico",
-  "description": "Sfida l'IA a indovinare un personaggio storico misterioso.",
+  "description": "Un personaggio nasconde chi è. Hai poche domande per scoprirlo, poi provi a indovinare.",
   "setup": {
     "title": "Impostazione del Gioco",
     "characterLabel": "Personaggio Misterioso",

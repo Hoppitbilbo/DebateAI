@@ -1,11 +1,31 @@
 {
-  "title": "Apprentissage Interactif avec",
-  "subtitle": "Conversations Alimentées par l'IA",
-  "description": "Dialoguez avec les esprits les plus brillants de chaque époque ! Rencontrez des scientifiques, des écrivains, des mathématiciens, des explorateurs, des artistes et des philosophes. Découvrez leurs secrets, leurs passions et transformez l'étude en une aventure extraordinaire !",
-  "tryApps": "Essayez nos apps",
-  "sampleChat": {
-    "bot1": "Eh bien jeune homme, qui êtes-vous ? On m'a dit que vous devez m'interviewer pour l'école. Allez, ne perdons pas de temps !",
-    "user": "Leonardo DaVinci, cela vous semblait-il normal de créer des armes pour des gens qui ne voulaient que plus de pouvoir?",
-    "bot2": "Méchant dès le début, j'aime ça, vous me semblez toscan. Mon cher, malheureusement je ne pouvais pas faire autrement. Nous les artistes à cette époque devions nous soumettre aux mécènes ou nous serions morts de faim. Mais rassurez-vous, presque aucune de mes armes n'a été construite. C'étaient juste des esquisses. Un peu comme quand vous exagérez dans le portfolio du CV"
+  "title": "Interviewe celles et ceux",
+  "subtitle": "qui ont fait l'histoire",
+  "description": "Choisis un personnage sur Wikipédia et parle-lui en classe : scientifiques, artistes, explorateurs, philosophes. Pose des questions, remets en doute, essaie de le convaincre. À la fin, tu reçois un retour sur ton raisonnement.",
+  "tryApps": "Choisis une app",
+  "story": {
+    "kicker": "Comment ça marche",
+    "title": "Un cours qui te répond",
+    "galileo": "Galilée",
+    "student": "Toi",
+    "typing": "écrit…",
+    "cta": "Essaie à ton tour",
+    "steps": {
+      "1": "Choisis un personnage",
+      "2": "Pose tes questions",
+      "3": "Remets les réponses en question",
+      "4": "Réfléchis et reçois un retour"
+    },
+    "messages": {
+      "s1": "Bonjour Galilée ! Je peux vraiment t'interviewer ?",
+      "g1": "Bien sûr ! Choisis qui tu veux sur Wikipédia : je réponds comme lui, avec ce que l'on sait de sa vie.",
+      "s2": "Alors dis-moi : pourquoi as-tu pointé ta lunette vers le ciel ?",
+      "g2": "Je voulais voir de mes propres yeux. Et j'ai découvert quatre lunes qui tournent autour de Jupiter !",
+      "s3": "Tu es sûr ? Beaucoup de gens à ton époque ne te croyaient pas.",
+      "g3": "Excellente objection ! Ici on raisonne avec des preuves : copier une réponse ne suffit pas.",
+      "s4": "Et à la fin, qu'est-ce qui se passe ?",
+      "g4": "Tu écris ce que tu as appris et tu reçois un retour sur ton raisonnement. Prêt à essayer ?"
+    },
+    "online": "online"
   }
 }

@@ -5,31 +5,35 @@ This document outlines the unified design system for the educational interview a
 
 ## Color Palette
 
-### Primary Colors
-- **Education Primary**: `#A5D233` - Main brand color for buttons, accents
-- **Education Light**: `#D8FF8F` - Light accent for backgrounds, highlights  
-- **Education Dark**: `#0E3542` - Dark text, headers
-- **Education Muted**: `#8BAB2A` - Subtle text, borders
+Bright classroom theme. Tokens live in `src/index.css` (`:root`, HSL) and are exposed by Tailwind.
+
+| Role | Token / class | Value |
+|---|---|---|
+| Paper (page background) | `background` | `#FDFAF2` |
+| Ink (text, outlines, offset shadows) | `foreground` | `#1E1A2E` |
+| Action (buttons, links, kickers) | `primary`, `education` | `#6A3BD4` purple |
+| Emphasis text | `education-light` | deep purple |
+| Text on purple | `education-dark`, `primary-foreground` | white |
+| Highlighter, blobs, student bubbles | `sun`, `sun-light`, `accent` | `#FFC52A` yellow and its tint |
+| Section bands | `secondary` | pale lavender |
 
 ### Usage Guidelines
-- Use Education Primary for primary actions (buttons, links)
-- Use Education Light for subtle backgrounds and highlights
-- Use Education Dark for headings and important text
-- Use Education Muted for secondary text and borders
+- Purple for actions; yellow only as highlighter or background shape, never for text.
+- Primary buttons and active cards carry a 2-4px ink offset shadow; no gradients, glows or glass.
+- One phrase per heading at most gets the `.ink-underline` yellow highlighter.
 
 ## Typography
 
-### Font Families
-- **Headings**: Fraunces (serif) - For app titles and main headings
-- **Body**: Inter (sans-serif) - For all body text and UI elements
+- **Headings**: Fraunces (500-700, italic 500 for the emphasised phrase)
+- **Body and UI (buttons included)**: DM Sans (400, 500, 700)
 
-### Scale
-- **Text XS**: 0.75rem (12px)
-- **Text SM**: 0.875rem (14px) 
-- **Text Base**: 1rem (16px)
-- **Text LG**: 1.125rem (18px)
-- **Text XL**: 1.25rem (20px)
-- **Text 2XL**: 1.5rem (24px)
+## Pictures
+
+- Illustrations: Icons8 `anthropic-claude-hand-drawn`, recoloured from orange to purple (`public/illustrations/`, lock in `icons8.json`).
+- App icons and chat fallbacks: Icons8 `color` style PNG (`public/icons/apps/`, `public/avatars/`).
+- Chat avatars: Wikipedia lead image of the speaker's page when it exists.
+- Logo: own SVG (`src/components/LogoMark.tsx`, `public/favicon.svg`).
+- Motion: one moving element per screen (hero loop, story chat, card hover on desktop only); everything respects `prefers-reduced-motion`.
 
 ## Spacing System
 

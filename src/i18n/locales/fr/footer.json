@@ -1,14 +1,14 @@
 {
-  "description": "Outils Éducatifs IA pour créer des scénarios éducatifs efficaces",
+  "description": "Des apps d'IA pour entraîner l'esprit critique en classe.",
   "resources": {
     "title": "Ressources",
-    "allApps": "Toutes les Apps",
-    "aboutUs": "À Propos"
+    "allApps": "Toutes les apps",
+    "aboutUs": "Qui sommes-nous"
   },
   "legal": {
-    "title": "Légal",
-    "privacy": "Politique de Confidentialité",
-    "terms": "Conditions de Service"
+    "title": "Mentions légales",
+    "privacy": "Confidentialité",
+    "terms": "Conditions d'utilisation"
   },
-  "copyright": "© {{year}} AI-Debate.Tech. Tous droits réservés."
+  "copyright": "© {{year}} AiDebate.tech. Tous droits réservés."
 }

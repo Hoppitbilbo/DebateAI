@@ -1,14 +1,14 @@
 {
-  "description": "Strumenti Educativi AI per creare scenari educativi efficaci",
+  "description": "App con l'AI per allenare il pensiero critico in classe.",
   "resources": {
     "title": "Risorse",
-    "allApps": "Tutte le App",
-    "aboutUs": "Chi Siamo"
+    "allApps": "Tutte le app",
+    "aboutUs": "Chi siamo"
   },
   "legal": {
-    "title": "Legale",
-    "privacy": "Politica sulla Privacy",
-    "terms": "Termini di Servizio"
+    "title": "Note legali",
+    "privacy": "Privacy",
+    "terms": "Termini di servizio"
   },
-  "copyright": "© {{year}} AI-Debate.Tech. Tutti i diritti riservati."
+  "copyright": "© {{year}} AiDebate.tech. Tutti i diritti riservati."
 }

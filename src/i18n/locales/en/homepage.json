@@ -1,13 +1,13 @@
 {
   "teacherGuide": {
-    "title": "Teacher's Guide",
-    "description": "Discover how to use our applications to create innovative and engaging learning experiences.",
-    "button": "View Guide"
+    "title": "Teacher guide",
+    "description": "How to bring the apps into class step by step, and how to assign them to students as homework.",
+    "button": "Open the guide"
   },
   "socialPurpose": {
-    "title": "Our Social Purpose",
-    "description": "We transform homework into interactive and engaging learning experiences, making education more accessible and fun through the use of AI.",
-    "exploreButton": "Explore Applications",
-    "learnMoreButton": "Learn More"
+    "title": "Why we do this",
+    "description": "AiDebate is open source and can run on your school's own server, without storing chats anywhere else. We want AI to train critical thinking, not replace it.",
+    "exploreButton": "Pick an app",
+    "learnMoreButton": "About us"
   }
 }

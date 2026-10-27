@@ -17,7 +17,7 @@ const components: Components = {
         {String(children).replace(/\n$/, '')}
       </CodeBlock>
     ) : (
-      <code className={`bg-black/30 px-1 py-0.5 rounded text-sm font-mono text-primary ${className}`} {...props}>
+      <code className={`bg-muted px-1 py-0.5 rounded text-sm font-mono text-primary ${className}`} {...props}>
         {children}
       </code>
     );
@@ -33,11 +33,11 @@ const components: Components = {
   strong: ({ node, ...props }) => <strong className="font-bold text-inherit" {...props} />,
   em: ({ node, ...props }) => <em className="italic text-inherit" {...props} />,
   blockquote: ({ node, ...props }) => (
-    <blockquote className="border-l-4 border-education/40 pl-4 italic my-4 text-muted-foreground bg-black/20 py-2 rounded-r" {...props} />
+    <blockquote className="border-l-4 border-education/40 pl-4 italic my-4 text-muted-foreground bg-muted py-2 rounded-r" {...props} />
   ),
   // Add table components for GFM
   table: ({ node, ...props }) => <table className="w-full border-collapse border border-border my-4" {...props} />,
-  thead: ({ node, ...props }) => <thead className="bg-black/20" {...props} />,
+  thead: ({ node, ...props }) => <thead className="bg-muted" {...props} />,
   tbody: ({ node, ...props }) => <tbody {...props} />,
   tr: ({ node, isHeader, ...props }) => <tr className="border-b border-border" {...props} />,
   th: ({ node, isHeader, ...props }) => <th className="p-2 border-r border-border font-bold text-left" {...props} />,
@@ -47,7 +47,7 @@ const remarkPlugins = [remarkGfm];
 
 const MarkdownViewer = memo(function MarkdownViewer({ content, className = "" }: MarkdownViewerProps) {
   return (
-    <div className={`prose prose-invert max-w-none ${className}`}>
+    <div className={`prose max-w-none prose-headings:text-foreground prose-p:text-foreground prose-li:text-foreground prose-strong:text-foreground prose-a:text-primary ${className}`}>
       <ReactMarkdown remarkPlugins={remarkPlugins} components={components}>
         {content}
       </ReactMarkdown>

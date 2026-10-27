@@ -4,7 +4,7 @@ import { Flag, Loader2, Mic, MicOff, Radio, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
-import ChatMessages from "./ChatMessages";
+import ChatMessages, { type AvatarFallback } from "./ChatMessages";
 import { useSpeechDictation } from "@/hooks/useSpeechDictation";
 import type { LiveControls } from "@/hooks/useLiveAi";
 import type { ActivityMessage } from "../types";
@@ -31,6 +31,8 @@ interface ChatPanelProps {
   /** Asks again for a failed AI reply (shown on the error bubble). */
   onRetry?: (id: string) => void;
   canRetry?: (id: string) => boolean;
+  /** Picture for an AI speaker whose Wikipedia page has none (default: a person). */
+  avatarFallback?: AvatarFallback;
 }
 
 /** The one chat component used by every app. */
@@ -52,6 +54,7 @@ const ChatPanel = ({
   heightClass = "h-[min(60vh,560px)]",
   onRetry,
   canRetry,
+  avatarFallback,
 }: ChatPanelProps) => {
   const { t, i18n } = useTranslation();
   const [input, setInput] = useState("");
@@ -92,6 +95,7 @@ const ChatPanel = ({
         busy={busy}
         onRetry={onRetry}
         canRetry={canRetry}
+        avatarFallback={avatarFallback}
       />
 
       {toolbar && <div className="border-t border-border px-4 py-2">{toolbar}</div>}

@@ -1,6 +1,6 @@
 {
   "name": "Entrevista Doble",
-  "title": "Entrevista Doble",
+  "title": "Doble entrevista",
   "subtitle": "Entrevista simultánea con dos figuras históricas",
   "setup": {
     "chooseCharacters": "Elegir Personajes",
@@ -12,7 +12,7 @@
     "dialogueTitle": "Diálogo",
     "changeCharacters": "Cambiar Personajes"
   },
-  "description": "Compara las respuestas de dos figuras históricas",
+  "description": "Haz las mismas preguntas a dos personajes y compara sus respuestas, como en las dobles entrevistas de la tele.",
   "greeting1": "Hola, soy {{name}}. Haz tu pregunta.",
   "greeting2": "Hola, soy {{name}}. Estoy listo para tu pregunta.",
   "placeholder": "Escribe a {{target}}...",

@@ -1,11 +1,20 @@
 {
   "name": "Incarnez Vous",
-  "title": "Incarnez Vous",
+  "title": "Incarne-le",
   "subtitle": "Dialoguez avec une figure historique en en interprétant une autre",
-  "description": "Mettez-vous dans la peau d'une figure historique",
+  "description": "Joue un personnage historique pendant que l'IA en joue un autre. Elle te pose des questions pour voir si tu le connais bien.",
   "page": {
     "title": "Incarnez Vous",
-    "subtitle": "Dialoguez avec une figure historique en en interprétant une autre"
+    "subtitle": "Dialoguez avec une figure historique en en interprétant une autre",
+    "setup": {
+      "title": "Choisissez les Personnages",
+      "description": "Sélectionnez le personnage que l'IA incarnera et celui que vous incarnerez",
+      "aiCharacterLabel": "Personnage de l'IA",
+      "yourCharacterLabel": "Votre Personnage",
+      "topicLabel": "Sujet de Conversation",
+      "topicPlaceholder": "par ex., Convainquez-moi de l'importance de la démocratie...",
+      "startConversationButton": "Démarrer la conversation"
+    }
   },
   "reflection": {
     "title": "Réflexion sur Incarnez-vous",
@@ -29,18 +38,5 @@
     "newImpersonation": "Nouvelle Incarnation",
     "downloadSuccess": "Réflexion téléchargée avec succès!",
     "downloadError": "Erreur lors du téléchargement de la réflexion"
-  },
-  "page": {
-    "title": "Incarnez Vous",
-    "subtitle": "Dialoguez avec une figure historique en en interprétant une autre",
-    "setup": {
-      "title": "Choisissez les Personnages",
-      "description": "Sélectionnez le personnage que l'IA incarnera et celui que vous incarnerez",
-      "aiCharacterLabel": "Personnage de l'IA",
-      "yourCharacterLabel": "Votre Personnage",
-      "topicLabel": "Sujet de Conversation",
-      "topicPlaceholder": "par ex., Convainquez-moi de l'importance de la démocratie...",
-      "startConversationButton": "Démarrer la conversation"
-    }
   }
 }

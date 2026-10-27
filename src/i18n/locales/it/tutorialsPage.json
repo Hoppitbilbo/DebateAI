@@ -1,39 +1,38 @@
 {
-  "title": "Tutorial e Guide",
-  "subtitle": "Impara a utilizzare i nostri strumenti di intelligenza artificiale per creare scenari educativi coinvolgenti e efficaci.",
+  "title": "Tutorial e guide",
+  "subtitle": "Un video breve per gli studenti e le slide per gli insegnanti, per ogni app.",
   "sections": {
     "availableTutorials": {
-      "title": "Tutorial Disponibili",
+      "title": "Tutorial disponibili",
       "availableLabel": "Disponibile",
-      "comingSoonLabel": "Prossimamente",
-      "goToAppButton": "Vai all'App",
-      "startTutorialButton": "Inizia Tutorial",
-      "tutorialComingSoonButton": "Tutorial in Arrivo",
-      "comingSoonLabel": "In Arrivo",
+      "comingSoonLabel": "In arrivo",
+      "goToAppButton": "Apri l'app",
+      "startTutorialButton": "Guarda il tutorial",
+      "tutorialComingSoonButton": "Tutorial in arrivo",
       "tutorials": {
         "youModerate": {
-          "title": "You Moderate",
-          "description": "Conversa con personaggi AI basati su contenuti Wikipedia, trasformando argomenti educativi in conversazioni interattive."
+          "title": "Modera tu",
+          "description": "Due personaggi discutono su un tema che scegli tu. Tu fai il moderatore: dai la parola, fai domande, riporti la discussione in tema."
         },
         "doppiaIntervista": {
-          "title": "Doppia Intervista",
-          "description": "Interagisci simultaneamente con due figure storiche in conversazioni parallele, creando un dialogo educativo unico."
+          "title": "Doppia intervista",
+          "description": "Fai le stesse domande a due personaggi e confronta le risposte, come nelle doppie interviste in TV."
         },
         "convinciTu": {
-          "title": "Convinci Tu",
-          "description": "Metti alla prova le tue capacità di persuasione cercando di convincere figure storiche delle tue idee."
+          "title": "Convinci tu",
+          "description": "Scegli un'idea e prova a convincere un personaggio storico. Cambia idea solo se i tuoi argomenti reggono."
         },
         "personaggioMisterioso": {
-          "title": "Personaggio Misterioso",
-          "description": "Sfida l'AI facendo domande per indovinare la figura storica scelta. Hai un numero limitato di domande per scoprire l'identità misteriosa!"
+          "title": "Personaggio misterioso",
+          "description": "Un personaggio nasconde chi è. Hai poche domande per scoprirlo, poi provi a indovinare."
         },
         "impersonaTu": {
-          "title": "Impersona Tu",
-          "description": "Impersona figure storiche e rispondi alle domande come se fossi quel personaggio."
+          "title": "Impersona tu",
+          "description": "Interpreta un personaggio storico mentre l'AI ne interpreta un altro. Ti fa domande per capire quanto lo conosci."
         },
         "wikiChatbot": {
-          "title": "WikiChat AI",
-          "description": "Chatta con un'intelligenza artificiale che rappresenta qualsiasi argomento di Wikipedia, perfetto per approfondimenti educativi interattivi."
+          "title": "WikiChat",
+          "description": "Parla con una pagina di Wikipedia: una persona, un luogo, un evento o un'idea ti risponde in prima persona."
         }
       }
     },
@@ -41,8 +40,8 @@
       "title": "Applicazioni in Sviluppo",
       "comingSoonButton": "Prossimamente",
       "promptEngineer": {
-        "title": "Prompt Engineer per l'Insegnamento",
-        "description": "Aiuta insegnanti e studenti a creare prompt efficaci per l'intelligenza artificiale nelle attività educative e di apprendimento."
+        "title": "Prompt per la didattica",
+        "description": "Per insegnanti e studenti: impara a scrivere richieste chiare per usare l'AI in classe."
       }
     },
     "additionalResources": {

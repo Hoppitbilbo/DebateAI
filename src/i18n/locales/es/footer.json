@@ -1,14 +1,14 @@
 {
-  "description": "Herramientas Educativas de IA para crear escenarios educativos efectivos",
+  "description": "Apps con IA para entrenar el pensamiento crítico en clase.",
   "resources": {
     "title": "Recursos",
-    "allApps": "Todas las Apps",
-    "aboutUs": "Acerca de Nosotros"
+    "allApps": "Todas las apps",
+    "aboutUs": "Quiénes somos"
   },
   "legal": {
     "title": "Legal",
-    "privacy": "Política de Privacidad",
-    "terms": "Términos de Servicio"
+    "privacy": "Privacidad",
+    "terms": "Términos del servicio"
   },
-  "copyright": "© {{year}} AI-Debate.Tech. Todos los derechos reservados."
+  "copyright": "© {{year}} AiDebate.tech. Todos los derechos reservados."
 }

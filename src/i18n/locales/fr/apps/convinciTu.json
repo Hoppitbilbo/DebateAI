@@ -1,8 +1,8 @@
 {
   "name": "Convaincs-moi",
-  "title": "Convaincs-moi",
+  "title": "Convaincs-le",
   "subtitle": "Essayez de convaincre un personnage historique sur un sujet spécifique",
-  "description": "Essayez de convaincre des figures historiques de vos idées",
+  "description": "Choisis une idée et essaie de convaincre un personnage historique. Il ne change d'avis que si tes arguments tiennent.",
   "newChatSuccess": "Nouveau chat commencé !",
   "errors": {
     "responseGeneration": "Erreur lors de la génération de la réponse.",

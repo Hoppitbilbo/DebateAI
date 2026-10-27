@@ -2,7 +2,7 @@
   "name": "Du moderierst",
   "title": "Du moderierst",
   "subtitle": "Historische Persönlichkeiten diskutieren lassen",
-  "description": "Erstelle und analysiere tiefgehende Gespräche zwischen zwei historischen Persönlichkeiten auf Grundlage ihrer Wikipedia-Profile.",
+  "description": "Zwei Figuren diskutieren über ein Thema deiner Wahl. Du moderierst: Du erteilst das Wort, stellst Fragen und holst sie zum Thema zurück.",
   "errors": {
     "fetchError": "Fehler beim Abrufen der Wikipedia-Daten für {{title}}",
     "noSummary": "Keine Zusammenfassung gefunden.",

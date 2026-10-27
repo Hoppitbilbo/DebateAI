@@ -46,12 +46,12 @@
     "abandoned": "Abbandonato"
   },
   "appNames": {
-    "convinci-tu": "Convinci TU",
-    "doppia-intervista": "Doppia Intervista",
-    "wiki-chatbot": "WikiChat AI",
-    "personaggio-misterioso": "Personaggio Misterioso",
-    "impersona-tu": "Impersona TU",
-    "you-moderate": "Modera TU"
+    "convinci-tu": "Convinci tu",
+    "doppia-intervista": "Doppia intervista",
+    "wiki-chatbot": "WikiChat",
+    "personaggio-misterioso": "Personaggio misterioso",
+    "impersona-tu": "Impersona tu",
+    "you-moderate": "Modera tu"
   },
   "errors": {
     "generic": "Qualcosa è andato storto. Riprova.",
@@ -252,7 +252,7 @@
       "guessLabel": "La tua risposta",
       "reasoningLabel": "Perché pensi che sia lui/lei?",
       "submitGuess": "Invia la risposta",
-      "guessLog": "Risposta finale: {{guess}} — il personaggio era {{answer}}.",
+      "guessLog": "Risposta finale: {{guess}}. Il personaggio era {{answer}}.",
       "correct": "Esatto! Era {{name}}.",
       "wrong": "Non proprio: era {{name}}.",
       "correctShort": "Risposta corretta!",

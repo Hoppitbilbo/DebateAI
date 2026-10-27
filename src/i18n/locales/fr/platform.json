@@ -46,12 +46,12 @@
     "abandoned": "Abandonné"
   },
   "appNames": {
-    "convinci-tu": "Convaincs-MOI",
-    "doppia-intervista": "Double Interview",
-    "wiki-chatbot": "WikiChat AI",
-    "personaggio-misterioso": "Personnage Mystère",
-    "impersona-tu": "Incarne-LE",
-    "you-moderate": "Modère-LES"
+    "convinci-tu": "Convaincs-le",
+    "doppia-intervista": "Double interview",
+    "wiki-chatbot": "WikiChat",
+    "personaggio-misterioso": "Personnage mystère",
+    "impersona-tu": "Incarne-le",
+    "you-moderate": "Modère toi"
   },
   "errors": {
     "generic": "Une erreur s'est produite. Réessayez.",
@@ -252,7 +252,7 @@
       "guessLabel": "Votre réponse",
       "reasoningLabel": "Pourquoi le pensez-vous ?",
       "submitGuess": "Envoyer la réponse",
-      "guessLog": "Réponse finale : {{guess}} — le personnage était {{answer}}.",
+      "guessLog": "Réponse finale : {{guess}}. Le personnage était {{answer}}.",
       "correct": "Exact ! C'était {{name}}.",
       "wrong": "Pas tout à fait : c'était {{name}}.",
       "correctShort": "Bonne réponse !",

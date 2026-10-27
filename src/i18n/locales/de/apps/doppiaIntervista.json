@@ -12,7 +12,7 @@
     "dialogueTitle": "Dialog",
     "changeCharacters": "Charaktere Ändern"
   },
-  "description": "Vergleichen Sie die Antworten von zwei historischen Figuren",
+  "description": "Stell zwei Figuren dieselben Fragen und vergleiche ihre Antworten, wie bei einem Doppelinterview im Fernsehen.",
   "greeting1": "Hallo, ich bin {{name}}. Stellen Sie Ihre Frage.",
   "greeting2": "Hallo, ich bin {{name}}. Ich bin bereit für Ihre Frage.",
   "placeholder": "Schreiben Sie an {{target}}...",

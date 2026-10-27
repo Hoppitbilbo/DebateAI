@@ -1,6 +1,6 @@
 {
   "loading": "Laden...",
-  "error": "Fehler",
+  "error": "Bei uns ist etwas schiefgelaufen, die Seite wurde nicht geladen. Lade die Seite neu, um es noch einmal zu versuchen.",
   "retry": "Wiederholen",
   "cancel": "Abbrechen",
   "confirm": "Bestätigen",

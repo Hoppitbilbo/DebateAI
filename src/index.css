@@ -23,59 +23,64 @@
 
 @layer base {
   :root {
-    /* Single site theme: deep teal surfaces, lime accent. */
-    --background: 187 30% 25%;
-    --foreground: 0 0% 96%;
+    /* Bright classroom theme: warm white paper, ink text, purple actions,
+       yellow highlighter. */
+    --background: 45 60% 97%;
+    --foreground: 255 25% 14%;
 
-    --card: 187 30% 29%;
-    --card-foreground: 0 0% 96%;
+    --card: 0 0% 100%;
+    --card-foreground: 255 25% 14%;
 
-    --popover: 187 32% 22%;
-    --popover-foreground: 0 0% 96%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 255 25% 14%;
 
-    --primary: 84 65% 52%;
-    --primary-foreground: 195 65% 16%;
+    --primary: 258 62% 52%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 195 65% 16%;
-    --secondary-foreground: 0 0% 96%;
+    --secondary: 255 70% 96%;
+    --secondary-foreground: 255 25% 14%;
 
-    --muted: 187 30% 31%;
-    --muted-foreground: 187 12% 78%;
+    --muted: 250 35% 94%;
+    --muted-foreground: 252 12% 38%;
 
-    --accent: 187 30% 35%;
-    --accent-foreground: 0 0% 96%;
+    --accent: 46 100% 88%;
+    --accent-foreground: 255 25% 14%;
 
-    --destructive: 0 72% 58%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 0 70% 46%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 187 25% 38%;
-    --input: 187 25% 42%;
-    --ring: 84 65% 52%;
+    --border: 252 25% 86%;
+    --input: 252 20% 76%;
+    --ring: 258 62% 52%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
-    --sidebar-background: 195 65% 16%;
-    --sidebar-foreground: 0 0% 96%;
-    --sidebar-primary: 84 65% 52%;
-    --sidebar-primary-foreground: 195 65% 16%;
-    --sidebar-accent: 187 30% 30%;
-    --sidebar-accent-foreground: 0 0% 96%;
-    --sidebar-border: 187 25% 38%;
-    --sidebar-ring: 84 65% 52%;
+    --sidebar-background: 255 70% 96%;
+    --sidebar-foreground: 255 25% 14%;
+    --sidebar-primary: 258 62% 52%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 46 100% 88%;
+    --sidebar-accent-foreground: 255 25% 14%;
+    --sidebar-border: 252 25% 86%;
+    --sidebar-ring: 258 62% 52%;
 
     /* Font variables */
-    --font-heading: 'Fraunces', serif;
-    --font-body: 'Inter', sans-serif;
+    --font-heading: 'Fraunces', Georgia, serif;
+    --font-body: 'DM Sans', system-ui, sans-serif;
     --font-weight-normal: 400;
     --font-weight-medium: 500;
     --font-weight-semibold: 600;
     --font-weight-bold: 700;
-    --letter-spacing-tight: -0.01em;
+    --letter-spacing-tight: -0.015em;
 
-    /* Brand ramp (same values as tailwind `education`) */
-    --brand: 77 63% 51%;
-    --brand-light: 84 100% 78%;
-    --brand-dark: 195 65% 16%;
+    /* Brand ramp behind tailwind `education`: DEFAULT is the action colour,
+       light the emphasis text, dark the text/surface that sits on them. */
+    --brand: 258 62% 52%;
+    --brand-light: 262 58% 40%;
+    --brand-dark: 0 0% 100%;
+    --brand-muted: 258 58% 44%;
+    --sun: 44 100% 58%;
+    --sun-light: 46 100% 88%;
   }
 }
 
@@ -85,49 +90,63 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
     font-family: var(--font-body);
-    opacity: 1;
-    transition: opacity 0.3s ease;
   }
-  
+
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
-    line-height: 1.2;
+    line-height: 1.15;
     letter-spacing: var(--letter-spacing-tight);
     font-weight: var(--font-weight-semibold);
+    text-wrap: balance;
   }
 
   h1 {
-    font-size: 2.25rem; /* 3xl */
-    font-variation-settings: "SOFT" 100, "WONK" 1;
+    font-size: 2.25rem;
   }
 
   h2 {
-    font-size: 1.875rem; /* 2xl */
-    font-variation-settings: "SOFT" 100, "WONK" 1;
+    font-size: 1.875rem;
   }
 
   h3 {
-    font-size: 1.5rem; /* xl */
-    color: hsl(var(--brand-light));
-    font-variation-settings: "SOFT" 100, "WONK" 1;
+    font-size: 1.5rem;
   }
 
   h4 {
-    font-size: 1.25rem; /* lg */
-    font-variation-settings: "SOFT" 100, "WONK" 1;
+    font-size: 1.25rem;
   }
 
   button, a.button {
-    font-family: var(--font-heading);
+    font-family: var(--font-body);
     font-weight: var(--font-weight-medium);
   }
-  
+
   .logo {
     font-family: var(--font-heading);
     font-weight: var(--font-weight-bold);
     letter-spacing: -0.02em;
+  }
+}
+
+/* Yellow highlighter stroke behind one emphasised phrase (hero, section titles). */
+.ink-underline {
+  background: linear-gradient(104deg, transparent 0.4em, hsl(var(--sun) / 0.85) 0.5em, hsl(var(--sun) / 0.7) calc(100% - 0.5em), transparent calc(100% - 0.35em)) left 62% / 100% 0.55em no-repeat;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  padding: 0 0.15em;
+  margin: 0 -0.15em;
+}
+
+/* Illustrations sit on the paper: fixed box, never stretched. In the
+   components layer so utilities such as `hidden` still win. */
+@layer components {
+  .illustration {
+    display: block;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
   }
 }
 
@@ -311,15 +330,12 @@ html, body {
 .chat-bubble {
   position: relative;
   padding: 1rem;
-  border-radius: 0.5rem;
+  border-radius: 1rem;
   margin-bottom: 1rem;
   max-width: 85%;
-  transition: transform 0.3s ease-in-out;
+  border: 1.5px solid hsl(var(--foreground));
 }
 
-.chat-bubble:hover {
-  transform: scale(1.05);
-}
 
 .chat-bubble-user {
   background-color: hsl(var(--primary));
@@ -335,22 +351,6 @@ html, body {
   border-bottom-left-radius: 0;
 }
 
-/* Button shake animation */
-@keyframes shake {
-  0%, 100% {
-    transform: translateX(0);
-  }
-  10%, 30%, 50%, 70%, 90% {
-    transform: translateX(-2px);
-  }
-  20%, 40%, 60%, 80% {
-    transform: translateX(2px);
-  }
-}
-
-.btn-shake:hover {
-  animation: shake 0.5s ease-in-out;
-}
 
 .typing-animation {
   display: inline-flex;
@@ -415,5 +415,149 @@ html, body {
   * {
     color: #000 !important;
     box-shadow: none !important;
+  }
+}
+
+/* Hero loop enters like ink wiped across the page, once. */
+.hero-art video {
+  animation: ink-wipe 900ms cubic-bezier(0.2, 0.8, 0.2, 1) 200ms both;
+}
+
+@keyframes ink-wipe {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-art video {
+    animation: none;
+  }
+}
+
+/* App pictures: a colour icon on a yellow blob. On desktop, hovering the card
+   lifts the app's hand-drawn scene from behind the icon with a small bounce. */
+.app-art {
+  position: relative;
+  height: 7rem;
+  display: flex;
+  align-items: center;
+}
+
+.app-art__blob {
+  position: absolute;
+  left: 0;
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 46% 54% 52% 48% / 55% 45% 55% 45%;
+  background: hsl(var(--sun));
+  border: 2px solid hsl(var(--foreground));
+  transition: transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.app-art__icon {
+  position: relative;
+  width: 3.25rem;
+  height: 3.25rem;
+  margin-left: 0.625rem;
+  object-fit: contain;
+  transition: transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.app-art__scene {
+  display: none;
+}
+
+@media (hover: hover) and (pointer: fine) and (min-width: 768px) {
+  .app-art__scene {
+    display: block;
+    position: absolute;
+    right: -0.5rem;
+    bottom: -0.25rem;
+    width: 8.5rem;
+    height: 8.5rem;
+    object-fit: contain;
+    opacity: 0;
+    transform: translate(-3.5rem, 1.5rem) scale(0.4) rotate(-12deg);
+    transform-origin: 30% 80%;
+    transition: opacity 180ms ease-out, transform 420ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    pointer-events: none;
+  }
+
+  .group:hover .app-art__scene,
+  .group:focus-visible .app-art__scene,
+  .group:focus-within .app-art__scene {
+    opacity: 1;
+    transform: translate(0, 0) scale(1) rotate(0deg);
+    animation: app-art-wobble 1.6s ease-in-out 450ms infinite;
+  }
+
+  .group:hover .app-art__blob,
+  .group:focus-within .app-art__blob {
+    transform: scale(1.12) rotate(-8deg);
+  }
+
+  .group:hover .app-art__icon,
+  .group:focus-within .app-art__icon {
+    transform: translateY(-3px) rotate(-6deg) scale(1.08);
+  }
+}
+
+@keyframes app-art-wobble {
+  0%, 100% {
+    transform: rotate(0deg) translateY(0);
+  }
+  50% {
+    transform: rotate(2deg) translateY(-3px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-art__scene,
+  .app-art__blob,
+  .app-art__icon {
+    transition: opacity 150ms linear;
+    animation: none !important;
+  }
+}
+
+/* Home story chat: each new bubble lands with a bump. */
+.story-bubble {
+  transform-origin: bottom left;
+  animation: story-bump 520ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.story-bubble--right {
+  transform-origin: bottom right;
+}
+
+.story-pop,
+.story-step-active {
+  animation: story-bump 420ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes story-bump {
+  0% {
+    opacity: 0;
+    transform: translateY(14px) scale(0.6);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(-3px) scale(1.06);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .story-bubble,
+  .story-pop,
+  .story-step-active {
+    animation: none;
   }
 }

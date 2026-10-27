@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 440">
+  <style>
+    .ink{fill:none;stroke:#1E1A2E;stroke-width:7;stroke-linecap:round;stroke-linejoin:round}
+    .paper{fill:#FDFAF2}
+    .mouth{transform-box:fill-box;transform-origin:center;animation:talk .9s ease-in-out infinite}
+    .a .mouth{animation-name:talk-a;animation-duration:3.2s}
+    .b .mouth{animation-name:talk-b;animation-duration:3.2s}
+    .a .mic{animation:mic-a 3.2s ease-in-out infinite}
+    .b .mic{animation:mic-b 3.2s ease-in-out infinite}
+    .rec{animation:blink 1s steps(2) infinite}
+    @keyframes talk-a{0%,5%,15%,25%,35%,45%,50%,100%{transform:scaleY(.25)}10%,20%,30%,40%{transform:scaleY(1)}}
+    @keyframes talk-b{0%,50%,55%,65%,75%,85%,95%,100%{transform:scaleY(.25)}60%,70%,80%,90%{transform:scaleY(1)}}
+    @keyframes mic-a{0%,45%{transform:translateY(-8px)}55%,95%{transform:translateY(6px)}100%{transform:translateY(-8px)}}
+    @keyframes mic-b{0%,45%{transform:translateY(6px)}55%,95%{transform:translateY(-8px)}100%{transform:translateY(6px)}}
+    @keyframes blink{0%{opacity:1}100%{opacity:0}}
+  </style>
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.022" numOctaves="2" seed="7"/>
+      <feDisplacementMap in="SourceGraphic" scale="3"/>
+    </filter>
+    <clipPath id="pa"><rect x="26" y="60" width="188" height="320"/></clipPath>
+    <clipPath id="pb"><rect x="226" y="60" width="188" height="320"/></clipPath>
+  </defs>
+  <g filter="url(#rough)">
+    <!-- left screen: purple set, person with glasses -->
+    <g class="a">
+      <rect x="26" y="60" width="188" height="320" fill="#C9B6F7"/>
+      <g clip-path="url(#pa)">
+        <path class="paper" d="M44 390Q48 270 120 262Q192 270 196 390Z"/>
+        <path class="ink" d="M44 390Q48 270 120 262Q192 270 196 390"/>
+        <circle class="paper" cx="120" cy="196" r="50"/>
+        <circle class="ink" cx="120" cy="196" r="50"/>
+        <path class="ink" d="M76 172Q90 136 128 142Q160 146 168 178" stroke-width="9"/>
+        <circle class="ink" cx="102" cy="194" r="12" stroke-width="5"/>
+        <circle class="ink" cx="140" cy="194" r="12" stroke-width="5"/>
+        <path class="ink" d="M114 194H128" stroke-width="5"/>
+        <ellipse class="mouth" cx="121" cy="222" rx="11" ry="8" fill="#1E1A2E"/>
+        <g class="mic">
+          <path class="ink" d="M184 392L160 272" stroke-width="12"/>
+          <circle cx="156" cy="256" r="17" fill="#1E1A2E"/>
+        </g>
+      </g>
+      <rect class="ink" x="26" y="60" width="188" height="320"/>
+      <path d="M40 340H122V362H40Z" fill="#FFD966"/>
+      <path class="ink" d="M40 340H122V362H40Z" stroke-width="5"/>
+    </g>
+    <!-- right screen: yellow set, person with a bun -->
+    <g class="b">
+      <rect x="226" y="60" width="188" height="320" fill="#FFD966"/>
+      <g clip-path="url(#pb)">
+        <path class="paper" d="M244 390Q248 270 320 262Q392 270 396 390Z"/>
+        <path class="ink" d="M244 390Q248 270 320 262Q392 270 396 390"/>
+        <circle class="paper" cx="320" cy="132" r="22"/>
+        <circle class="ink" cx="320" cy="132" r="22"/>
+        <circle class="paper" cx="320" cy="198" r="50"/>
+        <circle class="ink" cx="320" cy="198" r="50"/>
+        <path class="ink" d="M272 186Q286 150 320 150Q354 150 368 186" stroke-width="9"/>
+        <circle cx="302" cy="198" r="5" fill="#1E1A2E"/>
+        <circle cx="338" cy="198" r="5" fill="#1E1A2E"/>
+        <ellipse class="mouth" cx="320" cy="224" rx="11" ry="8" fill="#1E1A2E"/>
+        <g class="mic">
+          <path class="ink" d="M256 392L280 272" stroke-width="12"/>
+          <circle cx="284" cy="256" r="17" fill="#1E1A2E"/>
+        </g>
+      </g>
+      <rect class="ink" x="226" y="60" width="188" height="320"/>
+      <path d="M318 340H400V362H318Z" fill="#C9B6F7"/>
+      <path class="ink" d="M318 340H400V362H318Z" stroke-width="5"/>
+    </g>
+    <!-- recording dot -->
+    <circle class="rec" cx="48" cy="84" r="8" fill="#E5484D"/>
+  </g>
+</svg>

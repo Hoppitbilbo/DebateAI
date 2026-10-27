@@ -3,7 +3,7 @@
   "searchPlaceholder": "Buscar...",
   "noResults": "No se encontraron resultados",
   "loading": "Cargando...",
-  "error": "Error",
+  "error": "Algo falló por nuestra parte y la página no se cargó. Recarga la página para volver a intentarlo.",
   "tryAgain": "Intentar de nuevo",
   "retry": "Reintentar",
   "cancel": "Cancelar",

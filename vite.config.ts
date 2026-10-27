@@ -3,7 +3,6 @@ import { execFileSync } from "node:child_process";
 import { sentryVitePlugin } from "@sentry/vite-plugin";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
-import { componentTagger } from "lovable-tagger";
 
 // In development the Go server runs on :8080 (npm run dev:server) and Vite
 // proxies /api to it, so the browser talks to a single origin.
@@ -40,7 +39,6 @@ export default defineConfig(({ mode, command }) => {
     },
     plugins: [
       react(),
-      mode === "development" && componentTagger(),
       uploadSourceMaps && sentryVitePlugin({
         org: env.SENTRY_ORG || "aidebate-sx",
         project: env.SENTRY_PROJECT || "debateai-web",

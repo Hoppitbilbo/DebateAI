@@ -21,8 +21,8 @@ export default {
 		},
 		extend: {
 			fontFamily: {
-				heading: ['Fraunces', 'serif'],
-				body: ['Inter', 'sans-serif'],
+				heading: ['Fraunces', 'Georgia', 'serif'],
+				body: ['DM Sans', 'system-ui', 'sans-serif'],
 			},
 			colors: {
 				border: 'hsl(var(--border))',
@@ -59,10 +59,14 @@ export default {
 					foreground: 'hsl(var(--card-foreground))'
 				},
 				education: {
-					DEFAULT: '#A5D233', /* Brighter green for better contrast */
-					light: '#D8FF8F', /* Acid green for text that was gray */
-					dark: '#0E3542',
-					muted: '#8BAB2A', /* Darker shade for text on light backgrounds */
+					DEFAULT: 'hsl(var(--brand) / <alpha-value>)',
+					light: 'hsl(var(--brand-light) / <alpha-value>)',
+					dark: 'hsl(var(--brand-dark) / <alpha-value>)',
+					muted: 'hsl(var(--brand-muted) / <alpha-value>)',
+				},
+				sun: {
+					DEFAULT: 'hsl(var(--sun) / <alpha-value>)',
+					light: 'hsl(var(--sun-light) / <alpha-value>)',
 				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',

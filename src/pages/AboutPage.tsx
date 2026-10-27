@@ -85,7 +85,7 @@ const AboutPage = () => {
                     {t('aboutPage.helpDevelopment.redditButton')}
                   </Button>
                   <Button 
-                     className="bg-education-dark hover:bg-education-dark/80 text-white border border-border font-medium py-2 px-6 rounded-lg shadow-md transition-all flex items-center"
+                     className="bg-foreground hover:bg-foreground/85 text-background font-medium py-2 px-6 rounded-lg shadow-md transition-all flex items-center"
                      onClick={() => window.open('https://github.com/Hoppitbilbo/DebateAI', '_blank')}
                    >
                     <Github className="mr-2" size={20} />

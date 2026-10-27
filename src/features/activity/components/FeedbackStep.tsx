@@ -85,7 +85,7 @@ const FeedbackStep = ({ evaluation, partial, loading, error, reflection, message
         {error ? (
           <p className="text-destructive">{error}</p>
         ) : (evaluation?.markdown || partial) ? (
-          <MarkdownViewer content={evaluation?.markdown || partial} className="prose-invert" />
+          <MarkdownViewer content={evaluation?.markdown || partial} />
         ) : (
           <p className="flex items-center gap-2 text-muted-foreground">
             <Loader2 className="h-4 w-4 animate-spin" /> {t("platform.feedback.generating")}

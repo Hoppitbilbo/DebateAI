@@ -1,8 +1,8 @@
 {
   "name": "You Moderate",
-  "title": "You Moderate",
+  "title": "You moderate",
   "subtitle": "Interview historical figures",
-  "description": "Create and analyze deep conversations between two historical figures based on their Wikipedia profiles.",
+  "description": "Two characters debate a topic you choose. You run the debate: give the floor, ask questions, keep them on topic.",
   "errors": {
     "fetchError": "Error retrieving data from Wikipedia for {{title}}",
     "noSummary": "No summary found.",

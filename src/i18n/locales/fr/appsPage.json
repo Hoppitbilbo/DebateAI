@@ -1,42 +1,42 @@
 {
-  "title": "Applications d'Intelligence Artificielle pour l'Éducation",
-  "subtitle": "Explorez notre collection d'outils d'IA pour l'apprentissage interactif.",
+  "title": "Choisis à qui parler aujourd'hui",
+  "subtitle": "Chaque app part d'un personnage ou d'une page Wikipédia. Les enseignants peuvent la donner à la classe comme devoir.",
   "badges": {
     "new": "Nouveau",
     "comingSoon": "Bientôt"
   },
   "buttons": {
-    "launchApp": "Lancer l'Application",
+    "launchApp": "Commencer",
     "comingSoon": "Bientôt"
   },
   "appCards": {
     "youModerate": {
-      "title": "C’est toi qui modères",
-      "description": "Conversez avec des personnages IA basés sur le contenu de Wikipédia, transformant les sujets éducatifs en conversations interactives."
+      "title": "Modère toi",
+      "description": "Deux personnages débattent d'un sujet que tu choisis. Tu modères : tu donnes la parole, poses des questions, les ramènes au sujet."
     },
     "doppiaIntervista": {
-      "title": "Double Interview",
-      "description": "Interagissez simultanément avec deux figures historiques dans des conversations parallèles, créant un dialogue éducatif unique."
+      "title": "Double interview",
+      "description": "Pose les mêmes questions à deux personnages et compare leurs réponses, comme dans une double interview à la télé."
     },
     "wikiChatbot": {
-      "title": "WikiChat IA",
-      "description": "Chattez avec une intelligence artificielle qui représente n'importe quel sujet de Wikipédia, parfait pour des approfondissements éducatifs interactifs."
+      "title": "WikiChat",
+      "description": "Parle avec une page Wikipédia : une personne, un lieu, un événement ou une idée te répond à la première personne."
     },
     "personaggioMisterioso": {
-      "title": "Devinez le Personnage Mystérieux",
-      "description": "Défiez l'IA en posant des questions pour deviner la figure historique choisie. Vous avez un nombre limité de questions pour découvrir l'identité mystérieuse !"
+      "title": "Personnage mystère",
+      "description": "Un personnage cache son identité. Tu as peu de questions pour la découvrir, puis tu tentes ta chance."
     },
     "promptEngineer": {
-      "title": "Créateur de Prompts pour l'Enseignement",
-      "description": "Aide les enseignants et les étudiants à créer des prompts efficaces pour l'intelligence artificielle dans les activités éducatives et d'apprentissage."
+      "title": "Prompts pour la classe",
+      "description": "Pour les enseignants et les élèves : apprends à écrire des consignes claires pour utiliser l'IA en classe."
     },
     "convinciTu": {
-      "title": "Convainquez VOUS",
-      "description": "Défiez vos compétences de persuasion en essayant de convaincre des figures historiques de vos idées."
+      "title": "Convaincs-le",
+      "description": "Choisis une idée et essaie de convaincre un personnage historique. Il ne change d'avis que si tes arguments tiennent."
     },
     "impersonaTu": {
-      "title": "Incarnez Vous",
-      "description": "Dialoguez avec une figure historique en en interprétant une autre. Testez vos compétences d'empathie !"
+      "title": "Incarne-le",
+      "description": "Joue un personnage historique pendant que l'IA en joue un autre. Elle te pose des questions pour voir si tu le connais bien."
     }
   }
 }

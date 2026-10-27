@@ -3,7 +3,7 @@
   "searchPlaceholder": "Cerca...",
   "noResults": "Nessun risultato trovato",
   "loading": "Caricamento...",
-  "error": "Si è verificato un errore",
+  "error": "Qualcosa non ha funzionato da parte nostra e la pagina non si è caricata. Ricarica la pagina per riprovare.",
   "tryAgain": "Riprova",
   "cancel": "Annulla",
   "save": "Salva",

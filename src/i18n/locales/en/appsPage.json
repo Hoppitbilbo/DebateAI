@@ -1,42 +1,42 @@
 {
-  "title": "AI Applications for Education",
-  "subtitle": "Explore our collection of AI tools for interactive learning.",
+  "title": "Choose who to talk to today",
+  "subtitle": "Every app starts from a character or a Wikipedia page. Teachers can assign any of them to a class.",
   "appCards": {
     "youModerate": {
-      "title": "You Moderate",
-      "description": "Converse with AI characters based on Wikipedia content, transforming educational topics into interactive conversations."
+      "title": "You moderate",
+      "description": "Two characters debate a topic you choose. You run the debate: give the floor, ask questions, keep them on topic."
     },
     "doppiaIntervista": {
-      "title": "Double Interview",
-      "description": "Interact simultaneously with two historical figures in parallel conversations, creating a unique educational dialogue."
+      "title": "Double interview",
+      "description": "Ask two characters the same questions and compare their answers, like a TV double interview."
     },
     "wikiChatbot": {
-      "title": "WikiChat AI",
-      "description": "Chat with an artificial intelligence representing any Wikipedia topic, perfect for interactive educational insights."
+      "title": "WikiChat",
+      "description": "Talk to a Wikipedia page: a person, place, event or idea answers you in the first person."
     },
     "personaggioMisterioso": {
-      "title": "Guess the Mystery Character",
-      "description": "Challenge the AI by asking questions to guess the chosen historical figure. You have a limited number of questions to discover the mysterious identity!"
+      "title": "Mystery character",
+      "description": "A character hides who they are. You get a few questions to find out, then you make your guess."
     },
     "promptEngineer": {
-      "title": "Teaching Prompt Creator",
-      "description": "Help teachers and students create effective prompts for artificial intelligence in educational and learning activities."
+      "title": "Prompts for teaching",
+      "description": "For teachers and students: learn to write clear prompts to use AI in class."
     },
     "convinciTu": {
-      "title": "Convince YOU",
-      "description": "Challenge your persuasion skills by trying to convince historical figures of your ideas."
+      "title": "Convince them",
+      "description": "Pick an idea and try to win over a historical character. They only change their mind if your arguments hold up."
     },
     "impersonaTu": {
-      "title": "You Impersonate",
-      "description": "Dialogue with a historical figure by interpreting another. Test your empathy skills!"
+      "title": "Play the part",
+      "description": "Play a historical character while the AI plays another. It asks you questions to see how well you know your role."
     }
   },
   "badges": {
     "new": "New",
-    "comingSoon": "Coming Soon"
+    "comingSoon": "Coming soon"
   },
   "buttons": {
-    "launchApp": "Launch App",
-    "comingSoon": "Coming Soon"
+    "launchApp": "Start",
+    "comingSoon": "Coming soon"
   }
 }

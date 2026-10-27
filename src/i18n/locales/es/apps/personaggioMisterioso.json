@@ -1,8 +1,8 @@
 {
   "name": "Personaje Misterioso",
-  "title": "Personaje Misterioso",
+  "title": "Personaje misterioso",
   "subtitle": "Adivina la figura histórica",
-  "description": "Haz preguntas para descubrir quién es el personaje misterioso",
+  "description": "Un personaje oculta quién es. Tienes pocas preguntas para descubrirlo y luego intentas adivinar.",
   "setup": {
     "selectCharacterLabel": "Elige el Personaje a Adivinar",
     "selectCharacterError": "Debes seleccionar un personaje para comenzar el juego",

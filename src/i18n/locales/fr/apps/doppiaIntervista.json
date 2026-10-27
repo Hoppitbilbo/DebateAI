@@ -11,9 +11,9 @@
     }
   },
   "name": "Interview Double",
-  "title": "Interview Double",
+  "title": "Double interview",
   "subtitle": "Interview simultanée avec deux figures historiques",
-  "description": "Comparez les réponses de deux figures historiques",
+  "description": "Pose les mêmes questions à deux personnages et compare leurs réponses, comme dans une double interview à la télé.",
   "greeting1": "Bonjour, je suis {{name}}. Posez votre question.",
   "greeting2": "Bonjour, je suis {{name}}. Je suis prêt pour votre question.",
   "placeholder": "Écrivez à {{target}}...",

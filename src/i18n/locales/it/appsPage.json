@@ -1,42 +1,42 @@
 {
-  "title": "Applicazioni di Intelligenza Artificiale per l'Educazione",
-  "subtitle": "Esplora la nostra raccolta di strumenti AI per l'apprendimento interattivo.",
+  "title": "Scegli con chi parlare oggi",
+  "subtitle": "Ogni app parte da un personaggio o da una pagina di Wikipedia. Chi insegna può assegnarla alla classe come compito.",
   "appCards": {
     "youModerate": {
       "title": "Modera tu",
-      "description": "Conversa con personaggi AI basati sui contenuti di Wikipedia, trasformando argomenti educativi in conversazioni interattive."
+      "description": "Due personaggi discutono su un tema che scegli tu. Tu fai il moderatore: dai la parola, fai domande, riporti la discussione in tema."
     },
     "doppiaIntervista": {
-      "title": "Doppia Intervista",
-      "description": "Interagisci simultaneamente con due personaggi storici in conversazioni parallele, creando un dialogo educativo unico."
+      "title": "Doppia intervista",
+      "description": "Fai le stesse domande a due personaggi e confronta le risposte, come nelle doppie interviste in TV."
     },
     "wikiChatbot": {
-      "title": "WikiChat AI",
-      "description": "Chat con un'intelligenza artificiale che rappresenta qualsiasi argomento Wikipedia, perfetto per approfondimenti educativi interattivi."
+      "title": "WikiChat",
+      "description": "Parla con una pagina di Wikipedia: una persona, un luogo, un evento o un'idea ti risponde in prima persona."
     },
     "personaggioMisterioso": {
-      "title": "Indovina il Personaggio Misterioso",
-      "description": "Sfida l'intelligenza artificiale facendo domande per indovinare il personaggio storico scelto. Hai un numero limitato di domande per scoprire l'identità misteriosa!"
+      "title": "Personaggio misterioso",
+      "description": "Un personaggio nasconde chi è. Hai poche domande per scoprirlo, poi provi a indovinare."
     },
     "promptEngineer": {
-      "title": "Creatore di Prompt per l'Insegnamento",
-      "description": "Aiuta insegnanti e studenti a creare prompt efficaci per l'intelligenza artificiale in attività didattiche e di apprendimento."
+      "title": "Prompt per la didattica",
+      "description": "Per insegnanti e studenti: impara a scrivere richieste chiare per usare l'AI in classe."
     },
     "convinciTu": {
-      "title": "Convinci TU",
-      "description": "Sfida le tue capacità di persuasione cercando di convincere personaggi storici delle tue idee."
+      "title": "Convinci tu",
+      "description": "Scegli un'idea e prova a convincere un personaggio storico. Cambia idea solo se i tuoi argomenti reggono."
     },
     "impersonaTu": {
-      "title": "Impersona Tu",
-      "description": "Dialoga con un personaggio storico interpretandone un altro. Metti alla prova le tue capacità di immedesimazione!"
+      "title": "Impersona tu",
+      "description": "Interpreta un personaggio storico mentre l'AI ne interpreta un altro. Ti fa domande per capire quanto lo conosci."
     }
   },
   "badges": {
-    "new": "Nuovo",
-    "comingSoon": "Prossimamente"
+    "new": "Nuova",
+    "comingSoon": "In arrivo"
   },
   "buttons": {
-    "launchApp": "Avvia App",
-    "comingSoon": "Prossimamente"
+    "launchApp": "Inizia",
+    "comingSoon": "In arrivo"
   }
 }

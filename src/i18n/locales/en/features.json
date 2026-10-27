@@ -1,27 +1,27 @@
 {
-  "title": "Features",
-  "subtitle": "AI-Based Educational Tools",
-  "description": "Explore our collection of AI applications designed to transform learning into an interactive and engaging experience.",
+  "title": "The apps",
+  "subtitle": "Five ways to make history talk",
+  "description": "Each app trains a different skill: asking questions, moderating, arguing, stepping into someone else's shoes.",
   "items": {
     "youModerate": {
-      "name": "You Moderate",
-      "description": "Simulate conversations with historical figures through Wikipedia content, making learning interactive and engaging."
+      "name": "You moderate",
+      "description": "Two characters debate a topic you choose. You run the debate: give the floor, ask questions, keep them on topic."
     },
     "personaggioMisterioso": {
-      "name": "Mystery Character",
-      "description": "Play guessing historical and literary characters through questions and answers with AI."
+      "name": "Mystery character",
+      "description": "A character hides who they are. You get a few questions to find out, then you make your guess."
     },
     "doppiaIntervista": {
-      "name": "Double Interview",
-      "description": "Moderate a dialogue between two historical figures on a specific theme, exploring different perspectives."
+      "name": "Double interview",
+      "description": "Ask two characters the same questions and compare their answers, like a TV double interview."
     },
     "convinciTu": {
-      "name": "Convince You",
-      "description": "Challenge your persuasion skills by trying to change historical figures' minds on controversial topics."
+      "name": "Convince them",
+      "description": "Pick an idea and try to win over a historical character. They only change their mind if your arguments hold up."
     },
     "impersonaTu": {
-      "name": "You Impersonate",
-      "description": "Dialogue with a historical figure by interpreting another. Test your empathy skills!"
+      "name": "Play the part",
+      "description": "Play a historical character while the AI plays another. It asks you questions to see how well you know your role."
     }
   }
 }

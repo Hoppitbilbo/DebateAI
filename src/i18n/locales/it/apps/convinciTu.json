@@ -1,8 +1,8 @@
 {
   "name": "Convinci Tu",
-  "title": "ConvinciTu",
+  "title": "Convinci tu",
   "subtitle": "Prova a convincere un personaggio storico su un argomento specifico",
-  "description": "Prova a convincere personaggi storici delle tue idee",
+  "description": "Scegli un'idea e prova a convincere un personaggio storico. Cambia idea solo se i tuoi argomenti reggono.",
   "newChatSuccess": "Nuova chat iniziata!",
   "errors": {
     "responseGeneration": "Errore nella generazione della risposta. Riprova più tardi.",

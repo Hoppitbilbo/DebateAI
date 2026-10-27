@@ -2,7 +2,7 @@
   "name": "Geheimnisvolle Figur",
   "title": "Geheimnisvolle Figur",
   "subtitle": "Erraten Sie die historische Figur",
-  "description": "Stellen Sie Fragen, um herauszufinden, wer die geheimnisvolle Figur ist",
+  "description": "Eine Figur verrät nicht, wer sie ist. Du hast wenige Fragen, um es herauszufinden, dann rätst du.",
   "setup": {
     "selectCharacterLabel": "Wählen Sie den zu erratenden Charakter",
     "selectCharacterError": "Sie müssen eine Figur auswählen, um das Spiel zu starten",

@@ -1,27 +1,27 @@
 {
-  "title": "Características",
-  "subtitle": "Herramientas Educativas Basadas en IA",
-  "description": "Explora nuestra colección de aplicaciones de IA diseñadas para transformar el aprendizaje en una experiencia interactiva y atractiva.",
+  "title": "Las apps",
+  "subtitle": "Cinco formas de hacer hablar a la historia",
+  "description": "Cada app entrena una habilidad distinta: preguntar, moderar, argumentar, ponerse en el lugar del otro.",
   "items": {
     "youModerate": {
       "name": "Moderas tú",
-      "description": "Simula conversaciones con personajes históricos a través de contenidos de Wikipedia, haciendo el aprendizaje interactivo y atractivo."
+      "description": "Dos personajes debaten sobre un tema que eliges tú. Tú moderas: das la palabra, haces preguntas y los devuelves al tema."
     },
     "personaggioMisterioso": {
-      "name": "Personaje Misterioso",
-      "description": "Juega a adivinar personajes históricos y literarios a través de preguntas y respuestas con la IA."
+      "name": "Personaje misterioso",
+      "description": "Un personaje oculta quién es. Tienes pocas preguntas para descubrirlo y luego intentas adivinar."
     },
     "doppiaIntervista": {
-      "name": "Doble Entrevista",
-      "description": "Modera un diálogo entre dos personajes históricos sobre un tema específico, explorando diferentes perspectivas."
+      "name": "Doble entrevista",
+      "description": "Haz las mismas preguntas a dos personajes y compara sus respuestas, como en las dobles entrevistas de la tele."
     },
     "convinciTu": {
-      "name": "Convence Tú",
-      "description": "Desafía tus habilidades de persuasión tratando de hacer cambiar de opinión a personajes históricos sobre temas controvertidos."
+      "name": "Convence tú",
+      "description": "Elige una idea e intenta convencer a un personaje histórico. Solo cambia de opinión si tus argumentos se sostienen."
     },
     "impersonaTu": {
-      "name": "Personifica Tú",
-      "description": "Dialoga con un personaje histórico interpretando a otro. ¡Pon a prueba tus habilidades de interpretación!"
+      "name": "Interprétalo tú",
+      "description": "Interpreta a un personaje histórico mientras la IA interpreta a otro. Te hace preguntas para ver cuánto lo conoces."
     }
   }
 }

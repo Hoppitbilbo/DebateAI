@@ -1,11 +1,31 @@
 {
-  "title": "Interactive Learning with",
-  "subtitle": "AI-Powered Conversations",
-  "description": "Dialogue with the brightest minds of every era! Meet scientists, writers, mathematicians, explorers, artists and philosophers. Discover their secrets, their passions and transform studying into an extraordinary adventure!",
-  "tryApps": "Try our apps",
-  "sampleChat": {
-    "bot1": "Greetings! I am Marie Curie. I understand you wish to discuss my research? Science knows no boundaries - ask me anything about radioactivity or my laboratory work!",
-    "user": "How did you manage to work in science when so few women were accepted in your field?",
-    "bot2": "Ah, persistence and passion, my dear student! I faced many obstacles, but I believed that knowledge belongs to everyone. When they wouldn't let me into the University of Warsaw, I attended the 'Flying University' - secret classes for women. Science was my calling, and I would not be deterred!"
+  "title": "Interview the people",
+  "subtitle": "who made history",
+  "description": "Pick a character from Wikipedia and talk to them in class: scientists, artists, explorers, philosophers. Ask questions, challenge their answers, try to change their mind. At the end you get feedback on your reasoning.",
+  "tryApps": "Pick an app",
+  "story": {
+    "kicker": "How it works",
+    "title": "A lesson that talks back",
+    "galileo": "Galileo Galilei",
+    "student": "You",
+    "typing": "typing…",
+    "cta": "Try it yourself",
+    "steps": {
+      "1": "Pick a character",
+      "2": "Ask your questions",
+      "3": "Challenge the answers",
+      "4": "Reflect and get feedback"
+    },
+    "messages": {
+      "s1": "Hi Galileo! Can I really interview you?",
+      "g1": "Of course! Pick anyone from Wikipedia and I'll answer as them, with what we know about their life.",
+      "s2": "So tell me: why did you point your telescope at the sky?",
+      "g2": "I wanted to see for myself. And I found four moons circling Jupiter!",
+      "s3": "Are you sure? Many people back then didn't believe you.",
+      "g3": "Great objection! Here we reason with evidence: copying an answer isn't enough.",
+      "s4": "And what happens at the end?",
+      "g4": "You write what you learned and get feedback on your reasoning. Ready to try?"
+    },
+    "online": "online"
   }
 }

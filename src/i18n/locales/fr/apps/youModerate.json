@@ -1,8 +1,8 @@
 {
   "name": "C’est toi qui modères",
-  "title": "C’est toi qui modères",
+  "title": "Modère toi",
   "subtitle": "Interviewer des figures historiques",
-  "description": "Créez et analysez des conversations profondes entre deux figures historiques basées sur leurs profils Wikipedia.",
+  "description": "Deux personnages débattent d'un sujet que tu choisis. Tu modères : tu donnes la parole, poses des questions, les ramènes au sujet.",
   "errors": {
     "fetchError": "Erreur lors de la récupération des données de Wikipedia pour {{title}}",
     "noSummary": "Aucun résumé trouvé.",

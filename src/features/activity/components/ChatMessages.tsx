@@ -1,11 +1,42 @@
 import { memo } from "react";
 import { useTranslation } from "react-i18next";
-import { Bot, RotateCcw, User } from "lucide-react";
+import { RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import MarkdownViewer from "@/components/shared/MarkdownViewer";
 import { cn } from "@/lib/utils";
 import type { ActivityMessage } from "../types";
 import { useChatScroll } from "../useChatScroll";
+import { useWikiImage } from "../wikiImage";
+
+/** What an AI speaker without a Wikipedia picture looks like: a person or a page. */
+export type AvatarFallback = "person" | "page";
+
+// Speaker names that are not Wikipedia titles (the hidden mystery character, the generic AI).
+const MYSTERY_NAME = "???";
+const GENERIC_AI_NAME = "AI";
+
+const FALLBACK_ICONS = {
+  student: "/avatars/student-cap.webp",
+  mystery: "/avatars/mystery.webp",
+  person: "/avatars/unknown-person.webp",
+  page: "/avatars/page.webp",
+} as const;
+
+/** Wikipedia portrait of the speaker when the page has one, otherwise an Icons8 picture. */
+const SpeakerAvatar = memo(function SpeakerAvatar({ name, role, fallback }: { name?: string; role: ActivityMessage["role"]; fallback: AvatarFallback }) {
+  const isWikiTitle = !!name && name !== MYSTERY_NAME && name !== GENERIC_AI_NAME;
+  const photo = useWikiImage(isWikiTitle ? name : undefined);
+  const icon = name === MYSTERY_NAME ? FALLBACK_ICONS.mystery : role === "user" && !isWikiTitle ? FALLBACK_ICONS.student : FALLBACK_ICONS[fallback];
+  return (
+    <span className="mb-1 flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-foreground bg-accent">
+      {photo ? (
+        <img src={photo} alt="" className="h-full w-full object-cover object-top" loading="lazy" decoding="async" />
+      ) : (
+        <img src={icon} alt="" className="h-7 w-7 object-contain" />
+      )}
+    </span>
+  );
+});
 
 interface MessageProps {
   message: ActivityMessage;
@@ -13,9 +44,10 @@ interface MessageProps {
   speakerStyle?: string;
   onRetry?: (id: string) => void;
   retryDisabled?: boolean;
+  avatarFallback: AvatarFallback;
 }
 
-const ChatMessage = memo(function ChatMessage({ message, userLabel, speakerStyle, onRetry, retryDisabled }: MessageProps) {
+const ChatMessage = memo(function ChatMessage({ message, userLabel, speakerStyle, onRetry, retryDisabled, avatarFallback }: MessageProps) {
   const { t } = useTranslation();
   return (
     message.role === "system" ? (
@@ -24,10 +56,10 @@ const ChatMessage = memo(function ChatMessage({ message, userLabel, speakerStyle
       </div>
     ) : (
       <div className={cn("chat-message flex items-end gap-2", message.role === "user" ? "justify-end" : "justify-start")}>
-        {message.role !== "user" && <Bot className="mb-1 h-5 w-5 shrink-0 text-primary" aria-hidden />}
+        {message.role !== "user" && <SpeakerAvatar name={message.name} role={message.role} fallback={avatarFallback} />}
         <div
           className={cn(
-            "max-w-[80%] rounded-2xl px-4 py-2.5 shadow-sm",
+            "max-w-[80%] rounded-2xl px-4 py-2.5",
             message.role === "user"
               ? "rounded-br-sm bg-primary text-primary-foreground"
               : cn("rounded-bl-sm border border-border bg-background/60", speakerStyle),
@@ -41,7 +73,7 @@ const ChatMessage = memo(function ChatMessage({ message, userLabel, speakerStyle
             message.role === "user" ? (
               <p className="whitespace-pre-wrap text-sm">{message.content}</p>
             ) : (
-              <MarkdownViewer content={message.content} className="prose-sm prose-invert" />
+              <MarkdownViewer content={message.content} className="prose-sm" />
             )
           ) : (
             <span className="flex gap-1 py-1" aria-label={t("platform.activity.typing")}>
@@ -57,7 +89,7 @@ const ChatMessage = memo(function ChatMessage({ message, userLabel, speakerStyle
             </Button>
           )}
         </div>
-        {message.role === "user" && <User className="mb-1 h-5 w-5 shrink-0 text-primary" aria-hidden />}
+        {message.role === "user" && <SpeakerAvatar name={message.name} role={message.role} fallback={avatarFallback} />}
       </div>
     )
   );
@@ -71,10 +103,11 @@ interface ChatMessagesProps {
   busy?: boolean;
   onRetry?: (id: string) => void;
   canRetry?: (id: string) => boolean;
+  avatarFallback?: AvatarFallback;
 }
 
 /** Input changes never re-render the history; streaming only re-renders the changed row. */
-const ChatMessages = memo(function ChatMessages({ messages, heightClass, userLabel, speakerStyles, busy, onRetry, canRetry }: ChatMessagesProps) {
+const ChatMessages = memo(function ChatMessages({ messages, heightClass, userLabel, speakerStyles, busy, onRetry, canRetry, avatarFallback = "person" }: ChatMessagesProps) {
   const { t } = useTranslation();
   const { viewportRef, contentRef } = useChatScroll(messages);
 
@@ -92,6 +125,7 @@ const ChatMessages = memo(function ChatMessages({ messages, heightClass, userLab
             speakerStyle={message.speakerKey ? speakerStyles?.[message.speakerKey] : undefined}
             onRetry={message.error && onRetry && canRetry?.(message.id) ? onRetry : undefined}
             retryDisabled={message.error ? busy : undefined}
+            avatarFallback={avatarFallback}
           />
         ))}
       </div>

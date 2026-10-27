@@ -1,13 +1,13 @@
 {
   "teacherGuide": {
-    "title": "Lehrerhandbuch",
-    "description": "Entdecken Sie, wie Sie unsere Anwendungen nutzen können, um innovative und ansprechende Lernerfahrungen zu schaffen.",
-    "button": "Handbuch Anzeigen"
+    "title": "Leitfaden für Lehrkräfte",
+    "description": "Wie du die Apps Schritt für Schritt in den Unterricht bringst und sie als Aufgabe zuweist.",
+    "button": "Leitfaden öffnen"
   },
   "socialPurpose": {
-    "title": "Unser Sozialer Zweck",
-    "description": "Wir verwandeln Hausaufgaben in interaktive und ansprechende Lernerfahrungen und machen Bildung durch den Einsatz von KI zugänglicher und unterhaltsamer.",
-    "exploreButton": "Anwendungen Erkunden",
-    "learnMoreButton": "Mehr Erfahren"
+    "title": "Warum wir das machen",
+    "description": "AiDebate ist Open Source und läuft auch auf dem Schulserver, ohne Chats anderswo zu speichern. KI soll kritisches Denken trainieren, nicht ersetzen.",
+    "exploreButton": "App wählen",
+    "learnMoreButton": "Über uns"
   }
 }

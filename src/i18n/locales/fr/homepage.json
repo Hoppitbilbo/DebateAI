@@ -1,13 +1,13 @@
 {
   "teacherGuide": {
-    "title": "Guide de l'Enseignant",
-    "description": "Découvrez comment utiliser nos applications pour créer des expériences d'apprentissage innovantes et engageantes.",
-    "button": "Voir le Guide"
+    "title": "Guide pour les enseignants",
+    "description": "Comment utiliser les apps en classe étape par étape, et comment les donner aux élèves comme devoir.",
+    "button": "Ouvrir le guide"
   },
   "socialPurpose": {
-    "title": "Notre Mission Sociale",
-    "description": "Nous transformons les devoirs en expériences d'apprentissage interactives et engageantes, rendant l'éducation plus accessible et amusante grâce à l'utilisation de l'IA.",
-    "exploreButton": "Explorer les Applications",
-    "learnMoreButton": "En Savoir Plus"
+    "title": "Pourquoi on le fait",
+    "description": "AiDebate est open source et s'installe sur le serveur de l'école, sans stocker les conversations ailleurs. Nous voulons que l'IA entraîne l'esprit critique, pas qu'elle le remplace.",
+    "exploreButton": "Choisis une app",
+    "learnMoreButton": "Qui sommes-nous"
   }
 }

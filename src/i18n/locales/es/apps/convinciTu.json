@@ -1,8 +1,8 @@
 {
   "name": "Convénceme",
-  "title": "Convénceme",
+  "title": "Convence tú",
   "subtitle": "Intenta convencer a un personaje histórico sobre un tema específico",
-  "description": "Intenta convencer a figuras históricas de tus ideas",
+  "description": "Elige una idea e intenta convencer a un personaje histórico. Solo cambia de opinión si tus argumentos se sostienen.",
   "newChatSuccess": "¡Nuevo chat iniciado!",
   "errors": {
     "responseGeneration": "Error al generar la respuesta.",

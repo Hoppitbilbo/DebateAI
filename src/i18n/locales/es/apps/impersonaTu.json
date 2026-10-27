@@ -1,11 +1,20 @@
 {
   "name": "Personifica Tú",
-  "title": "Personifica Tú",
+  "title": "Interprétalo tú",
   "subtitle": "Dialoga con una figura histórica interpretando a otra",
-  "description": "Pon a prueba tus habilidades de empatía dialogando con un personaje histórico mientras interpretas a otro",
+  "description": "Interpreta a un personaje histórico mientras la IA interpreta a otro. Te hace preguntas para ver cuánto lo conoces.",
   "page": {
     "title": "Personifica Tú",
-    "subtitle": "Dialoga con una figura histórica interpretando a otra"
+    "subtitle": "Dialoga con una figura histórica interpretando a otra",
+    "setup": {
+      "title": "Elige los Personajes",
+      "description": "Selecciona el personaje que interpretará la IA y el que interpretarás tú",
+      "aiCharacterLabel": "Personaje IA",
+      "yourCharacterLabel": "Tu Personaje",
+      "topicLabel": "Tema de Conversación",
+      "topicPlaceholder": "ej., Convénceme de la importancia de la democracia...",
+      "startConversationButton": "Iniciar Conversación"
+    }
   },
   "reflection": {
     "title": "Reflexión sobre la Personificación",
@@ -47,18 +56,5 @@
     "evaluatingDescription": "La IA está analizando la conversación y tu reflexión.",
     "conversationTitle": "Conversación entre {{user}} y {{ai}}",
     "changeCharacters": "Cambiar Personajes"
-  },
-  "page": {
-    "title": "Personifica Tú",
-    "subtitle": "Dialoga con una figura histórica interpretando a otra",
-    "setup": {
-      "title": "Elige los Personajes",
-      "description": "Selecciona el personaje que interpretará la IA y el que interpretarás tú",
-      "aiCharacterLabel": "Personaje IA",
-      "yourCharacterLabel": "Tu Personaje",
-      "topicLabel": "Tema de Conversación",
-      "topicPlaceholder": "ej., Convénceme de la importancia de la democracia...",
-      "startConversationButton": "Iniciar Conversación"
-    }
   }
 }

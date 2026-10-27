@@ -46,12 +46,12 @@
     "abandoned": "Abandoned"
   },
   "appNames": {
-    "convinci-tu": "Convince YOU",
-    "doppia-intervista": "Double Interview",
-    "wiki-chatbot": "WikiChat AI",
-    "personaggio-misterioso": "Mystery Character",
-    "impersona-tu": "You Impersonate",
-    "you-moderate": "You Moderate"
+    "convinci-tu": "Convince them",
+    "doppia-intervista": "Double interview",
+    "wiki-chatbot": "WikiChat",
+    "personaggio-misterioso": "Mystery character",
+    "impersona-tu": "Play the part",
+    "you-moderate": "You moderate"
   },
   "errors": {
     "generic": "Something went wrong. Please try again.",
@@ -252,7 +252,7 @@
       "guessLabel": "Your answer",
       "reasoningLabel": "Why do you think so?",
       "submitGuess": "Submit answer",
-      "guessLog": "Final answer: {{guess}} — the character was {{answer}}.",
+      "guessLog": "Final answer: {{guess}}. The character was {{answer}}.",
       "correct": "Correct! It was {{name}}.",
       "wrong": "Not quite: it was {{name}}.",
       "correctShort": "Correct answer!",

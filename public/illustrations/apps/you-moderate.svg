@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 440">
+  <style>
+    .ink{fill:none;stroke:#1E1A2E;stroke-width:7;stroke-linecap:round;stroke-linejoin:round}
+    .gavel{transform-origin:360px 228px;animation:strike 1.8s cubic-bezier(.5,0,.3,1) infinite}
+    .bang{opacity:0;animation:bang 1.8s linear infinite}
+    .left{transform-box:fill-box;transform-origin:80% 100%;animation:pop 3.6s ease-in-out infinite}
+    .right{transform-box:fill-box;transform-origin:20% 100%;animation:pop 3.6s ease-in-out 1.8s infinite}
+    @keyframes strike{0%,45%{transform:rotate(30deg)}58%{transform:rotate(-2deg)}64%{transform:rotate(3deg)}70%{transform:rotate(0)}100%{transform:rotate(30deg)}}
+    @keyframes bang{0%,56%{opacity:0;transform:scale(.6)}60%{opacity:1;transform:scale(1)}78%,100%{opacity:0;transform:scale(1.15)}}
+    @keyframes pop{0%,8%{transform:scale(.85) rotate(-3deg)}14%{transform:scale(1.06) rotate(1deg)}20%,100%{transform:scale(1) rotate(0)}}
+  </style>
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.022" numOctaves="2" seed="4"/>
+      <feDisplacementMap in="SourceGraphic" scale="3"/>
+    </filter>
+  </defs>
+  <g filter="url(#rough)">
+    <!-- the two sides of the debate -->
+    <g class="left">
+      <path d="M40 70Q40 48 64 48H150Q174 48 174 70V112Q174 134 150 134H92L66 156V134Q40 132 40 112Z" fill="#C9B6F7"/>
+      <path class="ink" d="M40 70Q40 48 64 48H150Q174 48 174 70V112Q174 134 150 134H92L66 156V134Q40 132 40 112Z"/>
+      <path class="ink" d="M107 66V100M107 116V118"/>
+    </g>
+    <g class="right">
+      <path d="M268 40Q268 18 292 18H376Q400 18 400 40V82Q400 104 376 104H346V126L320 104H292Q268 104 268 82Z" fill="#FFD966"/>
+      <path class="ink" d="M268 40Q268 18 292 18H376Q400 18 400 40V82Q400 104 376 104H346V126L320 104H292Q268 104 268 82Z"/>
+      <path class="ink" d="M318 46Q318 34 334 34Q350 34 350 47Q350 58 334 62V72M334 86V88"/>
+    </g>
+    <!-- judge's bench -->
+    <path d="M72 306H368L352 412H88Z" fill="#C9B6F7"/>
+    <path class="ink" d="M72 306H368L352 412H88Z"/>
+    <path class="ink" d="M58 286H382V306H58Z" fill="#FDFAF2"/>
+    <path class="ink" d="M112 340H328M120 372H320"/>
+    <!-- sound block -->
+    <path d="M222 268H300V286H222Z" fill="#FFD966"/>
+    <path class="ink" d="M222 268H300V286H222Z"/>
+    <!-- impact -->
+    <g class="bang" style="transform-origin:260px 262px">
+      <path class="ink" d="M200 246L184 232M206 226L198 206M320 246L336 232M314 226L322 206"/>
+    </g>
+    <!-- gavel: pivot at the hand (360,228), head lands on the block at rotate(0) -->
+    <g class="gavel">
+      <path class="ink" d="M360 228H278" stroke-width="12"/>
+      <path d="M244 188H278Q284 188 284 196V260Q284 268 278 268H244Q238 268 238 260V196Q238 188 244 188Z" fill="#8B5E3C"/>
+      <path class="ink" d="M244 188H278Q284 188 284 196V260Q284 268 278 268H244Q238 268 238 260V196Q238 188 244 188Z"/>
+      <path class="ink" d="M238 206H284M238 250H284" stroke-width="4"/>
+    </g>
+  </g>
+</svg>

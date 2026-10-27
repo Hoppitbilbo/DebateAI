@@ -1,42 +1,42 @@
 {
-  "title": "KI-Anwendungen für die Bildung",
-  "subtitle": "Entdecken Sie unsere Sammlung von KI-Tools für interaktives Lernen.",
+  "title": "Wähle, mit wem du heute sprichst",
+  "subtitle": "Jede App startet mit einer Figur oder einer Wikipedia-Seite. Lehrkräfte können sie der Klasse als Aufgabe geben.",
   "badges": {
     "new": "Neu",
-    "comingSoon": "Demnächst"
+    "comingSoon": "Bald verfügbar"
   },
   "buttons": {
-    "launchApp": "App Starten",
-    "comingSoon": "Demnächst"
+    "launchApp": "Starten",
+    "comingSoon": "Bald verfügbar"
   },
   "appCards": {
     "youModerate": {
       "title": "Du moderierst",
-      "description": "Unterhalten Sie sich mit KI-Charakteren basierend auf Wikipedia-Inhalten und verwandeln Sie Bildungsthemen in interaktive Gespräche."
+      "description": "Zwei Figuren diskutieren über ein Thema deiner Wahl. Du moderierst: Du erteilst das Wort, stellst Fragen und holst sie zum Thema zurück."
     },
     "doppiaIntervista": {
       "title": "Doppelinterview",
-      "description": "Interagieren Sie gleichzeitig mit zwei historischen Figuren in parallelen Gesprächen und schaffen Sie einen einzigartigen Bildungsdialog."
+      "description": "Stell zwei Figuren dieselben Fragen und vergleiche ihre Antworten, wie bei einem Doppelinterview im Fernsehen."
     },
     "wikiChatbot": {
-      "title": "WikiChat KI",
-      "description": "Chatten Sie mit einer künstlichen Intelligenz, die jedes Wikipedia-Thema repräsentiert, perfekt für interaktive Bildungsvertiefungen."
+      "title": "WikiChat",
+      "description": "Sprich mit einer Wikipedia-Seite: Eine Person, ein Ort, ein Ereignis oder eine Idee antwortet dir in der Ich-Form."
     },
     "personaggioMisterioso": {
-      "title": "Rate die Mysteriöse Figur",
-      "description": "Fordern Sie die KI heraus, indem Sie Fragen stellen, um die gewählte historische Figur zu erraten. Sie haben eine begrenzte Anzahl von Fragen, um die mysteriöse Identität zu entdecken!"
+      "title": "Geheimnisvolle Figur",
+      "description": "Eine Figur verrät nicht, wer sie ist. Du hast wenige Fragen, um es herauszufinden, dann rätst du."
     },
     "promptEngineer": {
-      "title": "Lehr-Prompt-Ersteller",
-      "description": "Hilft Lehrern und Schülern, effektive Prompts für künstliche Intelligenz in Bildungs- und Lernaktivitäten zu erstellen."
+      "title": "Prompts für den Unterricht",
+      "description": "Für Lehrkräfte und Lernende: Lerne, klare Prompts für KI im Unterricht zu schreiben."
     },
     "convinciTu": {
-      "title": "Überzeuge DU",
-      "description": "Fordern Sie Ihre Überzeugungsfähigkeiten heraus, indem Sie versuchen, historische Figuren von Ihren Ideen zu überzeugen."
+      "title": "Überzeuge sie",
+      "description": "Wähle eine Idee und versuche, eine historische Figur zu überzeugen. Sie ändert ihre Meinung nur, wenn deine Argumente tragen."
     },
     "impersonaTu": {
-      "title": "Verkörpere Du",
-      "description": "Führen Sie ein Gespräch mit einer historischen Figur, während Sie eine andere interpretieren. Testen Sie Ihre Einfühlungsfähigkeiten!"
+      "title": "Schlüpf in die Rolle",
+      "description": "Spiel eine historische Figur, während die KI eine andere spielt. Sie fragt nach, wie gut du deine Rolle kennst."
     }
   }
 }

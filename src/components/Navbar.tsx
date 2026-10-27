@@ -15,6 +15,7 @@ import LanguageSwitcher from "@/components/shared/LanguageSwitcher";
 import { cn } from "@/lib/utils";
 import { dashboardPath, useAuth } from "@/context/auth";
 import { useMorphClick } from "@/features/navigation/morph";
+import LogoMark from "@/components/LogoMark";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
@@ -31,7 +32,7 @@ const Navbar = () => {
   ];
 
   const linkClass = ({ isActive }: { isActive: boolean }) =>
-    cn("rounded-md px-3 py-2 text-sm font-medium font-heading transition-colors", isActive ? "text-education-light" : "text-education hover:text-education-light");
+    cn("rounded-md px-3 py-2 text-sm font-medium transition-colors", isActive ? "text-education" : "text-foreground/75 hover:text-foreground");
 
   const doLogout = async () => {
     await logout();
@@ -39,10 +40,11 @@ const Navbar = () => {
   };
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border/60 bg-education-dark/95 backdrop-blur" style={{ viewTransitionName: "site-nav" }}>
+    <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur" style={{ viewTransitionName: "site-nav" }}>
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Link to="/" onClick={morph("/")} className="logo text-xl font-bold text-education">
-          {config?.siteName && config.siteName !== "AiDebate.tech" ? config.siteName : <>AiDebate<span className="text-foreground">.tech</span></>}
+        <Link to="/" onClick={morph("/")} className="logo flex items-center gap-2 text-xl font-bold text-education">
+          <LogoMark className="h-9 w-9 shrink-0 transition-transform duration-300 hover:-rotate-6" />
+          {config?.siteName && config.siteName !== "AiDebate.tech" ? config.siteName : <span>AiDebate<span className="text-foreground">.tech</span></span>}
         </Link>
 
         <nav className="hidden items-center gap-1 md:flex" aria-label={t("platform.nav.main")}>
@@ -52,7 +54,7 @@ const Navbar = () => {
         <div className="flex items-center gap-1">
           <LanguageSwitcher />
           <a href="https://github.com/Hoppitbilbo/DebateAI" target="_blank" rel="noopener noreferrer" className="hidden lg:block" aria-label="GitHub">
-            <Button variant="ghost" size="icon" className="text-education hover:text-education-light"><Github className="h-5 w-5" /></Button>
+            <Button variant="ghost" size="icon" className="text-foreground/75 hover:text-foreground"><Github className="h-5 w-5" /></Button>
           </a>
           {user ? (
             <DropdownMenu>
@@ -80,7 +82,7 @@ const Navbar = () => {
               <Link to="/login"><LogIn className="mr-2 h-4 w-4" />{t("platform.auth.login")}</Link>
             </Button>
           )}
-          <Button variant="ghost" size="icon" className="text-education md:hidden" onClick={() => setOpen((o) => !o)} aria-expanded={open} aria-label={t("platform.nav.menu")}>
+          <Button variant="ghost" size="icon" className="text-foreground md:hidden" onClick={() => setOpen((o) => !o)} aria-expanded={open} aria-label={t("platform.nav.menu")}>
             {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </Button>
         </div>

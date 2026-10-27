@@ -78,8 +78,8 @@ export const StudentTutorialPlayer = ({ app, variant = "page" }: StudentTutorial
         )}
       </div>
 
-      <div className={cn("flex flex-wrap items-center justify-between gap-2", presentation && "text-[#f4f4f4]")}>
-        <div className="flex items-center gap-1">
+      <div className={cn("flex flex-wrap items-center justify-between gap-x-4 gap-y-5 pt-2", presentation && "text-[#f4f4f4]")}>
+        <div className="flex items-center gap-2">
           <Button variant="outline" size="icon" onClick={() => player.goTo(frame.index - 1)} disabled={frame.index === 0} aria-label={t("common.back")}>
             <ChevronLeft className="h-4 w-4" />
           </Button>
@@ -114,9 +114,9 @@ export const StudentTutorialPlayer = ({ app, variant = "page" }: StudentTutorial
           ))}
         </ol>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-3">
           <Button variant="outline" size="sm" onClick={fullscreen}>
-            <Expand className="mr-2 h-4 w-4" />
+            <Expand className="h-4 w-4" />
             {t("platform.tutorialPlayer.fullscreen")}
           </Button>
           {!presentation && (

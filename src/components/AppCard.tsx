@@ -1,14 +1,14 @@
 
-import { ReactNode } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { appMorph, useMorphNavigate } from "@/features/navigation/morph";
 import { useTranslation } from "react-i18next";
+import AppArt from "@/components/AppArt";
+import { appArtSlug } from "@/lib/appArt";
 
 interface AppCardProps {
   title: string;
   description: string;
-  icon: ReactNode;
   link: string;
   isNew?: boolean;
   isComingSoon?: boolean;
@@ -17,7 +17,6 @@ interface AppCardProps {
 const AppCard = ({ 
   title, 
   description, 
-  icon, 
   link, 
   isNew, 
   isComingSoon 
@@ -26,27 +25,25 @@ const AppCard = ({
   const morphTo = useMorphNavigate();
 
   return (
-    <Card className="overflow-hidden transition-[transform,box-shadow] duration-300 hover:scale-105 hover:shadow-lg border border-accent" {...appMorph(link, "card")}>
-      <CardHeader className="pb-3 bg-accent">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-lg font-bold text-foreground" {...appMorph(link, "title")}>{title}</CardTitle>
+    <Card className="group flex flex-col overflow-hidden rounded-xl border border-border bg-card shadow-none transition-[transform,box-shadow,border-color] duration-200 hover:-translate-y-1 hover:border-foreground/60 hover:shadow-[4px_4px_0_0_hsl(var(--foreground))]" {...appMorph(link, "card")}>
+      <CardHeader className="pb-2">
+        <div className="flex items-start justify-between gap-3">
+          <AppArt slug={appArtSlug(link)} className="flex-1" />
           {isNew && (
-            <span className="bg-education text-education-dark text-xs font-medium px-2 py-1 rounded-full">
+            <span className="rounded-full bg-education px-2 py-1 text-xs font-medium text-education-dark">
               {t('appsPage.badges.new')}
             </span>
           )}
           {isComingSoon && (
-            <span className="bg-muted text-xs font-medium px-2 py-1 rounded-full">
+            <span className="rounded-full bg-muted px-2 py-1 text-xs font-medium">
               {t('appsPage.badges.comingSoon')}
             </span>
           )}
         </div>
-        <div className="flex justify-center py-3 text-education">
-          {icon}
-        </div>
+        <CardTitle className="pt-2 text-xl font-semibold text-foreground group-hover:text-education" {...appMorph(link, "title")}>{title}</CardTitle>
       </CardHeader>
-      <CardContent className="pt-4">
-        <CardDescription className="text-sm text-education-light">{description}</CardDescription>
+      <CardContent className="flex-1">
+        <CardDescription className="text-base text-muted-foreground">{description}</CardDescription>
       </CardContent>
       <CardFooter>
         {isComingSoon ? (

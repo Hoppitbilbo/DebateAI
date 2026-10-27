@@ -46,10 +46,10 @@
     "abandoned": "Abgebrochen"
   },
   "appNames": {
-    "convinci-tu": "Überzeuge MICH",
+    "convinci-tu": "Überzeuge sie",
     "doppia-intervista": "Doppelinterview",
-    "wiki-chatbot": "WikiChat AI",
-    "personaggio-misterioso": "Geheimnisvolle Person",
+    "wiki-chatbot": "WikiChat",
+    "personaggio-misterioso": "Geheimnisvolle Figur",
     "impersona-tu": "Schlüpf in die Rolle",
     "you-moderate": "Du moderierst"
   },
@@ -252,7 +252,7 @@
       "guessLabel": "Deine Antwort",
       "reasoningLabel": "Warum glaubst du das?",
       "submitGuess": "Antwort senden",
-      "guessLog": "Endgültige Antwort: {{guess}} — die Person war {{answer}}.",
+      "guessLog": "Endgültige Antwort: {{guess}}. Die Person war {{answer}}.",
       "correct": "Richtig! Es war {{name}}.",
       "wrong": "Nicht ganz: Es war {{name}}.",
       "correctShort": "Richtige Antwort!",

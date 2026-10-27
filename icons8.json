@@ -1,0 +1,124 @@
+{
+  "version": 2,
+  "illustrations": {
+    "style": "anthropic-claude-hand-drawn",
+    "target_ratio": 1.0,
+    "recolor": "ffmpeg hue=h=-110:s=1.4 (orange accent -> purple)",
+    "slots": {
+      "home-hero": {
+        "id": "68a914fb40f8ae0001d0e164",
+        "heading": "People facing each other and talking, Mental health counseling session",
+        "file": "public/illustrations/hero.webm + hero.mp4 + hero-poster.webp",
+        "width": 640,
+        "height": 640,
+        "free_distribution": false
+      },
+      "home-teacher-guide": {
+        "id": "6acdfdf414b04052295d0642",
+        "heading": "Teacher writing notes on board while holding open book",
+        "file": "public/illustrations/teacher.webp",
+        "width": 720,
+        "height": 720,
+        "free_distribution": false
+      },
+      "home-social-purpose": {
+        "id": "6a8c475b5f8ed3d82571a807",
+        "heading": "Community figures holding hands supporting unity and mutual connection together",
+        "file": "public/illustrations/community.webp",
+        "width": 720,
+        "height": 720,
+        "free_distribution": false
+      },
+      "tutorials-header": {
+        "id": "6a2ff0ff8c0c5905577823c4",
+        "heading": "Mental clarity transforming jumbled ideas into simple spoken message outline",
+        "file": "public/illustrations/ideas.webp",
+        "width": 720,
+        "height": 720,
+        "free_distribution": false
+      },
+      "not-found": {
+        "id": "6ab3a286d3a2d645b958e46a",
+        "heading": "Electrical plug and socket separated indicating communication breakdown",
+        "file": "public/illustrations/unplugged.webp",
+        "width": 720,
+        "height": 720,
+        "free_distribution": false
+      },
+      "app-you-moderate": {
+        "id": null,
+        "heading": "drawn in-house (animated SVG, no Icons8 match)",
+        "file": "public/illustrations/apps/you-moderate.svg",
+        "width": 440,
+        "height": 440,
+        "free_distribution": true
+      },
+      "app-personaggio-misterioso": {
+        "id": "69ea3f63ccb66e896446d54d",
+        "heading": "decision making process with question mark",
+        "file": "public/illustrations/apps/personaggio-misterioso.webp",
+        "width": 440,
+        "height": 440,
+        "free_distribution": false
+      },
+      "app-doppia-intervista": {
+        "id": null,
+        "heading": "drawn in-house (animated SVG, no Icons8 match)",
+        "file": "public/illustrations/apps/doppia-intervista.svg",
+        "width": 440,
+        "height": 440,
+        "free_distribution": true
+      },
+      "app-convinci-tu": {
+        "id": "6a85a27c5f8ed3d82571a76d",
+        "heading": "Dialogue bubble forming puzzle connection between opposite facing human heads",
+        "file": "public/illustrations/apps/convinci-tu.webp",
+        "width": 440,
+        "height": 440,
+        "free_distribution": false
+      },
+      "app-impersona-tu": {
+        "id": "6a91da4e4d368719584d205c",
+        "heading": "People silhouettes overlapping together expressing community support and solidarity",
+        "file": "public/illustrations/apps/impersona-tu.webp",
+        "width": 440,
+        "height": 440,
+        "free_distribution": false
+      },
+      "app-wiki-chatbot": {
+        "id": "6a85a2475f8ed3d82571a75d",
+        "heading": "Education concept with human outline sitting comfortably on books",
+        "file": "public/illustrations/apps/wiki-chatbot.webp",
+        "width": 440,
+        "height": 440,
+        "free_distribution": false
+      },
+      "app-prompt-engineer": {
+        "id": "68c1ecb2951cae000107e1d0",
+        "heading": "ligtbulb, having an ideas brainstorm, coming up with a solution to a problem",
+        "file": "public/illustrations/apps/prompt-engineer.webp",
+        "width": 440,
+        "height": 440,
+        "free_distribution": false
+      }
+    }
+  },
+  "icons": {
+    "platform": "color",
+    "format": "png 128-160 via img.icons8.com (SVG not in plan)",
+    "items": {
+      "app/you-moderate": "13182",
+      "app/personaggio-misterioso": "12007",
+      "app/doppia-intervista": "drawn in-house (split screen)",
+      "app/convinci-tu": "pzRJP9M294i2",
+      "app/impersona-tu": "13483",
+      "app/wiki-chatbot": "114325",
+      "app/prompt-engineer": "12244",
+      "avatar/student": "23318",
+      "avatar/student-cap": "12197",
+      "avatar/unknown-person": "MlrRrS5AdUX9",
+      "avatar/mystery": "pWvvqRPBeIN5",
+      "avatar/page": "114325"
+    }
+  }
+}
