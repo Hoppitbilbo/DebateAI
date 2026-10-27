@@ -38,7 +38,7 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto · `[-]` scartato (spieg
 ## Stato attuale
 
 - **Fasi 0-8 completate** il 2026-10-18 e unite in `master` (PR #9, merge `c0246a3`).
-- **Fase 9 completata** il 2026-10-26 (revisione del codice aggiunto dopo il piano: Sentry, giochi e transizioni, tutorial studenti), sul branch `feat/tutorial-studenti-8bit`, non ancora pushata.
+- **Fase 9 completata** il 2026-10-26 (revisione del codice aggiunto dopo il piano: Sentry, giochi e transizioni, tutorial studenti), sul branch `feat/tutorial-studenti-8bit`, pushata su `origin`.
 - **Lavoro a metà:** nessuno.
 - **Punti aperti (fuori dalla fase 9):** `AuthPages.tsx`, `AddProviderDialog.tsx` e `InviteForm.tsx` ripetono lo stesso `setBusy(true) / try / finally` per i form; `src/features/navigation/morph.ts` non ha test (usa la View Transitions API, assente in jsdom); `anthropic.go` antepone ancora un proprio messaggio utente `(start)`, ormai coperto da `userFirst` nel gateway ma lasciato perché l'adapter deve funzionare anche da solo.
 - **Test:** Go (pacchetti `ai`, `app`, `domain`, `httpapi`, `store`, `main`) verdi anche con `-race`; Vitest 86 test verdi; lint 0 errori e 0 avvisi; 701 chiavi i18n in 5 lingue.
