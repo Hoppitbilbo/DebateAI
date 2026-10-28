@@ -7,12 +7,7 @@
       "installCommand": "PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm ci",
       "buildCommand": "npm run build:web",
       "outputDirectory": "dist",
-      "rewrites": [
-        {
-          "source": "/(.*)",
-          "destination": "/index.html"
-        }
-      ]
+      "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
     },
     "server": {
       "root": "server",
@@ -20,23 +15,8 @@
     }
   },
   "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": {
-        "service": "server"
-      }
-    },
-    {
-      "source": "/(.*)",
-      "destination": {
-        "service": "app"
-      }
-    }
+    { "source": "/api/(.*)", "destination": { "service": "server" } },
+    { "source": "/(.*)", "destination": { "service": "app" } }
   ],
-  "crons": [
-    {
-      "path": "/api/cron/purge-rooms",
-      "schedule": "30 3 * * *"
-    }
-  ]
+  "crons": [{ "path": "/api/cron/purge-rooms", "schedule": "30 3 * * *" }]
 }
