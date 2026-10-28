@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { Loader2, Plus, Sparkles, Trash2 } from "lucide-react";
+import { AlertTriangle, Loader2, Plus, Sparkles, Trash2 } from "lucide-react";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,6 +16,8 @@ import { CharacterPicker } from "@/features/activity/components/SetupCard";
 import { uiLanguage } from "@/features/activity/prompts";
 import { AppName } from "./common";
 import { APP_TYPES } from "@/features/activity/appCatalog";
+import { QUESTIONS } from "@/features/activity/mystery";
+import { reconcileLimits, TURN_BOUNDS } from "@/features/teacher/assignmentLimits";
 
 interface Props {
   classId: number;
@@ -105,6 +107,10 @@ const AssignmentForm = ({ classId, open, onOpenChange, initial, onSaved }: Props
     }
   };
 
+  const isMystery = appType === "personaggio-misterioso";
+  const limits = reconcileLimits({ appType, minTurns, maxTurns, questions: isMystery ? config.questions : undefined });
+  const turnsFromQuestions = isMystery && limits.questions !== undefined;
+
   const save = async () => {
     if (!title.trim()) return toast.error(t("platform.teacher.form.titleRequired"));
     setSaving(true);
@@ -114,9 +120,9 @@ const AssignmentForm = ({ classId, open, onOpenChange, initial, onSaved }: Props
       appType,
       instructions,
       goals: goals.map((g) => g.trim()).filter(Boolean),
-      config: { ...config, characters: pair && pair.length === 2 ? pair : undefined },
-      minTurns,
-      maxTurns,
+      config: { ...config, characters: pair && pair.length === 2 ? pair : undefined, questions: limits.questions },
+      minTurns: limits.minTurns,
+      maxTurns: limits.maxTurns,
       autoEnd,
       requireReflection,
       allowLive,
@@ -222,7 +228,7 @@ const AssignmentForm = ({ classId, open, onOpenChange, initial, onSaved }: Props
             {appType === "personaggio-misterioso" && (
               <div className="space-y-2">
                 <Label htmlFor="a-q">{t("platform.teacher.form.questions")}</Label>
-                <Input id="a-q" type="number" min={3} max={20} value={config.questions ?? ""} onChange={(e) => setConfig({ ...config, questions: e.target.value ? Number(e.target.value) : undefined })} />
+                <Input id="a-q" type="number" min={QUESTIONS.min} max={QUESTIONS.max} value={config.questions ?? ""} onChange={(e) => setConfig({ ...config, questions: e.target.value ? Number(e.target.value) : undefined })} />
               </div>
             )}
           </div>
@@ -230,18 +236,37 @@ const AssignmentForm = ({ classId, open, onOpenChange, initial, onSaved }: Props
           <div className="grid gap-4 md:grid-cols-3">
             <div className="space-y-2">
               <Label htmlFor="a-min">{t("platform.teacher.form.minTurns")}</Label>
-              <Input id="a-min" type="number" min={0} max={100} value={minTurns} onChange={(e) => setMinTurns(Number(e.target.value))} />
+              <Input id="a-min" type="number" min={0} max={TURN_BOUNDS.minTurns} value={minTurns} onChange={(e) => setMinTurns(Number(e.target.value))} />
             </div>
             <div className="space-y-2">
               <Label htmlFor="a-max">{t("platform.teacher.form.maxTurns")}</Label>
-              <Input id="a-max" type="number" min={0} max={200} value={maxTurns} onChange={(e) => setMaxTurns(Number(e.target.value))} />
-              <p className="text-xs text-muted-foreground">{t("platform.teacher.form.zeroUnlimited")}</p>
+              <Input
+                id="a-max"
+                type="number"
+                min={0}
+                max={TURN_BOUNDS.maxTurns}
+                value={turnsFromQuestions ? limits.maxTurns : maxTurns}
+                onChange={(e) => setMaxTurns(Number(e.target.value))}
+                disabled={turnsFromQuestions}
+              />
+              <p className="text-xs text-muted-foreground">
+                {turnsFromQuestions ? t("platform.teacher.form.maxTurnsIsQuestions") : t("platform.teacher.form.zeroUnlimited")}
+              </p>
             </div>
             <div className="space-y-2">
               <Label htmlFor="a-due">{t("platform.teacher.form.dueAt")}</Label>
               <Input id="a-due" type="datetime-local" value={dueAt} onChange={(e) => setDueAt(e.target.value)} />
             </div>
           </div>
+
+          {limits.notes.length > 0 && (
+            <div role="status" className="space-y-1 rounded-md border border-amber-400/50 bg-amber-400/10 p-3 text-sm">
+              <p className="flex items-center gap-2 font-medium"><AlertTriangle className="h-4 w-4 text-amber-400" /> {t("platform.teacher.form.limitsAdapted")}</p>
+              <ul className="list-disc space-y-0.5 pl-6 text-muted-foreground">
+                {limits.notes.map((n) => <li key={n.key}>{t(`platform.teacher.form.limitNotes.${n.key}`, n.values)}</li>)}
+              </ul>
+            </div>
+          )}
 
           <div className="grid gap-3 md:grid-cols-2">
             <ToggleRow label={t("platform.teacher.form.autoEnd")} hint={t("platform.teacher.form.autoEndHint")} checked={autoEnd} onChange={setAutoEnd} />

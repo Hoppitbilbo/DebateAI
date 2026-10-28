@@ -52,7 +52,7 @@ vi.mock("@/features/activity/components/SetupCard", async (orig) => ({
 }));
 vi.mock("@/features/activity/wiki", () => ({ useWikiSummaries: () => ({ summaries: {}, loading: false }), bioOf: () => "bio" }));
 vi.mock("@/hooks/useLiveAi", () => ({
-  useLiveAi: () => ({ liveMode: false, liveState: "off", liveAvailable: false, toggleLive: vi.fn(), stopLive: vi.fn(), sendLiveText: vi.fn() }),
+  useLiveAi: () => ({ liveMode: false, liveState: "off", liveAvailable: false, toggleLive: vi.fn(), stopLive: vi.fn(), finishLive: vi.fn(), sendLiveText: vi.fn() }),
 }));
 
 // The AI gateway is a fake AiClient given through the provider.
@@ -174,7 +174,46 @@ describe("PersonaggioMisteriosoPage end of game", () => {
     await act(async () => {
       fireEvent.click(screen.getByRole("button", { name: "Send" }));
     });
-    expect(screen.getByText(/JEV decided you have reached the goal/)).toBeTruthy();
-    expect(screen.getByLabelText("Your answer")).toBeTruthy(); // the final guess form replaced the chat
+    // the chat stays on screen so the last answer can be read; the guess comes when the student is ready
+    expect(screen.getByText(/JEV decided you reached the goal: no more questions/)).toBeTruthy();
+    expect(screen.getAllByText("risposta")).toHaveLength(2); // opening + answer to the last question
+    expect(screen.queryByLabelText("Your answer")).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: /Make your guess/ }));
+    expect(screen.getByLabelText("Your answer")).toBeTruthy();
+  });
+
+  it("waits for the answer to the last question before ending the game", async () => {
+    render(<PersonaggioMisteriosoPage />);
+    pickAll();
+    await start();
+    let answer!: (text: string) => void;
+    mocks.generateStream.mockImplementationOnce(() => new Promise((resolve) => (answer = resolve)));
+    mocks.sync.mockResolvedValue("turn_limit");
+    fireEvent.change(screen.getByRole("textbox"), { target: { value: "Sei Napoleone?" } });
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: "Send" }));
+    });
+    // the AI is still answering: nothing ends and the student cannot jump to the guess
+    expect(mocks.sync).not.toHaveBeenCalled();
+    expect(screen.queryByText(/No questions left!/)).toBeNull();
+    expect((screen.getByRole("button", { name: /Make your guess/ }) as HTMLButtonElement).disabled).toBe(true);
+    await act(async () => answer("Non sono Napoleone"));
+    expect(screen.getByText("Non sono Napoleone")).toBeTruthy();
+    expect(screen.getByText(/No questions left!/)).toBeTruthy();
+    expect(screen.queryByLabelText("Your answer")).toBeNull();
+  });
+
+  it("keeps the last answer readable when the turn limit ends the questions", async () => {
+    render(<PersonaggioMisteriosoPage />);
+    pickAll();
+    await start();
+    mocks.sync.mockResolvedValue("turn_limit");
+    fireEvent.change(screen.getByRole("textbox"), { target: { value: "Sei Napoleone?" } });
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: "Send" }));
+    });
+    expect(screen.getByText(/No questions left!/)).toBeTruthy();
+    expect(screen.queryByRole("textbox")).toBeNull();
+    expect(screen.queryByLabelText("Your answer")).toBeNull();
   });
 });

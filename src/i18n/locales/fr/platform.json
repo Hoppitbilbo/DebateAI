@@ -261,7 +261,9 @@
       "questionsUsed": "Questions utilisées",
       "reflectionPrompt": "Quelles questions vous ont le plus aidé ? Comment changeriez-vous votre stratégie ?",
       "evalActivity": "jeu de devinette avec un nombre limité de questions",
-      "judgeEnded": "JEV a estimé que tu as atteint l'objectif : la partie est terminée. Écris ta réponse finale."
+      "judgeEnded": "JEV a estimé que tu as atteint l'objectif : la partie est terminée. Écris ta réponse finale.",
+      "readLastAnswer": "Plus de questions ! Relis les réponses tranquillement, puis appuie sur « Deviner maintenant ».",
+      "judgeEndedChat": "JEV a décidé que tu as atteint l'objectif : plus de questions. Relis les réponses, puis appuie sur « Deviner maintenant »."
     },
     "impersonaTu": {
       "setupTitle": "Choisissez les rôles",
@@ -405,7 +407,14 @@
       "published": "Publié",
       "publishedHint": "Visible par les élèves de la classe.",
       "notify": "Prévenir les élèves par e-mail",
-      "notifyHint": "Envoie un e-mail à chaque élève de la classe."
+      "notifyHint": "Envoie un e-mail à chaque élève de la classe.",
+      "maxTurnsIsQuestions": "Dans ce jeu, il correspond au nombre de questions.",
+      "limitsAdapted": "Nous avons adapté les limites pour qu'elles ne se contredisent pas :",
+      "limitNotes": {
+        "questionsClamped": "Les questions vont de {{min}} à {{max}} : fixées à {{count}}.",
+        "maxTurnsFromQuestions": "Chaque question est un message : le maximum passe de {{from}} à {{count}}, pour que le jeu ne s'arrête pas avant.",
+        "minTurnsLowered": "Le minimum ({{from}}) dépassait le maximum : fixé à {{count}}."
+      }
     },
     "exportExcel": "Exporter les notes (Excel)",
     "teacherScore": "Note enseignant"

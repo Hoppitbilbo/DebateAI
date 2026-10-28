@@ -14,7 +14,7 @@ const mocks = vi.hoisted(() => ({
   generateStream: vi.fn(),
   toastError: vi.fn(),
   liveOptions: vi.fn(),
-  live: { liveMode: false, liveState: "off", liveAvailable: false, toggleLive: vi.fn(), stopLive: vi.fn(), sendLiveText: vi.fn() },
+  live: { liveMode: false, liveState: "off", liveAvailable: false, toggleLive: vi.fn(), stopLive: vi.fn(), finishLive: vi.fn(), sendLiveText: vi.fn() },
 }));
 
 vi.mock("@/hooks/useLiveAi", () => ({ useLiveAi: (options: UseLiveAiOptions) => {

@@ -17,8 +17,8 @@ interface LiveConfig {
 interface FlowOptions {
   /** Gemini Live voice settings for the current phase, or null when voice is off. */
   live?: (phase: ActivityPhase, assignment: Assignment | null) => LiveConfig | null;
-  /** Extra context saved with the transcript (characters, topic...). */
-  context?: Record<string, unknown>;
+  /** Extra context saved with the transcript (characters, topic...), fixed or depending on the assignment. */
+  context?: Record<string, unknown> | ((assignment: Assignment | null) => Record<string, unknown>);
   /** Called when the server ends the activity; by default it moves on to the reflection. */
   onEnded?: (reason: EndReason) => void;
 }
@@ -41,7 +41,12 @@ export const useActivityFlow = (appType: AppType, { live, context, onEnded }: Fl
     setPhase("reflection");
   }, [t]);
 
-  const engine = useChatEngine({ session, live: live?.(phase, session.assignment) ?? null, context, onEnded: onEnded ?? defaultOnEnded });
+  const engine = useChatEngine({
+    session,
+    live: live?.(phase, session.assignment) ?? null,
+    context: typeof context === "function" ? context(session.assignment) : context,
+    onEnded: onEnded ?? defaultOnEnded,
+  });
   const evaluation = useEvaluationFlow(session);
 
   /** Starts a server session and opens the chat with the given first messages. */

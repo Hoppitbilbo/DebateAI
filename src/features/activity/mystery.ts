@@ -30,3 +30,17 @@ export const isCorrectGuess = (guess: string, answer: string) => {
   const guessWords = new Set(g.split(" "));
   return nameWords(answer).some((w) => guessWords.has(w));
 };
+
+/** How many questions a game can have, and the default when nobody chooses. */
+export const QUESTIONS = { min: 3, max: 20, default: 7 } as const;
+
+/**
+ * The questions the student really gets: the chosen number, kept within
+ * QUESTIONS, and never more than the assignment's turn limit (each question
+ * is one student message), so the game never ends before the count it
+ * announced.
+ */
+export const availableQuestions = (questions: number | undefined, maxTurns = 0) => {
+  const chosen = Math.min(QUESTIONS.max, Math.max(QUESTIONS.min, Math.round(questions || QUESTIONS.default)));
+  return maxTurns > 0 ? Math.min(chosen, maxTurns) : chosen;
+};

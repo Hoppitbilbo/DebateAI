@@ -261,7 +261,9 @@
       "questionsUsed": "Preguntas usadas",
       "reflectionPrompt": "¿Qué preguntas te ayudaron más? ¿Cómo cambiarías tu estrategia?",
       "evalActivity": "juego de adivinar con preguntas limitadas",
-      "judgeEnded": "JEV ha decidido que has alcanzado el objetivo: la partida ha terminado. Escribe tu respuesta final."
+      "judgeEnded": "JEV ha decidido que has alcanzado el objetivo: la partida ha terminado. Escribe tu respuesta final.",
+      "readLastAnswer": "¡Se acabaron las preguntas! Relee las respuestas con calma y luego pulsa «Intenta adivinar».",
+      "judgeEndedChat": "JEV ha decidido que alcanzaste el objetivo: no hay más preguntas. Relee las respuestas y luego pulsa «Intenta adivinar»."
     },
     "impersonaTu": {
       "setupTitle": "Elige los papeles",
@@ -405,7 +407,14 @@
       "published": "Publicada",
       "publishedHint": "Visible para los estudiantes de la clase.",
       "notify": "Avisar a los estudiantes por correo",
-      "notifyHint": "Envía un correo a cada estudiante de la clase."
+      "notifyHint": "Envía un correo a cada estudiante de la clase.",
+      "maxTurnsIsQuestions": "En este juego coincide con el número de preguntas.",
+      "limitsAdapted": "Hemos adaptado los límites para que no se contradigan:",
+      "limitNotes": {
+        "questionsClamped": "Las preguntas van de {{min}} a {{max}}: fijadas en {{count}}.",
+        "maxTurnsFromQuestions": "Cada pregunta es un mensaje: el máximo pasa de {{from}} a {{count}}, así el juego no se interrumpe antes.",
+        "minTurnsLowered": "El mínimo ({{from}}) superaba el máximo: fijado en {{count}}."
+      }
     },
     "exportExcel": "Exportar notas (Excel)",
     "teacherScore": "Nota docente"

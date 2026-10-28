@@ -261,7 +261,9 @@
       "questionsUsed": "Questions used",
       "reflectionPrompt": "Which questions helped you most? How would you change your strategy?",
       "evalActivity": "guessing game with a limited number of questions",
-      "judgeEnded": "JEV decided you have reached the goal: the game is over. Write your final answer."
+      "judgeEnded": "JEV decided you have reached the goal: the game is over. Write your final answer.",
+      "readLastAnswer": "No questions left! Take your time to reread the answers, then press “Make your guess”.",
+      "judgeEndedChat": "JEV decided you reached the goal: no more questions. Reread the answers, then press “Make your guess”."
     },
     "impersonaTu": {
       "setupTitle": "Choose the roles",
@@ -405,7 +407,14 @@
       "published": "Published",
       "publishedHint": "Visible to the students of the class.",
       "notify": "Notify students by email",
-      "notifyHint": "Sends an email to every student in the class."
+      "notifyHint": "Sends an email to every student in the class.",
+      "maxTurnsIsQuestions": "In this game it equals the number of questions.",
+      "limitsAdapted": "We adapted the limits so they don't contradict each other:",
+      "limitNotes": {
+        "questionsClamped": "Questions go from {{min}} to {{max}}: set to {{count}}.",
+        "maxTurnsFromQuestions": "Each question is one message: the maximum goes from {{from}} to {{count}}, so the game doesn't stop early.",
+        "minTurnsLowered": "The minimum ({{from}}) was above the maximum: set to {{count}}."
+      }
     },
     "exportExcel": "Export grades (Excel)",
     "teacherScore": "Teacher score"

@@ -47,6 +47,8 @@ export const useLiveAi = (opts: UseLiveAiOptions) => {
   const sourcesRef = useRef<AudioBufferSourceNode[]>([]);
   const assistantTurnOpen = useRef(false);
   const userBuffer = useRef("");
+  /** finishLive was called: the session closes when the last audio ends. */
+  const finishingRef = useRef(false);
   const cbRef = useRef(opts);
   cbRef.current = opts;
 
@@ -88,7 +90,9 @@ export const useLiveAi = (opts: UseLiveAiOptions) => {
     sourcesRef.current.push(src);
     src.onended = () => {
       sourcesRef.current = sourcesRef.current.filter((s) => s !== src);
-      if (sourcesRef.current.length === 0 && controllerRef.current) setLiveState("listening");
+      if (sourcesRef.current.length > 0 || !controllerRef.current) return;
+      if (finishingRef.current) setLiveMode(false);
+      else setLiveState("listening");
     };
     setLiveState("speaking");
   }, []);
@@ -100,6 +104,7 @@ export const useLiveAi = (opts: UseLiveAiOptions) => {
     void audioCtxRef.current?.close();
     audioCtxRef.current = null;
     assistantTurnOpen.current = false;
+    finishingRef.current = false;
     userBuffer.current = "";
     setLiveState("off");
   }, [stopPlayback]);
@@ -181,7 +186,17 @@ export const useLiveAi = (opts: UseLiveAiOptions) => {
   const toggleLive = useCallback(() => setLiveMode((v) => !v), []);
   const stopLive = useCallback(() => setLiveMode(false), []);
 
-  return { liveMode, liveState, liveAvailable, toggleLive, stopLive, sendLiveText };
+  /**
+   * Ends the voice session without cutting the character off: the microphone
+   * closes at once, the connection when the audio already received has played.
+   */
+  const finishLive = useCallback(() => {
+    controllerRef.current?.setMicMuted(true);
+    if (sourcesRef.current.length === 0) setLiveMode(false);
+    else finishingRef.current = true;
+  }, []);
+
+  return { liveMode, liveState, liveAvailable, toggleLive, stopLive, finishLive, sendLiveText };
 };
 
 export type LiveControls = ReturnType<typeof useLiveAi>;

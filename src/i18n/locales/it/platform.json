@@ -261,7 +261,9 @@
       "questionsUsed": "Domande usate",
       "reflectionPrompt": "Quali domande ti sono state più utili? Come cambieresti la tua strategia?",
       "evalActivity": "gioco di indovinare il personaggio con domande limitate",
-      "judgeEnded": "JEV ha stabilito che hai raggiunto l'obiettivo: la partita è finita. Scrivi la tua risposta finale."
+      "judgeEnded": "JEV ha stabilito che hai raggiunto l'obiettivo: la partita è finita. Scrivi la tua risposta finale.",
+      "readLastAnswer": "Domande finite! Rileggi le risposte con calma, poi premi «Prova a indovinare».",
+      "judgeEndedChat": "JEV ha stabilito che hai raggiunto l'obiettivo: niente più domande. Rileggi le risposte, poi premi «Prova a indovinare»."
     },
     "impersonaTu": {
       "setupTitle": "Scegli i ruoli",
@@ -405,7 +407,14 @@
       "published": "Pubblicato",
       "publishedHint": "Visibile agli studenti della classe.",
       "notify": "Avvisa gli studenti via email",
-      "notifyHint": "Invia un'email a ogni studente della classe."
+      "notifyHint": "Invia un'email a ogni studente della classe.",
+      "maxTurnsIsQuestions": "In questo gioco coincide con il numero di domande.",
+      "limitsAdapted": "Abbiamo adattato i limiti perché non si contraddicano:",
+      "limitNotes": {
+        "questionsClamped": "Le domande vanno da {{min}} a {{max}}: impostate a {{count}}.",
+        "maxTurnsFromQuestions": "Ogni domanda è un messaggio: il massimo passa da {{from}} a {{count}}, così il gioco non si interrompe prima.",
+        "minTurnsLowered": "Il minimo ({{from}}) superava il massimo: portato a {{count}}."
+      }
     },
     "exportExcel": "Esporta voti (Excel)",
     "teacherScore": "Voto docente"

@@ -171,7 +171,7 @@ export const useChatEngine = ({ session, live, context, onEnded }: Options) => {
   }, [busy, ended, addMessage, afterTurn, liveCtl, withBusy]);
 
   useEffect(() => {
-    if (ended && liveCtl.liveMode) liveCtl.stopLive();
+    if (ended && liveCtl.liveMode) liveCtl.finishLive(); // let the character finish the last answer
   }, [ended, liveCtl]);
 
   /** Asks again for a reply that failed, then syncs the turn with the server. */

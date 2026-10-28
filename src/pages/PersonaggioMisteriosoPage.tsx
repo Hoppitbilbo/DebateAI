@@ -15,17 +15,23 @@ import type { EndReason } from "@/features/activity/useActivitySession";
 import { bioOf, useWikiSummaries } from "@/features/activity/wiki";
 import { openings, prompts } from "@/features/activity/prompts";
 import { APPS } from "@/features/activity/types";
-import { isCorrectGuess, RANDOM_CHARACTERS } from "@/features/activity/mystery";
+import { availableQuestions, isCorrectGuess, QUESTIONS, RANDOM_CHARACTERS } from "@/features/activity/mystery";
 
 const app = APPS["personaggio-misterioso"];
+
+/** Largest number of questions the student can pick on the slider. */
+const SLIDER_MAX_QUESTIONS = 15;
 
 /** Guess who: the student asks a limited number of questions, then guesses the character. */
 const PersonaggioMisteriosoPage = () => {
   const { t } = useTranslation();
   const [character, setCharacter] = useState<WikiRef | null>(null);
   const [concealed, setConcealed] = useState(false);
-  const [maxQuestions, setMaxQuestions] = useState(7);
+  const [chosenQuestions, setChosenQuestions] = useState<number>(QUESTIONS.default);
   const [guessing, setGuessing] = useState(false);
+  // The questions are over (count used up, turn limit or JEV): the chat stays
+  // readable and the student moves on to the guess when ready.
+  const [questionsOver, setQuestionsOver] = useState(false);
   const [guess, setGuess] = useState("");
   const [reasoning, setReasoning] = useState("");
   const [result, setResult] = useState<boolean | null>(null);
@@ -36,23 +42,26 @@ const PersonaggioMisteriosoPage = () => {
   const systemFor = (assignment: Assignment | null) => (character ? prompts.mystery(character.title, bio, assignment) : "");
 
   // When the server ends the questions (turn limit, or JEV judging the goal
-  // reached) the game moves on to the final guess.
+  // reached) no more questions can be asked; the student then makes the guess.
   const onEnded = useCallback((reason: EndReason) => {
     if (reason === "goal_reached") {
       setEndedByJudge(true);
       toast.success(t("platform.apps.personaggioMisterioso.judgeEnded"));
     }
-    if (reason === "turn_limit" || reason === "goal_reached") setGuessing(true);
+    if (reason === "turn_limit" || reason === "goal_reached") setQuestionsOver(true);
   }, [t]);
 
   const flow = useActivityFlow(app.type, {
     live: (phase, assignment) =>
       phase === "chat" && character && !guessing ? { systemInstruction: systemFor(assignment), characterName: character.title, characterBio: bio } : null,
-    context: { questions: maxQuestions },
+    context: (assignment) => ({ questions: availableQuestions(chosenQuestions, assignment?.maxTurns) }),
     onEnded,
   });
   const { preset, engine, session, phase } = flow;
   const system = systemFor(session.assignment);
+  // Never more questions than the assignment's turn limit, so the game ends when it says it does.
+  const turnCap = session.assignment?.maxTurns ?? 0;
+  const maxQuestions = availableQuestions(chosenQuestions, turnCap);
   const questionsLeft = Math.max(0, maxQuestions - session.turns);
 
   useEffect(() => {
@@ -60,16 +69,16 @@ const PersonaggioMisteriosoPage = () => {
       setCharacter(preset.character);
       setConcealed(true); // the teacher chose it: the student must not see it
     }
-    if (preset.questions) setMaxQuestions(preset.questions);
+    if (preset.questions) setChosenQuestions(preset.questions);
   }, [preset.character, preset.questions]);
 
   useEffect(() => {
-    if (phase === "chat" && session.turns >= maxQuestions && !guessing) {
-      engine.live.stopLive();
-      setGuessing(true);
+    if (phase === "chat" && session.turns >= maxQuestions && !guessing && !questionsOver) {
+      engine.live.finishLive(); // the voice still says the last answer
+      setQuestionsOver(true);
       toast.info(t("platform.apps.personaggioMisterioso.noQuestionsLeft"));
     }
-  }, [session.turns, maxQuestions, phase, guessing, engine.live, t]);
+  }, [session.turns, maxQuestions, phase, guessing, questionsOver, engine.live, t]);
 
   const pickRandom = () => {
     setCharacter({ title: RANDOM_CHARACTERS[Math.floor(Math.random() * RANDOM_CHARACTERS.length)] });
@@ -79,6 +88,7 @@ const PersonaggioMisteriosoPage = () => {
   const start = async () => {
     if (!character) return;
     setGuessing(false);
+    setQuestionsOver(false);
     setEndedByJudge(false);
     setResult(null);
     setGuess("");
@@ -111,6 +121,7 @@ const PersonaggioMisteriosoPage = () => {
         setConcealed(false);
       }
       setGuessing(false);
+      setQuestionsOver(false);
       setEndedByJudge(false);
     });
 
@@ -169,7 +180,14 @@ const PersonaggioMisteriosoPage = () => {
             )}
             <div className="space-y-3">
               <Label>{t("platform.apps.personaggioMisterioso.questionsLabel", { count: maxQuestions })}</Label>
-              <Slider value={[maxQuestions]} min={3} max={15} step={1} onValueChange={(v) => setMaxQuestions(v[0])} disabled={!!preset.questions} />
+              <Slider
+                value={[maxQuestions]}
+                min={Math.min(QUESTIONS.min, maxQuestions)}
+                max={availableQuestions(SLIDER_MAX_QUESTIONS, turnCap)}
+                step={1}
+                onValueChange={(v) => setChosenQuestions(v[0])}
+                disabled={!!preset.questions}
+              />
             </div>
           </>
         ),
@@ -180,14 +198,16 @@ const PersonaggioMisteriosoPage = () => {
         onSend: (text) => engine.runTurn(text, () => engine.respond({ system, name: "???" })),
         placeholder: t("platform.apps.personaggioMisterioso.placeholder"),
         live: engine.live,
-        disabled: questionsLeft === 0,
-        disabledReason: t("platform.apps.personaggioMisterioso.noQuestionsLeft"),
+        disabled: questionsOver || questionsLeft === 0 || engine.ended,
+        disabledReason: endedByJudge
+          ? t("platform.apps.personaggioMisterioso.judgeEndedChat")
+          : t("platform.apps.personaggioMisterioso.readLastAnswer"),
         onEnd: () => {
           engine.live.stopLive();
           setGuessing(true);
         },
         endLabel: t("platform.apps.personaggioMisterioso.guessNow"),
-        canEnd: session.turns >= 1,
+        canEnd: session.turns >= 1 || questionsOver,
         footerNote: (
           <span className="inline-flex items-center gap-1">
             <HelpCircle className="h-3.5 w-3.5" /> {t("platform.apps.personaggioMisterioso.questionsLeft", { count: questionsLeft })}
