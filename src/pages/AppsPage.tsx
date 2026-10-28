@@ -3,48 +3,11 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import AppCard from "@/components/AppCard";
 import { useTranslation } from "react-i18next";
+import { APPS_PAGE_APPS } from "@/features/apps/catalog";
 
 const AppsPage = () => {
   const { t } = useTranslation();
-  
-  const apps = [
-    {
-      title: t('appsPage.appCards.youModerate.title'),
-      description: t('appsPage.appCards.youModerate.description'),
-      link: "/apps/you-moderate",
-    },
-    {
-      title: t('appsPage.appCards.doppiaIntervista.title'),
-      description: t('appsPage.appCards.doppiaIntervista.description'),
-      link: "/apps/doppia-intervista",
-    },
-    {
-      title: t('appsPage.appCards.wikiChatbot.title'),
-      description: t('appsPage.appCards.wikiChatbot.description'),
-      link: "/apps/wiki-chatbot",
-    },
-    {
-      title: t('appsPage.appCards.personaggioMisterioso.title'),
-      description: t('appsPage.appCards.personaggioMisterioso.description'),
-      link: "/apps/personaggio-misterioso",
-    },
-    {
-      title: t('appsPage.appCards.promptEngineer.title'),
-      description: t('appsPage.appCards.promptEngineer.description'),
-      link: "/apps/prompt-engineer",
-      isComingSoon: true,
-    },
-    {
-      title: t('appsPage.appCards.convinciTu.title'),
-      description: t('appsPage.appCards.convinciTu.description'),
-      link: "/apps/convinci-tu",
-    },
-    {
-      title: t('appsPage.appCards.impersonaTu.title'),
-      description: t('appsPage.appCards.impersonaTu.description'),
-      link: "/apps/impersona-tu",
-    },
-  ];
+
 
   return (
     <div className="flex flex-col min-h-screen animate-fade-in">
@@ -69,14 +32,8 @@ const AppsPage = () => {
 
         <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {apps.map((app) => (
-              <AppCard
-                key={app.title}
-                title={app.title}
-                description={app.description}
-                link={app.link}
-                isComingSoon={app.isComingSoon}
-              />
+            {APPS_PAGE_APPS.map((app) => (
+              <AppCard key={app.slug} app={app} />
             ))}
           </div>
         </div>

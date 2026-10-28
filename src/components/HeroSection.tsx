@@ -1,8 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { useMemo, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useMorphClick } from "@/features/navigation/morph";
+import { HOME_APPS } from "@/features/apps/catalog";
 
 // The Icons8 loop runs a touch slower than drawn: calmer next to the copy.
 const HERO_PLAYBACK_RATE = 0.8;
@@ -55,29 +56,8 @@ const HeroSection = () => {
   const { t } = useTranslation();
   const morph = useMorphClick();
 
-  // Define available apps to randomly choose from
-  const apps = useMemo(() => [{
-    path: "/apps/you-moderate",
-    name: t('features.items.youModerate.name')
-  }, {
-    path: "/apps/doppia-intervista",
-    name: t('features.items.doppiaIntervista.name')
-  }, {
-    path: "/apps/convinci-tu",
-    name: t('features.items.convinciTu.name')
-  }, {
-    path: "/apps/personaggio-misterioso",
-    name: t('features.items.personaggioMisterioso.name')
-  }, {
-    path: "/apps/impersona-tu",
-    name: t('features.items.impersonaTu.name')
-  }], [t]);
-
-  // Select a random app on component render
-  const randomApp = useMemo(() => {
-    const randomIndex = Math.floor(Math.random() * apps.length);
-    return apps[randomIndex];
-  }, [apps]);
+  // One app to try straight away, picked once per visit.
+  const [randomApp] = useState(() => HOME_APPS[Math.floor(Math.random() * HOME_APPS.length)]);
 
   // Add staggered reveal animations
   const [isLoaded, setIsLoaded] = useState(false);
@@ -101,7 +81,7 @@ const HeroSection = () => {
               <Link to="/apps" onClick={morph("/apps")}>{t('hero.tryApps')}</Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="bg-transparent text-foreground hover:bg-sun-light">
-              <Link to={randomApp.path} onClick={morph(randomApp.path)}>{randomApp.name}</Link>
+              <Link to={randomApp.path} onClick={morph(randomApp.path)}>{t(`features.items.${randomApp.i18nKey}.name`)}</Link>
             </Button>
           </div>
         </div>

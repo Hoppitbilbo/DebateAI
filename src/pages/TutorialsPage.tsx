@@ -19,70 +19,11 @@ import {
 import { useTranslation } from 'react-i18next';
 import RedditButton from '@/components/shared/RedditButton';
 import AppArt from '@/components/AppArt';
-import { appArtSlug } from '@/lib/appArt';
+import { TUTORIAL_PAGE_APPS, UPCOMING_APP } from '@/features/apps/catalog';
+import { TUTORIALS } from '@/features/tutorials/tutorials';
 
 const TutorialsPage = () => {
   const { t } = useTranslation('tutorialsPage');
-
-  const tutorials = [
-    {
-      id: 'you-moderate',
-      title: t('sections.availableTutorials.tutorials.youModerate.title'),
-      description: t('sections.availableTutorials.tutorials.youModerate.description'),
-      appLink: '/apps/you-moderate',
-      tutorialLink: '/apps/you-moderate/tutorial',
-      available: true
-    },
-    {
-      id: 'doppia-intervista',
-      title: t('sections.availableTutorials.tutorials.doppiaIntervista.title'),
-      description: t('sections.availableTutorials.tutorials.doppiaIntervista.description'),
-      appLink: '/apps/doppia-intervista',
-      tutorialLink: '/apps/doppia-intervista/tutorial',
-      available: true
-    },
-    {
-      id: 'convinci-tu',
-      title: t('sections.availableTutorials.tutorials.convinciTu.title'),
-      description: t('sections.availableTutorials.tutorials.convinciTu.description'),
-      appLink: '/apps/convinci-tu',
-      tutorialLink: '/apps/convinci-tu/tutorial',
-      available: true
-    },
-    {
-      id: 'personaggio-misterioso',
-      title: t('sections.availableTutorials.tutorials.personaggioMisterioso.title'),
-      description: t('sections.availableTutorials.tutorials.personaggioMisterioso.description'),
-      appLink: '/apps/personaggio-misterioso',
-      tutorialLink: '/apps/personaggio-misterioso/tutorial',
-      available: true
-    },
-    {
-      id: 'impersona-tu',
-      title: t('sections.availableTutorials.tutorials.impersonaTu.title'),
-      description: t('sections.availableTutorials.tutorials.impersonaTu.description'),
-      appLink: '/apps/impersona-tu',
-      tutorialLink: '/apps/impersona-tu/tutorial',
-      available: true
-    },
-    {
-      id: 'wiki-chatbot',
-      title: t('sections.availableTutorials.tutorials.wikiChatbot.title'),
-      description: t('sections.availableTutorials.tutorials.wikiChatbot.description'),
-      appLink: '/apps/wiki-chatbot',
-      tutorialLink: null,
-      available: false
-    }
-  ];
-
-  const comingSoon = [
-    {
-      id: 'prompt-engineer',
-      title: t('sections.comingSoon.promptEngineer.title'),
-      description: t('sections.comingSoon.promptEngineer.description'),
-      appLink: '/apps/prompt-engineer'
-    }
-  ];
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
@@ -111,26 +52,29 @@ const TutorialsPage = () => {
               {t('sections.availableTutorials.title')}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {tutorials.map((tutorial) => (
-                <div key={tutorial.id} className="group flex flex-col bg-card rounded-xl overflow-hidden border border-border">
+              {TUTORIAL_PAGE_APPS.map((app) => {
+                // Only apps with teacher slides link to a tutorial from here.
+                const tutorialLink = TUTORIALS[app.slug] ? app.tutorialPath : null;
+                return (
+                <div key={app.slug} className="group flex flex-col bg-card rounded-xl overflow-hidden border border-border">
                   <div className="bg-secondary p-6">
                     <div className="flex items-start justify-between">
-                      <AppArt slug={appArtSlug(tutorial.appLink)} className="flex-1" />
+                      <AppArt slug={app.slug} className="flex-1" />
                     </div>
-                    <h3 className="text-xl text-foreground mb-2">{tutorial.title}</h3>
+                    <h3 className="text-xl text-foreground mb-2">{t(`sections.availableTutorials.tutorials.${app.i18nKey}.title`)}</h3>
                   </div>
                   <div className="flex flex-1 flex-col p-6">
-                    <p className="text-muted-foreground mb-6">{tutorial.description}</p>
+                    <p className="text-muted-foreground mb-6">{t(`sections.availableTutorials.tutorials.${app.i18nKey}.description`)}</p>
                     <div className="mt-auto flex flex-col gap-4">
                       <Button asChild className="w-full bg-education hover:bg-education/90 text-education-dark">
-                        <Link to={tutorial.appLink}>
+                        <Link to={app.path}>
                           <ExternalLink />
                           {t('sections.availableTutorials.goToAppButton')}
                         </Link>
                       </Button>
-                      {tutorial.tutorialLink ? (
+                      {tutorialLink ? (
                         <Button asChild variant="outline" className="w-full bg-transparent text-foreground hover:bg-sun-light">
-                          <Link to={tutorial.tutorialLink}>
+                          <Link to={tutorialLink}>
                             <Book />
                             {t('sections.availableTutorials.startTutorialButton')}
                           </Link>
@@ -144,7 +88,8 @@ const TutorialsPage = () => {
                     </div>
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
           </section>
 
@@ -155,26 +100,24 @@ const TutorialsPage = () => {
               {t('sections.comingSoon.title')}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {comingSoon.map((app) => (
-                <div key={app.id} className="bg-card rounded-lg overflow-hidden border border-border opacity-75">
-                  <div className="bg-muted p-6">
-                    <div className="flex items-start justify-between">
-                      <AppArt slug={appArtSlug(app.appLink)} className="flex-1" />
-                      <span className="bg-secondary text-foreground text-xs font-medium px-2 py-1 rounded-full">
-                        {t('sections.availableTutorials.comingSoonLabel')}
-                      </span>
-                    </div>
-                    <h3 className="text-xl text-foreground mb-2">{app.title}</h3>
+              <div className="bg-card rounded-lg overflow-hidden border border-border opacity-75">
+                <div className="bg-muted p-6">
+                  <div className="flex items-start justify-between">
+                    <AppArt slug={UPCOMING_APP.slug} className="flex-1" />
+                    <span className="bg-secondary text-foreground text-xs font-medium px-2 py-1 rounded-full">
+                      {t('sections.availableTutorials.comingSoonLabel')}
+                    </span>
                   </div>
-                  <div className="p-6">
-                    <p className="text-muted-foreground mb-6">{app.description}</p>
-                    <Button disabled className="w-full">
-                      <Calendar className="w-4 h-4 mr-2" />
-                      {t('sections.comingSoon.comingSoonButton')}
-                    </Button>
-                  </div>
+                  <h3 className="text-xl text-foreground mb-2">{t(`sections.comingSoon.${UPCOMING_APP.i18nKey}.title`)}</h3>
                 </div>
-              ))}
+                <div className="p-6">
+                  <p className="text-muted-foreground mb-6">{t(`sections.comingSoon.${UPCOMING_APP.i18nKey}.description`)}</p>
+                  <Button disabled className="w-full">
+                    <Calendar className="w-4 h-4 mr-2" />
+                    {t('sections.comingSoon.comingSoonButton')}
+                  </Button>
+                </div>
+              </div>
             </div>
           </section>
 

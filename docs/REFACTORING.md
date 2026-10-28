@@ -235,6 +235,18 @@ Il codice di Sentry (`845ef66`), dei tutorial studenti (`982debd`) e di giochi e
 
 - [x] **10.1** (`b372168`) Isolare cronologia e singoli messaggi dall'input; raggruppare gli aggiornamenti visivi dello streaming; caricare l'evidenziazione del codice su richiesta; saltare il layout dei messaggi fuori schermo con le API native del browser. Test di comportamento prima del refactoring e verifiche su 200 messaggi, completamento dello streaming, trascrizione Live, reset, smontaggio, StrictMode, scroll e download fallito del codice opzionale.
 
+### Fase 11: revisione del restyling e punti aperti (richiesta del 2026-10-27)
+
+Il restyling (`5478a3d`) è stato scritto fuori dal piano. Controllato con le stesse regole, insieme ai punti aperti rimasti dalla fase 9.
+
+- [x] **11.0** (`30c38fa`) Test di caratterizzazione: link e ordine delle app in home, pagina App e Tutorial; chat animata della home (statica con `prefers-reduced-motion`, avanzamento con lo scroll); avatar delle chat; navigazione con morph.
+- [x] **11.1** (HASH11) Un solo catalogo delle app: percorsi e chiavi i18n vengono da `APPS` (già esistente in `features/activity/types.ts`); `src/features/apps/catalog.ts` dice solo quali app mostra ogni pagina e in che ordine, più l'app annunciata `prompt-engineer`. Usato da `HeroSection`, `FeaturesSection`, `AppsPage` (`AppCard` riceve l'app), `TutorialsPage` e `appArt.ts`; tolto il prop `isNew`, non più passato da nessuno.
+- [ ] **11.2** `prefersReducedMotion` in un solo punto (`src/lib/motion.ts`), oggi ripetuto in `HeroSection`, `DebateStory` e `morph.ts`.
+- [ ] **11.3** `DebateStory` (170 righe, quattro compiti): calcolo dello scroll in un hook a parte con test, numero magico `0.8` con nome, passi e chat in componenti separati.
+- [ ] **11.4** Scelta dell'avatar di chi parla in una funzione pura con test, fuori da `ChatMessages`.
+- [ ] **11.5** `TutorialsPage`: blocchi copiati (4 passi, 3 risorse, 3 consigli) generati da dati; import inutilizzati e campo `available` mai letto.
+- [ ] **11.6** `useBusyAction` al posto del blocco `setBusy(true) / try / catch → toast / finally` ripetuto 6 volte in `AuthPages`, `AddProviderDialog` e `InviteForm` (punto aperto della fase 9).
+
 ---
 
 ## Note e decisioni
