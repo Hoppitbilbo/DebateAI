@@ -240,8 +240,8 @@ Il codice di Sentry (`845ef66`), dei tutorial studenti (`982debd`) e di giochi e
 Il restyling (`5478a3d`) è stato scritto fuori dal piano. Controllato con le stesse regole, insieme ai punti aperti rimasti dalla fase 9.
 
 - [x] **11.0** (`30c38fa`) Test di caratterizzazione: link e ordine delle app in home, pagina App e Tutorial; chat animata della home (statica con `prefers-reduced-motion`, avanzamento con lo scroll); avatar delle chat; navigazione con morph.
-- [x] **11.1** (HASH11) Un solo catalogo delle app: percorsi e chiavi i18n vengono da `APPS` (già esistente in `features/activity/types.ts`); `src/features/apps/catalog.ts` dice solo quali app mostra ogni pagina e in che ordine, più l'app annunciata `prompt-engineer`. Usato da `HeroSection`, `FeaturesSection`, `AppsPage` (`AppCard` riceve l'app), `TutorialsPage` e `appArt.ts`; tolto il prop `isNew`, non più passato da nessuno.
-- [ ] **11.2** `prefersReducedMotion` in un solo punto (`src/lib/motion.ts`), oggi ripetuto in `HeroSection`, `DebateStory` e `morph.ts`.
+- [x] **11.1** (`e038d83`) Un solo catalogo delle app: percorsi e chiavi i18n vengono da `APPS` (già esistente in `features/activity/types.ts`); `src/features/apps/catalog.ts` dice solo quali app mostra ogni pagina e in che ordine, più l'app annunciata `prompt-engineer`. Usato da `HeroSection`, `FeaturesSection`, `AppsPage` (`AppCard` riceve l'app), `TutorialsPage` e `appArt.ts`; tolto il prop `isNew`, non più passato da nessuno.
+- [x] **11.2** (HASH) `prefersReducedMotion` in un solo punto (`src/lib/motion.ts`, con test), usato da `HeroSection`, `DebateStory` e `morph.ts`. Unica differenza: la hero non va più in errore nei browser senza `matchMedia`.
 - [ ] **11.3** `DebateStory` (170 righe, quattro compiti): calcolo dello scroll in un hook a parte con test, numero magico `0.8` con nome, passi e chat in componenti separati.
 - [ ] **11.4** Scelta dell'avatar di chi parla in una funzione pura con test, fuori da `ChatMessages`.
 - [ ] **11.5** `TutorialsPage`: blocchi copiati (4 passi, 3 risorse, 3 consigli) generati da dati; import inutilizzati e campo `available` mai letto.

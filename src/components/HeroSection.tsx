@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useMorphClick } from "@/features/navigation/morph";
 import { HOME_APPS } from "@/features/apps/catalog";
+import { prefersReducedMotion } from "@/lib/motion";
 
 // The Icons8 loop runs a touch slower than drawn: calmer next to the copy.
 const HERO_PLAYBACK_RATE = 0.8;
@@ -16,7 +17,7 @@ const HeroIllustration = () => {
     const video = videoRef.current;
     if (!video) return;
     video.playbackRate = HERO_PLAYBACK_RATE;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    if (prefersReducedMotion()) {
       video.pause();
       return;
     }

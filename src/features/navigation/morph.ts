@@ -1,6 +1,7 @@
 import { useCallback, type MouseEvent } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { preloadPath } from "@/lib/lazyPage";
+import { prefersReducedMotion } from "@/lib/motion";
 
 // Page changes as a morph (View Transitions API): the new page is loaded
 // first, then the browser animates from the old page to the new one. Elements
@@ -39,7 +40,7 @@ const pairApp = (app: string | null, on: boolean) => {
 const canMorph = () =>
   typeof document !== "undefined" &&
   !!(document as DocumentWithTransitions).startViewTransition &&
-  !window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+  !prefersReducedMotion();
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 

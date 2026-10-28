@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { prefersReducedMotion } from "@/lib/motion";
 
 type Speaker = "student" | "galileo";
 
@@ -26,9 +27,6 @@ const AVATARS: Record<Speaker, string> = {
   galileo: "/avatars/galileo.webp",
   student: "/avatars/student.webp",
 };
-
-const prefersReducedMotion = () =>
-  typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
 /** How far the reader has scrolled through `el`, 0 at its top and 1 when its end reaches the viewport bottom. */
 const scrollProgress = (el: HTMLElement) => {
