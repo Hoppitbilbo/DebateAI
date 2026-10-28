@@ -670,5 +670,112 @@
     "exit": "Leave the presentation",
     "forStudents": "For students",
     "forTeachers": "For teachers"
+  },
+  "tour": {
+    "common": {
+      "next": "Next",
+      "back": "Back",
+      "skip": "Skip",
+      "finish": "Got it",
+      "dontShowAgain": "Don't show guides again",
+      "stepOf": "Step {{n}} of {{total}}",
+      "replay": "Interactive guide",
+      "settingsTitle": "Interactive guides",
+      "settingsHint": "Show a step-by-step guide the first time you open a page.",
+      "resetSeen": "Show all guides again",
+      "resetDone": "The guides will start again next time you open the pages."
+    },
+    "teacher": {
+      "welcome": {
+        "title": "Welcome to AiDebate!",
+        "body": "In one minute we'll show you where everything is. You can skip the guide at any time."
+      },
+      "newClass": {
+        "title": "Create a class",
+        "body": "Start here: create a class and you'll get a code to give your students."
+      },
+      "classes": {
+        "title": "Your classes",
+        "body": "Your classes are here. Open one to set assignments and follow progress."
+      },
+      "apps": {
+        "title": "Try the activities",
+        "body": "Under “Apps” you can try each activity as a student before assigning it."
+      },
+      "menu": {
+        "title": "Your menu",
+        "body": "From here you open your account, change language and restart this guide."
+      },
+      "done": {
+        "title": "All set!",
+        "body": "Create your first class and assign an activity. Have fun!"
+      }
+    },
+    "classPage": {
+      "newAssignment": {
+        "title": "New assignment",
+        "body": "Pick an app, write the instructions and the goals: JEV checks them in the conversation."
+      },
+      "assignments": {
+        "title": "Assignments",
+        "body": "The class assignments: you can edit, hide or delete them."
+      },
+      "students": {
+        "title": "Students",
+        "body": "Invite students by e-mail or with the class code."
+      },
+      "progress": {
+        "title": "Progress",
+        "body": "See where each student is in each assignment and open their conversations."
+      },
+      "export": {
+        "title": "Export grades",
+        "body": "Download an Excel file with the class results."
+      }
+    },
+    "student": {
+      "welcome": {
+        "title": "Hi!",
+        "body": "A few steps to show you how your area works. You can skip at any time."
+      },
+      "todo": {
+        "title": "To do",
+        "body": "Your teachers' assignments arrive here. Press “Start” to begin."
+      },
+      "join": {
+        "title": "Join a class",
+        "body": "Got a code from your teacher? Type it here to join the class."
+      },
+      "practice": {
+        "title": "Free practice",
+        "body": "You can try every activity even without an assignment."
+      },
+      "history": {
+        "title": "Your activities",
+        "body": "Review past conversations, scores and comments."
+      },
+      "menu": {
+        "title": "Your menu",
+        "body": "From here you open your account and can restart this guide."
+      }
+    },
+    "activity": {
+      "steps": {
+        "title": "The four phases",
+        "body": "Every activity goes: setup, conversation, reflection and evaluation."
+      },
+      "assignment": {
+        "title": "The assignment",
+        "body": "What your teacher asks and how close you are to the goals."
+      },
+      "setup": {
+        "title": "Start here",
+        "body": "Choose the settings and start: then write or talk to the character."
+      },
+      "tutorial": {
+        "title": "Need help?",
+        "body": "The tutorial explains the activity step by step."
+      }
+    }
   }
 }

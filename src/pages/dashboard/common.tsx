@@ -41,8 +41,8 @@ export const DashboardLayout = ({ title, subtitle, actions, children }: { title:
   </div>
 );
 
-export const Panel = ({ title, actions, children, className }: { title?: React.ReactNode; actions?: React.ReactNode; children: React.ReactNode; className?: string }) => (
-  <section className={cn("rounded-lg border border-border bg-card p-5 text-card-foreground shadow-sm", className)}>
+export const Panel = ({ title, actions, children, className, tour }: { title?: React.ReactNode; actions?: React.ReactNode; children: React.ReactNode; className?: string; /** Target name for the guided tour. */ tour?: string }) => (
+  <section className={cn("rounded-lg border border-border bg-card p-5 text-card-foreground shadow-sm", className)} data-tour={tour}>
     {(title || actions) && (
       <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
         {title && <h2 className="text-lg font-semibold">{title}</h2>}

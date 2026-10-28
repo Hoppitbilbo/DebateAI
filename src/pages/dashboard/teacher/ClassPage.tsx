@@ -12,6 +12,7 @@ import ClassAssignments from "./ClassAssignments";
 import ClassMembers from "./ClassMembers";
 import ClassProgress from "./ClassProgress";
 import ClassSettings from "./ClassSettings";
+import { usePageTour } from "@/features/tour/tour";
 
 /** One class: assignments, students, progress matrix and settings. */
 const ClassPage = () => {
@@ -24,6 +25,7 @@ const ClassPage = () => {
   const [editing, setEditing] = useState<Assignment | null>(null);
 
   const klass = useClass(classId, tab === "progress");
+  usePageTour("classPage");
   const { detail, assignments, progress, refresh } = klass;
 
   if (detail.isLoading) return <DashboardLayout title="…"><Spinner /></DashboardLayout>;
@@ -38,18 +40,18 @@ const ClassPage = () => {
       actions={
         <>
           <Button variant="outline" asChild><Link to="/teacher">{t("platform.teacher.allClasses")}</Link></Button>
-          <Button variant="outline" asChild>
+          <Button variant="outline" asChild data-tour="export-grades">
             <a href={gradesUrl.ofClass(classId)} download><FileSpreadsheet className="mr-2 h-4 w-4" />{t("platform.teacher.exportExcel")}</a>
           </Button>
-          <Button onClick={() => { setEditing(null); setFormOpen(true); }}><Plus className="mr-2 h-4 w-4" />{t("platform.teacher.newAssignment")}</Button>
+          <Button onClick={() => { setEditing(null); setFormOpen(true); }} data-tour="new-assignment"><Plus className="mr-2 h-4 w-4" />{t("platform.teacher.newAssignment")}</Button>
         </>
       }
     >
       <Tabs value={tab} onValueChange={(v) => setParams({ tab: v })}>
         <TabsList>
-          <TabsTrigger value="assignments">{t("platform.teacher.tabs.assignments")}</TabsTrigger>
-          <TabsTrigger value="students">{t("platform.teacher.tabs.students")} ({students.length})</TabsTrigger>
-          <TabsTrigger value="progress">{t("platform.teacher.tabs.progress")}</TabsTrigger>
+          <TabsTrigger value="assignments" data-tour="tab-assignments">{t("platform.teacher.tabs.assignments")}</TabsTrigger>
+          <TabsTrigger value="students" data-tour="tab-students">{t("platform.teacher.tabs.students")} ({students.length})</TabsTrigger>
+          <TabsTrigger value="progress" data-tour="tab-progress">{t("platform.teacher.tabs.progress")}</TabsTrigger>
           <TabsTrigger value="settings">{t("platform.teacher.tabs.settings")}</TabsTrigger>
         </TabsList>
 

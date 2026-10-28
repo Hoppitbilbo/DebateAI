@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Github, LayoutDashboard, LogIn, LogOut, Menu, Settings, UserRound, X } from "lucide-react";
+import { Compass, Github, LayoutDashboard, LogIn, LogOut, Menu, Settings, UserRound, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils";
 import { dashboardPath, useAuth } from "@/context/auth";
 import { useMorphClick } from "@/features/navigation/morph";
 import LogoMark from "@/components/LogoMark";
+import { useTour } from "@/features/tour/tour";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
@@ -23,6 +24,7 @@ const Navbar = () => {
   const { user, logout, config } = useAuth();
   const navigate = useNavigate();
   const morph = useMorphClick();
+  const tour = useTour();
 
   const links = [
     { to: "/", label: t("navigation.home"), end: true },
@@ -47,7 +49,7 @@ const Navbar = () => {
           {config?.siteName && config.siteName !== "AiDebate.tech" ? config.siteName : <span>AiDebate<span className="text-foreground">.tech</span></span>}
         </Link>
 
-        <nav className="hidden items-center gap-1 md:flex" aria-label={t("platform.nav.main")}>
+        <nav className="hidden items-center gap-1 md:flex" aria-label={t("platform.nav.main")} data-tour="nav-links">
           {links.map((l) => <NavLink key={l.to} to={l.to} end={l.end} className={linkClass} onClick={morph(l.to)}>{l.label}</NavLink>)}
         </nav>
 
@@ -59,7 +61,7 @@ const Navbar = () => {
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="ml-1 border-education text-education hover:bg-education hover:text-education-dark">
+                <Button variant="outline" size="sm" className="ml-1 border-education text-education hover:bg-education hover:text-education-dark" data-tour="user-menu">
                   <UserRound className="mr-2 h-4 w-4" />
                   <span className="max-w-[120px] truncate">{user.name}</span>
                 </Button>
@@ -73,6 +75,9 @@ const Navbar = () => {
                 <DropdownMenuItem onClick={() => navigate(dashboardPath(user))}><LayoutDashboard className="mr-2 h-4 w-4" />{t("platform.nav.dashboard")}</DropdownMenuItem>
                 {user.role === "admin" && <DropdownMenuItem onClick={() => navigate("/teacher")}><LayoutDashboard className="mr-2 h-4 w-4" />{t("platform.nav.myClasses")}</DropdownMenuItem>}
                 <DropdownMenuItem onClick={() => navigate("/account")}><Settings className="mr-2 h-4 w-4" />{t("platform.nav.account")}</DropdownMenuItem>
+                {tour.available && (
+                  <DropdownMenuItem onClick={() => tour.start(tour.available!)}><Compass className="mr-2 h-4 w-4" />{t("platform.tour.common.replay")}</DropdownMenuItem>
+                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={doLogout}><LogOut className="mr-2 h-4 w-4" />{t("platform.nav.logout")}</DropdownMenuItem>
               </DropdownMenuContent>

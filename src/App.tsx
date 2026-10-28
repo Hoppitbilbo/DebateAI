@@ -9,6 +9,7 @@ import { dashboardPath, useAuth } from "@/context/auth";
 import { lazyPage } from "@/lib/lazyPage";
 import { APP_TYPES } from "@/features/activity/appCatalog";
 import MorphGate from "@/features/navigation/MorphGate";
+import TourProvider from "@/features/tour/TourProvider";
 
 import Index from "./pages/Index";
 const AppsPage = lazyPage(() => import("./pages/AppsPage"), ["/apps"]);
@@ -59,6 +60,7 @@ const App = () => (
         <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
           <MorphGate />
           <AuthProvider>
+            <TourProvider>
             <Suspense fallback={<Spinner />}>
             <Routes>
               <Route path="/" element={<Index />} />
@@ -100,6 +102,7 @@ const App = () => (
               <Route path="*" element={<NotFound />} />
             </Routes>
             </Suspense>
+            </TourProvider>
           </AuthProvider>
         </BrowserRouter>
       </TooltipProvider>

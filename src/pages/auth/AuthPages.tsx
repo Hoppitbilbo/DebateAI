@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { useTour } from "@/features/tour/tour";
 import { ApiError } from "@/lib/api";
 import { authApi, InviteInfo, ProfileChange } from "@/features/auth/authApi";
 import { dashboardPath, useAuth } from "@/context/auth";
@@ -274,6 +276,7 @@ export const SetupPage = () => {
 export const AccountPage = () => {
   const { t } = useTranslation();
   const { user, setUser } = useAuth();
+  const tour = useTour();
   const [name, setName] = useState(user?.name ?? "");
   const [current, setCurrent] = useState("");
   const [next, setNext] = useState("");
@@ -309,6 +312,18 @@ export const AccountPage = () => {
         <Field id="new" label={t("platform.auth.newPassword")} type="password" minLength={8} required value={next} onChange={(e) => setNext(e.target.value)} />
         <Button type="submit" variant="secondary" className="w-full">{t("platform.account.changePassword")}</Button>
       </form>
+      <div className="space-y-3 border-t border-border pt-4">
+        <label className="flex items-start justify-between gap-4">
+          <span>
+            <span className="block text-sm font-medium">{t("platform.tour.common.settingsTitle")}</span>
+            <span className="block text-xs text-muted-foreground">{t("platform.tour.common.settingsHint")}</span>
+          </span>
+          <Switch checked={tour.enabled} onCheckedChange={tour.setEnabled} />
+        </label>
+        <Button type="button" variant="outline" className="w-full" onClick={() => { tour.resetSeen(); toast.success(t("platform.tour.common.resetDone")); }}>
+          {t("platform.tour.common.resetSeen")}
+        </Button>
+      </div>
     </AuthLayout>
   );
 };

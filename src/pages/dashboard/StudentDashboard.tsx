@@ -12,6 +12,7 @@ import { useAuth } from "@/context/auth";
 import { APPS } from "@/features/activity/types";
 import { AppName, DashboardLayout, EmptyState, Panel, Spinner, StatusBadge } from "./common";
 import { formatDate } from "@/lib/format";
+import { usePageTour } from "@/features/tour/tour";
 
 const StudentDashboard = () => {
   const { t, i18n } = useTranslation();
@@ -23,6 +24,7 @@ const StudentDashboard = () => {
   const classes = useMyClasses();
   const sessions = useMySessions();
   const joinClass = useJoinClass();
+  usePageTour("student");
 
   const join = async () => {
     try {
@@ -79,7 +81,7 @@ const StudentDashboard = () => {
     <DashboardLayout title={t("platform.student.title", { name: user?.name })} subtitle={t("platform.student.subtitle")}>
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
-          <Panel title={t("platform.student.todo")}>
+          <Panel title={t("platform.student.todo")} tour="student-todo">
             {assignments.isLoading ? <Spinner /> : todo.length === 0 ? <EmptyState>{t("platform.student.noTodo")}</EmptyState> : (
               <div className="grid gap-4 md:grid-cols-2">{todo.map((a) => <AssignmentCard key={a.id} a={a} />)}</div>
             )}
@@ -89,7 +91,7 @@ const StudentDashboard = () => {
               <div className="grid gap-4 md:grid-cols-2">{done.map((a) => <AssignmentCard key={a.id} a={a} />)}</div>
             </Panel>
           )}
-          <Panel title={t("platform.student.history")}>
+          <Panel title={t("platform.student.history")} tour="student-history">
             {sessions.isLoading ? <Spinner /> : (sessions.data ?? []).length === 0 ? <EmptyState>{t("platform.student.noHistory")}</EmptyState> : (
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
@@ -124,7 +126,7 @@ const StudentDashboard = () => {
 
         <div className="space-y-6">
           {config?.allowJoinByCode && (
-            <Panel title={t("platform.student.joinTitle")}>
+            <Panel title={t("platform.student.joinTitle")} tour="join-class">
               <form className="flex gap-2" onSubmit={(e) => { e.preventDefault(); void join(); }}>
                 <Input value={code} onChange={(e) => setCode(e.target.value.toUpperCase())} placeholder="ABC123" maxLength={8} aria-label={t("platform.student.classCode")} />
                 <Button type="submit" disabled={code.length < 4}>{t("platform.student.join")}</Button>
@@ -143,7 +145,7 @@ const StudentDashboard = () => {
               </ul>
             )}
           </Panel>
-          <Panel title={t("platform.student.freePractice")}>
+          <Panel title={t("platform.student.freePractice")} tour="free-practice">
             <p className="mb-3 text-sm text-muted-foreground">{t("platform.student.freePracticeText")}</p>
             <Button variant="outline" asChild className="w-full"><Link to="/apps">{t("navigation.apps")}</Link></Button>
           </Panel>

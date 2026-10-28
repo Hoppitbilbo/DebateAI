@@ -670,5 +670,112 @@
     "exit": "Präsentation verlassen",
     "forStudents": "Für Lernende",
     "forTeachers": "Für Lehrkräfte"
+  },
+  "tour": {
+    "common": {
+      "next": "Weiter",
+      "back": "Zurück",
+      "skip": "Überspringen",
+      "finish": "Verstanden",
+      "dontShowAgain": "Anleitungen nicht mehr zeigen",
+      "stepOf": "Schritt {{n}} von {{total}}",
+      "replay": "Interaktive Anleitung",
+      "settingsTitle": "Interaktive Anleitungen",
+      "settingsHint": "Zeigt beim ersten Öffnen einer Seite eine Schritt-für-Schritt-Anleitung.",
+      "resetSeen": "Alle Anleitungen erneut zeigen",
+      "resetDone": "Die Anleitungen starten beim nächsten Öffnen der Seiten erneut."
+    },
+    "teacher": {
+      "welcome": {
+        "title": "Willkommen bei AiDebate!",
+        "body": "In einer Minute zeigen wir dir, wo alles ist. Du kannst die Anleitung jederzeit überspringen."
+      },
+      "newClass": {
+        "title": "Klasse erstellen",
+        "body": "Beginne hier: Erstelle eine Klasse und du erhältst einen Code für deine Schüler."
+      },
+      "classes": {
+        "title": "Deine Klassen",
+        "body": "Hier sind deine Klassen. Öffne eine, um Aufgaben zu stellen und Fortschritte zu verfolgen."
+      },
+      "apps": {
+        "title": "Aktivitäten ausprobieren",
+        "body": "Unter „Apps“ kannst du jede Aktivität wie ein Schüler testen, bevor du sie zuweist."
+      },
+      "menu": {
+        "title": "Dein Menü",
+        "body": "Hier öffnest du dein Konto, wechselst die Sprache und startest diese Anleitung neu."
+      },
+      "done": {
+        "title": "Alles bereit!",
+        "body": "Erstelle deine erste Klasse und weise eine Aktivität zu. Viel Erfolg!"
+      }
+    },
+    "classPage": {
+      "newAssignment": {
+        "title": "Neue Aufgabe",
+        "body": "Wähle eine App, schreibe Anweisungen und Ziele: JEV prüft sie im Gespräch."
+      },
+      "assignments": {
+        "title": "Aufgaben",
+        "body": "Die Aufgaben der Klasse: Du kannst sie bearbeiten, ausblenden oder löschen."
+      },
+      "students": {
+        "title": "Schüler",
+        "body": "Lade Schüler per E-Mail oder mit dem Klassencode ein."
+      },
+      "progress": {
+        "title": "Fortschritt",
+        "body": "Sieh, wo jeder Schüler bei jeder Aufgabe steht, und öffne die Gespräche."
+      },
+      "export": {
+        "title": "Noten exportieren",
+        "body": "Lade eine Excel-Datei mit den Ergebnissen der Klasse herunter."
+      }
+    },
+    "student": {
+      "welcome": {
+        "title": "Hallo!",
+        "body": "In wenigen Schritten zeigen wir dir deinen Bereich. Du kannst jederzeit überspringen."
+      },
+      "todo": {
+        "title": "Zu erledigen",
+        "body": "Hier kommen die Aufgaben deiner Lehrkräfte an. Drücke „Starten“."
+      },
+      "join": {
+        "title": "Klasse beitreten",
+        "body": "Hast du einen Code von deiner Lehrkraft? Gib ihn hier ein, um beizutreten."
+      },
+      "practice": {
+        "title": "Freies Üben",
+        "body": "Du kannst alle Aktivitäten auch ohne Aufgabe ausprobieren."
+      },
+      "history": {
+        "title": "Deine Aktivitäten",
+        "body": "Sieh dir frühere Gespräche, Punkte und Kommentare an."
+      },
+      "menu": {
+        "title": "Dein Menü",
+        "body": "Hier öffnest du dein Konto und kannst diese Anleitung neu starten."
+      }
+    },
+    "activity": {
+      "steps": {
+        "title": "Die vier Phasen",
+        "body": "Jede Aktivität läuft so ab: Vorbereitung, Gespräch, Reflexion und Bewertung."
+      },
+      "assignment": {
+        "title": "Die Aufgabe",
+        "body": "Was deine Lehrkraft verlangt und wie nah du den Zielen bist."
+      },
+      "setup": {
+        "title": "Hier beginnen",
+        "body": "Wähle die Einstellungen und starte: Dann schreibe oder sprich mit der Figur."
+      },
+      "tutorial": {
+        "title": "Hilfe nötig?",
+        "body": "Das Tutorial erklärt die Aktivität Schritt für Schritt."
+      }
+    }
   }
 }

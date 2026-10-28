@@ -13,6 +13,7 @@ import type { ActivityPhase, AppMeta } from "../types";
 import type { ActivitySession } from "../useActivitySession";
 import AssignmentPanel from "./AssignmentPanel";
 import { appMorph, useMorphClick } from "@/features/navigation/morph";
+import { usePageTour } from "@/features/tour/tour";
 
 interface ActivityShellProps {
   app: AppMeta;
@@ -33,6 +34,7 @@ const ActivityShell = ({ app, phase, session, onReset, children, phaseLabels }: 
   const ai = useAiClient();
   const morph = useMorphClick();
   const [status, setStatus] = useState<AiStatus | null>(null);
+  usePageTour("activity");
 
   useEffect(() => {
     void ai.status().then(setStatus);
@@ -59,7 +61,7 @@ const ActivityShell = ({ app, phase, session, onReset, children, phaseLabels }: 
             </div>
             <div className="flex shrink-0 gap-2">
               {app.tutorialPath && (
-                <Button variant="outline" size="sm" asChild>
+                <Button variant="outline" size="sm" asChild data-tour="app-tutorial">
                   <Link to={app.tutorialPath}>
                     <BookOpen className="mr-2 h-4 w-4" />
                     {t("platform.activity.tutorial")}
@@ -75,7 +77,7 @@ const ActivityShell = ({ app, phase, session, onReset, children, phaseLabels }: 
             </div>
           </header>
 
-          <ol className="grid grid-cols-4 gap-2" aria-label={t("platform.activity.steps")}>
+          <ol className="grid grid-cols-4 gap-2" aria-label={t("platform.activity.steps")} data-tour="activity-steps">
             {PHASES.map((p, i) => (
               <li
                 key={p}
@@ -132,9 +134,9 @@ const ActivityShell = ({ app, phase, session, onReset, children, phaseLabels }: 
               {t("platform.activity.assignmentError")}
             </div>
           )}
-          {session.assignment && <AssignmentPanel session={session} />}
+          {session.assignment && <div data-tour="assignment-panel"><AssignmentPanel session={session} /></div>}
 
-          {children}
+          <div data-tour="activity-main">{children}</div>
         </div>
       </main>
       <Footer />

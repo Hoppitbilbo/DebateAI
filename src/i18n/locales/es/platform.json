@@ -670,5 +670,112 @@
     "exit": "Salir de la presentación",
     "forStudents": "Para el estudiante",
     "forTeachers": "Para el docente"
+  },
+  "tour": {
+    "common": {
+      "next": "Siguiente",
+      "back": "Atrás",
+      "skip": "Saltar",
+      "finish": "Entendido",
+      "dontShowAgain": "No volver a mostrar las guías",
+      "stepOf": "Paso {{n}} de {{total}}",
+      "replay": "Guía interactiva",
+      "settingsTitle": "Guías interactivas",
+      "settingsHint": "Muestra una guía paso a paso la primera vez que abres una página.",
+      "resetSeen": "Ver todas las guías de nuevo",
+      "resetDone": "Las guías volverán a empezar la próxima vez que abras las páginas."
+    },
+    "teacher": {
+      "welcome": {
+        "title": "¡Bienvenido a AiDebate!",
+        "body": "En un minuto te mostramos dónde está todo. Puedes saltar la guía cuando quieras."
+      },
+      "newClass": {
+        "title": "Crea una clase",
+        "body": "Empieza aquí: crea una clase y obtendrás un código para tus estudiantes."
+      },
+      "classes": {
+        "title": "Tus clases",
+        "body": "Aquí están tus clases. Abre una para asignar tareas y seguir el progreso."
+      },
+      "apps": {
+        "title": "Prueba las actividades",
+        "body": "En «Apps» puedes probar cada actividad como estudiante antes de asignarla."
+      },
+      "menu": {
+        "title": "Tu menú",
+        "body": "Desde aquí abres tu cuenta, cambias el idioma y reinicias esta guía."
+      },
+      "done": {
+        "title": "¡Todo listo!",
+        "body": "Crea tu primera clase y asigna una actividad. ¡Buen trabajo!"
+      }
+    },
+    "classPage": {
+      "newAssignment": {
+        "title": "Nueva tarea",
+        "body": "Elige una app, escribe la consigna y los objetivos: JEV los comprueba en la conversación."
+      },
+      "assignments": {
+        "title": "Tareas",
+        "body": "Las tareas de la clase: puedes editarlas, ocultarlas o eliminarlas."
+      },
+      "students": {
+        "title": "Estudiantes",
+        "body": "Invita a los estudiantes por correo o con el código de la clase."
+      },
+      "progress": {
+        "title": "Progreso",
+        "body": "Mira en qué punto está cada estudiante en cada tarea y abre sus conversaciones."
+      },
+      "export": {
+        "title": "Exportar notas",
+        "body": "Descarga un archivo Excel con los resultados de la clase."
+      }
+    },
+    "student": {
+      "welcome": {
+        "title": "¡Hola!",
+        "body": "En pocos pasos te mostramos cómo funciona tu área. Puedes saltar cuando quieras."
+      },
+      "todo": {
+        "title": "Pendientes",
+        "body": "Aquí llegan las tareas de tus profesores. Pulsa «Empezar» para comenzar."
+      },
+      "join": {
+        "title": "Únete a una clase",
+        "body": "¿Tienes un código de tu profesor? Escríbelo aquí para entrar en la clase."
+      },
+      "practice": {
+        "title": "Práctica libre",
+        "body": "Puedes probar todas las actividades incluso sin una tarea."
+      },
+      "history": {
+        "title": "Tus actividades",
+        "body": "Repasa conversaciones pasadas, puntuaciones y comentarios."
+      },
+      "menu": {
+        "title": "Tu menú",
+        "body": "Desde aquí abres tu cuenta y puedes reiniciar esta guía."
+      }
+    },
+    "activity": {
+      "steps": {
+        "title": "Las cuatro fases",
+        "body": "Cada actividad sigue: preparación, conversación, reflexión y evaluación."
+      },
+      "assignment": {
+        "title": "La consigna",
+        "body": "Lo que pide tu profesor y cuánto te falta para los objetivos."
+      },
+      "setup": {
+        "title": "Empieza aquí",
+        "body": "Elige los ajustes y empieza: luego escribe o habla con el personaje."
+      },
+      "tutorial": {
+        "title": "¿Necesitas ayuda?",
+        "body": "El tutorial explica la actividad paso a paso."
+      }
+    }
   }
 }
