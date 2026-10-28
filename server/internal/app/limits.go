@@ -39,5 +39,15 @@ const (
 	inviteTTL    = 14 * 24 * time.Hour
 )
 
+// Temporary rooms ("aula lampo").
+const (
+	defaultRoomMinutes   = 60
+	rejoinPINTTL         = 10 * time.Minute
+	rejoinPINDigits      = 4
+	maxRoomTitleChars    = 120
+	maxRoomInstructChars = 4000
+	roomAttemptsPerGuest = 200 // attempts of one guest included in an export
+)
+
 // smtpDialTimeout bounds the connection to the mail server.
 const smtpDialTimeout = 15 * time.Second

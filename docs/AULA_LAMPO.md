@@ -196,10 +196,10 @@ GET    /api/cron/purge-rooms              Vercel cron (CRON_SECRET)
 ## Piano di lavoro
 
 - [x] **L1** Schema, `store.Rooms` + test (cancellazione completa, purge, unicità nickname, aula piena).
-- [ ] **L2** `roomService` (crea, join, rientro, scadenza, limiti) + test.
-- [ ] **L3** `RoomSettings` + `TargetsFor` nel gateway + conteggio richieste per ospite/aula + test.
+- [x] **L2** `roomService` (apertura, ingresso, rientro con PIN, scadenza, limiti per ospite/aula) + test.
+- [x] **L3** `RoomSettings` + `TargetsFor` nel gateway (profilo aula via context, anche per il giudice) + test.
 - [ ] **L4** Handler, middleware ospite, cookie host, cron, rate limit sui codici errati; aggiornare `shapes.json`.
-- [ ] **L5** Export xlsx/JSON firmato, import con mapping + test.
+- [~] **L5** Export cifrato (AES-GCM) e import con abbinamento (servizio + test fatti; xlsx e handler in L4).
 - [ ] **L6** Frontend: `/entra`, scelta avatar, attività come ospite (riuso `ActivityRunner`).
 - [ ] **L7** Frontend docente: `/aula/nuova`, schermo proiettabile (QR, countdown, lobby), import in classe.
 - [ ] **L8** Admin: tab "Aula lampo" (provider dedicato, limiti).

@@ -150,7 +150,7 @@ func (g *aiGateway) judge(ctx context.Context, in judgeInput, userID, sessionID 
 	}
 
 	var verdict *JudgeResult
-	err := g.runFallbackChain("judge", g.Targets(TaskJudge), func(t RouteTarget, cp *cachedProvider) error {
+	err := g.runFallbackChain("judge", g.TargetsFor(ctx, TaskJudge), func(t RouteTarget, cp *cachedProvider) error {
 		ctx, cancel := context.WithTimeout(ctx, judgeTargetTimeout)
 		defer cancel()
 		engine, ok := judgeFor(cp.p)

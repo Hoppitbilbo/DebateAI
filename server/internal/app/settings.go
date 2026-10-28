@@ -1,5 +1,7 @@
 package app
 
+import "github.com/Hoppitbilbo/DebateAI/server/internal/domain"
+
 // loadSetting returns the stored value of key, or def when it is missing or invalid.
 func loadSetting[T any](st settingsStore, key string, def T) T {
 	out := def
@@ -83,6 +85,50 @@ type JevSettings struct {
 	MaxStateChars int     `json:"maxStateChars"`
 }
 
+// RoomSettings configure the temporary rooms ("aula lampo"): who may open
+// them, their limits and the AI models their guests use.
+type RoomSettings struct {
+	Enabled                bool `json:"enabled"`
+	AllowAnonymousTeachers bool `json:"allowAnonymousTeachers"`
+	MaxMinutes             int  `json:"maxMinutes"` // at most domain.MaxRoomDuration
+	MaxGuests              int  `json:"maxGuests"`
+	// Limits are per guest and per room, never per IP: a school lab
+	// reaches the server from a single address.
+	RequestsPerGuestPerHour int `json:"requestsPerGuestPerHour"`
+	MaxRequestsPerRoom      int `json:"maxRequestsPerRoom"`
+	MaxOpenAnonymousRooms   int `json:"maxOpenAnonymousRooms"`
+	// Tasks routes the guests' AI calls; an empty task uses the main
+	// routing. FreeOnly drops every target that is not known to be free.
+	Tasks    map[string][]RouteTarget `json:"tasks"`
+	FreeOnly bool                     `json:"freeOnly"`
+}
+
+// RoomTasks are the tasks a room may route to its own models (no live voice).
+var RoomTasks = []string{TaskChat, TaskEvaluation, TaskUtility, TaskJudge}
+
+func DefaultRooms() RoomSettings {
+	return RoomSettings{
+		Enabled: true, AllowAnonymousTeachers: true, MaxMinutes: 120, MaxGuests: 40,
+		RequestsPerGuestPerHour: 120, MaxRequestsPerRoom: 3000, MaxOpenAnonymousRooms: 50,
+		Tasks: map[string][]RouteTarget{}, FreeOnly: true,
+	}
+}
+
+// normalize keeps the limits inside their allowed ranges.
+func (r RoomSettings) normalize() RoomSettings {
+	maxMinutes := int(domain.MaxRoomDuration.Minutes())
+	if r.MaxMinutes <= 0 || r.MaxMinutes > maxMinutes {
+		r.MaxMinutes = maxMinutes
+	}
+	if r.MaxGuests <= 0 {
+		r.MaxGuests = DefaultRooms().MaxGuests
+	}
+	if r.Tasks == nil {
+		r.Tasks = map[string][]RouteTarget{}
+	}
+	return r
+}
+
 func DefaultJev() JevSettings {
 	return JevSettings{Enabled: true, Threshold: defaultJudgeThreshold, EvaluateEvery: 1, MaxStateChars: 24000}
 }
@@ -102,6 +148,7 @@ const (
 	SettingBudget  = "budget"
 	SettingRouting = "routing"
 	SettingJev     = "jev"
+	SettingRooms   = "rooms"
 )
 
 func (c *settingsService) General() GeneralSettings {
@@ -118,6 +165,14 @@ func (c *settingsService) Routing() RoutingSettings {
 		r.Tasks = map[string][]RouteTarget{}
 	}
 	return r
+}
+
+func (c *settingsService) Rooms() RoomSettings {
+	return loadSetting(c.store, SettingRooms, DefaultRooms()).normalize()
+}
+
+func (c *settingsService) SaveRooms(v RoomSettings) error {
+	return c.store.Save(SettingRooms, v.normalize())
 }
 
 func (c *settingsService) Jev() JevSettings {

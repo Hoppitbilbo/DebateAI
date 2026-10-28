@@ -11,6 +11,7 @@ import (
 // invitations. Handlers check the HTTP side (rate limits, settings).
 type classService struct {
 	classes  classStore
+	rooms    roomStore
 	users    userStore
 	accounts *authService
 	mail     mailer
@@ -27,6 +28,17 @@ var (
 // CanManage: admins, the owner, or co-teachers.
 func (c *classService) CanManage(u *domain.User, classID int64) bool {
 	return u.Role == domain.RoleAdmin || c.classes.Teaches(classID, u.ID)
+}
+
+// MayAttempt tells whether u may work on assignment a: its teachers, the
+// students of its class once it is published, and the guests of a room
+// opened on it.
+func (c *classService) MayAttempt(u *domain.User, a *domain.Assignment) bool {
+	if u.IsGuest() {
+		room, err := c.rooms.Get(*u.RoomID)
+		return err == nil && room.AssignmentID != nil && *room.AssignmentID == a.ID
+	}
+	return c.CanManage(u, a.ClassID) || (c.classes.IsMember(a.ClassID, u.ID) && a.Published)
 }
 
 // List returns the classes u teaches; admins see every class unless onlyMine.

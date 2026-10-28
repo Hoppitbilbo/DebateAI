@@ -51,7 +51,7 @@ func (svc *sessionService) Start(u *domain.User, in NewAttempt) (*domain.Session
 	n := domain.NewSession{UserID: u.ID, AppType: in.AppType, Title: truncate(in.Title, maxSessionTitleChars), Context: "{}"}
 	if in.AssignmentID > 0 {
 		a, err := svc.assignments.Get(in.AssignmentID)
-		if err != nil || (!svc.classSvc.CanManage(u, a.ClassID) && (!svc.classes.IsMember(a.ClassID, u.ID) || !a.Published)) {
+		if err != nil || !svc.classSvc.MayAttempt(u, a) {
 			return nil, ErrAssignmentForbidden
 		}
 		if a.AppType != in.AppType {

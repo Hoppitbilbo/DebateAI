@@ -230,3 +230,24 @@ func (r *ActivitySessions) CountFinished(assignmentID int64) int {
 func (r *ActivitySessions) CountAttempts(userID, assignmentID int64) int {
 	return count(r.db, `SELECT COUNT(*) FROM activity_sessions WHERE user_id = ? AND assignment_id = ?`, userID, assignmentID)
 }
+
+// Import stores a finished copy of an attempt (from a room export) for a
+// student; its timestamps and scores are kept as they were.
+func (r *ActivitySessions) Import(userID int64, assignmentID *int64, d domain.SessionDetail) (int64, error) {
+	res, err := r.db.Exec(`INSERT INTO activity_sessions(user_id, assignment_id, app_type, title, context_json, status, transcript_json, turns, progress, jev_json,
+		reflection, evaluation, score_conversation, score_reflection, cost_usd, started_at, updated_at, completed_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+		userID, assignmentID, d.AppType, d.Title, jsonOr(d.Context, "{}"), d.Status, jsonOr(d.Transcript, "[]"), d.Turns, d.Progress, jsonOr(d.Jev, "{}"),
+		d.Reflection, d.Evaluation, d.ScoreConversation, d.ScoreReflection, d.CostUSD, d.StartedAt, d.UpdatedAt, d.CompletedAt)
+	if err != nil {
+		return 0, err
+	}
+	return res.LastInsertId()
+}
+
+// jsonOr returns raw as text, or def when it is empty.
+func jsonOr(raw json.RawMessage, def string) string {
+	if len(raw) == 0 {
+		return def
+	}
+	return string(raw)
+}
