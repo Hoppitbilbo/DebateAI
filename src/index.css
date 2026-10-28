@@ -273,6 +273,13 @@ html, body {
   overflow-x: clip;
 }
 
+/* While a menu or dialog locks scrolling (Radix sets overflow: hidden on body),
+   html must not clip: otherwise body becomes its own scroll box at offset 0
+   and the sticky navbar jumps to the top of the page, out of view. */
+html:has(> body[data-scroll-locked]) {
+  overflow-x: visible;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .reveal-animation, .reveal-from-left, .reveal-from-right {
     opacity: 1;
