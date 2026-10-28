@@ -16,10 +16,12 @@ import platform from './platform.json';
 import homepage from './homepage.json';
 import teacherGuidePage from './teacherGuidePage.json';
 import notFound from './notFound.json';
+import room from './room.json';
 
 // AI and evaluation sections would need to be extracted from the original file
 // For now, we'll create a combined export
 export default {
+  room,
   platform,
   homepage,
   teacherGuidePage,

@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { FileSpreadsheet, Plus } from "lucide-react";
+import { FileSpreadsheet, Plus, Upload } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Assignment } from "@/lib/api";
@@ -13,6 +14,7 @@ import ClassMembers from "./ClassMembers";
 import ClassProgress from "./ClassProgress";
 import ClassSettings from "./ClassSettings";
 import { usePageTour } from "@/features/tour/tour";
+import RoomImportDialog from "../../room/RoomImportDialog";
 
 /** One class: assignments, students, progress matrix and settings. */
 const ClassPage = () => {
@@ -23,6 +25,7 @@ const ClassPage = () => {
   const tab = params.get("tab") || "assignments";
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<Assignment | null>(null);
+  const [importing, setImporting] = useState(false);
 
   const klass = useClass(classId, tab === "progress");
   usePageTour("classPage");
@@ -43,6 +46,7 @@ const ClassPage = () => {
           <Button variant="outline" asChild data-tour="export-grades">
             <a href={gradesUrl.ofClass(classId)} download><FileSpreadsheet className="mr-2 h-4 w-4" />{t("platform.teacher.exportExcel")}</a>
           </Button>
+          <Button variant="outline" onClick={() => setImporting(true)}><Upload className="mr-2 h-4 w-4" />{t("room.import.fromFile")}</Button>
           <Button onClick={() => { setEditing(null); setFormOpen(true); }} data-tour="new-assignment"><Plus className="mr-2 h-4 w-4" />{t("platform.teacher.newAssignment")}</Button>
         </>
       }
@@ -77,6 +81,13 @@ const ClassPage = () => {
       </Tabs>
 
       <AssignmentForm classId={classId} open={formOpen} onOpenChange={setFormOpen} initial={editing} onSaved={refresh} />
+      <RoomImportDialog
+        open={importing}
+        onOpenChange={setImporting}
+        source={{ kind: "file" }}
+        classId={classId}
+        onDone={(_, r) => { toast.success(t("room.import.done", { sessions: r.sessions, students: r.students })); refresh(); }}
+      />
     </DashboardLayout>
   );
 };

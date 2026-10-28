@@ -131,6 +131,7 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("DELETE /api/rooms/{id}", s.handleEndRoom)
 	mux.HandleFunc("POST /api/rooms/{id}/guests/{userId}/pin", s.handleRoomGuestPIN)
 	mux.HandleFunc("DELETE /api/rooms/{id}/guests/{userId}", s.handleRemoveRoomGuest)
+	mux.HandleFunc("GET /api/rooms/{id}/guests/{userId}/sessions", s.handleRoomGuestSessions)
 	mux.HandleFunc("GET /api/rooms/{id}/sessions/{sessionId}", s.handleRoomSession)
 	mux.HandleFunc("GET /api/rooms/{id}/export.xlsx", s.handleRoomExportXLSX)
 	mux.HandleFunc("GET /api/rooms/{id}/export.aula", s.handleRoomExportFile)

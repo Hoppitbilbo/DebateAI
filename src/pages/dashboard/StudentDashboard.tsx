@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, Navigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { CalendarClock, Play, RotateCcw, Eye } from "lucide-react";
@@ -76,6 +76,8 @@ const StudentDashboard = () => {
       </div>
     );
   };
+
+  if (user?.roomId) return <Navigate to="/aula" replace />; // room guests have their own page
 
   return (
     <DashboardLayout title={t("platform.student.title", { name: user?.name })} subtitle={t("platform.student.subtitle")}>

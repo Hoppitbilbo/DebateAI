@@ -374,6 +374,14 @@ func (svc *roomService) AllowAI(u *domain.User) error {
 	return nil
 }
 
+// GuestSessions lists the attempts of one of the room's guests.
+func (svc *roomService) GuestSessions(room *domain.Room, userID int64) ([]*domain.SessionSummary, error) {
+	if _, err := svc.rooms.Guest(room.ID, userID); err != nil {
+		return nil, ErrGuestNotFound
+	}
+	return svc.sessions.ListForUser(userID, roomAttemptsPerGuest)
+}
+
 // Session returns an attempt of one of the room's guests.
 func (svc *roomService) Session(room *domain.Room, sessionID int64) (*domain.SessionDetail, error) {
 	d, err := svc.sessions.Detail(sessionID)

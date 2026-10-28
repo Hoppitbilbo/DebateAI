@@ -117,6 +117,10 @@ func TestEndToEndRoomInSchoolLab(t *testing.T) {
 	if code := inLab().do("GET", roomPath, nil, nil); code != 404 {
 		t.Fatalf("lobby without key: %d", code)
 	}
+	var annaSessions []domain.SessionSummary
+	if code := host.do("GET", fmt.Sprintf("%s/guests/%d/sessions", roomPath, view.Guests[0].UserID), nil, &annaSessions); code != 200 || len(annaSessions) != 1 {
+		t.Fatalf("guest attempts: %d %d", code, len(annaSessions))
+	}
 	if code := host.do("GET", fmt.Sprintf("%s/sessions/%d", roomPath, sess.ID), nil, nil); code != 200 {
 		t.Fatalf("host reads a conversation: %d", code)
 	}

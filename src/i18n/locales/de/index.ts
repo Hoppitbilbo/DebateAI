@@ -14,6 +14,7 @@ import homepage from './homepage.json';
 import language from './language.json';
 import navigation from './navigation.json';
 import notFound from './notFound.json';
+import room from './room.json';
 import prompts from './prompts.json';
 import teacherGuide from './teacherGuide.json';
 import teacherGuidePage from './teacherGuidePage.json';
@@ -38,6 +39,7 @@ const de = {
   language,
   navigation,
   notFound,
+  room,
   prompts,
   teacherGuide,
   teacherGuidePage,

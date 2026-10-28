@@ -11,7 +11,19 @@ export interface Provider { id: number; name: string; kind: Kind; baseUrl: strin
 export interface RouteTarget { providerId: number; model: string }
 export interface Routing { strategy: "ordered" | "free_first" | "cheapest"; tasks: Record<string, RouteTarget[]>; defaultVoice: string }
 export interface JevSettings { enabled: boolean; threshold: number; evaluateEvery: number; maxStateChars: number }
-export interface AiSettings { routing: Routing; jev: JevSettings; tasks: string[] }
+/** Temporary rooms ("aula lampo"): limits per guest and per room, and their own models. */
+export interface RoomSettings {
+  enabled: boolean;
+  allowAnonymousTeachers: boolean;
+  maxMinutes: number;
+  maxGuests: number;
+  requestsPerGuestPerHour: number;
+  maxRequestsPerRoom: number;
+  maxOpenAnonymousRooms: number;
+  tasks: Record<string, RouteTarget[]>;
+  freeOnly: boolean;
+}
+export interface AiSettings { routing: Routing; jev: JevSettings; rooms: RoomSettings; tasks: string[]; roomTasks: string[] }
 export interface PriceRow { providerId: number; providerName: string; model: string; inputPerM: number; outputPerM: number }
 
 export interface NewProvider {
@@ -66,3 +78,5 @@ export const usePrices = () => {
     },
   };
 };
+
+export const saveRooms = (rooms: RoomSettings) => api.put("/api/admin/settings/rooms", rooms);

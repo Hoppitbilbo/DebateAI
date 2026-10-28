@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Plus } from "lucide-react";
+import { Plus, Zap } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth";
 import { useMyClasses } from "@/features/teacher/teacherApi";
 import { DashboardLayout, Spinner } from "../common";
 import ClassCreateDialog from "./ClassCreateDialog";
 import ClassGrid from "./ClassGrid";
+import OpenRooms from "../../room/OpenRooms";
 import { usePageTour } from "@/features/tour/tour";
 
 /** The teacher's home: their classes. */
@@ -20,8 +22,14 @@ const TeacherDashboard = () => {
     <DashboardLayout
       title={t("platform.teacher.title")}
       subtitle={t("platform.teacher.subtitle", { name: user?.name })}
-      actions={<Button onClick={() => setOpen(true)} data-tour="new-class"><Plus className="mr-2 h-4 w-4" />{t("platform.teacher.newClass")}</Button>}
+      actions={
+        <>
+          <Button variant="outline" asChild><Link to="/aula/nuova"><Zap className="mr-2 h-4 w-4" />{t("room.nav.open")}</Link></Button>
+          <Button onClick={() => setOpen(true)} data-tour="new-class"><Plus className="mr-2 h-4 w-4" />{t("platform.teacher.newClass")}</Button>
+        </>
+      }
     >
+      <OpenRooms />
       <div data-tour="class-grid">{classes.isLoading ? <Spinner /> : <ClassGrid classes={classes.data ?? []} />}</div>
       <ClassCreateDialog open={open} onOpenChange={setOpen} onCreated={refresh} />
     </DashboardLayout>

@@ -16,8 +16,10 @@ import tutorialsPage from './tutorialsPage.json';
 import platform from './platform.json';
 import teacherGuidePage from './teacherGuidePage.json';
 import notFound from './notFound.json';
+import room from './room.json';
 
 export default {
+  room,
   platform,
   teacherGuidePage,
   notFound,

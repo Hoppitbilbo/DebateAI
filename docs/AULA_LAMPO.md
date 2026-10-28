@@ -1,6 +1,6 @@
 # Aula lampo: accesso con codice, senza registrazione degli studenti
 
-Ultimo aggiornamento: 28 ottobre 2026 · Stato: **specifica approvata nelle scelte, implementazione da iniziare**
+Ultimo aggiornamento: 28 ottobre 2026 · Stato: **implementata sul branch `feat/aula-lampo` (L1-L9); manca la prova su preview Vercel (L10)**
 
 Feature aggiuntiva, isolata dal resto: non cambia il comportamento delle classi, delle consegne
 o dell'accesso ospite esistente. Va sviluppata su un branch a parte (`feat/aula-lampo`), non
@@ -200,8 +200,14 @@ GET    /api/cron/purge-rooms              Vercel cron (CRON_SECRET)
 - [x] **L3** `RoomSettings` + `TargetsFor` nel gateway (profilo aula via context, anche per il giudice) + test.
 - [x] **L4** Handler, chiave host (`X-Room-Key`), cookie ospite, cron Vercel giornaliero, limiti sui codici/PIN errati; `shapes.json` aggiornato (campi nuovi in config pubblica e impostazioni admin).
 - [x] **L5** Export xlsx e file `.aula` cifrato (AES-GCM), anteprima e import con abbinamento + test.
-- [ ] **L6** Frontend: `/entra`, scelta avatar, attività come ospite (riuso `ActivityRunner`).
-- [ ] **L7** Frontend docente: `/aula/nuova`, schermo proiettabile (QR, countdown, lobby), import in classe.
-- [ ] **L8** Admin: tab "Aula lampo" (provider dedicato, limiti).
-- [ ] **L9** Avatar Icons8 in `public/avatars/`, traduzioni nelle 5 lingue, `check:i18n`.
-- [ ] **L10** Prova end-to-end su preview Vercel con più browser.
+- [x] **L6** Frontend: `/entra` (codice, nickname, avatar, rientro con PIN), `/aula` per l'ospite; le attività funzionano senza modifiche perché l'ospite è un utente loggato.
+- [x] **L7** Frontend docente: `/aula/nuova`, `/aula/gestisci/:id` (codice, QR, countdown, lobby, PIN, conversazioni, export, chiusura), import dall'aula o da file `.aula` nella pagina classe, aule aperte nella dashboard.
+- [x] **L8** Admin → AI: sezione "Aula lampo" (attivazione, docenti senza account, solo gratuiti, limiti, modelli per task). Estratto `TaskTargets` da `RoutingEditor`.
+- [x] **L9** 24 avatar Icons8 `color` in `public/avatars/room/` (lock in `icons8.json`), `room.json` in 5 lingue, `check:i18n` esteso alle chiavi `room.*`.
+- [~] **L10** Prova end-to-end: fatta in locale con Playwright (supplente senza account, 3 studenti, nickname doppio, rientro con PIN, ingressi chiusi, chiusura; docente con account, aula su consegna, import con abbinamento). **Da fare:** preview Vercel con Turso e un provider gratuito vero.
+
+## Deploy (Vercel Hobby)
+
+1. Variabile d'ambiente **`CRON_SECRET`** (stringa casuale lunga): Vercel la manda al cron giornaliero `/api/cron/purge-rooms`. Senza, il cron risponde 401 e la pulizia resta affidata al purge a ogni richiesta (che basta: i dati scaduti sono già inaccessibili).
+2. Admin → AI: aggiungere il provider gratuito (es. OpenRouter con modelli `:free`, DeepSeek, Gemini) con la sua chiave, poi sceglierlo nella sezione "Aula lampo".
+3. Il rate limiter in memoria vale per singola istanza: su Vercel i limiti contro i codici/PIN sbagliati sono quindi "best effort". I limiti AI per ospite e per aula sono invece contati nel DB e valgono ovunque.

@@ -8,6 +8,7 @@ import AddProviderDialog from "./ai/AddProviderDialog";
 import PricesEditor from "./ai/PricesEditor";
 import ProviderCard from "./ai/ProviderCard";
 import RoutingEditor from "./ai/RoutingEditor";
+import RoomsEditor from "./ai/RoomsEditor";
 
 /** Admin → AI: providers, routing (JEV router), JEV judge and prices. */
 const AdminAI = () => {
@@ -28,6 +29,7 @@ const AdminAI = () => {
         )}
       </Panel>
       {settings.data && <RoutingEditor providers={list} settings={settings.data} onSaved={refresh} />}
+      {settings.data?.rooms && <RoomsEditor providers={list} settings={settings.data} onSaved={refresh} />}
       {list.length > 0 && <PricesEditor providers={list} />}
       <AddProviderDialog open={adding} onOpenChange={setAdding} onAdded={refresh} />
     </div>

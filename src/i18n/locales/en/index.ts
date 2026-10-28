@@ -12,6 +12,7 @@ import homepage from './homepage.json';
 import language from './language.json';
 import navigation from './navigation.json';
 import notFound from './notFound.json';
+import room from './room.json';
 import prompts from './prompts.json';
 import teacherGuide from './teacherGuide.json';
 import teacherGuidePage from './teacherGuidePage.json';
@@ -21,6 +22,7 @@ import evaluation from './evaluation.json';
 import platform from './platform.json';
 
 export default {
+  room,
   platform,
   aboutPage,
   apps,

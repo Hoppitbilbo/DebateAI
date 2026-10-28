@@ -295,6 +295,19 @@ func (s *Server) handleRemoveRoomGuest(w http.ResponseWriter, r *http.Request) {
 	writeOK(w)
 }
 
+func (s *Server) handleRoomGuestSessions(w http.ResponseWriter, r *http.Request) {
+	room, ok := s.hostedRoom(w, r)
+	if !ok {
+		return
+	}
+	out, err := s.RoomSvc.GuestSessions(room, pathID(r, "userId"))
+	if err != nil {
+		writeRoomErr(w, err)
+		return
+	}
+	writeJSON(w, 200, out)
+}
+
 func (s *Server) handleRoomSession(w http.ResponseWriter, r *http.Request) {
 	room, ok := s.hostedRoom(w, r)
 	if !ok {

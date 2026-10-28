@@ -120,5 +120,37 @@
       "avatar/mystery": "pWvvqRPBeIN5",
       "avatar/page": "114325"
     }
+  },
+  "roomAvatars": {
+    "platform": "color",
+    "format": "png 128px",
+    "folder": "public/avatars/room/",
+    "note": "Aula lampo: avatar scelti dagli studenti ospiti; slug = nome file",
+    "items": {
+      "fox": "40811",
+      "panda": "16093",
+      "red-panda": "vjcEOhHbbzpq",
+      "lion": "33035",
+      "rabbit": "16082",
+      "turtle": "16106",
+      "elephant": "24495",
+      "giraffe": "16056",
+      "penguin": "GLNXrevIGCZO",
+      "unicorn": "16114",
+      "bear": "16035",
+      "butterfly": "16031",
+      "owl": "36262",
+      "parrot": "36840",
+      "bee": "16034",
+      "octopus": "16077",
+      "whale": "20894",
+      "wolf": "20920",
+      "cat": "16017",
+      "dog": "16018",
+      "hedgehog": "EqlaXlCmEM5J",
+      "squirrel": "95006",
+      "flamingo": "95002",
+      "frog": "5Lss2FosoQhJ"
+    }
   }
 }
