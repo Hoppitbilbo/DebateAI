@@ -7,32 +7,17 @@ import { cn } from "@/lib/utils";
 import type { ActivityMessage } from "../types";
 import { useChatScroll } from "../useChatScroll";
 import { useWikiImage } from "../wikiImage";
-
-/** What an AI speaker without a Wikipedia picture looks like: a person or a page. */
-export type AvatarFallback = "person" | "page";
-
-// Speaker names that are not Wikipedia titles (the hidden mystery character, the generic AI).
-const MYSTERY_NAME = "???";
-const GENERIC_AI_NAME = "AI";
-
-const FALLBACK_ICONS = {
-  student: "/avatars/student-cap.webp",
-  mystery: "/avatars/mystery.webp",
-  person: "/avatars/unknown-person.webp",
-  page: "/avatars/page.webp",
-} as const;
+import { fallbackIcon, GENERIC_AI_NAME, wikiTitleOf, type AvatarFallback } from "../speakerAvatar";
 
 /** Wikipedia portrait of the speaker when the page has one, otherwise an Icons8 picture. */
 const SpeakerAvatar = memo(function SpeakerAvatar({ name, role, fallback }: { name?: string; role: ActivityMessage["role"]; fallback: AvatarFallback }) {
-  const isWikiTitle = !!name && name !== MYSTERY_NAME && name !== GENERIC_AI_NAME;
-  const photo = useWikiImage(isWikiTitle ? name : undefined);
-  const icon = name === MYSTERY_NAME ? FALLBACK_ICONS.mystery : role === "user" && !isWikiTitle ? FALLBACK_ICONS.student : FALLBACK_ICONS[fallback];
+  const photo = useWikiImage(wikiTitleOf(name));
   return (
     <span className="mb-1 flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-foreground bg-accent">
       {photo ? (
         <img src={photo} alt="" className="h-full w-full object-cover object-top" loading="lazy" decoding="async" />
       ) : (
-        <img src={icon} alt="" className="h-7 w-7 object-contain" />
+        <img src={fallbackIcon(name, role, fallback)} alt="" className="h-7 w-7 object-contain" />
       )}
     </span>
   );
@@ -67,7 +52,7 @@ const ChatMessage = memo(function ChatMessage({ message, userLabel, speakerStyle
           )}
         >
           <p className="mb-0.5 text-xs font-semibold opacity-80">
-            {message.role === "user" ? message.name || userLabel || t("platform.common.you") : message.name || "AI"}
+            {message.role === "user" ? message.name || userLabel || t("platform.common.you") : message.name || GENERIC_AI_NAME}
           </p>
           {message.content ? (
             message.role === "user" ? (

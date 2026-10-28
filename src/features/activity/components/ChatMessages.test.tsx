@@ -1,6 +1,7 @@
 import { cleanup, render } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import ChatMessages, { type AvatarFallback } from "./ChatMessages";
+import ChatMessages from "./ChatMessages";
+import type { AvatarFallback } from "../speakerAvatar";
 import type { ActivityMessage } from "../types";
 
 vi.mock("react-i18next", () => ({
