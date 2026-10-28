@@ -8,6 +8,7 @@ import (
 	"math/big"
 	"regexp"
 	"strings"
+	"sync/atomic"
 	"time"
 
 	"github.com/Hoppitbilbo/DebateAI/server/internal/domain"
@@ -30,6 +31,7 @@ type roomService struct {
 	crypto      *Crypto
 	settings    func() RoomSettings
 	now         func() time.Time
+	lastPurge   atomic.Int64 // unix seconds of the last purge
 }
 
 var (
@@ -193,8 +195,15 @@ func (svc *roomService) Remove(room *domain.Room, userID int64) error {
 // End closes the room now and deletes everything in it.
 func (svc *roomService) End(room *domain.Room) error { return svc.rooms.Delete(room.ID) }
 
-// Purge deletes the expired rooms; it is cheap and runs on every room request.
+// Purge deletes the expired rooms. Room requests call it, at most once per
+// roomPurgeInterval: an expired room is refused at once anyway, this only
+// removes its data.
 func (svc *roomService) Purge() {
+	now := svc.now().Unix()
+	last := svc.lastPurge.Load()
+	if now-last < int64(roomPurgeInterval.Seconds()) || !svc.lastPurge.CompareAndSwap(last, now) {
+		return
+	}
 	logIfErr("purge expired rooms", svc.rooms.PurgeExpired(svc.nowString()))
 }
 

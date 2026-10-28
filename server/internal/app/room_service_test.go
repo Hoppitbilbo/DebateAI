@@ -164,7 +164,7 @@ func TestRoomExpiresAndEnds(t *testing.T) {
 	opened, _ := s.RoomSvc.Open(nil, RoomRequest{AppType: "wiki-chatbot", Minutes: 30})
 	guest := joinRoom(t, s, opened.Room.Code, "Anna")
 
-	later := *s.RoomSvc
+	later := s.RoomSvc
 	later.now = func() time.Time { return time.Now().Add(31 * time.Minute) }
 	if _, err := later.Lookup(opened.Room.Code); !errors.Is(err, ErrRoomNotFound) {
 		t.Fatal("an expired room is closed at once")
@@ -176,6 +176,7 @@ func TestRoomExpiresAndEnds(t *testing.T) {
 	if _, err := s.Users.Get(guest.ID); err == nil {
 		t.Fatal("purge deletes the guests")
 	}
+	later.now = time.Now
 
 	opened, _ = s.RoomSvc.Open(nil, RoomRequest{AppType: "wiki-chatbot"})
 	guest = joinRoom(t, s, opened.Room.Code, "Anna")

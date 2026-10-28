@@ -63,14 +63,23 @@ func writeGradesXLSX(w http.ResponseWriter, title, locale string, rows []app.Gra
 	_ = f.SetColWidth(sheet, "A", last, 18)
 	_ = f.SetPanes(sheet, &excelize.Panes{Freeze: true, YSplit: 1, TopLeftCell: "A2", ActivePane: "bottomLeft"})
 
-	name := strings.Map(func(r rune) rune {
+	sendXLSX(w, f, "grades.xlsx", safeFileName(title)+".xlsx")
+}
+
+// safeFileName replaces the characters that file systems refuse.
+func safeFileName(s string) string {
+	return strings.Map(func(r rune) rune {
 		if strings.ContainsRune(`\/:*?"<>|`, r) {
 			return '-'
 		}
 		return r
-	}, title) + ".xlsx"
+	}, s)
+}
+
+// sendXLSX sends a workbook as a download; fallback is the ASCII file name.
+func sendXLSX(w http.ResponseWriter, f *excelize.File, fallback, name string) {
 	w.Header().Set("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-	w.Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename="grades.xlsx"; filename*=UTF-8''%s`, url.PathEscape(name)))
+	w.Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename="%s"; filename*=UTF-8''%s`, fallback, url.PathEscape(name)))
 	if err := f.Write(w); err != nil {
 		writeErr(w, 500, "internal", err.Error())
 	}

@@ -47,6 +47,7 @@ const (
 	maxRoomTitleChars    = 120
 	maxRoomInstructChars = 4000
 	roomAttemptsPerGuest = 200 // attempts of one guest included in an export
+	roomPurgeInterval    = time.Minute
 )
 
 // smtpDialTimeout bounds the connection to the mail server.

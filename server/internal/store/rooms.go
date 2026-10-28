@@ -255,8 +255,12 @@ func (r *Rooms) Delete(id int64) error {
 	return r.deleteWhere(`id = ?`, id)
 }
 
-// PurgeExpired deletes every room that expired before now.
+// PurgeExpired deletes every room that expired before now; when none did,
+// it costs a single indexed query.
 func (r *Rooms) PurgeExpired(now string) error {
+	if count(r.db, `SELECT COUNT(*) FROM rooms WHERE expires_at <= ?`, now) == 0 {
+		return nil
+	}
 	return r.deleteWhere(`expires_at <= ?`, now)
 }
 

@@ -148,6 +148,10 @@ func (s *Server) handleTeacherInvites(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) handleJoinClass(w http.ResponseWriter, r *http.Request) {
 	u := currentUser(r)
+	if u.IsGuest() {
+		writeErr(w, 403, "forbidden", "room guests cannot join classes")
+		return
+	}
 	if !s.Settings.General().AllowJoinByCode {
 		writeErr(w, 403, "disabled", "joining by code is disabled")
 		return

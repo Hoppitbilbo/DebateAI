@@ -27,6 +27,11 @@ type publicConfigResponse struct {
 	LiveEnabled     bool   `json:"liveEnabled"`
 	SetupRequired   bool   `json:"setupRequired"`
 	MailConfigured  bool   `json:"mailConfigured"`
+	// Temporary rooms: whether they exist and whether a teacher without an
+	// account may open one.
+	RoomsEnabled   bool `json:"roomsEnabled"`
+	AnonymousRooms bool `json:"anonymousRooms"`
+	RoomMaxMinutes int  `json:"roomMaxMinutes"`
 }
 
 type meResponse struct {
@@ -142,7 +147,9 @@ type settingsResponse struct {
 	Budget          app.BudgetSettings  `json:"budget"`
 	Routing         app.RoutingSettings `json:"routing"`
 	Jev             app.JevSettings     `json:"jev"`
+	Rooms           app.RoomSettings    `json:"rooms"`
 	Tasks           []string            `json:"tasks"`
+	RoomTasks       []string            `json:"roomTasks"`
 }
 
 type usageSummaryResponse struct {
@@ -155,4 +162,9 @@ type usageSummaryResponse struct {
 	ByClass       []domain.UsageAggregate `json:"byClass"`
 	MonthSpendUSD float64                 `json:"monthSpendUsd"`
 	Budget        app.BudgetSettings      `json:"budget"`
+}
+
+// rejoinPINResponse is the one-time PIN a teacher reads to a guest.
+type rejoinPINResponse struct {
+	PIN string `json:"pin"`
 }

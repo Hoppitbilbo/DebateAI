@@ -26,3 +26,14 @@ const (
 
 	rateLimiterSweepEvery = 10 * time.Minute
 )
+
+// Temporary rooms. A school lab shares one IP, so only failures are
+// counted per network, with room for a class of students mistyping.
+const (
+	wrongRoomCodesLimit    = 60
+	wrongRoomCodesWindow   = 10 * time.Minute
+	wrongPINsLimit         = 5 // per room and nickname
+	wrongPINsWindow        = 10 * time.Minute
+	anonymousRoomsPerIPDay = 30
+	roomPurgeEvery         = 5 * time.Minute // long-running servers; Vercel uses its cron
+)
