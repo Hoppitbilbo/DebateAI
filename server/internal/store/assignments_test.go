@@ -18,11 +18,11 @@ func TestAssignmentsLifecycle(t *testing.T) {
 
 	due := "2026-11-01T10:00:00Z"
 	id, err := r.Create(domain.NewAssignment{ClassID: classID, Title: "Napoleone", AppType: "wiki-chatbot", Config: "{}",
-		Goals: []string{"g1"}, MaxTurns: 5, AutoEnd: true, Published: true, DueAt: &due, CreatedBy: teacher})
+		Goals: []string{"g1"}, MaxTurns: 5, AutoEnd: true, Published: true, DueAt: &due, CreatedBy: &teacher})
 	if err != nil {
 		t.Fatal(err)
 	}
-	r.Create(domain.NewAssignment{ClassID: classID, Title: "Bozza", AppType: "wiki-chatbot", Config: "{}", CreatedBy: teacher})
+	r.Create(domain.NewAssignment{ClassID: classID, Title: "Bozza", AppType: "wiki-chatbot", Config: "{}", CreatedBy: &teacher})
 
 	a, err := r.Get(id)
 	if err != nil || a.ClassName != "3A" || a.Goals[0] != "g1" || !a.AutoEnd || a.RequireReflection || *a.DueAt != due {

@@ -52,13 +52,7 @@
     "title": "Aula rápida",
     "subtitle": "Un aula temporal: los estudiantes entran con un código, sin registrarse. Se borra sola tras {{hours}} horas como máximo.",
     "assignmentLabel": "Tarea",
-    "assignmentHint": "Elige una tarea de una de tus clases para usar sus objetivos y la evaluación automática, o una actividad libre.",
-    "freeActivity": "Actividad libre",
-    "appLabel": "Actividad",
-    "titleLabel": "Título",
-    "titlePlaceholder": "P. ej. Entrevista a Napoleón",
-    "instructionsLabel": "Instrucciones para los estudiantes",
-    "instructionsPlaceholder": "¿Qué deben hacer? Lo verán nada más entrar.",
+    "assignmentHint": "Los estudiantes la hacen con sus objetivos y la evaluación automática.",
     "durationLabel": "Duración",
     "minutes_one": "{{count}} minuto",
     "minutes_other": "{{count}} minutos",
@@ -70,7 +64,11 @@
     "how4": "Descarga los resultados o impórtalos en una clase: tras {{hours}} horas se borra todo.",
     "anonymousNote": "Estás abriendo el aula sin cuenta: guarda el enlace de gestión que verás en la página siguiente. Para importar los resultados en una clase necesitarás una cuenta.",
     "loginNeeded": "Inicia sesión como docente para abrir un aula rápida.",
-    "disabled": "Las aulas rápidas no están activas en este sitio."
+    "disabled": "Las aulas rápidas no están activas en este sitio.",
+    "modePrepare": "Prepara la actividad",
+    "modeExisting": "Usar una tarea de mis clases",
+    "pickAssignment": "Elige una tarea",
+    "prepareHint": "Prepara la actividad como una tarea: los personajes, el tema y los objetivos que fijes aquí quedan bloqueados para los estudiantes, que entran directamente en la actividad. Lo que dejes vacío lo eligen ellos."
   },
   "host": {
     "subtitle": "Proyecta esta página: los estudiantes entran con el código.",

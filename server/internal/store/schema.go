@@ -158,6 +158,7 @@ CREATE TABLE IF NOT EXISTS rooms (
   host_token_hash TEXT NOT NULL UNIQUE,
   teacher_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
   assignment_id INTEGER REFERENCES assignments(id) ON DELETE SET NULL,
+  own_class_id INTEGER REFERENCES classes(id) ON DELETE SET NULL,
   title TEXT NOT NULL DEFAULT '',
   instructions TEXT NOT NULL DEFAULT '',
   app_type TEXT NOT NULL,
@@ -226,6 +227,7 @@ var migrations = []string{
 	`ALTER TABLE activity_sessions ADD COLUMN teacher_feedback TEXT NOT NULL DEFAULT ''`,
 	`ALTER TABLE activity_sessions ADD COLUMN teacher_score INTEGER`,
 	`ALTER TABLE activity_sessions ADD COLUMN teacher_feedback_at TEXT`,
+	`ALTER TABLE rooms ADD COLUMN own_class_id INTEGER REFERENCES classes(id) ON DELETE SET NULL`,
 }
 
 func applyMigrations(db *sql.DB) error {

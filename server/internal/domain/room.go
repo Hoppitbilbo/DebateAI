@@ -55,6 +55,9 @@ type NewRoom struct {
 	AppType       string
 	MaxGuests     int
 	ExpiresAt     string
+	// OwnAssignment, when set, is created with the room in a hidden class of
+	// its own and deleted with it; AssignmentID is then filled in.
+	OwnAssignment *NewAssignment
 }
 
 // RoomGuest is a student inside a room, as the teacher sees it.

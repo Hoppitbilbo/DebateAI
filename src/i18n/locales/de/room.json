@@ -52,13 +52,7 @@
     "title": "Blitzraum",
     "subtitle": "Ein temporärer Raum: Schüler/innen treten mit einem Code bei, ohne Registrierung. Er löscht sich nach höchstens {{hours}} Stunden selbst.",
     "assignmentLabel": "Aufgabe",
-    "assignmentHint": "Wähle eine Aufgabe einer deiner Klassen, um ihre Ziele und die automatische Bewertung zu nutzen, oder eine freie Aktivität.",
-    "freeActivity": "Freie Aktivität",
-    "appLabel": "Aktivität",
-    "titleLabel": "Titel",
-    "titlePlaceholder": "Z. B. Interview mit Napoleon",
-    "instructionsLabel": "Arbeitsauftrag für die Schüler/innen",
-    "instructionsPlaceholder": "Was sollen sie tun? Sie sehen es gleich nach dem Beitreten.",
+    "assignmentHint": "Die Schüler/innen bearbeiten sie mit ihren Zielen und der automatischen Bewertung.",
     "durationLabel": "Dauer",
     "minutes_one": "{{count}} Minute",
     "minutes_other": "{{count}} Minuten",
@@ -70,7 +64,11 @@
     "how4": "Lade die Ergebnisse herunter oder importiere sie in eine Klasse: Nach {{hours}} Stunden wird alles gelöscht.",
     "anonymousNote": "Du öffnest den Raum ohne Konto: Speichere den Verwaltungslink, den du auf der nächsten Seite siehst. Um die Ergebnisse in eine Klasse zu importieren, brauchst du ein Konto.",
     "loginNeeded": "Melde dich als Lehrkraft an, um einen Blitzraum zu öffnen.",
-    "disabled": "Blitzräume sind auf dieser Seite nicht aktiviert."
+    "disabled": "Blitzräume sind auf dieser Seite nicht aktiviert.",
+    "modePrepare": "Aktivität vorbereiten",
+    "modeExisting": "Aufgabe aus meinen Klassen verwenden",
+    "pickAssignment": "Aufgabe wählen",
+    "prepareHint": "Bereite die Aktivität wie eine Aufgabe vor: Figuren, Thema und Ziele, die du hier festlegst, sind für die Schüler/innen gesperrt; sie steigen direkt in die Aktivität ein. Was du leer lässt, wählen sie selbst."
   },
   "host": {
     "subtitle": "Projiziere diese Seite: Die Schüler/innen treten mit dem Code bei.",

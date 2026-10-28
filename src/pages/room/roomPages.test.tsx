@@ -20,6 +20,7 @@ vi.mock("@/components/Navbar", () => ({ default: () => null }));
 beforeAll(() => i18n.changeLanguage("en"));
 beforeEach(() => {
   mocks.get.mockReset();
+  mocks.get.mockResolvedValue(room);
   mocks.post.mockReset();
   mocks.setUser.mockReset();
 });
@@ -32,6 +33,7 @@ const renderAt = (url: string) =>
         <Routes>
           <Route path="/entra" element={<JoinRoomPage />} />
           <Route path="/aula" element={<p>inside the room</p>} />
+          <Route path="/apps/wiki-chatbot" element={<p>inside the activity</p>} />
         </Routes>
       </MemoryRouter>
     </QueryClientProvider>,
@@ -40,8 +42,8 @@ const renderAt = (url: string) =>
 const room = { title: "Napoleon", appType: "wiki-chatbot", locked: false, full: false, expiresAt: "2099-01-01T00:00:00Z" };
 
 describe("JoinRoomPage", () => {
-  it("opens the room from the QR code link, then joins with a nickname and an avatar", async () => {
-    mocks.get.mockResolvedValue(room);
+  it("opens the room from the QR code link, joins with a nickname and an avatar, and goes straight to the activity", async () => {
+    mocks.get.mockImplementation((path: string) => Promise.resolve(path === "/api/guest/room" ? { ...room, assignmentId: 7, nickname: "Marco R", avatar: "owl" } : room));
     mocks.post.mockResolvedValue({ id: 9, name: "Marco R", roomId: 3, role: "student" });
     renderAt("/entra?c=k7mpq2");
 
@@ -51,7 +53,8 @@ describe("JoinRoomPage", () => {
     fireEvent.click(screen.getByRole("radio", { name: "Owl" }));
     fireEvent.click(screen.getByRole("button", { name: "Join" }));
 
-    expect(await screen.findByText("inside the room")).toBeTruthy();
+    expect(await screen.findByText("inside the activity")).toBeTruthy();
+    expect(mocks.get).toHaveBeenLastCalledWith("/api/guest/room");
     expect(mocks.post).toHaveBeenCalledWith("/api/guest/join", { code: "K7MPQ2", nickname: "Marco R", avatar: "owl", locale: "en" });
     expect(mocks.setUser).toHaveBeenCalled();
   });
