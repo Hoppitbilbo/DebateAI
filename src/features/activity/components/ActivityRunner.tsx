@@ -57,51 +57,59 @@ const ActivityRunner = ({ app, flow, onRestart, phaseLabels, setup, chat, reflec
 
   return (
     <ActivityShell app={app} phase={phase} session={session} onReset={onRestart} phaseLabels={phaseLabels}>
-      {phase === "setup" && (
-        <SetupCard title={setup.title} description={setup.description} onStart={setup.onStart} canStart={setup.canStart} starting={setup.starting}>
-          {setup.children}
-        </SetupCard>
-      )}
+      {/* Keyed by phase: each step enters with the phase-enter animation. */}
+      <div key={phase} className="phase-enter">
+        {phase === "setup" && (
+          <SetupCard title={setup.title} description={setup.description} onStart={setup.onStart} canStart={setup.canStart} starting={setup.starting}>
+            {setup.children}
+          </SetupCard>
+        )}
 
-      {phase === "chat" && ready && (replacement ?? (
-        <ChatPanel
-          messages={engine.messages}
-          busy={engine.busy}
-          disabled={engine.ended}
-          disabledReason={t("platform.activity.ended")}
-          onEnd={flow.finishChat}
-          canEnd={session.turns >= minTurns}
-          footerNote={session.turns < minTurns ? t("platform.activity.minTurnsNote", { count: minTurns - session.turns }) : null}
-          onRetry={(id) => void engine.retry(id)}
-          canRetry={engine.canRetry}
-          {...chatProps}
-        />
-      ))}
+        {phase === "chat" && ready && (replacement ?? (
+          <ChatPanel
+            messages={engine.messages}
+            busy={engine.busy}
+            disabled={engine.ended}
+            disabledReason={t("platform.activity.ended")}
+            onEnd={flow.finishChat}
+            canEnd={session.turns >= minTurns}
+            footerNote={session.turns < minTurns ? t("platform.activity.minTurnsNote", { count: minTurns - session.turns }) : null}
+            onRetry={(id) => void engine.retry(id)}
+            canRetry={engine.canRetry}
+            ended={engine.ended && !engine.busy ? {
+              message: t(session.endReason === "goal_reached" ? "platform.activity.endedGoal" : "platform.activity.endedTurns"),
+              continueLabel: t("platform.activity.continueToReflection"),
+              onContinue: flow.finishChat,
+            } : null}
+            {...chatProps}
+          />
+        ))}
 
-      {phase === "reflection" && (
-        <ReflectionStep
-          prompt={reflection.prompt}
-          summary={reflection.summary}
-          onSubmit={(text) => flow.submitReflection(text, reflection.brief())}
-          optional={!session.requireReflection}
-          endReason={reflection.showEndReason === false ? undefined : session.endReason}
-        />
-      )}
+        {phase === "reflection" && (
+          <ReflectionStep
+            prompt={reflection.prompt}
+            summary={reflection.summary}
+            onSubmit={(text) => flow.submitReflection(text, reflection.brief())}
+            optional={!session.requireReflection}
+            endReason={reflection.showEndReason === false ? undefined : session.endReason}
+          />
+        )}
 
-      {phase === "feedback" && (
-        <FeedbackStep
-          title={feedback.title}
-          evaluation={evaluation.evaluation}
-          partial={evaluation.partial}
-          loading={evaluation.loading}
-          error={evaluation.error}
-          reflection={evaluation.reflection}
-          messages={engine.messages}
-          facts={feedback.facts}
-          onRestart={onRestart}
-          isAssignment={!!session.assignment}
-        />
-      )}
+        {phase === "feedback" && (
+          <FeedbackStep
+            title={feedback.title}
+            evaluation={evaluation.evaluation}
+            partial={evaluation.partial}
+            loading={evaluation.loading}
+            error={evaluation.error}
+            reflection={evaluation.reflection}
+            messages={engine.messages}
+            facts={feedback.facts}
+            onRestart={onRestart}
+            isAssignment={!!session.assignment}
+          />
+        )}
+      </div>
     </ActivityShell>
   );
 };

@@ -19,7 +19,11 @@ interface FlowOptions {
   live?: (phase: ActivityPhase, assignment: Assignment | null) => LiveConfig | null;
   /** Extra context saved with the transcript (characters, topic...), fixed or depending on the assignment. */
   context?: Record<string, unknown> | ((assignment: Assignment | null) => Record<string, unknown>);
-  /** Called when the server ends the activity; by default it moves on to the reflection. */
+  /**
+   * Called when the server ends the activity. By default the chat stays on
+   * screen, so the student can read the last reply, and they move on to the
+   * reflection with the chat's continue button.
+   */
   onEnded?: (reason: EndReason) => void;
 }
 
@@ -38,7 +42,6 @@ export const useActivityFlow = (appType: AppType, { live, context, onEnded }: Fl
 
   const defaultOnEnded = useCallback((reason: EndReason) => {
     toast.success(reason === "goal_reached" ? t("platform.activity.goalReachedToast") : t("platform.activity.turnLimitToast"));
-    setPhase("reflection");
   }, [t]);
 
   const engine = useChatEngine({
@@ -56,7 +59,7 @@ export const useActivityFlow = (appType: AppType, { live, context, onEnded }: Fl
     setPhase("chat");
   };
 
-  /** The student ends the conversation before the server does. */
+  /** The student ends the conversation, or moves on after the server ended it (its reason is kept). */
   const finishChat = () => {
     session.markManualEnd();
     engine.live.stopLive();

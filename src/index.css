@@ -568,3 +568,23 @@ html:has(> body[data-scroll-locked]) {
     animation: none;
   }
 }
+
+/* Phase changes inside an activity (setup → chat → reflection → feedback)
+   and notices that appear in place: the new content rises into view with the
+   same easing as the page morph. */
+.phase-enter {
+  animation: 340ms cubic-bezier(0, 0, 0.2, 1) both phase-in;
+}
+
+@keyframes phase-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .phase-enter {
+    animation: none;
+  }
+}

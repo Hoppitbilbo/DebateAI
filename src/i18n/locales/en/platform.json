@@ -147,7 +147,10 @@
     "loginRequired": "This server requires an account to use the apps.",
     "loginForAssignment": "This link opens an assignment: log in to save your work for your teacher.",
     "assignmentError": "This assignment could not be loaded (it may be for another app or not assigned to you).",
-    "retry": "Try again"
+    "retry": "Try again",
+    "endedGoal": "Goals reached! Take your time to read the last reply, then move on.",
+    "endedTurns": "You used all your turns. Take your time to read the last reply, then move on.",
+    "continueToReflection": "Next: reflection"
   },
   "assignment": {
     "label": "Assignment",
