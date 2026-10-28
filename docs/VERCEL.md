@@ -44,6 +44,8 @@ cd server && TURSO_DATABASE_URL=http://127.0.0.1:8089 APP_SECRET=dev go run .
 ## Verified
 
 - A real Vercel deployment (2026-10-26): project `debateai`, Turso from the Marketplace, `https://debateai-steel.vercel.app`; the frontend and `/api/*` answer 200 and the server logs `database: remote libSQL`. The project's first deployment always goes to production.
+- Production deployment of 2026-10-28 (`dpl_7Se1juqP5GZaD3mnfon5ZJvQz9Hb`, branch `vercel` at `fa5f07a`, restyling and phase 11): pages, illustrations, `og-image.png` and `/api/public/config` answer 200 on `https://debateai-steel.vercel.app`.
+- Preview deployments start the server without `APP_SECRET` (set for Production only) while `TURSO_DATABASE_URL` is set for Preview too, so their `/api/*` answers 500 (`APP_SECRET is required with TURSO_DATABASE_URL`). The frontend of a preview works.
 
 ## Not verified yet
 
