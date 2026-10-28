@@ -173,7 +173,7 @@ func (r *Classes) Members(classID int64) []domain.Member {
 
 // Students returns the student accounts of a class, by name.
 func (r *Classes) Students(classID int64) ([]domain.User, error) {
-	rows, err := r.db.Query(`SELECT `+prefixed("u.", userCols)+` FROM class_members m JOIN users u ON u.id = m.user_id WHERE m.class_id = ? AND m.role = 'student' ORDER BY u.name`, classID)
+	rows, err := r.db.Query(`SELECT `+prefixed("u.", userCols)+`, `+userRoomCol("u")+` FROM class_members m JOIN users u ON u.id = m.user_id WHERE m.class_id = ? AND m.role = 'student' ORDER BY u.name`, classID)
 	if err != nil {
 		return nil, err
 	}

@@ -20,7 +20,11 @@ type User struct {
 	Active      bool    `json:"active"`
 	CreatedAt   string  `json:"createdAt"`
 	LastLoginAt *string `json:"lastLoginAt,omitempty"`
+	RoomID      *int64  `json:"roomId,omitempty"` // set for the guests of a room
 }
+
+// IsGuest reports whether the account is a temporary room guest.
+func (u *User) IsGuest() bool { return u.RoomID != nil }
 
 // UserPatch lists the profile fields to change; nil fields stay as they are.
 type UserPatch struct {

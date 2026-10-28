@@ -151,6 +151,33 @@ CREATE TABLE IF NOT EXISTS settings (
   key TEXT PRIMARY KEY,
   value TEXT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS rooms (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  code TEXT NOT NULL UNIQUE,
+  host_token_hash TEXT NOT NULL UNIQUE,
+  teacher_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  assignment_id INTEGER REFERENCES assignments(id) ON DELETE SET NULL,
+  title TEXT NOT NULL DEFAULT '',
+  instructions TEXT NOT NULL DEFAULT '',
+  app_type TEXT NOT NULL,
+  locked INTEGER NOT NULL DEFAULT 0,
+  max_guests INTEGER NOT NULL,
+  created_at TEXT NOT NULL,
+  expires_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_rooms_expires ON rooms(expires_at);
+
+CREATE TABLE IF NOT EXISTS room_guests (
+  user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+  room_id INTEGER NOT NULL REFERENCES rooms(id) ON DELETE CASCADE,
+  nickname TEXT NOT NULL COLLATE NOCASE,
+  avatar TEXT NOT NULL,
+  rejoin_pin_hash TEXT NOT NULL DEFAULT '',
+  rejoin_expires_at TEXT,
+  UNIQUE (room_id, nickname)
+);
+CREATE INDEX IF NOT EXISTS idx_room_guests_room ON room_guests(room_id);
 `
 
 // Open opens the SQLite database at path and applies the schema.
