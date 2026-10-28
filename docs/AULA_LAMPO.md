@@ -31,7 +31,7 @@ docente non li abbia esportati o importati in una sua classe.
 ## Flusso
 
 **Docente**
-1. `/aula/nuova`: titolo, attività (o una consegna di una sua classe se ha l'account), durata 30/60/90/120 min.
+1. `/aula/nuova`: prepara l'attività con gli stessi campi di una consegna (app, personaggi, argomento, istruzioni, obiettivi, turni) oppure, con l'account, sceglie una consegna di una sua classe; durata 30/60/90/120 min. Quello che fissa è bloccato per gli studenti, quello che lascia vuoto lo scelgono loro.
 2. Schermo da proiettare: codice grande, QR, `sito/entra`, conto alla rovescia, lobby con avatar.
 3. Comandi: blocca ingressi, espelli, approva rientro, termina e cancella.
 4. A 15 minuti dalla fine: "Scarica i risultati o importali in una classe prima che vengano cancellati".
@@ -42,7 +42,7 @@ importare in una classe serve un account (può crearlo dopo e importare il file)
 
 **Studente**
 1. `/entra` (o QR con il codice già compilato) → codice → nickname (max 20 caratteri,
-   suggerimento "nome + iniziale") → avatar → dentro.
+   suggerimento "nome + iniziale") → avatar → **direttamente nell'attività**, con le scelte del docente già bloccate.
 2. Se chiude la scheda, il cookie lo fa rientrare. Se cambia PC, reinserisce codice e lo stesso
    nickname: il docente vede "Marco vuole rientrare" e approva.
 
@@ -73,6 +73,11 @@ CREATE TABLE room_guests (
   login, account e righe dell'aula; in `usage_log` azzera solo `user_id` (i costi restano).
 - Import in classe: `UPDATE activity_sessions SET user_id = <studente>` per gli ospiti abbinati,
   poi cancellazione dell'aula.
+- **Consegna dell'aula** (`rooms.own_class_id`, migrazione per il DB già in produzione): l'attività
+  preparata in `/aula/nuova` diventa una consegna vera in una classe nascosta (archiviata, quindi il suo
+  codice non funziona, ed esclusa dagli elenchi), creata nella stessa transazione dell'aula e cancellata
+  con essa. Gli ospiti la svolgono come una consegna di classe (scelte bloccate, giudice JEV, limiti di turni).
+  I tentativi importati in una classe vera restano, senza il collegamento alla consegna cancellata.
 - **Rientro:** il docente genera un PIN di 4 cifre (valido 10 minuti) per un ospite; lo studente
   inserisce codice aula + nickname + PIN su qualsiasi PC.
 

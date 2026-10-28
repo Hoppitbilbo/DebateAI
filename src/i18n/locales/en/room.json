@@ -52,13 +52,7 @@
     "title": "Quick room",
     "subtitle": "A temporary room: students join with a code, without signing up. It deletes itself after {{hours}} hours at most.",
     "assignmentLabel": "Assignment",
-    "assignmentHint": "Pick an assignment of one of your classes to use its goals and automatic assessment, or a free activity.",
-    "freeActivity": "Free activity",
-    "appLabel": "Activity",
-    "titleLabel": "Title",
-    "titlePlaceholder": "E.g. Interview with Napoleon",
-    "instructionsLabel": "Instructions for students",
-    "instructionsPlaceholder": "What should they do? They see it as soon as they join.",
+    "assignmentHint": "Students do it with its goals and automatic assessment.",
     "durationLabel": "Duration",
     "minutes_one": "{{count}} minute",
     "minutes_other": "{{count}} minutes",
@@ -70,7 +64,11 @@
     "how4": "Download the results or import them into a class: after {{hours}} hours everything is deleted.",
     "anonymousNote": "You are opening the room without an account: save the management link shown on the next page. To import the results into a class you will need an account.",
     "loginNeeded": "Log in as a teacher to open a quick room.",
-    "disabled": "Quick rooms are not enabled on this site."
+    "disabled": "Quick rooms are not enabled on this site.",
+    "modePrepare": "Prepare the activity",
+    "modeExisting": "Use an assignment of my classes",
+    "pickAssignment": "Pick an assignment",
+    "prepareHint": "Prepare the activity like an assignment: the characters, topic and goals you fix here are locked for the students, who go straight into the activity. What you leave empty, they choose."
   },
   "host": {
     "subtitle": "Project this page: students join with the code.",

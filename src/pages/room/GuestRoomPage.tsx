@@ -5,8 +5,7 @@ import { Clock, LogOut, Play } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth";
-import { APPS } from "@/features/activity/types";
-import { REFRESH_MS, roomApi } from "@/features/room/roomApi";
+import { activityPath, REFRESH_MS, roomApi } from "@/features/room/roomApi";
 import { avatarUrl } from "@/features/room/avatars";
 import { formatCountdown, useCountdown } from "@/features/room/useCountdown";
 import { Spinner } from "../dashboard/common";
@@ -24,8 +23,7 @@ const GuestRoomPage = () => {
   if (!user?.roomId) return <Navigate to="/entra?fine=1" replace />;
 
   const closed = room.isError || left === 0;
-  const app = room.data ? APPS[room.data.appType] : null;
-  const start = room.data && app ? `${app.path}${room.data.assignmentId ? `?assignment=${room.data.assignmentId}` : ""}` : "#";
+  const start = room.data ? activityPath(room.data) : "#";
 
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground">

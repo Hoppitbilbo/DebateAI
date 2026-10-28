@@ -1,5 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { api, ApiError, AppType, SessionDetail, SessionSummary, User } from "@/lib/api";
+import { APPS } from "@/features/activity/types";
+import type { draftBody } from "@/features/teacher/assignmentDraft";
 
 // Data layer of the temporary rooms ("aula lampo"): students join with a
 // code, a nickname and an avatar; the teacher manages the room with a
@@ -47,11 +49,11 @@ export interface GuestRoom {
   avatar: string;
 }
 
+/** A room opens on an assignment of the teacher's classes, or on one of its own. */
 export interface RoomRequest {
-  title: string;
-  instructions: string;
-  appType: AppType;
   assignmentId?: number;
+  /** The activity prepared for this room only (the fields of an assignment). */
+  assignment?: ReturnType<typeof draftBody>;
   minutes: number;
   maxGuests?: number;
 }
@@ -64,8 +66,8 @@ export interface ImportMatch { nickname: string; studentId: number }
 
 export interface ImportResult { sessions: number; students: number; discarded: number }
 
-/** Text limits, the same as the server's (domain.MaxNicknameChars, app/limits.go). */
-export const ROOM_LIMITS = { nickname: 20, title: 120, instructions: 4000 } as const;
+/** Text limits, the same as the server's (domain.MaxNicknameChars). */
+export const ROOM_LIMITS = { nickname: 20 } as const;
 
 /** How often the screens refresh (ms): the teacher's lobby, the dashboard list, the guest's room. */
 export const REFRESH_MS = { lobby: 4000, openRooms: 30000, guestRoom: 60000 } as const;
@@ -101,6 +103,10 @@ export const hostKeys = {
 
 /** The link that manages a room from any browser; the key stays in the fragment, never sent to the server in a URL. */
 export const hostLink = (roomId: number, key: string) => `${window.location.origin}/aula/gestisci/${roomId}#k=${encodeURIComponent(key)}`;
+
+/** Where a guest works: the room's activity, with its assignment when it has one. */
+export const activityPath = (room: GuestRoom) =>
+  `${APPS[room.appType].path}${room.assignmentId ? `?assignment=${room.assignmentId}` : ""}`;
 
 /** The link students open, with the code already filled in. */
 export const joinLink = (code: string) => `${window.location.origin}/entra?c=${code}`;

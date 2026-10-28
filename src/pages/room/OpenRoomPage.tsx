@@ -2,68 +2,67 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 import { Loader2, LogIn, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { api, AppType, Assignment } from "@/lib/api";
+import { api, Assignment } from "@/lib/api";
 import { useAuth } from "@/context/auth";
 import { useBusyAction } from "@/hooks/useBusyAction";
-import { APP_TYPES } from "@/features/activity/appCatalog";
 import { useMyClasses } from "@/features/teacher/teacherApi";
-import { hostKeys, ROOM_LIMITS, roomApi } from "@/features/room/roomApi";
-import { AppName, DashboardLayout, EmptyState, Panel, Spinner } from "../dashboard/common";
+import { AssignmentDraft, draftBody, draftOf } from "@/features/teacher/assignmentDraft";
+import { hostKeys, roomApi, RoomRequest } from "@/features/room/roomApi";
+import { DashboardLayout, EmptyState, Panel, Spinner } from "../dashboard/common";
+import AssignmentFields from "../dashboard/AssignmentFields";
 
 const DURATIONS = [30, 60, 90, 120];
-const FREE_ACTIVITY = "free";
 
-/** The teacher's assignments, to open a room on one of them (optional). */
-const AssignmentPicker = ({ value, onChange }: { value: string; onChange: (id: string, a?: Assignment) => void }) => {
-  const { t } = useTranslation();
+/** How the room gets its activity: prepared here, or an assignment of one of the teacher's classes. */
+type Mode = "prepare" | "existing";
+
+/** The assignments of the teacher's active classes. */
+const useMyAssignments = (enabled: boolean) => {
   const { classes } = useMyClasses();
-  const all = useQuery({
+  return useQuery({
     queryKey: ["room-assignments", classes.data?.map((c) => c.id)],
-    enabled: !!classes.data,
+    enabled: enabled && !!classes.data,
     queryFn: async () => (await Promise.all((classes.data ?? []).filter((c) => !c.archived).map((c) => api.get<Assignment[]>(`/api/classes/${c.id}/assignments`)))).flat(),
   });
-  if (!all.data?.length) return null;
-  return (
-    <div className="space-y-2">
-      <Label>{t("room.open.assignmentLabel")}</Label>
-      <Select value={value} onValueChange={(v) => onChange(v, all.data?.find((a) => String(a.id) === v))}>
-        <SelectTrigger><SelectValue /></SelectTrigger>
-        <SelectContent>
-          <SelectItem value={FREE_ACTIVITY}>{t("room.open.freeActivity")}</SelectItem>
-          {all.data.map((a) => <SelectItem key={a.id} value={String(a.id)}>{a.className ? `${a.className} · ` : ""}{a.title}</SelectItem>)}
-        </SelectContent>
-      </Select>
-      <p className="text-xs text-muted-foreground">{t("room.open.assignmentHint")}</p>
-    </div>
-  );
 };
 
-/** Opens a temporary room: with an account, or without one when the admin allows it. */
+/**
+ * Opens a temporary room, with an account or without one when the admin
+ * allows it. The teacher prepares the activity like an assignment: what is
+ * fixed here is locked for the students, what is left empty they choose.
+ */
 const OpenRoomPage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user, config, loading } = useAuth();
+  const isTeacher = !!user && user.role !== "student";
   const maxMinutes = config?.roomMaxMinutes ?? 120;
-  const [title, setTitle] = useState("");
-  const [instructions, setInstructions] = useState("");
-  const [appType, setAppType] = useState<AppType>("wiki-chatbot");
-  const [assignment, setAssignment] = useState(FREE_ACTIVITY);
+  const [mode, setMode] = useState<Mode>("prepare");
+  const [draft, setDraft] = useState<AssignmentDraft>(() => ({ ...draftOf(), allowLive: false }));
+  const [assignmentId, setAssignmentId] = useState("");
   const [minutes, setMinutes] = useState(Math.min(60, maxMinutes));
   const { busy, run } = useBusyAction();
+  const mine = useMyAssignments(isTeacher);
 
   if (loading) return <Spinner />;
-  const isTeacher = user && user.role !== "student";
   const canOpen = config?.roomsEnabled && (isTeacher || (!user && config.anonymousRooms));
+  const hasAssignments = isTeacher && !!mine.data?.length;
+
+  const request = (): RoomRequest | null => {
+    if (mode === "existing") return assignmentId ? { assignmentId: Number(assignmentId), minutes } : null;
+    return draft.title.trim() ? { assignment: draftBody(draft), minutes } : null;
+  };
 
   const open = () => run(async () => {
-    const assignmentId = assignment === FREE_ACTIVITY ? undefined : Number(assignment);
-    const { room, hostKey } = await roomApi.open({ title, instructions, appType, assignmentId, minutes });
+    const r = request();
+    if (!r) return void toast.error(mode === "existing" ? t("room.open.pickAssignment") : t("platform.teacher.form.titleRequired"));
+    const { room, hostKey } = await roomApi.open(r);
     hostKeys.save(room.id, hostKey);
     navigate(`/aula/gestisci/${room.id}#k=${encodeURIComponent(hostKey)}`);
   });
@@ -77,36 +76,30 @@ const OpenRoomPage = () => {
         </EmptyState>
       ) : (
         <div className="grid gap-6 lg:grid-cols-3">
-          <Panel className="space-y-4 lg:col-span-2">
-            {isTeacher && (
-              <AssignmentPicker
-                value={assignment}
-                onChange={(id, a) => {
-                  setAssignment(id);
-                  if (a) {
-                    setAppType(a.appType);
-                    setTitle(a.title);
-                  }
-                }}
-              />
-            )}
-            {assignment === FREE_ACTIVITY && (
-              <div className="space-y-2">
-                <Label>{t("room.open.appLabel")}</Label>
-                <Select value={appType} onValueChange={(v) => setAppType(v as AppType)}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>{APP_TYPES.map((a) => <SelectItem key={a} value={a}><AppName type={a} /></SelectItem>)}</SelectContent>
+          <Panel className="space-y-5 lg:col-span-2">
+            <Tabs value={mode} onValueChange={(v) => setMode(v as Mode)}>
+              {hasAssignments && (
+                <TabsList className="mb-4">
+                  <TabsTrigger value="prepare">{t("room.open.modePrepare")}</TabsTrigger>
+                  <TabsTrigger value="existing">{t("room.open.modeExisting")}</TabsTrigger>
+                </TabsList>
+              )}
+              <TabsContent value="prepare" className="mt-0">
+                <p className="mb-4 rounded-md bg-secondary p-3 text-sm">{t("room.open.prepareHint")}</p>
+                <AssignmentFields draft={draft} onChange={setDraft} showLive={false} idPrefix="room" />
+              </TabsContent>
+              <TabsContent value="existing" className="mt-0 space-y-2">
+                <Label>{t("room.open.assignmentLabel")}</Label>
+                <Select value={assignmentId} onValueChange={setAssignmentId}>
+                  <SelectTrigger><SelectValue placeholder={t("room.open.pickAssignment")} /></SelectTrigger>
+                  <SelectContent>
+                    {(mine.data ?? []).map((a) => <SelectItem key={a.id} value={String(a.id)}>{a.className ? `${a.className} · ` : ""}{a.title}</SelectItem>)}
+                  </SelectContent>
                 </Select>
-              </div>
-            )}
-            <div className="space-y-2">
-              <Label htmlFor="room-title">{t("room.open.titleLabel")}</Label>
-              <Input id="room-title" value={title} onChange={(e) => setTitle(e.target.value)} maxLength={ROOM_LIMITS.title} placeholder={t("room.open.titlePlaceholder")} />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="room-instructions">{t("room.open.instructionsLabel")}</Label>
-              <Textarea id="room-instructions" value={instructions} onChange={(e) => setInstructions(e.target.value)} rows={4} maxLength={ROOM_LIMITS.instructions} placeholder={t("room.open.instructionsPlaceholder")} />
-            </div>
+                <p className="text-xs text-muted-foreground">{t("room.open.assignmentHint")}</p>
+              </TabsContent>
+            </Tabs>
+
             <fieldset className="space-y-2">
               <legend className="text-sm font-medium">{t("room.open.durationLabel")}</legend>
               <div className="flex flex-wrap gap-2">

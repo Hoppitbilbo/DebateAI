@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ApiError } from "@/lib/api";
 import { useAuth } from "@/context/auth";
-import { ROOM_LIMITS, roomApi, RoomInfo } from "@/features/room/roomApi";
+import { activityPath, ROOM_LIMITS, roomApi, RoomInfo } from "@/features/room/roomApi";
 import { randomAvatar } from "@/features/room/avatars";
 import AvatarPicker from "./AvatarPicker";
 
@@ -74,7 +74,9 @@ const JoinRoomPage = () => {
         ? await roomApi.rejoin({ code, nickname, pin })
         : await roomApi.join({ code, nickname, avatar, locale: i18n.language });
       setUser(u);
-      navigate("/aula", { replace: true });
+      // Straight into the activity: everything the teacher fixed is already set.
+      const room = await roomApi.myRoom().catch(() => null);
+      navigate(room ? activityPath(room) : "/aula", { replace: true });
     } catch (err) {
       fail(err);
     } finally {

@@ -52,13 +52,7 @@
     "title": "Aula lampo",
     "subtitle": "Un'aula temporanea: gli studenti entrano con un codice, senza registrarsi. Si cancella da sola dopo al massimo {{hours}} ore.",
     "assignmentLabel": "Consegna",
-    "assignmentHint": "Scegli una consegna di una tua classe per usare i suoi obiettivi e la valutazione automatica, oppure un'attività libera.",
-    "freeActivity": "Attività libera",
-    "appLabel": "Attività",
-    "titleLabel": "Titolo",
-    "titlePlaceholder": "Es. Intervista a Napoleone",
-    "instructionsLabel": "Consegna per gli studenti",
-    "instructionsPlaceholder": "Cosa devono fare? La vedranno appena entrati.",
+    "assignmentHint": "Gli studenti la svolgono con i suoi obiettivi e la valutazione automatica.",
     "durationLabel": "Durata",
     "minutes_one": "{{count}} minuto",
     "minutes_other": "{{count}} minuti",
@@ -70,7 +64,11 @@
     "how4": "Scarica i risultati o importali in una classe: dopo {{hours}} ore si cancella tutto.",
     "anonymousNote": "Stai aprendo l'aula senza account: salva il link di gestione che vedrai nella pagina successiva. Per importare i risultati in una classe ti servirà un account.",
     "loginNeeded": "Per aprire un'aula lampo devi accedere come docente.",
-    "disabled": "Le aule lampo non sono attive su questo sito."
+    "disabled": "Le aule lampo non sono attive su questo sito.",
+    "modePrepare": "Prepara l'attività",
+    "modeExisting": "Usa una consegna di una mia classe",
+    "pickAssignment": "Scegli una consegna",
+    "prepareHint": "Prepara l'attività come una consegna: personaggi, argomento e obiettivi che fissi qui sono bloccati per gli studenti, che entrano direttamente nell'attività. Quello che lasci vuoto lo scelgono loro."
   },
   "host": {
     "subtitle": "Proietta questa pagina: gli studenti entrano con il codice.",
