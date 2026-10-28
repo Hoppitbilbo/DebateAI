@@ -106,3 +106,9 @@ func (r *Usage) Recent(limit int) ([]domain.UsageLogRow, error) {
 	}
 	return out, rows.Err()
 }
+
+// CountRoomRequestsSince counts the calls of a room's guests since a
+// timestamp, except those of excludedTask.
+func (r *Usage) CountRoomRequestsSince(roomID int64, since, excludedTask string) int {
+	return count(r.db, `SELECT COUNT(*) FROM usage_log WHERE user_id IN (SELECT user_id FROM room_guests WHERE room_id = ?) AND created_at >= ? AND task != ?`, roomID, since, excludedTask)
+}

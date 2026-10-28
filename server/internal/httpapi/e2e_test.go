@@ -62,9 +62,10 @@ func mockAI(t *testing.T) *httptest.Server {
 }
 
 type client struct {
-	t    *testing.T
-	base string
-	http *http.Client
+	t       *testing.T
+	base    string
+	http    *http.Client
+	headers map[string]string // sent with every request
 }
 
 func newClient(t *testing.T, base string) *client {
@@ -81,6 +82,9 @@ func (c *client) do(method, path string, in any, out any) int {
 	}
 	req, _ := http.NewRequest(method, c.base+path, rdr)
 	req.Header.Set("Content-Type", "application/json")
+	for k, v := range c.headers {
+		req.Header.Set(k, v)
+	}
 	resp, err := c.http.Do(req)
 	if err != nil {
 		c.t.Fatal(err)

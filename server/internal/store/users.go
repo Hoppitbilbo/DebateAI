@@ -14,33 +14,49 @@ func NewUsers(db *sql.DB) *Users { return &Users{db: db} }
 
 const userCols = `id, email, name, role, locale, active, created_at, last_login_at`
 
+// userRoomCol selects the room of a guest account (NULL for real accounts);
+// table is the name or alias of the users table in the query.
+func userRoomCol(table string) string {
+	return `(SELECT g.room_id FROM room_guests g WHERE g.user_id = ` + table + `.id)`
+}
+
+// userSelect is the column list scanUser reads.
+var userSelect = userCols + `, ` + userRoomCol("users")
+
+// notGuest filters room guests out of the account lists.
+const notGuest = ` AND id NOT IN (SELECT user_id FROM room_guests)`
+
 func scanUser(row interface{ Scan(...any) error }) (*domain.User, error) {
 	var u domain.User
 	var active int
 	var last sql.NullString
-	if err := row.Scan(&u.ID, &u.Email, &u.Name, &u.Role, &u.Locale, &active, &u.CreatedAt, &last); err != nil {
+	var room sql.NullInt64
+	if err := row.Scan(&u.ID, &u.Email, &u.Name, &u.Role, &u.Locale, &active, &u.CreatedAt, &last, &room); err != nil {
 		return nil, err
 	}
 	u.Active = active == 1
 	if last.Valid {
 		u.LastLoginAt = &last.String
 	}
+	if room.Valid {
+		u.RoomID = &room.Int64
+	}
 	return &u, nil
 }
 
 func (r *Users) Get(id int64) (*domain.User, error) {
-	return scanUser(r.db.QueryRow(`SELECT `+userCols+` FROM users WHERE id = ?`, id))
+	return scanUser(r.db.QueryRow(`SELECT `+userSelect+` FROM users WHERE id = ?`, id))
 }
 
 func (r *Users) GetByEmail(email string) (*domain.User, error) {
-	return scanUser(r.db.QueryRow(`SELECT `+userCols+` FROM users WHERE email = ?`, strings.TrimSpace(email)))
+	return scanUser(r.db.QueryRow(`SELECT `+userSelect+` FROM users WHERE email = ?`, strings.TrimSpace(email)))
 }
 
 // Search lists users whose name or e-mail contains q, newest first;
-// role filters when not empty.
+// role filters when not empty. Room guests are not listed.
 func (r *Users) Search(q, role string, limit int) ([]domain.User, error) {
 	like := "%" + q + "%"
-	query := `SELECT ` + userCols + ` FROM users WHERE (name LIKE ? OR email LIKE ?)`
+	query := `SELECT ` + userSelect + ` FROM users WHERE (name LIKE ? OR email LIKE ?)` + notGuest
 	args := []any{like, like}
 	if role != "" {
 		query += ` AND role = ?`
@@ -124,15 +140,13 @@ func (r *Users) RecordLogin(id int64) error {
 	return err
 }
 
-// Count returns the number of users with role, or of all users when role is empty.
+// Count returns the number of users with role, or of all users when role
+// is empty; room guests are not counted.
 func (r *Users) Count(role string) int {
-	var n int
 	if role == "" {
-		_ = r.db.QueryRow(`SELECT COUNT(*) FROM users`).Scan(&n)
-	} else {
-		_ = r.db.QueryRow(`SELECT COUNT(*) FROM users WHERE role = ?`, role).Scan(&n)
+		return count(r.db, `SELECT COUNT(*) FROM users WHERE 1 = 1`+notGuest)
 	}
-	return n
+	return count(r.db, `SELECT COUNT(*) FROM users WHERE role = ?`+notGuest, role)
 }
 
 func boolInt(b bool) int {

@@ -104,6 +104,27 @@ type sessionStore interface {
 	CountStarted(assignmentID int64) int
 	CountFinished(assignmentID int64) int
 	CountAttempts(userID, assignmentID int64) int
+	Import(userID int64, assignmentID *int64, d domain.SessionDetail) (int64, error)
+}
+
+type roomStore interface {
+	Create(n domain.NewRoom) (int64, error)
+	Get(id int64) (*domain.Room, error)
+	FindByCode(code string) (*domain.Room, error)
+	FindByHostToken(tokenHash string) (*domain.Room, error)
+	ListOpenForTeacher(teacherID int64, now string) ([]*domain.Room, error)
+	CountOpenAnonymous(now string) int
+	SetLocked(id int64, locked bool) error
+	AddGuest(roomID int64, nickname, avatar, locale string) (int64, error)
+	Guests(roomID int64) ([]domain.RoomGuest, error)
+	Guest(roomID, userID int64) (*domain.RoomGuest, error)
+	GuestByNickname(roomID int64, nickname string) (*domain.RoomGuest, error)
+	SetRejoinPIN(userID int64, pinHash string, expiresAt *string) error
+	RejoinPIN(userID int64) (pinHash, expiresAt string, err error)
+	MoveGuestSessions(guestID, studentID int64) error
+	DeleteGuest(roomID, userID int64) error
+	Delete(id int64) error
+	PurgeExpired(now string) error
 }
 
 type providerStore interface {
@@ -132,6 +153,7 @@ type usageStore interface {
 	UserSpendSince(userID int64, since string) float64
 	CountSince(since string, onlyErrors bool) int
 	CountUserRequestsSince(userID int64, since, excludedTask string) int
+	CountRoomRequestsSince(roomID int64, since, excludedTask string) int
 	Aggregate(since string, by domain.UsageGrouping, limit int) []domain.UsageAggregate
 	Recent(limit int) ([]domain.UsageLogRow, error)
 }

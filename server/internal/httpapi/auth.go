@@ -52,7 +52,11 @@ func writeServiceErr(w http.ResponseWriter, err error) {
 
 func (s *Server) handlePublicConfig(w http.ResponseWriter, r *http.Request) {
 	g := s.Settings.General()
+	rooms := s.Settings.Rooms()
 	writeJSON(w, 200, publicConfigResponse{
+		RoomsEnabled:    rooms.Enabled,
+		AnonymousRooms:  rooms.Enabled && rooms.AllowAnonymousTeachers,
+		RoomMaxMinutes:  rooms.MaxMinutes,
 		SiteName:        g.SiteName,
 		DefaultLocale:   g.DefaultLocale,
 		GuestAccess:     g.GuestAccess,
@@ -131,6 +135,10 @@ func (s *Server) handleMe(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleUpdateMe(w http.ResponseWriter, r *http.Request) {
+	if currentUser(r).IsGuest() {
+		writeErr(w, 403, "forbidden", "room guests have no profile to change")
+		return
+	}
 	var in struct {
 		Name            *string `json:"name"`
 		Locale          *string `json:"locale"`

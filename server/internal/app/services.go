@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"log"
+	"time"
 
 	"github.com/Hoppitbilbo/DebateAI/server/internal/ai"
 	"github.com/Hoppitbilbo/DebateAI/server/internal/domain"
@@ -23,6 +24,7 @@ type Services struct {
 	Providers     providerStore
 	Prices        priceStore
 	Usage         usageStore
+	Rooms         roomStore
 
 	Crypto        *Crypto
 	Settings      *settingsService
@@ -32,6 +34,8 @@ type Services struct {
 	ClassSvc      *classService
 	AssignmentSvc *assignmentService
 	SessionSvc    *sessionService
+	RoomSvc       *roomService
+	RoomTransfer  *roomTransfer
 }
 
 // Option changes how NewServices builds the application.
@@ -56,6 +60,7 @@ func NewServices(cfg Config, db *sql.DB, opts ...Option) *Services {
 		Providers:     store.NewProviders(db),
 		Prices:        store.NewPrices(db),
 		Usage:         store.NewUsage(db),
+		Rooms:         store.NewRooms(db),
 		Crypto:        NewCrypto(cfg.Secret),
 	}
 	sv.Settings = &settingsService{store: sv.SettingsStore, crypto: sv.Crypto, smtpDefaults: cfg.SMTP}
@@ -63,13 +68,17 @@ func NewServices(cfg Config, db *sql.DB, opts ...Option) *Services {
 	siteName := func() string { return sv.Settings.General().SiteName }
 	sv.Gateway = newAIGateway(sv.Providers, sv.Prices, sv.Usage, sv.Sessions, sv.Settings, sv.Crypto)
 	sv.Accounts = &authService{users: sv.Users, logins: sv.Logins, invites: sv.Invites, classes: sv.Classes, mail: sv.Mailer, siteName: siteName}
-	sv.ClassSvc = &classService{classes: sv.Classes, users: sv.Users, accounts: sv.Accounts, mail: sv.Mailer,
+	sv.ClassSvc = &classService{classes: sv.Classes, rooms: sv.Rooms, users: sv.Users, accounts: sv.Accounts, mail: sv.Mailer,
 		siteName: siteName, mailOn: sv.Settings.MailConfigured}
 	sv.AssignmentSvc = &assignmentService{assignments: sv.Assignments, classes: sv.Classes, sessions: sv.Sessions, classSvc: sv.ClassSvc,
 		listeners: []assignmentListener{mailNotifier{classes: sv.Classes, mail: sv.Mailer, siteName: siteName}}}
 	sv.SessionSvc = &sessionService{sessions: sv.Sessions, assignments: sv.Assignments, classes: sv.Classes, classSvc: sv.ClassSvc,
 		judge: sv.Gateway, jevSettings: sv.Settings.Jev,
 		listeners: []feedbackListener{feedbackMailer{users: sv.Users, mail: sv.Mailer, siteName: siteName}}}
+	sv.RoomSvc = &roomService{rooms: sv.Rooms, sessions: sv.Sessions, assignments: sv.Assignments, classSvc: sv.ClassSvc,
+		accounts: sv.Accounts, usage: sv.Usage, settings: sv.Settings.Rooms, now: time.Now}
+	sv.RoomTransfer = &roomTransfer{rooms: sv.Rooms, sessions: sv.Sessions, assignments: sv.Assignments, classes: sv.Classes, classSvc: sv.ClassSvc,
+		crypto: sv.Crypto, endRoom: sv.RoomSvc.End, now: time.Now}
 	for _, opt := range opts {
 		opt(sv)
 	}

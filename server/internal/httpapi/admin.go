@@ -244,7 +244,9 @@ func (s *Server) handleGetSettings(w http.ResponseWriter, r *http.Request) {
 		Budget:          s.Settings.Budget(),
 		Routing:         s.Settings.Routing(),
 		Jev:             s.Settings.Jev(),
+		Rooms:           s.Settings.Rooms(),
 		Tasks:           app.AllTasks,
+		RoomTasks:       app.RoomTasks,
 	})
 }
 
@@ -275,6 +277,11 @@ func (s *Server) handlePutSetting(w http.ResponseWriter, r *http.Request) {
 		v := app.DefaultJev()
 		if err = readJSON(r, &v); err == nil {
 			err = s.Settings.SaveJev(v)
+		}
+	case app.SettingRooms:
+		v := app.DefaultRooms()
+		if err = readJSON(r, &v); err == nil {
+			err = s.Settings.SaveRooms(v)
 		}
 	default:
 		writeErr(w, 404, "not_found", "unknown setting")

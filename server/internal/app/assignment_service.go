@@ -78,7 +78,7 @@ func (svc *assignmentService) Visible(u *domain.User, id int64) (*domain.Assignm
 	if err != nil {
 		return nil, ErrAssignmentNotFound
 	}
-	if !svc.classSvc.CanManage(u, a.ClassID) && (!svc.classes.IsMember(a.ClassID, u.ID) || !a.Published) {
+	if !svc.classSvc.MayAttempt(u, a) {
 		return nil, ErrNotAssigned
 	}
 	a.MySession = svc.sessions.Latest(u.ID, a.ID)

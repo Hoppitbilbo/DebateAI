@@ -27,7 +27,13 @@ type Server struct {
 }
 
 func NewServer(cfg app.Config, services *app.Services, static fs.FS) *Server {
-	return &Server{cfg: cfg, Services: services, static: static, limiter: newRateLimiter()}
+	s := &Server{cfg: cfg, Services: services, static: static, limiter: newRateLimiter()}
+	go func() {
+		for range time.Tick(roomPurgeEvery) {
+			s.RoomSvc.Purge()
+		}
+	}()
+	return s
 }
 
 func (s *Server) Handler() http.Handler {
@@ -112,6 +118,26 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("PUT /api/admin/prices", s.role("admin", s.handlePutPrice))
 	mux.HandleFunc("GET /api/admin/usage", s.role("admin", s.handleUsageSummary))
 	mux.HandleFunc("GET /api/admin/usage/log", s.role("admin", s.handleUsageLog))
+
+	// temporary rooms ("aula lampo")
+	mux.HandleFunc("GET /api/guest/rooms/{code}", s.handleRoomLookup)
+	mux.HandleFunc("POST /api/guest/join", s.handleRoomJoin)
+	mux.HandleFunc("POST /api/guest/rejoin", s.handleRoomRejoin)
+	mux.HandleFunc("GET /api/guest/room", s.auth(s.handleGuestRoom))
+	mux.HandleFunc("POST /api/rooms", s.handleOpenRoom)
+	mux.HandleFunc("GET /api/rooms", s.role("teacher", s.handleListRooms))
+	mux.HandleFunc("GET /api/rooms/{id}", s.handleGetRoom)
+	mux.HandleFunc("PATCH /api/rooms/{id}", s.handleUpdateRoom)
+	mux.HandleFunc("DELETE /api/rooms/{id}", s.handleEndRoom)
+	mux.HandleFunc("POST /api/rooms/{id}/guests/{userId}/pin", s.handleRoomGuestPIN)
+	mux.HandleFunc("DELETE /api/rooms/{id}/guests/{userId}", s.handleRemoveRoomGuest)
+	mux.HandleFunc("GET /api/rooms/{id}/guests/{userId}/sessions", s.handleRoomGuestSessions)
+	mux.HandleFunc("GET /api/rooms/{id}/sessions/{sessionId}", s.handleRoomSession)
+	mux.HandleFunc("GET /api/rooms/{id}/export.xlsx", s.handleRoomExportXLSX)
+	mux.HandleFunc("GET /api/rooms/{id}/export.aula", s.handleRoomExportFile)
+	mux.HandleFunc("POST /api/classes/{id}/room-import", s.role("teacher", s.handleRoomImport))
+	mux.HandleFunc("POST /api/classes/{id}/room-import/preview", s.role("teacher", s.handleRoomImportPreview))
+	mux.HandleFunc("GET /api/cron/purge-rooms", s.handleCronPurgeRooms)
 
 	mux.HandleFunc("/api/", func(w http.ResponseWriter, r *http.Request) { writeErr(w, 404, "not_found", "API route not found") })
 	mux.HandleFunc("/", s.serveStatic)
@@ -208,7 +234,7 @@ func currentUser(r *http.Request) *domain.User {
 
 func (s *Server) withUser(r *http.Request) *http.Request {
 	if u := s.userFromRequest(r); u != nil {
-		return r.WithContext(context.WithValue(r.Context(), userKey, u))
+		return r.WithContext(context.WithValue(aiContext(r, u), userKey, u))
 	}
 	return r
 }
@@ -321,6 +347,14 @@ func newRateLimiter() *rateLimiter {
 		}
 	}()
 	return rl
+}
+
+// exhausted reports, without counting a hit, whether key reached limit.
+func (rl *rateLimiter) exhausted(key string, limit int) bool {
+	rl.mu.Lock()
+	defer rl.mu.Unlock()
+	b := rl.buckets[key]
+	return b != nil && time.Now().Before(b.reset) && b.count >= limit
 }
 
 // allow returns false once `limit` hits happened within `window` for key.

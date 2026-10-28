@@ -1,6 +1,7 @@
 package httpapi
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -27,6 +28,12 @@ func (s *Server) aiAllowed(w http.ResponseWriter, r *http.Request) (*domain.User
 			return nil, false
 		}
 		return nil, true
+	}
+	if u.IsGuest() {
+		if err := s.RoomSvc.AllowAI(u); err != nil {
+			writeErr(w, 429, "rate_limited", err.Error())
+			return nil, false
+		}
 	}
 	if u.Role == "student" && g.StudentRequestsPerDay > 0 {
 		since := time.Now().UTC().Add(-24 * time.Hour).Format(time.RFC3339)
@@ -55,14 +62,24 @@ func (s *Server) sessionFor(u *domain.User, sessionID int64) (*int64, string, er
 
 // ---------- handlers ----------
 
+// aiContext is the context of the AI calls of a request: room guests use
+// the models chosen for rooms.
+func aiContext(r *http.Request, u *domain.User) context.Context {
+	if u != nil && u.IsGuest() {
+		return app.WithRoomRouting(r.Context())
+	}
+	return r.Context()
+}
+
 func (s *Server) handleAIStatus(w http.ResponseWriter, r *http.Request) {
 	u := s.userFromRequest(r)
 	g := s.Settings.General()
-	live := g.LiveEnabled && len(s.Gateway.Targets(app.TaskLive)) > 0 && (u != nil || g.GuestLive)
+	ctx := aiContext(r, u)
+	live := g.LiveEnabled && len(s.Gateway.TargetsFor(ctx, app.TaskLive)) > 0 && (u != nil || g.GuestLive)
 	writeJSON(w, 200, aiStatusResponse{
-		Text:        len(s.Gateway.Targets(app.TaskChat)) > 0 && (u != nil || g.GuestAccess),
+		Text:        len(s.Gateway.TargetsFor(ctx, app.TaskChat)) > 0 && (u != nil || g.GuestAccess),
 		Live:        live,
-		Judge:       s.Settings.Jev().Enabled && len(s.Gateway.Targets(app.TaskJudge)) > 0,
+		Judge:       s.Settings.Jev().Enabled && len(s.Gateway.TargetsFor(ctx, app.TaskJudge)) > 0,
 		LoggedIn:    u != nil,
 		GuestAccess: g.GuestAccess,
 	})
@@ -120,7 +137,7 @@ func (s *Server) handleGenerate(w http.ResponseWriter, r *http.Request) {
 	req := ai.Request{System: in.System, Messages: in.Messages, JSON: in.JSON, Temperature: in.Temperature, MaxTokens: in.MaxTokens}
 
 	if !in.Stream {
-		res, err := s.Gateway.Generate(r.Context(), in.Task, req, userID, sessionID, nil)
+		res, err := s.Gateway.Generate(aiContext(r, u), in.Task, req, userID, sessionID, nil)
 		if err != nil {
 			writeErr(w, 502, "ai_error", err.Error())
 			return
@@ -144,7 +161,7 @@ func (s *Server) handleGenerate(w http.ResponseWriter, r *http.Request) {
 		}
 		return nil
 	}
-	res, err := s.Gateway.Generate(r.Context(), in.Task, req, userID, sessionID, func(d string) error { return send(streamDelta{Delta: d}) })
+	res, err := s.Gateway.Generate(aiContext(r, u), in.Task, req, userID, sessionID, func(d string) error { return send(streamDelta{Delta: d}) })
 	if err != nil {
 		_ = send(streamError{Error: err.Error()})
 		return
@@ -155,7 +172,7 @@ func (s *Server) handleGenerate(w http.ResponseWriter, r *http.Request) {
 func (s *Server) handleLiveToken(w http.ResponseWriter, r *http.Request) {
 	u := s.userFromRequest(r)
 	g := s.Settings.General()
-	if !g.LiveEnabled || (u == nil && !g.GuestLive) {
+	if !g.LiveEnabled || (u == nil && !g.GuestLive) || (u != nil && u.IsGuest()) {
 		writeErr(w, 403, "live_disabled", "live conversation is not enabled for this account")
 		return
 	}

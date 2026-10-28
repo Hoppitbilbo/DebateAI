@@ -113,14 +113,21 @@ func (a *authService) SetPassword(userID int64, password string) error {
 
 // StartSession logs a user in and returns the secret token for the cookie.
 func (a *authService) StartSession(userID int64) (token string, expires time.Time, err error) {
-	token = randomToken(32)
 	expires = time.Now().Add(sessionTTL)
+	token, err = a.StartSessionUntil(userID, expires)
+	return token, expires, err
+}
+
+// StartSessionUntil logs a user in until a fixed time (room guests leave
+// when their room closes).
+func (a *authService) StartSessionUntil(userID int64, expires time.Time) (string, error) {
+	token := randomToken(32)
 	if err := a.logins.Create(hashToken(token), userID, expires.UTC().Format(time.RFC3339)); err != nil {
-		return "", time.Time{}, err
+		return "", err
 	}
 	logIfErr("record last login", a.users.RecordLogin(userID))
 	logIfErr("purge expired sessions", a.logins.PurgeExpired())
-	return token, expires, nil
+	return token, nil
 }
 
 // UserForToken returns the active user of a login token, or nil.

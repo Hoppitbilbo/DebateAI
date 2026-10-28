@@ -1,6 +1,9 @@
 package app
 
-import "sort"
+import (
+	"context"
+	"sort"
+)
 
 // Routing strategies (Strategy pattern): given the configured targets of a
 // task, decide the order in which the fallback chain tries them. A new
@@ -91,16 +94,57 @@ func (f freeOnly) order(list []RouteTarget, prices priceBook) []RouteTarget {
 	return free
 }
 
+// taskTargets returns the configured targets of a task; text tasks without
+// targets fall back to the chat ones.
+func taskTargets(tasks map[string][]RouteTarget, task string) []RouteTarget {
+	list := tasks[task]
+	if len(list) == 0 && task != TaskChat && task != TaskLive {
+		list = tasks[TaskChat] // sensible fallback
+	}
+	return list
+}
+
 // targets returns the candidate list for a task according to the routing
 // strategy and the budget state. This is the "decide which API" half of JEV.
 func (g *aiGateway) Targets(task string) []RouteTarget {
 	rt := g.settings.Routing()
-	list := rt.Tasks[task]
-	if len(list) == 0 && task != TaskChat && task != TaskLive {
-		list = rt.Tasks[TaskChat] // sensible fallback
-	}
 	strategy := strategyFor(rt.Strategy)
 	if g.BudgetExceeded() {
+		strategy = freeOnly{strategy}
+	}
+	return strategy.order(taskTargets(rt.Tasks, task), g)
+}
+
+// roomRoutingKey marks a context whose AI calls come from a room guest.
+type roomRoutingKey struct{}
+
+// WithRoomRouting makes the AI calls made with ctx use the room models.
+func WithRoomRouting(ctx context.Context) context.Context {
+	return context.WithValue(ctx, roomRoutingKey{}, true)
+}
+
+func isRoomRouting(ctx context.Context) bool {
+	on, _ := ctx.Value(roomRoutingKey{}).(bool)
+	return on
+}
+
+// TargetsFor is Targets for a request: room guests use the models the
+// admin chose for rooms (or the main ones when none is set), free only
+// when so configured. Live voice is never available in rooms.
+func (g *aiGateway) TargetsFor(ctx context.Context, task string) []RouteTarget {
+	if !isRoomRouting(ctx) {
+		return g.Targets(task)
+	}
+	if task == TaskLive {
+		return nil
+	}
+	rs := g.settings.Rooms()
+	list := taskTargets(rs.Tasks, task)
+	if len(list) == 0 {
+		list = taskTargets(g.settings.Routing().Tasks, task)
+	}
+	strategy := strategyFor(g.settings.Routing().Strategy)
+	if rs.FreeOnly || g.BudgetExceeded() {
 		strategy = freeOnly{strategy}
 	}
 	return strategy.order(list, g)

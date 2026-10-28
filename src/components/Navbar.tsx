@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Compass, Github, LayoutDashboard, LogIn, LogOut, Menu, Settings, UserRound, X } from "lucide-react";
+import { Compass, Github, LayoutDashboard, LogIn, LogOut, Menu, Settings, UserRound, X, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -32,6 +32,9 @@ const Navbar = () => {
     { to: "/tutorials", label: t("platform.nav.tutorials") },
     { to: "/about", label: t("navigation.about") },
   ];
+  // Temporary rooms: students enter with a code, guests go back to their room.
+  if (user?.roomId) links.push({ to: "/aula", label: t("room.nav.myRoom"), end: true });
+  else if (!user && config?.roomsEnabled) links.push({ to: "/entra", label: t("room.nav.join"), end: true });
 
   const linkClass = ({ isActive }: { isActive: boolean }) =>
     cn("rounded-md px-3 py-2 text-sm font-medium transition-colors", isActive ? "text-education" : "text-foreground/75 hover:text-foreground");
@@ -68,13 +71,14 @@ const Navbar = () => {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuLabel>
-                  <div className="truncate">{user.email}</div>
-                  <div className="text-xs font-normal text-muted-foreground">{t(`platform.roles.${user.role}`)}</div>
+                  <div className="truncate">{user.roomId ? user.name : user.email}</div>
+                  <div className="text-xs font-normal text-muted-foreground">{user.roomId ? t("room.nav.guestRole") : t(`platform.roles.${user.role}`)}</div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => navigate(dashboardPath(user))}><LayoutDashboard className="mr-2 h-4 w-4" />{t("platform.nav.dashboard")}</DropdownMenuItem>
                 {user.role === "admin" && <DropdownMenuItem onClick={() => navigate("/teacher")}><LayoutDashboard className="mr-2 h-4 w-4" />{t("platform.nav.myClasses")}</DropdownMenuItem>}
-                <DropdownMenuItem onClick={() => navigate("/account")}><Settings className="mr-2 h-4 w-4" />{t("platform.nav.account")}</DropdownMenuItem>
+                {user.role !== "student" && config?.roomsEnabled && <DropdownMenuItem onClick={() => navigate("/aula/nuova")}><Zap className="mr-2 h-4 w-4" />{t("room.nav.open")}</DropdownMenuItem>}
+                {!user.roomId && <DropdownMenuItem onClick={() => navigate("/account")}><Settings className="mr-2 h-4 w-4" />{t("platform.nav.account")}</DropdownMenuItem>}
                 {tour.available && (
                   <DropdownMenuItem onClick={() => tour.start(tour.available!)}><Compass className="mr-2 h-4 w-4" />{t("platform.tour.common.replay")}</DropdownMenuItem>
                 )}

@@ -56,6 +56,11 @@ const dyn = {
   "platform.admin.ai.presetNotes": ["gemini", "opencode", "jev", "openrouter", "local"],
   "platform.live.state": ["off", "connecting", "listening", "speaking"],
   "platform.invite.status": ["added", "invited", "error"],
+  "room.join.errors": ["not_found", "room_locked", "room_full", "nickname_taken", "bad_pin", "rate_limited", "generic"],
+  "room.admin": ["enabled", "enabledHint", "allowAnonymousTeachers", "allowAnonymousTeachersHint", "freeOnly", "freeOnlyHint",
+    "maxMinutes", "maxGuests", "requestsPerGuestPerHour", "maxRequestsPerRoom", "maxOpenAnonymousRooms"],
+  // the avatar slugs, as listed in ROOM_AVATARS
+  "room.avatars": [...readFileSync(join(root, "features/room/avatars.ts"), "utf8").match(/ROOM_AVATARS = \[([^\]]+)\]/)[1].matchAll(/"([a-z-]+)"/g)].map((m) => m[1]),
 };
 for (const [p, list] of Object.entries(dyn)) list.forEach((k) => used.add(`${p}.${k}`));
 for (const app of ["convinciTu", "doppiaIntervista", "wikiChatbot", "personaggioMisterioso", "impersonaTu", "youModerate"]) used.add(`apps.${app}.title`);
@@ -68,13 +73,13 @@ for (const [l, set] of keys) {
     console.log(`\n[${l}] missing ${miss.length}:\n  ${miss.join("\n  ")}`);
   }
 }
-// platform namespace must have identical keys everywhere
-const ref = [...keys.find(([l]) => l === "en")[1]].filter((k) => k.startsWith("platform."));
+// platform and room namespaces must have identical keys everywhere
+const ref = [...keys.find(([l]) => l === "en")[1]].filter((k) => k.startsWith("platform.") || k.startsWith("room."));
 for (const [l, set] of keys) {
   const miss = ref.filter((k) => !set.has(k));
   if (miss.length) {
     missing += miss.length;
-    console.log(`\n[${l}] platform keys missing vs en:\n  ${miss.join("\n  ")}`);
+    console.log(`\n[${l}] platform/room keys missing vs en:\n  ${miss.join("\n  ")}`);
   }
 }
 console.log(missing ? `\n${missing} problems` : `OK: ${used.size} keys present in ${LOCALES.length} locales`);

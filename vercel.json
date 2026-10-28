@@ -17,5 +17,6 @@
   "rewrites": [
     { "source": "/api/(.*)", "destination": { "service": "server" } },
     { "source": "/(.*)", "destination": { "service": "app" } }
-  ]
+  ],
+  "crons": [{ "path": "/api/cron/purge-rooms", "schedule": "30 3 * * *" }]
 }

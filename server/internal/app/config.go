@@ -27,7 +27,9 @@ type Config struct {
 	OpencodeKey   string
 	OpenRouterKey string
 	TypeSafeKey   string
-	SMTP          SMTPSettings
+	// CronSecret authenticates the scheduled calls of Vercel Cron.
+	CronSecret string
+	SMTP       SMTPSettings
 }
 
 func env(key, def string) string {
@@ -50,6 +52,7 @@ func LoadConfig() Config {
 		OpencodeKey:   env("OPENCODE_API_KEY", ""),
 		OpenRouterKey: env("OPENROUTER_API_KEY", ""),
 		TypeSafeKey:   env("TYPESAFE_API_KEY", ""),
+		CronSecret:    env("CRON_SECRET", ""),
 		SMTP: SMTPSettings{
 			Host:     env("SMTP_HOST", ""),
 			Port:     atoiDefault(env("SMTP_PORT", "587"), 587),

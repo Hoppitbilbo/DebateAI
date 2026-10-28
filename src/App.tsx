@@ -42,6 +42,10 @@ const TeacherDashboard = lazyPage(() => import("./pages/dashboard/teacher/Teache
 const ClassPage = lazyPage(() => import("./pages/dashboard/teacher/ClassPage"));
 const AssignmentProgressPage = lazyPage(() => import("./pages/dashboard/teacher/AssignmentProgressPage"));
 const AdminPage = lazyPage(() => import("./pages/admin/AdminPage"), ["/admin"]);
+const JoinRoomPage = lazyPage(() => import("./pages/room/JoinRoomPage"), ["/entra"]);
+const GuestRoomPage = lazyPage(() => import("./pages/room/GuestRoomPage"), ["/aula"]);
+const OpenRoomPage = lazyPage(() => import("./pages/room/OpenRoomPage"), ["/aula/nuova"]);
+const HostRoomPage = lazyPage(() => import("./pages/room/HostRoomPage"));
 
 const queryClient = new QueryClient({ defaultOptions: { queries: { retry: 1, refetchOnWindowFocus: false } } });
 
@@ -98,6 +102,11 @@ const App = () => (
               <Route path="/teacher/classes/:id" element={<RequireRole role="teacher"><ClassPage /></RequireRole>} />
               <Route path="/teacher/assignments/:id" element={<RequireRole role="teacher"><AssignmentProgressPage /></RequireRole>} />
               <Route path="/admin" element={<RequireRole role="admin"><AdminPage /></RequireRole>} />
+              {/* temporary rooms ("aula lampo"): no registration for students */}
+              <Route path="/entra" element={<JoinRoomPage />} />
+              <Route path="/aula" element={<GuestRoomPage />} />
+              <Route path="/aula/nuova" element={<OpenRoomPage />} />
+              <Route path="/aula/gestisci/:id" element={<HostRoomPage />} />
 
               <Route path="*" element={<NotFound />} />
             </Routes>

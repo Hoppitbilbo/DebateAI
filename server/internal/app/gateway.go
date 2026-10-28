@@ -184,7 +184,7 @@ var ErrNoTargets = errors.New("no AI model is configured for this task (ask the 
 // generate runs a request through the fallback chain. When onDelta is non-nil
 // the response is streamed; fallback only happens before the first delta.
 func (g *aiGateway) Generate(ctx context.Context, task string, req ai.Request, userID, sessionID *int64, onDelta func(string) error) (*GenResult, error) {
-	targets := g.Targets(task)
+	targets := g.TargetsFor(ctx, task)
 	if len(targets) == 0 {
 		if g.BudgetExceeded() {
 			return nil, errors.New("monthly AI budget exhausted and no free model is configured")

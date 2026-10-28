@@ -56,6 +56,8 @@ export interface User {
   active: boolean;
   createdAt: string;
   lastLoginAt?: string;
+  /** Set for the temporary guests of a room ("aula lampo"). */
+  roomId?: number;
 }
 
 export interface PublicConfig {
@@ -67,6 +69,9 @@ export interface PublicConfig {
   liveEnabled: boolean;
   setupRequired: boolean;
   mailConfigured: boolean;
+  roomsEnabled?: boolean;
+  anonymousRooms?: boolean;
+  roomMaxMinutes?: number;
 }
 
 export type AppType =

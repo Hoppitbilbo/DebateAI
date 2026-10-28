@@ -25,4 +25,4 @@ export const useAuth = () => {
 
 /** Where a user lands after login. */
 export const dashboardPath = (u: User | null) =>
-  !u ? "/login" : u.role === "admin" ? "/admin" : u.role === "teacher" ? "/teacher" : "/student";
+  !u ? "/login" : u.roomId ? "/aula" : u.role === "admin" ? "/admin" : u.role === "teacher" ? "/teacher" : "/student";

@@ -14,6 +14,7 @@ import evaluation from './evaluation.json';
 import footer from './footer.json';
 import homepage from './homepage.json';
 import notFound from './notFound.json';
+import room from './room.json';
 import prompts from './prompts.json';
 import reflection from './reflection.json';
 import teacherGuidePage from './teacherGuidePage.json';
@@ -22,6 +23,7 @@ import apps from './apps';
 import platform from './platform.json';
 
 export default {
+  room,
   platform,
   common,
   navigation,
