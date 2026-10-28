@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Kind, providerActions } from "@/features/admin/aiAdminApi";
 import { Preset, PRESETS } from "@/features/admin/aiPresets";
+import { useBusyAction } from "@/hooks/useBusyAction";
 
 const AddProviderDialog = ({ open, onOpenChange, onAdded }: { open: boolean; onOpenChange: (o: boolean) => void; onAdded: () => void }) => {
   const { t } = useTranslation();
@@ -17,7 +18,7 @@ const AddProviderDialog = ({ open, onOpenChange, onAdded }: { open: boolean; onO
   const [baseUrl, setBaseUrl] = useState(PRESETS[0].baseUrl);
   const [apiKey, setApiKey] = useState("");
   const [kind, setKind] = useState<Kind>(PRESETS[0].kind);
-  const [busy, setBusy] = useState(false);
+  const { busy, run } = useBusyAction();
 
   const choose = (id: string) => {
     const p = PRESETS.find((x) => x.id === id)!;
@@ -27,9 +28,8 @@ const AddProviderDialog = ({ open, onOpenChange, onAdded }: { open: boolean; onO
     setKind(p.kind);
   };
 
-  const save = async () => {
-    setBusy(true);
-    try {
+  const save = () =>
+    run(async () => {
       await providerActions.add({
         name, kind, baseUrl, apiKey,
         models: preset.models?.map((id) => ({ id, free: id.endsWith("-free") || id === "big-pickle" })),
@@ -38,12 +38,7 @@ const AddProviderDialog = ({ open, onOpenChange, onAdded }: { open: boolean; onO
       setApiKey("");
       onAdded();
       onOpenChange(false);
-    } catch (e) {
-      toast.error((e as Error).message);
-    } finally {
-      setBusy(false);
-    }
-  };
+    });
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

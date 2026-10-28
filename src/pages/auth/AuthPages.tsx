@@ -14,6 +14,7 @@ import { authApi, InviteInfo, ProfileChange } from "@/features/auth/authApi";
 import { dashboardPath, useAuth } from "@/context/auth";
 import i18n from "@/i18n";
 import { LOCALES } from "@/i18n/languages";
+import { useBusyAction } from "@/hooks/useBusyAction";
 
 export const AuthLayout = ({ title, subtitle, children }: { title: string; subtitle?: string; children: React.ReactNode }) => (
   <div className="flex min-h-screen flex-col bg-background text-foreground">
@@ -46,6 +47,12 @@ const errMsg = (e: unknown, t: (k: string) => string) => {
   return t("platform.errors.generic");
 };
 
+/** useBusyAction with the auth error texts. */
+const useAuthAction = () => {
+  const { t } = useTranslation();
+  return useBusyAction((err) => errMsg(err, t));
+};
+
 export const LoginPage = () => {
   const { t } = useTranslation();
   const { login, user, config } = useAuth();
@@ -53,22 +60,17 @@ export const LoginPage = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [busy, setBusy] = useState(false);
+  const { busy, run } = useAuthAction();
 
   if (config?.setupRequired) return <Navigate to="/setup" replace />;
   if (user) return <Navigate to={params.get("next") || dashboardPath(user)} replace />;
 
-  const submit = async (e: React.FormEvent) => {
+  const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    setBusy(true);
-    try {
+    void run(async () => {
       const u = await login(email, password);
       navigate(params.get("next") || dashboardPath(u), { replace: true });
-    } catch (err) {
-      toast.error(errMsg(err, t));
-    } finally {
-      setBusy(false);
-    }
+    });
   };
 
   return (
@@ -101,7 +103,7 @@ export const RegisterPage = () => {
   const [password, setPassword] = useState("");
   const [password2, setPassword2] = useState("");
   const [locale, setLocale] = useState(i18n.language.slice(0, 2));
-  const [busy, setBusy] = useState(false);
+  const { busy, run } = useAuthAction();
 
   useEffect(() => {
     if (!token) {
@@ -119,23 +121,18 @@ export const RegisterPage = () => {
       .catch(() => setInvalid(true));
   }, [token]);
 
-  const submit = async (e: React.FormEvent) => {
+  const submit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!info?.userExists && password !== password2) {
       toast.error(t("platform.auth.passwordMismatch"));
       return;
     }
-    setBusy(true);
-    try {
+    void run(async () => {
       const u = await authApi.register({ token, name, password, locale });
       setUser(u);
       toast.success(t("platform.auth.registered"));
       navigate(dashboardPath(u), { replace: true });
-    } catch (err) {
-      toast.error(errMsg(err, t));
-    } finally {
-      setBusy(false);
-    }
+    });
   };
 
   if (invalid) {
@@ -217,25 +214,20 @@ export const ResetPasswordPage = () => {
   const navigate = useNavigate();
   const [password, setPassword] = useState("");
   const [password2, setPassword2] = useState("");
-  const [busy, setBusy] = useState(false);
+  const { busy, run } = useAuthAction();
   return (
     <AuthLayout title={t("platform.auth.resetTitle")}>
       <form
         className="space-y-4"
-        onSubmit={async (e) => {
+        onSubmit={(e) => {
           e.preventDefault();
           if (password !== password2) return toast.error(t("platform.auth.passwordMismatch"));
-          setBusy(true);
-          try {
+          void run(async () => {
             const u = await authApi.resetPassword(params.get("token"), password);
             setUser(u);
             toast.success(t("platform.auth.passwordChanged"));
             navigate(dashboardPath(u), { replace: true });
-          } catch (err) {
-            toast.error(errMsg(err, t));
-          } finally {
-            setBusy(false);
-          }
+          });
         }}
       >
         <Field id="password" label={t("platform.auth.newPassword")} type="password" minLength={8} required value={password} onChange={(e) => setPassword(e.target.value)} />
@@ -253,26 +245,21 @@ export const SetupPage = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [busy, setBusy] = useState(false);
+  const { busy, run } = useAuthAction();
   if (config && !config.setupRequired && !busy) return <Navigate to={user ? "/admin?tab=ai" : "/login"} replace />;
   return (
     <AuthLayout title={t("platform.setup.title")} subtitle={t("platform.setup.subtitle")}>
       <div className="flex justify-center"><ShieldCheck className="h-10 w-10 text-primary" /></div>
       <form
         className="space-y-4"
-        onSubmit={async (e) => {
+        onSubmit={(e) => {
           e.preventDefault();
-          setBusy(true);
-          try {
+          void run(async () => {
             const u = await authApi.setup({ name, email, password, locale: i18n.language.slice(0, 2) });
             setUser(u);
             await refresh();
             navigate("/admin?tab=ai", { replace: true });
-          } catch (err) {
-            toast.error(errMsg(err, t));
-          } finally {
-            setBusy(false);
-          }
+          });
         }}
       >
         <Field id="name" label={t("platform.auth.name")} required value={name} onChange={(e) => setName(e.target.value)} />

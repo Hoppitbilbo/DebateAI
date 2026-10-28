@@ -11,6 +11,7 @@ import type { InviteSender } from "@/features/teacher/teacherApi";
 import { useAuth } from "@/context/auth";
 import { copy } from "@/lib/clipboard";
 import { LOCALES } from "@/i18n/languages";
+import { useBusyAction } from "@/hooks/useBusyAction";
 
 interface Props {
   /** Who receives the invitations: a class (inviteToClass) or the platform (inviteToPlatform). */
@@ -26,24 +27,18 @@ const InviteForm = ({ invite, roles, onDone }: Props) => {
   const [emails, setEmails] = useState("");
   const [role, setRole] = useState<Role>(roles[0]);
   const [locale, setLocale] = useState(i18n.language.slice(0, 2));
-  const [busy, setBusy] = useState(false);
+  const { busy, run } = useBusyAction();
   const [results, setResults] = useState<InviteResult[]>([]);
 
-  const submit = async () => {
-    setBusy(true);
-    try {
+  const submit = () =>
+    run(async () => {
       const res = await invite({ emails: [emails], role, locale });
       setResults(res);
       const ok = res.filter((r) => r.status !== "error").length;
       toast.success(t("platform.invite.done", { count: ok }));
       setEmails("");
       onDone?.();
-    } catch (e) {
-      toast.error((e as Error).message);
-    } finally {
-      setBusy(false);
-    }
-  };
+    });
 
   return (
     <div className="space-y-3">
