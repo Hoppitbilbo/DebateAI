@@ -23,29 +23,37 @@ import frTutorialsPage from './locales/fr/tutorialsPage.json';
 import deTutorialsPage from './locales/de/tutorialsPage.json';
 import itTutorialsPage from './locales/it/tutorialsPage.json';
 
-// Student tutorials (8-bit videos): Italian only for now, the other languages fall back to it
+// Student tutorials (8-bit videos), one file per language
 import itStudentTutorials from './studentTutorials/it.json';
+import enStudentTutorials from './studentTutorials/en.json';
+import esStudentTutorials from './studentTutorials/es.json';
+import frStudentTutorials from './studentTutorials/fr.json';
+import deStudentTutorials from './studentTutorials/de.json';
 
 const resources = {
   en: { 
     translation: en,
     tutorial: enTutorials,
-    tutorialsPage: enTutorialsPage
+    tutorialsPage: enTutorialsPage,
+    studentTutorial: enStudentTutorials
   },
   es: { 
     translation: es,
     tutorial: esTutorials,
-    tutorialsPage: esTutorialsPage
+    tutorialsPage: esTutorialsPage,
+    studentTutorial: esStudentTutorials
   },
   fr: { 
     translation: fr,
     tutorial: frTutorials,
-    tutorialsPage: frTutorialsPage
+    tutorialsPage: frTutorialsPage,
+    studentTutorial: frStudentTutorials
   },
   de: { 
     translation: de,
     tutorial: deTutorials,
-    tutorialsPage: deTutorialsPage
+    tutorialsPage: deTutorialsPage,
+    studentTutorial: deStudentTutorials
   },
   it: { 
     translation: it,

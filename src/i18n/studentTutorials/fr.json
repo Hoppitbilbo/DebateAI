@@ -1,0 +1,296 @@
+{
+  "characters": {
+    "napoleon": "Napoléon",
+    "galileo": "Galilée",
+    "aristotle": "Aristote",
+    "shadow": "???",
+    "cleopatra": "Cléopâtre",
+    "leonardo": "Léonard",
+    "curie": "Marie Curie",
+    "einstein": "Einstein",
+    "ada": "Ada Lovelace",
+    "colosseum": "Colisée",
+    "student": "Toi"
+  },
+  "common": {
+    "taskTitle": "TA CONSIGNE",
+    "tipsTitle": "CONSEILS",
+    "pressStart": "APPUIE SUR START",
+    "path": {
+      "title": "LE PARCOURS",
+      "levels": [
+        "PRÉPARATION",
+        "CONVERSATION",
+        "RÉFLEXION",
+        "RETOUR"
+      ],
+      "voice": "Le parcours a quatre niveaux. Tu prépares la partie, tu discutes, tu écris une réflexion et tu reçois un retour. Chaque niveau compte."
+    },
+    "progress": {
+      "title": "LA BARRE DE PROGRESSION",
+      "barLabel": "PROGRESSION",
+      "warning": "HORS SUJET ? Reviens à la consigne",
+      "lines": [
+        "Objectif atteint : une coche apparaît",
+        "Progression : objectifs atteints en %",
+        "Hors sujet : tu reçois un avertissement"
+      ],
+      "voice": "Si ton enseignant t'a donné un devoir, tu vois la liste des objectifs. Après chacun de tes messages, un juge automatique vérifie où tu en es. Quand tu atteins un objectif, une coche apparaît. Ce qui compte, c'est ce que tu fais toi : si c'est le personnage qui dit tout, l'objectif reste ouvert. Si tu sors du sujet, ou si tu essaies de faire sortir le personnage de son rôle, tu reçois un avertissement."
+    },
+    "grading": {
+      "title": "COMMENT TU ES EVALUE",
+      "conversation": "CONVERSATION",
+      "reflection": "REFLEXION",
+      "sample": "exemple",
+      "reflectionTitle": "La question de réflexion",
+      "voice": "À la fin, tu reçois deux notes de zéro à dix : une pour la conversation, une pour la réflexion. Le retour cite des moments précis de ta discussion, te dit quoi améliorer et vérifie chaque objectif de l'enseignant. Un travail court ou superficiel reçoit une note basse.",
+      "reflectionVoice": "Dans la réflexion, tu réponds à cette question :"
+    }
+  },
+  "convinciTu": {
+    "mission": {
+      "title": "MISSION : CONVAINCS L'EMPEREUR",
+      "lines": [
+        "Choisis un personnage historique.",
+        "Convaincs-le d'une idée."
+      ],
+      "voice": "Je suis Napoléon. J'ai conquis la moitié de l'Europe et je change rarement d'avis. Tu veux me convaincre ? Il te faudra des arguments solides."
+    },
+    "task": {
+      "lines": [
+        "1. Choisis le personnage",
+        "2. Écris l'idée à défendre",
+        "3. Argumente et réponds aux objections",
+        "4. Écris la réflexion finale"
+      ],
+      "voice": "Choisis qui convaincre et écris l'idée. Je défendrai le point de vue de mon époque et je te poserai des questions difficiles. Je changerai d'avis peu à peu, et seulement face à de bonnes raisons."
+    },
+    "path": {
+      "extra": "Le personnage cède peu à peu : chaque bon argument compte."
+    },
+    "progress": {
+      "goal": "Utilise un argument lié à l'époque du personnage"
+    },
+    "grading": {
+      "plus": [
+        "Des arguments adaptés à son époque et à ses valeurs",
+        "Des réponses à ses objections",
+        "Des preuves et des exemples concrets"
+      ],
+      "reflection": "Comment as-tu essayé de convaincre Napoléon ? Quels arguments ont fonctionné, et pourquoi ?"
+    },
+    "tips": {
+      "lines": [
+        "Parle de ce qui compte pour lui : gloire, ordre, France",
+        "Une idée par message",
+        "Ses questions te montrent le point faible"
+      ],
+      "voice": "Parle de ce qui me tient à cœur. Avance une idée à la fois. Et écoute mes questions : elles te montrent où frapper. À l'attaque, soldat ! Appuie sur start."
+    }
+  },
+  "doppiaIntervista": {
+    "mission": {
+      "title": "MISSION : UNE QUESTION, DEUX REPONSES",
+      "lines": [
+        "Tu interviewes deux personnages ensemble.",
+        "Tu compares ce qu'ils disent."
+      ],
+      "voice": "Je suis Galilée, lui c'est Aristote. Sur le ciel, nous pensons le contraire. Pose-nous la même question et regarde ce qui se passe."
+    },
+    "task": {
+      "lines": [
+        "1. Choisis deux personnages",
+        "2. Pose tes questions : les deux répondent",
+        "3. Compare les réponses",
+        "4. Explique les différences dans la réflexion"
+      ],
+      "voice": "Chaque question nous arrive à tous les deux. Les réponses s'affichent côte à côte. Ton travail : repérer où nous sommes d'accord et où nous ne le sommes pas."
+    },
+    "path": {
+      "extra": "Deux colonnes, deux points de vue."
+    },
+    "progress": {
+      "goal": "Pose une question qui oppose les deux visions"
+    },
+    "grading": {
+      "plus": [
+        "Des questions ouvertes, qui font ressortir les différences",
+        "Des questions pour approfondir les réponses",
+        "Une comparaison précise dans la réflexion"
+      ],
+      "reflection": "En quoi les points de vue de Galilée et d'Aristote étaient-ils différents ? Qu'as-tu appris en les comparant ?"
+    },
+    "tips": {
+      "lines": [
+        "Préfère pourquoi et comment aux questions oui/non",
+        "Reprends une phrase de l'un et pose-la à l'autre",
+        "Note les différences en lisant"
+      ],
+      "voice": "Demande pourquoi et comment. Rapporte à l'un ce que l'autre a dit. Note les différences. Observe, compare, réfléchis. Appuie sur start."
+    }
+  },
+  "personaggioMisterioso": {
+    "mission": {
+      "title": "MISSION : QUI SUIS-JE ?",
+      "lines": [
+        "Devine le personnage secret.",
+        "Tu as un nombre limité de questions."
+      ],
+      "voice": "Qui suis-je ? Je ne te le dirai pas. Je te donnerai des indices. Tu as peu de questions : utilise-les bien."
+    },
+    "task": {
+      "lines": [
+        "1. Le personnage est secret",
+        "2. Tu as de 3 à 15 questions (souvent 7)",
+        "3. Rassemble des indices : époque, lieu, métier",
+        "4. Devine et explique ton raisonnement"
+      ],
+      "voice": "Le personnage est choisi par l'enseignant, ou il arrive par surprise. Je réponds toujours sincèrement, avec des indices indirects. Si tu me demandes si je suis une certaine personne, je réponds seulement oui ou non. Pour deviner, un mot du nom bien écrit suffit, comme César ou Léonard."
+    },
+    "path": {
+      "extra": "Le compteur de questions baisse à chaque message."
+    },
+    "progress": {
+      "goal": "Pose des questions qui réduisent les possibilités"
+    },
+    "grading": {
+      "plus": [
+        "Des questions stratégiques, du général au particulier",
+        "Peu de questions utilisées et le nom trouvé",
+        "Un raisonnement clair, même si tu te trompes"
+      ],
+      "reflection": "Quelles questions t'ont été les plus utiles ? Comment changerais-tu ta stratégie ?"
+    },
+    "tips": {
+      "lines": [
+        "D'abord l'époque, puis le lieu, puis le domaine",
+        "Ne répète pas un indice que tu as déjà",
+        "Garde ta réponse pour quand tu es sûr"
+      ],
+      "voice": "J'étais Cléopâtre ! Commence par l'époque, puis le lieu, puis le domaine. Ne gaspille pas de questions sur des indices que tu as déjà. À toi de jouer. Appuie sur start."
+    }
+  },
+  "impersonaTu": {
+    "mission": {
+      "title": "MISSION : DEVIENS QUELQU'UN D'AUTRE",
+      "lines": [
+        "Tu joues un personnage historique.",
+        "Tu dialogues avec un autre personnage."
+      ],
+      "voice": "Aujourd'hui, tu portes un masque. Tu deviens un personnage et tu parles comme lui. Je serai ton interlocuteur et je te mettrai à l'épreuve."
+    },
+    "task": {
+      "lines": [
+        "1. Choisis qui tu joues",
+        "2. Choisis le personnage de l'IA",
+        "3. Choisis le sujet",
+        "4. Reste dans ton rôle jusqu'à la fin"
+      ],
+      "voice": "Parle à la première personne, avec les idées et le langage de ton personnage. Si tu dis quelque chose de faux sur sa vie, je m'en apercevrai et je te le ferai remarquer."
+    },
+    "path": {
+      "extra": "Chacun de tes messages est une réplique de ton personnage."
+    },
+    "progress": {
+      "goal": "Cite un fait réel de la vie de ton personnage"
+    },
+    "grading": {
+      "plus": [
+        "Des faits historiques exacts",
+        "Une cohérence avec les idées du personnage",
+        "Des réponses vives aux questions de l'IA"
+      ],
+      "reflection": "Comment as-tu joué ton personnage ? Comment Léonard a-t-il réagi, et qu'as-tu appris sur les deux ?"
+    },
+    "tips": {
+      "lines": [
+        "Lis sa biographie avant de commencer",
+        "Dis je : j'ai découvert, j'ai écrit",
+        "Si tu ne sais pas, réponds comme il le ferait"
+      ],
+      "voice": "Étudie la biographie avant d'entrer en scène. Parle toujours à la première personne. Et si tu ne sais pas quelque chose, pense à la façon dont ton personnage répondrait. Lever de rideau ! Appuie sur start."
+    }
+  },
+  "youModerate": {
+    "mission": {
+      "title": "MISSION : MENE LE DEBAT",
+      "lines": [
+        "Deux personnages débattent.",
+        "Tu es le modérateur."
+      ],
+      "voice": "Einstein et moi avons des idées fortes. Sans modérateur, nous parlerions pendant des heures. Le micro est à toi."
+    },
+    "task": {
+      "lines": [
+        "1. Choisis deux personnages et le thème",
+        "2. Donne la parole et pose des questions",
+        "3. Demande d'être bref, ramène au sujet",
+        "4. Conclus et écris la réflexion"
+      ],
+      "voice": "Tu peux nous poser des questions, demander à l'un de répondre à l'autre, nous dire d'être brefs. Nous suivons tes indications."
+    },
+    "path": {
+      "extra": "C'est toi qui décides qui parle et de quoi."
+    },
+    "progress": {
+      "goal": "Pose une question qui oblige les deux à se confronter"
+    },
+    "grading": {
+      "plus": [
+        "Des questions qui lancent le débat",
+        "De l'équilibre : chacun a sa place",
+        "Des interventions quand le débat s'égare"
+      ],
+      "reflection": "Comment as-tu modéré le débat entre Curie et Einstein ? Quelles questions l'ont rendu plus intéressant ?"
+    },
+    "tips": {
+      "lines": [
+        "Ouvre avec une question qui divise",
+        "Demande à l'un de répondre à l'autre",
+        "Résume avant de changer de sujet"
+      ],
+      "voice": "Ouvre avec une question qui nous divise. Fais répondre l'un à l'autre. Résume avant de passer à la suite. Le temps est relatif, ton tour non. Appuie sur start."
+    }
+  },
+  "wikiChatbot": {
+    "mission": {
+      "title": "MISSION : PARLE AVEC UN SUJET",
+      "lines": [
+        "Choisis un article de Wikipédia.",
+        "Il devient un personnage à qui parler."
+      ],
+      "voice": "Je suis Ada Lovelace. Ici, chaque article de Wikipédia prend la parole : une personne, un lieu, un événement, une idée. Regarde : le Colisée te salue."
+    },
+    "task": {
+      "lines": [
+        "1. Cherche et choisis un article de Wikipédia",
+        "2. Pose des questions au sujet",
+        "3. Approfondis et relie d'autres thèmes",
+        "4. Écris ce que tu as appris"
+      ],
+      "voice": "Demande-moi qui m'a construit, à quoi je servais, ce que j'ai vu. Je réponds avec les faits de mon article de Wikipédia."
+    },
+    "path": {
+      "extra": "Plus tes questions sont précises, plus tu découvres."
+    },
+    "progress": {
+      "goal": "Demande les causes et les conséquences d'un événement"
+    },
+    "grading": {
+      "plus": [
+        "Des questions qui vont en profondeur",
+        "Des liens avec d'autres sujets",
+        "Des faits appris et de nouvelles questions dans la réflexion"
+      ],
+      "reflection": "Qu'as-tu appris sur le Colisée ? Qu'est-ce qui t'a surpris ? Que voudrais-tu encore savoir ?"
+    },
+    "tips": {
+      "lines": [
+        "Pars d'une vraie curiosité",
+        "Demande pourquoi après chaque réponse",
+        "Vérifie les faits importants sur Wikipédia"
+      ],
+      "voice": "Pars d'une vraie curiosité. Après chaque réponse intéressante, demande pourquoi. Et vérifie les faits importants dans l'article de Wikipédia. Exécute le programme : appuie sur start."
+    }
+  }
+}

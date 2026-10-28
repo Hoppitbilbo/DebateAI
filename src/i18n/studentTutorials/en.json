@@ -1,0 +1,249 @@
+{
+  "characters": {
+    "napoleon": "Napoleon",
+    "galileo": "Galileo",
+    "aristotle": "Aristotle",
+    "shadow": "???",
+    "cleopatra": "Cleopatra",
+    "leonardo": "Leonardo",
+    "curie": "Marie Curie",
+    "einstein": "Einstein",
+    "ada": "Ada Lovelace",
+    "colosseum": "Colosseum",
+    "student": "You"
+  },
+  "common": {
+    "taskTitle": "YOUR TASK",
+    "tipsTitle": "TIPS",
+    "pressStart": "PRESS START",
+    "path": {
+      "title": "THE PATH",
+      "levels": ["SETUP", "CONVERSATION", "REFLECTION", "FEEDBACK"],
+      "voice": "The path has four levels. You set up the game, you chat, you write a reflection and you get feedback. Every level counts."
+    },
+    "progress": {
+      "title": "THE PROGRESS BAR",
+      "barLabel": "PROGRESS",
+      "warning": "OFF TOPIC? Back to the task",
+      "lines": [
+        "Goal reached: a tick appears",
+        "Progress: goals reached in %",
+        "Off topic: you get a warning"
+      ],
+      "voice": "If your teacher gave you an assignment, you see the list of goals. After each of your messages an automatic judge checks how far you are. When you reach a goal, a tick appears. What counts is what you do: if the character says everything, the goal stays open. If you go off topic, or try to push the character out of their role, you get a warning."
+    },
+    "grading": {
+      "title": "HOW YOU ARE GRADED",
+      "conversation": "CONVERSATION",
+      "reflection": "REFLECTION",
+      "sample": "example",
+      "reflectionTitle": "The reflection question",
+      "voice": "At the end you get two marks from zero to ten: one for the conversation, one for the reflection. The feedback quotes real moments from your chat, tells you what to improve and checks every goal set by your teacher. Short or shallow work gets a low mark.",
+      "reflectionVoice": "In the reflection you answer this question:"
+    }
+  },
+  "convinciTu": {
+    "mission": {
+      "title": "MISSION: CONVINCE THE EMPEROR",
+      "lines": ["Choose a historical figure.", "Convince them of an idea."],
+      "voice": "I am Napoleon. I conquered half of Europe and I rarely change my mind. You want to convince me? You will need solid arguments."
+    },
+    "task": {
+      "lines": [
+        "1. Choose the character",
+        "2. Write the idea you defend",
+        "3. Argue and answer the objections",
+        "4. Write the final reflection"
+      ],
+      "voice": "Choose who to convince and write the idea. I will defend the point of view of my time and ask you hard questions. I will change my mind little by little, and only when faced with strong reasons."
+    },
+    "path": { "extra": "The character gives in little by little: every good argument counts." },
+    "progress": { "goal": "Use an argument linked to the character's time" },
+    "grading": {
+      "plus": [
+        "Arguments that fit their time and values",
+        "Answers to their objections",
+        "Evidence and concrete examples"
+      ],
+      "reflection": "How did you try to convince Napoleon? Which arguments worked, and why?"
+    },
+    "tips": {
+      "lines": [
+        "Talk about what he cares for: glory, order, France",
+        "One point per message",
+        "His questions show you the weak spot"
+      ],
+      "voice": "Talk about what matters to me. Make one point at a time. And listen to my questions: they show you where to strike. Charge, soldier! Press start."
+    }
+  },
+  "doppiaIntervista": {
+    "mission": {
+      "title": "MISSION: ONE QUESTION, TWO ANSWERS",
+      "lines": ["You interview two characters together.", "You compare what they say."],
+      "voice": "I am Galileo, he is Aristotle. About the sky we think the opposite. Ask us both the same question and see what happens."
+    },
+    "task": {
+      "lines": [
+        "1. Choose two characters",
+        "2. Ask questions: both answer",
+        "3. Compare the answers",
+        "4. Explain the differences in the reflection"
+      ],
+      "voice": "Every question reaches both of us. The answers appear side by side. Your job is to notice where we agree and where we don't."
+    },
+    "path": { "extra": "Two columns, two points of view." },
+    "progress": { "goal": "Ask a question that sets the two views against each other" },
+    "grading": {
+      "plus": [
+        "Open questions that bring out differences",
+        "Follow-up questions on the answers",
+        "A precise comparison in the reflection"
+      ],
+      "reflection": "How did Galileo's and Aristotle's points of view differ? What did you learn by comparing them?"
+    },
+    "tips": {
+      "lines": [
+        "Prefer why and how to yes/no questions",
+        "Take a sentence from one and ask the other",
+        "Note the differences as you read"
+      ],
+      "voice": "Ask why and how. Tell one what the other said. Note the differences. Observe, compare, reason. Press start."
+    }
+  },
+  "personaggioMisterioso": {
+    "mission": {
+      "title": "MISSION: WHO AM I?",
+      "lines": ["Guess the secret character.", "You have a limited number of questions."],
+      "voice": "Who am I? I won't tell you. I'll give you clues. You have few questions: use them well."
+    },
+    "task": {
+      "lines": [
+        "1. The character is secret",
+        "2. You have 3 to 15 questions (usually 7)",
+        "3. Collect clues: era, place, job",
+        "4. Guess and explain your reasoning"
+      ],
+      "voice": "The teacher picks the character, or it arrives as a surprise. I always answer truthfully, with indirect clues. If you ask whether I am a certain person, I only answer yes or no. To guess, one correctly spelled word of the name is enough, like Caesar or Leonardo."
+    },
+    "path": { "extra": "The question counter goes down with every message." },
+    "progress": { "goal": "Use questions that narrow down the options" },
+    "grading": {
+      "plus": [
+        "Strategic questions, from general to specific",
+        "Few questions used and the name guessed",
+        "Clear reasoning, even if you are wrong"
+      ],
+      "reflection": "Which questions were the most useful? How would you change your strategy?"
+    },
+    "tips": {
+      "lines": [
+        "First the era, then the place, then the field",
+        "Don't repeat a clue you already have",
+        "Save your guess for when you are sure"
+      ],
+      "voice": "I was Cleopatra! Start with the era, then the place, then the field. Don't waste questions on clues you already have. Now it's your turn. Press start."
+    }
+  },
+  "impersonaTu": {
+    "mission": {
+      "title": "MISSION: BECOME SOMEONE ELSE",
+      "lines": ["You play a historical figure.", "You talk with another character."],
+      "voice": "Today you put on a mask. You become a character and speak like them. I will be the one you talk to, and I will put you to the test."
+    },
+    "task": {
+      "lines": [
+        "1. Choose who you play",
+        "2. Choose the AI's character",
+        "3. Choose the topic",
+        "4. Stay in role until the end"
+      ],
+      "voice": "Speak in the first person, with your character's ideas and language. If you say something wrong about their life, I will notice and point it out."
+    },
+    "path": { "extra": "Each of your messages is a line from your character." },
+    "progress": { "goal": "Mention a true fact from your character's life" },
+    "grading": {
+      "plus": [
+        "Correct historical facts",
+        "Consistency with the character's ideas",
+        "Quick answers to the AI's questions"
+      ],
+      "reflection": "How did you play your character? How did Leonardo react, and what did you learn about both of them?"
+    },
+    "tips": {
+      "lines": [
+        "Read their biography before you start",
+        "Use I: I discovered, I wrote",
+        "If you don't know something, answer as they would"
+      ],
+      "voice": "Study the biography before you go on stage. Always speak in the first person. And if you don't know something, think how your character would answer. Curtain up! Press start."
+    }
+  },
+  "youModerate": {
+    "mission": {
+      "title": "MISSION: LEAD THE DEBATE",
+      "lines": ["Two characters argue.", "You are the moderator."],
+      "voice": "Einstein and I have strong ideas. Without a moderator we would talk for hours. The microphone is yours."
+    },
+    "task": {
+      "lines": [
+        "1. Choose two characters and the topic",
+        "2. Give the floor and ask questions",
+        "3. Ask for brevity, bring them back on topic",
+        "4. Close and write the reflection"
+      ],
+      "voice": "You can ask us questions, ask one of us to answer the other, tell us to be brief. We follow your lead."
+    },
+    "path": { "extra": "You decide who speaks and about what." },
+    "progress": { "goal": "Ask a question that makes the two confront each other" },
+    "grading": {
+      "plus": [
+        "Questions that spark the debate",
+        "Balance: both get room to speak",
+        "Stepping in when the debate drifts"
+      ],
+      "reflection": "How did you moderate the debate between Curie and Einstein? Which questions made it more interesting?"
+    },
+    "tips": {
+      "lines": [
+        "Open with a question that divides",
+        "Ask one to answer the other",
+        "Sum up before changing topic"
+      ],
+      "voice": "Open with a question that divides us. Have one answer the other. Sum up before moving on. Time is relative, your turn is not. Press start."
+    }
+  },
+  "wikiChatbot": {
+    "mission": {
+      "title": "MISSION: TALK TO A TOPIC",
+      "lines": ["Choose a Wikipedia article.", "It becomes a character you can talk to."],
+      "voice": "I am Ada Lovelace. Here every Wikipedia article can speak: a person, a place, an event, an idea. Look: the Colosseum says hello."
+    },
+    "task": {
+      "lines": [
+        "1. Search and choose a Wikipedia article",
+        "2. Ask the topic questions",
+        "3. Dig deeper and link other topics",
+        "4. Write what you learned"
+      ],
+      "voice": "Ask me who built me, what I was for, what I have seen. I answer with the facts in my Wikipedia article."
+    },
+    "path": { "extra": "The more precise your questions, the more you discover." },
+    "progress": { "goal": "Ask about the causes and consequences of an event" },
+    "grading": {
+      "plus": [
+        "Questions that go in depth",
+        "Links to other topics",
+        "Facts learned and new questions in the reflection"
+      ],
+      "reflection": "What did you learn about the Colosseum? What surprised you? What would you still like to know?"
+    },
+    "tips": {
+      "lines": [
+        "Start from a real curiosity",
+        "Ask why after every answer",
+        "Check the important facts on Wikipedia"
+      ],
+      "voice": "Start from a real curiosity. After every interesting answer, ask why. And check the important facts in the Wikipedia article. Run the program: press start."
+    }
+  }
+}

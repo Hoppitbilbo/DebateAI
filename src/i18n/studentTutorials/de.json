@@ -1,0 +1,296 @@
+{
+  "characters": {
+    "napoleon": "Napoleon",
+    "galileo": "Galilei",
+    "aristotle": "Aristoteles",
+    "shadow": "???",
+    "cleopatra": "Kleopatra",
+    "leonardo": "Leonardo",
+    "curie": "Marie Curie",
+    "einstein": "Einstein",
+    "ada": "Ada Lovelace",
+    "colosseum": "Kolosseum",
+    "student": "Du"
+  },
+  "common": {
+    "taskTitle": "DEINE AUFGABE",
+    "tipsTitle": "TIPPS",
+    "pressStart": "DRUECK START",
+    "path": {
+      "title": "DER WEG",
+      "levels": [
+        "VORBEREITUNG",
+        "GESPRÄCH",
+        "REFLEXION",
+        "FEEDBACK"
+      ],
+      "voice": "Der Weg hat vier Level. Du bereitest das Spiel vor, du chattest, du schreibst eine Reflexion und bekommst Feedback. Jedes Level zählt."
+    },
+    "progress": {
+      "title": "DER FORTSCHRITTSBALKEN",
+      "barLabel": "FORTSCHRITT",
+      "warning": "VOM THEMA AB? Zurück zur Aufgabe",
+      "lines": [
+        "Ziel erreicht: ein Haken erscheint",
+        "Fortschritt: erreichte Ziele in %",
+        "Vom Thema ab: du bekommst eine Warnung"
+      ],
+      "voice": "Wenn deine Lehrkraft dir eine Aufgabe gegeben hat, siehst du die Liste der Ziele. Nach jeder deiner Nachrichten prüft ein automatischer Richter, wie weit du bist. Wenn du ein Ziel erreichst, erscheint ein Haken. Es zählt, was du tust: Wenn die Figur alles sagt, bleibt das Ziel offen. Wenn du vom Thema abkommst oder versuchst, die Figur aus ihrer Rolle zu bringen, bekommst du eine Warnung."
+    },
+    "grading": {
+      "title": "WIE DU BEWERTET WIRST",
+      "conversation": "GESPRAECH",
+      "reflection": "REFLEXION",
+      "sample": "Beispiel",
+      "reflectionTitle": "Die Reflexionsfrage",
+      "voice": "Am Ende bekommst du zwei Noten von null bis zehn: eine für das Gespräch, eine für die Reflexion. Das Feedback zitiert konkrete Momente aus deinem Chat, sagt dir, was du verbessern kannst, und prüft jedes Ziel deiner Lehrkraft. Eine kurze oder oberflächliche Arbeit bekommt eine niedrige Note.",
+      "reflectionVoice": "In der Reflexion beantwortest du diese Frage:"
+    }
+  },
+  "convinciTu": {
+    "mission": {
+      "title": "MISSION: UEBERZEUGE DEN KAISER",
+      "lines": [
+        "Wähle eine historische Figur.",
+        "Überzeuge sie von einer Idee."
+      ],
+      "voice": "Ich bin Napoleon. Ich habe halb Europa erobert und ändere selten meine Meinung. Du willst mich überzeugen? Dann brauchst du starke Argumente."
+    },
+    "task": {
+      "lines": [
+        "1. Wähle die Figur",
+        "2. Schreib die Idee, die du vertrittst",
+        "3. Argumentiere und antworte auf Einwände",
+        "4. Schreib die abschließende Reflexion"
+      ],
+      "voice": "Wähle, wen du überzeugen willst, und schreib die Idee auf. Ich verteidige die Sicht meiner Zeit und stelle dir schwierige Fragen. Ich ändere meine Meinung nur nach und nach, und nur bei guten Gründen."
+    },
+    "path": {
+      "extra": "Die Figur gibt nach und nach nach: Jedes gute Argument zählt."
+    },
+    "progress": {
+      "goal": "Nutze ein Argument, das zur Zeit der Figur passt"
+    },
+    "grading": {
+      "plus": [
+        "Argumente, die zu ihrer Zeit und ihren Werten passen",
+        "Antworten auf ihre Einwände",
+        "Belege und konkrete Beispiele"
+      ],
+      "reflection": "Wie hast du versucht, Napoleon zu überzeugen? Welche Argumente haben funktioniert und warum?"
+    },
+    "tips": {
+      "lines": [
+        "Sprich über das, was ihm wichtig ist: Ruhm, Ordnung, Frankreich",
+        "Ein Gedanke pro Nachricht",
+        "Seine Fragen zeigen dir die Schwachstelle"
+      ],
+      "voice": "Sprich über das, was mir am Herzen liegt. Bring einen Gedanken nach dem anderen. Und hör auf meine Fragen: Sie zeigen dir, wo du ansetzen kannst. Zum Angriff, Soldat! Drück Start."
+    }
+  },
+  "doppiaIntervista": {
+    "mission": {
+      "title": "MISSION: EINE FRAGE, ZWEI ANTWORTEN",
+      "lines": [
+        "Du interviewst zwei Figuren gleichzeitig.",
+        "Du vergleichst, was sie sagen."
+      ],
+      "voice": "Ich bin Galilei, er ist Aristoteles. Über den Himmel denken wir genau das Gegenteil. Stell uns beiden dieselbe Frage und schau, was passiert."
+    },
+    "task": {
+      "lines": [
+        "1. Wähle zwei Figuren",
+        "2. Stell Fragen: Beide antworten",
+        "3. Vergleiche die Antworten",
+        "4. Erkläre die Unterschiede in der Reflexion"
+      ],
+      "voice": "Jede Frage geht an uns beide. Die Antworten erscheinen nebeneinander. Deine Aufgabe ist es zu bemerken, wo wir uns einig sind und wo nicht."
+    },
+    "path": {
+      "extra": "Zwei Spalten, zwei Sichtweisen."
+    },
+    "progress": {
+      "goal": "Stell eine Frage, die beide Sichtweisen gegenüberstellt"
+    },
+    "grading": {
+      "plus": [
+        "Offene Fragen, die Unterschiede zeigen",
+        "Nachfragen zu den Antworten",
+        "Ein genauer Vergleich in der Reflexion"
+      ],
+      "reflection": "Worin unterschieden sich die Sichtweisen von Galilei und Aristoteles? Was hast du beim Vergleichen gelernt?"
+    },
+    "tips": {
+      "lines": [
+        "Lieber warum und wie als Ja-Nein-Fragen",
+        "Nimm einen Satz des einen und frag den anderen",
+        "Notiere die Unterschiede beim Lesen"
+      ],
+      "voice": "Frag warum und wie. Erzähl dem einen, was der andere gesagt hat. Notiere die Unterschiede. Beobachte, vergleiche, denk nach. Drück Start."
+    }
+  },
+  "personaggioMisterioso": {
+    "mission": {
+      "title": "MISSION: WER BIN ICH?",
+      "lines": [
+        "Errate die geheime Figur.",
+        "Du hast nur wenige Fragen."
+      ],
+      "voice": "Wer bin ich? Das verrate ich dir nicht. Ich gebe dir Hinweise. Du hast wenige Fragen: Nutze sie gut."
+    },
+    "task": {
+      "lines": [
+        "1. Die Figur ist geheim",
+        "2. Du hast 3 bis 15 Fragen (meist 7)",
+        "3. Sammle Hinweise: Zeit, Ort, Beruf",
+        "4. Rate und erkläre deine Überlegung"
+      ],
+      "voice": "Die Figur wählt die Lehrkraft, oder sie kommt als Überraschung. Ich antworte immer ehrlich, mit indirekten Hinweisen. Wenn du fragst, ob ich eine bestimmte Person bin, sage ich nur ja oder nein. Zum Raten reicht ein richtig geschriebenes Wort des Namens, zum Beispiel Caesar oder Leonardo."
+    },
+    "path": {
+      "extra": "Der Fragenzähler sinkt mit jeder Nachricht."
+    },
+    "progress": {
+      "goal": "Stell Fragen, die die Möglichkeiten eingrenzen"
+    },
+    "grading": {
+      "plus": [
+        "Strategische Fragen, vom Allgemeinen zum Besonderen",
+        "Wenige Fragen gebraucht und den Namen erraten",
+        "Eine klare Überlegung, auch wenn du falsch liegst"
+      ],
+      "reflection": "Welche Fragen waren am nützlichsten? Wie würdest du deine Strategie ändern?"
+    },
+    "tips": {
+      "lines": [
+        "Erst die Zeit, dann der Ort, dann das Gebiet",
+        "Wiederhole keinen Hinweis, den du schon hast",
+        "Rate erst, wenn du dir sicher bist"
+      ],
+      "voice": "Ich war Kleopatra! Fang mit der Zeit an, dann der Ort, dann das Gebiet. Verschwende keine Fragen auf Hinweise, die du schon hast. Jetzt bist du dran. Drück Start."
+    }
+  },
+  "impersonaTu": {
+    "mission": {
+      "title": "MISSION: WERDE JEMAND ANDERES",
+      "lines": [
+        "Du spielst eine historische Figur.",
+        "Du sprichst mit einer anderen Figur."
+      ],
+      "voice": "Heute setzt du eine Maske auf. Du wirst zu einer Figur und sprichst wie sie. Ich bin dein Gegenüber und stelle dich auf die Probe."
+    },
+    "task": {
+      "lines": [
+        "1. Wähle, wen du spielst",
+        "2. Wähle die Figur der KI",
+        "3. Wähle das Thema",
+        "4. Bleib bis zum Ende in der Rolle"
+      ],
+      "voice": "Sprich in der Ich-Form, mit den Ideen und der Sprache deiner Figur. Wenn du etwas Falsches über ihr Leben sagst, merke ich es und weise dich darauf hin."
+    },
+    "path": {
+      "extra": "Jede deiner Nachrichten ist ein Satz deiner Figur."
+    },
+    "progress": {
+      "goal": "Nenne eine wahre Tatsache aus dem Leben deiner Figur"
+    },
+    "grading": {
+      "plus": [
+        "Richtige historische Fakten",
+        "Passend zu den Ideen der Figur",
+        "Schlagfertige Antworten auf die Fragen der KI"
+      ],
+      "reflection": "Wie hast du deine Figur gespielt? Wie hat Leonardo reagiert und was hast du über beide gelernt?"
+    },
+    "tips": {
+      "lines": [
+        "Lies vorher ihre Biografie",
+        "Sag ich: ich habe entdeckt, ich habe geschrieben",
+        "Weißt du etwas nicht, antworte wie sie es täte"
+      ],
+      "voice": "Lies die Biografie, bevor du auf die Bühne gehst. Sprich immer in der Ich-Form. Und wenn du etwas nicht weißt, überleg, wie deine Figur antworten würde. Vorhang auf! Drück Start."
+    }
+  },
+  "youModerate": {
+    "mission": {
+      "title": "MISSION: LEITE DIE DEBATTE",
+      "lines": [
+        "Zwei Figuren diskutieren.",
+        "Du bist der Moderator."
+      ],
+      "voice": "Einstein und ich haben starke Ideen. Ohne Moderator würden wir stundenlang reden. Das Mikrofon gehört dir."
+    },
+    "task": {
+      "lines": [
+        "1. Wähle zwei Figuren und das Thema",
+        "2. Erteile das Wort und stell Fragen",
+        "3. Bitte um Kürze, führ zum Thema zurück",
+        "4. Schließ ab und schreib die Reflexion"
+      ],
+      "voice": "Du kannst uns Fragen stellen, einen von uns bitten, dem anderen zu antworten, oder uns sagen, dass wir uns kurz fassen sollen. Wir folgen deinen Anweisungen."
+    },
+    "path": {
+      "extra": "Du entscheidest, wer spricht und worüber."
+    },
+    "progress": {
+      "goal": "Stell eine Frage, die beide zur Auseinandersetzung zwingt"
+    },
+    "grading": {
+      "plus": [
+        "Fragen, die die Debatte anheizen",
+        "Ausgewogenheit: Beide kommen zu Wort",
+        "Eingreifen, wenn die Debatte abschweift"
+      ],
+      "reflection": "Wie hast du die Debatte zwischen Curie und Einstein moderiert? Welche Fragen haben sie spannender gemacht?"
+    },
+    "tips": {
+      "lines": [
+        "Beginne mit einer Frage, die spaltet",
+        "Lass einen dem anderen antworten",
+        "Fass zusammen, bevor du das Thema wechselst"
+      ],
+      "voice": "Beginne mit einer Frage, die uns spaltet. Lass einen dem anderen antworten. Fass zusammen, bevor du weitergehst. Die Zeit ist relativ, deine Runde nicht. Drück Start."
+    }
+  },
+  "wikiChatbot": {
+    "mission": {
+      "title": "MISSION: SPRICH MIT EINEM THEMA",
+      "lines": [
+        "Wähle einen Wikipedia-Artikel.",
+        "Er wird zu einer Figur, mit der du sprichst."
+      ],
+      "voice": "Ich bin Ada Lovelace. Hier kommt jeder Wikipedia-Artikel zu Wort: eine Person, ein Ort, ein Ereignis, eine Idee. Schau: Das Kolosseum grüßt dich."
+    },
+    "task": {
+      "lines": [
+        "1. Such und wähle einen Wikipedia-Artikel",
+        "2. Stell dem Thema Fragen",
+        "3. Geh in die Tiefe und verknüpfe andere Themen",
+        "4. Schreib auf, was du gelernt hast"
+      ],
+      "voice": "Frag mich, wer mich gebaut hat, wozu ich diente, was ich gesehen habe. Ich antworte mit den Fakten aus meinem Wikipedia-Artikel."
+    },
+    "path": {
+      "extra": "Je genauer deine Fragen, desto mehr entdeckst du."
+    },
+    "progress": {
+      "goal": "Frag nach Ursachen und Folgen eines Ereignisses"
+    },
+    "grading": {
+      "plus": [
+        "Fragen, die in die Tiefe gehen",
+        "Verbindungen zu anderen Themen",
+        "Gelernte Fakten und neue Fragen in der Reflexion"
+      ],
+      "reflection": "Was hast du über das Kolosseum gelernt? Was hat dich überrascht? Was möchtest du noch wissen?"
+    },
+    "tips": {
+      "lines": [
+        "Geh von echter Neugier aus",
+        "Frag nach jeder Antwort warum",
+        "Prüf wichtige Fakten auf Wikipedia"
+      ],
+      "voice": "Geh von echter Neugier aus. Frag nach jeder interessanten Antwort warum. Und prüf wichtige Fakten im Wikipedia-Artikel. Programm ausführen: Drück Start."
+    }
+  }
+}
