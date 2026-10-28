@@ -3,6 +3,7 @@ package store
 import (
 	"database/sql"
 	"errors"
+	"strings"
 
 	"github.com/Hoppitbilbo/DebateAI/server/internal/domain"
 )
@@ -59,14 +60,18 @@ func (r *Classes) Name(id int64) string {
 	return name
 }
 
+// notRoomClass hides the classes rooms create for their own assignment.
+const notRoomClass = ` c.id NOT IN (SELECT own_class_id FROM rooms WHERE own_class_id IS NOT NULL)`
+
 // ListAll returns every class, active ones first.
 func (r *Classes) ListAll() ([]*domain.Class, error) {
-	return r.list(` ORDER BY c.archived, c.created_at DESC`)
+	return r.list(` WHERE` + notRoomClass + ` ORDER BY c.archived, c.created_at DESC`)
 }
 
 // ListTaughtBy returns the classes a user owns or co-teaches.
 func (r *Classes) ListTaughtBy(userID int64) ([]*domain.Class, error) {
-	return r.list(` WHERE c.owner_id = ? OR c.id IN (SELECT class_id FROM class_members WHERE user_id = ? AND role = 'teacher') ORDER BY c.archived, c.created_at DESC`, userID, userID)
+	return r.list(` WHERE (c.owner_id = ? OR c.id IN (SELECT class_id FROM class_members WHERE user_id = ? AND role = 'teacher')) AND`+notRoomClass+
+		` ORDER BY c.archived, c.created_at DESC`, userID, userID)
 }
 
 // ListJoinedBy returns the active classes a user belongs to, by name.
@@ -89,21 +94,29 @@ func (r *Classes) Create(name, description string, ownerID int64) (int64, error)
 		return 0, err
 	}
 	defer tx.Rollback()
-	var id int64
-	for attempt := 0; attempt < 5 && id == 0; attempt++ { // join codes are unique
-		res, err := tx.Exec(`INSERT INTO classes(name, description, join_code, owner_id, created_at) VALUES(?,?,?,?,?)`,
-			name, description, domain.NewJoinCode(), ownerID, domain.Now())
-		if err == nil {
-			id, _ = res.LastInsertId()
-		}
-	}
-	if id == 0 {
-		return 0, errNoJoinCode
+	id, err := insertClass(tx, name, description, &ownerID, false)
+	if err != nil {
+		return 0, err
 	}
 	if _, err := tx.Exec(`INSERT OR IGNORE INTO class_members(class_id, user_id, role, joined_at) VALUES(?,?,?,?)`, id, ownerID, domain.RoleTeacher, domain.Now()); err != nil {
 		return 0, err
 	}
 	return id, tx.Commit()
+}
+
+// insertClass stores a class with a fresh join code (they are unique).
+func insertClass(db execer, name, description string, ownerID *int64, archived bool) (int64, error) {
+	for attempt := 0; attempt < 5; attempt++ {
+		res, err := db.Exec(`INSERT INTO classes(name, description, join_code, owner_id, archived, created_at) VALUES(?,?,?,?,?,?)`,
+			name, description, domain.NewJoinCode(), ownerID, boolInt(archived), domain.Now())
+		if err == nil {
+			return res.LastInsertId()
+		}
+		if !strings.Contains(err.Error(), "UNIQUE") {
+			return 0, err
+		}
+	}
+	return 0, errNoJoinCode
 }
 
 // Update applies the non-nil fields of p in one transaction.

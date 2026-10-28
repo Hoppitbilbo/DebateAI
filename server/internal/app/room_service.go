@@ -58,9 +58,13 @@ type RoomRequest struct {
 	Title        string `json:"title"`
 	Instructions string `json:"instructions"`
 	AppType      string `json:"appType"`
-	AssignmentID int64  `json:"assignmentId"` // 0: free activity
-	Minutes      int    `json:"minutes"`
-	MaxGuests    int    `json:"maxGuests"`
+	AssignmentID int64  `json:"assignmentId"` // an existing assignment of the teacher's classes
+	// Assignment is a new assignment for this room only (characters, topic,
+	// goals, turns): it lives and dies with the room. Without it and without
+	// AssignmentID the students choose freely.
+	Assignment *AssignmentInput `json:"assignment"`
+	Minutes    int              `json:"minutes"`
+	MaxGuests  int              `json:"maxGuests"`
 }
 
 // OpenedRoom is the new room with the secret key that manages it; the key
@@ -80,8 +84,13 @@ func (svc *roomService) Open(u *domain.User, in RoomRequest) (*OpenedRoom, error
 	if err := svc.setHost(&n, u, cfg); err != nil {
 		return nil, err
 	}
-	if in.AssignmentID > 0 {
+	switch {
+	case in.AssignmentID > 0:
 		if err := svc.setAssignment(&n, u, in.AssignmentID); err != nil {
+			return nil, err
+		}
+	case in.Assignment != nil:
+		if err := setOwnAssignment(&n, *in.Assignment); err != nil {
 			return nil, err
 		}
 	}
@@ -129,6 +138,25 @@ func (svc *roomService) setAssignment(n *domain.NewRoom, u *domain.User, assignm
 	n.AssignmentID, n.AppType = &a.ID, a.AppType
 	if n.Title == "" {
 		n.Title = a.Title
+	}
+	return nil
+}
+
+// setOwnAssignment gives the room an assignment of its own, read like a
+// class assignment: always published, no due date (the room has its end),
+// no live voice (guests never get it).
+func setOwnAssignment(n *domain.NewRoom, in AssignmentInput) error {
+	a, err := in.newAssignment()
+	if err != nil {
+		return err
+	}
+	a.Published, a.AllowLive, a.DueAt = true, false, nil
+	n.OwnAssignment, n.AppType = &a, a.AppType
+	if n.Title == "" {
+		n.Title = a.Title
+	}
+	if n.Instructions == "" {
+		n.Instructions = a.Instructions
 	}
 	return nil
 }

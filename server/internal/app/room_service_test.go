@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"strings"
 	"testing"
@@ -306,5 +307,50 @@ func TestRoomExportAndImport(t *testing.T) {
 	}
 	if _, err := s.Users.Get(marco.ID); err == nil {
 		t.Fatal("the guest account is gone")
+	}
+}
+
+// A substitute without an account fixes characters, topic and goals: the
+// guests go straight to that assignment, like the students of a class.
+func TestRoomWithItsOwnAssignment(t *testing.T) {
+	s := newTestServer(t)
+	config := json.RawMessage(`{"userCharacter":{"title":"Dante Alighieri"},"aiCharacter":{"title":"Virgilio"},"topic":"Inferno"}`)
+	opened, err := s.RoomSvc.Open(nil, RoomRequest{Minutes: 60, Assignment: &AssignmentInput{
+		Title: ptr("Dante e Virgilio"), AppType: ptr("impersona-tu"), Instructions: ptr("Fai parlare Dante"), Config: &config,
+		Goals: &[]string{"Chiede del primo cerchio"}, MaxTurns: ptr(6), AllowLive: ptr(true), Published: ptr(false),
+	}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	room := opened.Room
+	if room.AssignmentID == nil || room.AppType != "impersona-tu" || room.Title != "Dante e Virgilio" || room.Instructions != "Fai parlare Dante" {
+		t.Fatalf("room: %+v", room)
+	}
+	a, _ := s.Assignments.Get(*room.AssignmentID)
+	if !a.Published || a.AllowLive || a.MaxTurns != 6 || len(a.Goals) != 1 || !strings.Contains(string(a.Config), "Virgilio") {
+		t.Fatalf("the room assignment is published, without live voice: %+v", a)
+	}
+
+	guest := joinRoom(t, s, room.Code, "Anna")
+	if gr, _ := s.RoomSvc.ForGuest(guest); gr.AssignmentID == nil || *gr.AssignmentID != a.ID {
+		t.Fatal("the guest is sent to the room assignment")
+	}
+	if _, err := s.AssignmentSvc.Visible(guest, a.ID); err != nil {
+		t.Fatalf("the guest sees the fixed setup: %v", err)
+	}
+	if _, err := s.SessionSvc.Start(guest, NewAttempt{AppType: "impersona-tu", AssignmentID: a.ID}); err != nil {
+		t.Fatalf("the guest starts it: %v", err)
+	}
+
+	if _, err := s.RoomSvc.Open(nil, RoomRequest{Assignment: &AssignmentInput{AppType: ptr("impersona-tu")}}); !errors.Is(err, ErrAssignmentInvalid) {
+		t.Fatalf("a room assignment needs a title: %v", err)
+	}
+
+	end, _ := s.RoomSvc.ForHost(opened.HostKey)
+	if err := s.RoomSvc.End(end); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := s.Assignments.Get(a.ID); err == nil {
+		t.Fatal("the room assignment ends with the room")
 	}
 }

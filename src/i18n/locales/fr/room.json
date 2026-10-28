@@ -52,13 +52,7 @@
     "title": "Salle éclair",
     "subtitle": "Une salle temporaire : les élèves entrent avec un code, sans inscription. Elle s'efface toute seule après {{hours}} heures au plus.",
     "assignmentLabel": "Devoir",
-    "assignmentHint": "Choisis un devoir d'une de tes classes pour utiliser ses objectifs et l'évaluation automatique, ou une activité libre.",
-    "freeActivity": "Activité libre",
-    "appLabel": "Activité",
-    "titleLabel": "Titre",
-    "titlePlaceholder": "Ex. Interview de Napoléon",
-    "instructionsLabel": "Consigne pour les élèves",
-    "instructionsPlaceholder": "Que doivent-ils faire ? Ils la verront dès leur entrée.",
+    "assignmentHint": "Les élèves le font avec ses objectifs et l'évaluation automatique.",
     "durationLabel": "Durée",
     "minutes_one": "{{count}} minute",
     "minutes_other": "{{count}} minutes",
@@ -70,7 +64,11 @@
     "how4": "Télécharge les résultats ou importe-les dans une classe : après {{hours}} heures tout est effacé.",
     "anonymousNote": "Tu ouvres la salle sans compte : garde le lien de gestion affiché à la page suivante. Pour importer les résultats dans une classe, il te faudra un compte.",
     "loginNeeded": "Connecte-toi en tant qu'enseignant pour ouvrir une salle éclair.",
-    "disabled": "Les salles éclair ne sont pas activées sur ce site."
+    "disabled": "Les salles éclair ne sont pas activées sur ce site.",
+    "modePrepare": "Préparer l'activité",
+    "modeExisting": "Utiliser un devoir de mes classes",
+    "pickAssignment": "Choisis un devoir",
+    "prepareHint": "Prépare l'activité comme un devoir : les personnages, le sujet et les objectifs que tu fixes ici sont bloqués pour les élèves, qui entrent directement dans l'activité. Ce que tu laisses vide, ils le choisissent."
   },
   "host": {
     "subtitle": "Projette cette page : les élèves entrent avec le code.",

@@ -69,13 +69,24 @@ func (r *Assignments) ListForStudent(userID int64) ([]*domain.Assignment, error)
 }
 
 func (r *Assignments) Create(n domain.NewAssignment) (int64, error) {
+	return insertAssignment(r.db, n)
+}
+
+// execer is what a statement needs: the database or a transaction.
+type execer interface {
+	Exec(query string, args ...any) (sql.Result, error)
+}
+
+// insertAssignment stores a new assignment; rooms use it inside their own
+// transaction.
+func insertAssignment(db execer, n domain.NewAssignment) (int64, error) {
 	goals, _ := json.Marshal(n.Goals)
 	var due any
 	if n.DueAt != nil && *n.DueAt != "" {
 		due = *n.DueAt
 	}
 	now := domain.Now()
-	res, err := r.db.Exec(`INSERT INTO assignments(class_id, title, instructions, app_type, config_json, goals_json, min_turns, max_turns, auto_end, require_reflection, allow_live, published, due_at, created_by, created_at, updated_at)
+	res, err := db.Exec(`INSERT INTO assignments(class_id, title, instructions, app_type, config_json, goals_json, min_turns, max_turns, auto_end, require_reflection, allow_live, published, due_at, created_by, created_at, updated_at)
 		VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
 		n.ClassID, n.Title, n.Instructions, n.AppType, n.Config, string(goals), n.MinTurns, n.MaxTurns,
 		boolInt(n.AutoEnd), boolInt(n.RequireReflection), boolInt(n.AllowLive), boolInt(n.Published), due, n.CreatedBy, now, now)

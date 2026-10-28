@@ -164,3 +164,90 @@ func TestRoomsDeleteLeavesNothingBehind(t *testing.T) {
 		t.Fatalf("leftover rows: %d", n)
 	}
 }
+
+func TestRoomWithItsOwnAssignment(t *testing.T) {
+	db := openTestDB(t)
+	users := NewUsers(db)
+	classes := NewClasses(db)
+	assignments := NewAssignments(db)
+	sessions := NewActivitySessions(db)
+	teacher, _ := users.Create("t@x.it", "Prof", "", domain.RoleTeacher, "it")
+	real, _ := classes.Create("3A", "", teacher)
+	r := NewRooms(db)
+
+	id, err := r.Create(domain.NewRoom{HostTokenHash: "h", TeacherID: &teacher, AppType: "impersona-tu", Title: "Dante", MaxGuests: 30,
+		ExpiresAt:     time.Now().Add(time.Hour).UTC().Format(time.RFC3339),
+		OwnAssignment: &domain.NewAssignment{Title: "Dante", AppType: "impersona-tu", Config: `{"topic":"Inferno"}`, Goals: []string{"Chiede di Virgilio"}, MaxTurns: 8, Published: true}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	room, _ := r.Get(id)
+	if room.AssignmentID == nil {
+		t.Fatal("the room points to its assignment")
+	}
+	a, err := assignments.Get(*room.AssignmentID)
+	if err != nil || a.Title != "Dante" || a.MaxTurns != 8 || len(a.Goals) != 1 || !a.Published {
+		t.Fatalf("own assignment: %v %+v", err, a)
+	}
+	hidden, _ := classes.Get(a.ClassID)
+	if !hidden.Archived {
+		t.Fatal("the hidden class is archived, so its code never works")
+	}
+	if _, err := classes.FindByJoinCode(hidden.JoinCode); err == nil {
+		t.Fatal("nobody joins the hidden class")
+	}
+	if list, _ := classes.ListTaughtBy(teacher); len(list) != 1 || list[0].ID != real {
+		t.Fatalf("the teacher does not see the hidden class: %+v", list)
+	}
+	if list, _ := classes.ListAll(); len(list) != 1 {
+		t.Fatalf("admins do not see it either: %+v", list)
+	}
+	if !classes.Teaches(a.ClassID, teacher) {
+		t.Fatal("the teacher manages the room's assignment")
+	}
+
+	// One guest's attempt is imported into a real student, one is not.
+	moved, _ := r.AddGuest(id, "Anna", "fox", "it")
+	gone, _ := r.AddGuest(id, "Bea", "owl", "it")
+	student, _ := users.Create("s@x.it", "Anna Rossi", "", domain.RoleStudent, "it")
+	sessions.Create(domain.NewSession{UserID: moved, AssignmentID: room.AssignmentID, AppType: "impersona-tu", Context: "{}"})
+	sessions.Create(domain.NewSession{UserID: gone, AssignmentID: room.AssignmentID, AppType: "impersona-tu", Context: "{}"})
+	r.MoveGuestSessions(moved, student)
+
+	if err := r.Delete(id); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := assignments.Get(*room.AssignmentID); err == nil {
+		t.Fatal("the own assignment is deleted with the room")
+	}
+	if _, err := classes.Get(a.ClassID); err == nil {
+		t.Fatal("the hidden class is deleted with the room")
+	}
+	kept, _ := sessions.ListForUser(student, 10)
+	if len(kept) != 1 || kept[0].AssignmentID != nil {
+		t.Fatalf("the imported attempt stays, without the deleted assignment: %+v", kept)
+	}
+	if _, err := classes.Get(real); err != nil {
+		t.Fatal("real classes are untouched")
+	}
+}
+
+func TestRoomWithoutAccountHasAnAssignmentWithoutAuthor(t *testing.T) {
+	db := openTestDB(t)
+	r := NewRooms(db)
+	id, err := r.Create(domain.NewRoom{HostTokenHash: "h", AppType: "convinci-tu", MaxGuests: 30, ExpiresAt: time.Now().Add(time.Hour).UTC().Format(time.RFC3339),
+		OwnAssignment: &domain.NewAssignment{Title: "Debate", AppType: "convinci-tu", Config: "{}", Published: true}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	room, _ := r.Get(id)
+	if a, err := NewAssignments(db).Get(*room.AssignmentID); err != nil || a.Title != "Debate" {
+		t.Fatalf("assignment of an anonymous room: %v", err)
+	}
+	if err := r.PurgeExpired(time.Now().Add(2 * time.Hour).UTC().Format(time.RFC3339)); err != nil {
+		t.Fatal(err)
+	}
+	if n := count(db, `SELECT COUNT(*) FROM classes`) + count(db, `SELECT COUNT(*) FROM assignments`); n != 0 {
+		t.Fatalf("purge leaves nothing: %d", n)
+	}
+}
