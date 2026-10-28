@@ -47,11 +47,44 @@ func nullIntPtr64(v sql.NullInt64) *int64 {
 	return &v.Int64
 }
 
-// Create inserts a room with a fresh join code.
+// Create inserts a room with a fresh join code; with an OwnAssignment it
+// also creates that assignment in a hidden, archived class of its own.
 func (r *Rooms) Create(n domain.NewRoom) (int64, error) {
+	tx, err := r.db.Begin()
+	if err != nil {
+		return 0, err
+	}
+	defer tx.Rollback()
+	var ownClass *int64
+	if n.OwnAssignment != nil {
+		classID, assignmentID, err := insertRoomAssignment(tx, n)
+		if err != nil {
+			return 0, err
+		}
+		ownClass, n.AssignmentID = &classID, &assignmentID
+	}
+	id, err := insertRoom(tx, n, ownClass)
+	if err != nil {
+		return 0, err
+	}
+	return id, tx.Commit()
+}
+
+// insertRoomAssignment creates the hidden class of a room and its assignment.
+func insertRoomAssignment(tx *sql.Tx, n domain.NewRoom) (classID, assignmentID int64, err error) {
+	if classID, err = insertClass(tx, n.OwnAssignment.Title, "", n.TeacherID, true); err != nil {
+		return 0, 0, err
+	}
+	a := *n.OwnAssignment
+	a.ClassID, a.CreatedBy = classID, n.TeacherID
+	assignmentID, err = insertAssignment(tx, a)
+	return classID, assignmentID, err
+}
+
+func insertRoom(tx *sql.Tx, n domain.NewRoom, ownClass *int64) (int64, error) {
 	for attempt := 0; attempt < 5; attempt++ { // codes are unique
-		res, err := r.db.Exec(`INSERT INTO rooms(code, host_token_hash, teacher_id, assignment_id, title, instructions, app_type, max_guests, created_at, expires_at)
-			VALUES(?,?,?,?,?,?,?,?,?,?)`, domain.NewJoinCode(), n.HostTokenHash, n.TeacherID, n.AssignmentID, n.Title, n.Instructions, n.AppType, n.MaxGuests, domain.Now(), n.ExpiresAt)
+		res, err := tx.Exec(`INSERT INTO rooms(code, host_token_hash, teacher_id, assignment_id, own_class_id, title, instructions, app_type, max_guests, created_at, expires_at)
+			VALUES(?,?,?,?,?,?,?,?,?,?,?)`, domain.NewJoinCode(), n.HostTokenHash, n.TeacherID, n.AssignmentID, ownClass, n.Title, n.Instructions, n.AppType, n.MaxGuests, domain.Now(), n.ExpiresAt)
 		if err == nil {
 			return res.LastInsertId()
 		}
@@ -223,12 +256,32 @@ var guestCleanup = []string{
 }
 
 func deleteGuests(tx *sql.Tx, guests string, args ...any) error {
-	for _, q := range guestCleanup {
-		if _, err := tx.Exec(strings.Replace(q, "%s", guests, 1), args...); err != nil {
+	return execEach(tx, guestCleanup, guests, args...)
+}
+
+// execEach runs each statement with %s replaced by the subquery sub.
+func execEach(tx *sql.Tx, statements []string, sub string, args ...any) error {
+	for _, q := range statements {
+		if _, err := tx.Exec(strings.Replace(q, "%s", sub, 1), args...); err != nil {
 			return err
 		}
 	}
 	return nil
+}
+
+// ownClassCleanup deletes the hidden classes of rooms (selected by the
+// subquery %s) with their assignment. Attempts moved to real students keep
+// existing, without the assignment.
+var ownClassCleanup = []string{
+	`UPDATE activity_sessions SET assignment_id = NULL WHERE assignment_id IN (SELECT id FROM assignments WHERE class_id IN (%s))`,
+	`UPDATE rooms SET assignment_id = NULL WHERE assignment_id IN (SELECT id FROM assignments WHERE class_id IN (%s))`,
+	`DELETE FROM assignments WHERE class_id IN (%s)`,
+	`DELETE FROM class_members WHERE class_id IN (%s)`,
+	`DELETE FROM classes WHERE id IN (%s)`,
+}
+
+func deleteOwnClasses(tx *sql.Tx, classes string, args ...any) error {
+	return execEach(tx, ownClassCleanup, classes, args...)
 }
 
 // DeleteGuest removes a guest with all their attempts.
@@ -269,6 +322,9 @@ func (r *Rooms) deleteWhere(cond string, args ...any) error {
 	defer tx.Rollback()
 	rooms := `SELECT id FROM rooms WHERE ` + cond
 	if err := deleteGuests(tx, `SELECT user_id FROM room_guests WHERE room_id IN (`+rooms+`)`, args...); err != nil {
+		return err
+	}
+	if err := deleteOwnClasses(tx, `SELECT own_class_id FROM rooms WHERE own_class_id IS NOT NULL AND `+cond, args...); err != nil {
 		return err
 	}
 	if _, err := tx.Exec(`DELETE FROM room_guests WHERE room_id IN (`+rooms+`)`, args...); err != nil {

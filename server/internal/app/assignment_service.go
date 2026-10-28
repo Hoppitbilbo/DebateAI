@@ -108,16 +108,19 @@ func (svc *assignmentService) ListForStudent(u *domain.User) ([]*domain.Assignme
 	return out, err
 }
 
-func (svc *assignmentService) Create(u *domain.User, classID int64, in AssignmentInput, baseURL string) (*domain.Assignment, error) {
+// newAssignment reads the teacher's form for a new assignment, with the
+// defaults of the missing fields; ErrAssignmentInvalid without a title or
+// a known app.
+func (in AssignmentInput) newAssignment() (domain.NewAssignment, error) {
 	if in.Title == nil || strings.TrimSpace(*in.Title) == "" || in.AppType == nil || !domain.AppTypes[*in.AppType] {
-		return nil, ErrAssignmentInvalid
+		return domain.NewAssignment{}, ErrAssignmentInvalid
 	}
 	n := domain.NewAssignment{
-		ClassID: classID, Title: strings.TrimSpace(*in.Title), AppType: *in.AppType, Config: "{}", Goals: []string{},
+		Title: strings.TrimSpace(*in.Title), AppType: *in.AppType, Config: "{}", Goals: []string{},
 		MinTurns: valueOr(in.MinTurns, 0), MaxTurns: valueOr(in.MaxTurns, 0),
 		AutoEnd: valueOr(in.AutoEnd, true), RequireReflection: valueOr(in.RequireReflection, true),
 		AllowLive: valueOr(in.AllowLive, true), Published: valueOr(in.Published, true),
-		DueAt: in.DueAt, CreatedBy: u.ID,
+		DueAt: in.DueAt,
 	}
 	if in.Config != nil && len(*in.Config) > 0 {
 		n.Config = string(*in.Config)
@@ -128,6 +131,15 @@ func (svc *assignmentService) Create(u *domain.User, classID int64, in Assignmen
 	if in.Instructions != nil {
 		n.Instructions = strings.TrimSpace(*in.Instructions)
 	}
+	return n, nil
+}
+
+func (svc *assignmentService) Create(u *domain.User, classID int64, in AssignmentInput, baseURL string) (*domain.Assignment, error) {
+	n, err := in.newAssignment()
+	if err != nil {
+		return nil, err
+	}
+	n.ClassID, n.CreatedBy = classID, &u.ID
 	id, err := svc.assignments.Create(n)
 	if err != nil {
 		return nil, err

@@ -57,7 +57,7 @@ type NewAssignment struct {
 	AllowLive         bool
 	Published         bool
 	DueAt             *string
-	CreatedBy         int64
+	CreatedBy         *int64 // nil for the assignment of a room opened without an account
 }
 
 // AssignmentPatch lists the fields to change; nil fields stay as they are.

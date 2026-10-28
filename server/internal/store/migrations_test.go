@@ -48,3 +48,26 @@ func TestOpenMigratesOldDatabase(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+// The rooms table of the first release gets the column of its own class.
+func TestOpenMigratesFirstRoomsTable(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "rooms.db")
+	old, err := sql.Open("sqlite", "file:"+path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := old.Exec(`CREATE TABLE rooms (id INTEGER PRIMARY KEY AUTOINCREMENT, code TEXT NOT NULL UNIQUE, host_token_hash TEXT NOT NULL UNIQUE,
+		teacher_id INTEGER, assignment_id INTEGER, title TEXT NOT NULL DEFAULT '', instructions TEXT NOT NULL DEFAULT '', app_type TEXT NOT NULL,
+		locked INTEGER NOT NULL DEFAULT 0, max_guests INTEGER NOT NULL, created_at TEXT NOT NULL, expires_at TEXT NOT NULL)`); err != nil {
+		t.Fatal(err)
+	}
+	old.Close()
+	db, err := Open(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer db.Close()
+	if _, err := db.Exec(`SELECT own_class_id FROM rooms`); err != nil {
+		t.Fatalf("own_class_id missing: %v", err)
+	}
+}
