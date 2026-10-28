@@ -12,7 +12,6 @@ import (
 	"time"
 
 	"github.com/Hoppitbilbo/DebateAI/server/internal/domain"
-	"github.com/Hoppitbilbo/DebateAI/server/internal/store"
 )
 
 // roomService runs the temporary rooms ("aula lampo"): a teacher, with or
@@ -24,11 +23,9 @@ type roomService struct {
 	rooms       roomStore
 	sessions    sessionStore
 	assignments assignmentStore
-	classes     classStore
 	classSvc    *classService
 	accounts    *authService
 	usage       usageStore
-	crypto      *Crypto
 	settings    func() RoomSettings
 	now         func() time.Time
 	lastPurge   atomic.Int64 // unix seconds of the last purge
@@ -40,15 +37,14 @@ var (
 	ErrTooManyRooms      = errors.New("too many open rooms, retry later")
 	ErrRoomNotFound      = errors.New("room not found or closed")
 	ErrRoomLocked        = errors.New("the teacher closed the entrance of this room")
-	ErrRoomFull          = store.ErrRoomFull
-	ErrNicknameTaken     = store.ErrNicknameTaken
+	ErrRoomFull          = domain.ErrRoomFull
+	ErrNicknameTaken     = domain.ErrNicknameTaken
 	ErrBadNickname       = errors.New("choose a nickname")
 	ErrBadAvatar         = errors.New("choose an avatar")
 	ErrBadRejoinPIN      = errors.New("wrong or expired PIN: ask your teacher for a new one")
 	ErrGuestNotFound     = errors.New("guest not found")
 	ErrGuestLimit        = errors.New("you sent too many requests, wait a few minutes")
 	ErrRoomLimit         = errors.New("this room used all its AI requests")
-	ErrBadImportMapping  = errors.New("a guest can only be matched with a student of the class")
 	ErrRoomNotYours      = errors.New("not your room")
 )
 
@@ -80,38 +76,66 @@ func (svc *roomService) Open(u *domain.User, in RoomRequest) (*OpenedRoom, error
 	if !cfg.Enabled {
 		return nil, ErrRoomsDisabled
 	}
-	n := domain.NewRoom{
-		Title:        truncate(strings.TrimSpace(in.Title), maxRoomTitleChars),
-		Instructions: truncate(strings.TrimSpace(in.Instructions), maxRoomInstructChars),
-		AppType:      in.AppType,
-		MaxGuests:    clampInt(in.MaxGuests, 1, cfg.MaxGuests, cfg.MaxGuests),
-	}
-	if u == nil || u.IsGuest() {
-		if !cfg.AllowAnonymousTeachers {
-			return nil, ErrRoomLoginRequired
-		}
-		if svc.rooms.CountOpenAnonymous(svc.nowString()) >= cfg.MaxOpenAnonymousRooms {
-			return nil, ErrTooManyRooms
-		}
-	} else {
-		n.TeacherID = &u.ID
+	n := svc.newRoom(in, cfg)
+	if err := svc.setHost(&n, u, cfg); err != nil {
+		return nil, err
 	}
 	if in.AssignmentID > 0 {
-		a, err := svc.assignments.Get(in.AssignmentID)
-		if err != nil || n.TeacherID == nil || !svc.classSvc.CanManage(u, a.ClassID) {
-			return nil, ErrAssignmentForbidden
-		}
-		n.AssignmentID, n.AppType = &a.ID, a.AppType
-		if n.Title == "" {
-			n.Title = a.Title
+		if err := svc.setAssignment(&n, u, in.AssignmentID); err != nil {
+			return nil, err
 		}
 	}
 	if !domain.AppTypes[n.AppType] {
 		return nil, ErrInvalidApp
 	}
+	return svc.create(n)
+}
+
+// newRoom reads the request within the limits of the settings.
+func (svc *roomService) newRoom(in RoomRequest, cfg RoomSettings) domain.NewRoom {
 	minutes := clampInt(in.Minutes, 1, cfg.MaxMinutes, min(defaultRoomMinutes, cfg.MaxMinutes))
-	n.ExpiresAt = svc.now().Add(time.Duration(minutes) * time.Minute).UTC().Format(time.RFC3339)
-	key := randomToken(24)
+	return domain.NewRoom{
+		Title:        truncate(strings.TrimSpace(in.Title), maxRoomTitleChars),
+		Instructions: truncate(strings.TrimSpace(in.Instructions), maxRoomInstructChars),
+		AppType:      in.AppType,
+		MaxGuests:    clampInt(in.MaxGuests, 1, cfg.MaxGuests, cfg.MaxGuests),
+		ExpiresAt:    svc.now().Add(time.Duration(minutes) * time.Minute).UTC().Format(time.RFC3339),
+	}
+}
+
+// setHost makes u the room's teacher; without an account the room is
+// anonymous, when the admin allows it and not too many are open.
+func (svc *roomService) setHost(n *domain.NewRoom, u *domain.User, cfg RoomSettings) error {
+	if u != nil && !u.IsGuest() {
+		n.TeacherID = &u.ID
+		return nil
+	}
+	if !cfg.AllowAnonymousTeachers {
+		return ErrRoomLoginRequired
+	}
+	if svc.rooms.CountOpenAnonymous(svc.nowString()) >= cfg.MaxOpenAnonymousRooms {
+		return ErrTooManyRooms
+	}
+	return nil
+}
+
+// setAssignment opens the room on an assignment u manages: it takes the
+// assignment's app, and its title when the room has none.
+func (svc *roomService) setAssignment(n *domain.NewRoom, u *domain.User, assignmentID int64) error {
+	a, err := svc.assignments.Get(assignmentID)
+	if err != nil || n.TeacherID == nil || !svc.classSvc.CanManage(u, a.ClassID) {
+		return ErrAssignmentForbidden
+	}
+	n.AssignmentID, n.AppType = &a.ID, a.AppType
+	if n.Title == "" {
+		n.Title = a.Title
+	}
+	return nil
+}
+
+// create stores the room with a new secret host key.
+func (svc *roomService) create(n domain.NewRoom) (*OpenedRoom, error) {
+	key := randomToken(roomHostKeyBytes)
 	n.HostTokenHash = hashToken(key)
 	id, err := svc.rooms.Create(n)
 	if err != nil {

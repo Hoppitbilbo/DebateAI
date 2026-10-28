@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
 import { Loader2, LogIn, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,9 +10,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { api, AppType, Assignment } from "@/lib/api";
 import { useAuth } from "@/context/auth";
+import { useBusyAction } from "@/hooks/useBusyAction";
 import { APP_TYPES } from "@/features/activity/appCatalog";
 import { useMyClasses } from "@/features/teacher/teacherApi";
-import { hostKeys, roomApi } from "@/features/room/roomApi";
+import { hostKeys, ROOM_LIMITS, roomApi } from "@/features/room/roomApi";
 import { AppName, DashboardLayout, EmptyState, Panel, Spinner } from "../dashboard/common";
 
 const DURATIONS = [30, 60, 90, 120];
@@ -55,25 +55,18 @@ const OpenRoomPage = () => {
   const [appType, setAppType] = useState<AppType>("wiki-chatbot");
   const [assignment, setAssignment] = useState(FREE_ACTIVITY);
   const [minutes, setMinutes] = useState(Math.min(60, maxMinutes));
-  const [busy, setBusy] = useState(false);
+  const { busy, run } = useBusyAction();
 
   if (loading) return <Spinner />;
   const isTeacher = user && user.role !== "student";
   const canOpen = config?.roomsEnabled && (isTeacher || (!user && config.anonymousRooms));
 
-  const open = async () => {
-    setBusy(true);
-    try {
-      const assignmentId = assignment === FREE_ACTIVITY ? undefined : Number(assignment);
-      const { room, hostKey } = await roomApi.open({ title, instructions, appType, assignmentId, minutes });
-      hostKeys.save(room.id, hostKey);
-      navigate(`/aula/gestisci/${room.id}#k=${encodeURIComponent(hostKey)}`);
-    } catch (e) {
-      toast.error((e as Error).message);
-    } finally {
-      setBusy(false);
-    }
-  };
+  const open = () => run(async () => {
+    const assignmentId = assignment === FREE_ACTIVITY ? undefined : Number(assignment);
+    const { room, hostKey } = await roomApi.open({ title, instructions, appType, assignmentId, minutes });
+    hostKeys.save(room.id, hostKey);
+    navigate(`/aula/gestisci/${room.id}#k=${encodeURIComponent(hostKey)}`);
+  });
 
   return (
     <DashboardLayout title={t("room.open.title")} subtitle={t("room.open.subtitle", { hours: maxMinutes / 60 })}>
@@ -108,11 +101,11 @@ const OpenRoomPage = () => {
             )}
             <div className="space-y-2">
               <Label htmlFor="room-title">{t("room.open.titleLabel")}</Label>
-              <Input id="room-title" value={title} onChange={(e) => setTitle(e.target.value)} maxLength={120} placeholder={t("room.open.titlePlaceholder")} />
+              <Input id="room-title" value={title} onChange={(e) => setTitle(e.target.value)} maxLength={ROOM_LIMITS.title} placeholder={t("room.open.titlePlaceholder")} />
             </div>
             <div className="space-y-2">
               <Label htmlFor="room-instructions">{t("room.open.instructionsLabel")}</Label>
-              <Textarea id="room-instructions" value={instructions} onChange={(e) => setInstructions(e.target.value)} rows={4} maxLength={4000} placeholder={t("room.open.instructionsPlaceholder")} />
+              <Textarea id="room-instructions" value={instructions} onChange={(e) => setInstructions(e.target.value)} rows={4} maxLength={ROOM_LIMITS.instructions} placeholder={t("room.open.instructionsPlaceholder")} />
             </div>
             <fieldset className="space-y-2">
               <legend className="text-sm font-medium">{t("room.open.durationLabel")}</legend>

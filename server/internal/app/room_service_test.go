@@ -264,29 +264,29 @@ func TestRoomExportAndImport(t *testing.T) {
 	s.Sessions.SaveTranscript(ss.ID, `[{"role":"user","content":"ciao"}]`, 1, nil)
 	room, _ := s.RoomSvc.ForTeacher(teacher, opened.Room.ID)
 
-	export, err := s.RoomSvc.Export(room)
+	export, err := s.RoomTransfer.Export(room)
 	if err != nil || len(export.Guests) != 2 || len(export.Guests[0].Sessions) != 1 || export.Guests[0].Sessions[0].UserID != nil {
 		t.Fatalf("export: %v %+v", err, export)
 	}
-	file, err := s.RoomSvc.SealExport(export)
+	file, err := s.RoomTransfer.SealExport(export)
 	if err != nil {
 		t.Fatal(err)
 	}
 	if strings.Contains(string(file), "ciao") || strings.Contains(string(file), "Marco") {
 		t.Fatal("the file must not expose the conversations")
 	}
-	if _, err := s.RoomSvc.OpenExport(string(file[:len(file)-10]) + `"}`); !errors.Is(err, ErrBadExportFile) {
+	if _, err := s.RoomTransfer.OpenExport(string(file[:len(file)-10]) + `"}`); !errors.Is(err, ErrBadExportFile) {
 		t.Fatal("a changed file is refused")
 	}
-	preview, err := s.RoomSvc.PreviewFile(string(file))
+	preview, err := s.RoomTransfer.PreviewFile(string(file))
 	if err != nil || len(preview.Guests) != 2 || preview.Guests[0].Sessions != 1 {
 		t.Fatalf("preview: %v %+v", err, preview)
 	}
 
-	if _, err := s.RoomSvc.ImportFile(teacher, class.ID, string(file), []ImportMatch{{"Marco", outsider.ID}}); !errors.Is(err, ErrBadImportMapping) {
+	if _, err := s.RoomTransfer.ImportFile(teacher, class.ID, string(file), []ImportMatch{{"Marco", outsider.ID}}); !errors.Is(err, ErrBadImportMapping) {
 		t.Fatal("only students of the class")
 	}
-	res, err := s.RoomSvc.ImportFile(teacher, class.ID, string(file), []ImportMatch{{"marco", rossi.ID}, {"Anon", 0}})
+	res, err := s.RoomTransfer.ImportFile(teacher, class.ID, string(file), []ImportMatch{{"marco", rossi.ID}, {"Anon", 0}})
 	if err != nil || res.Sessions != 1 || res.Students != 1 || res.Discarded != 1 {
 		t.Fatalf("import file: %v %+v", err, res)
 	}
@@ -294,7 +294,7 @@ func TestRoomExportAndImport(t *testing.T) {
 		t.Fatal("imported attempt counts for the assignment")
 	}
 
-	res, err = s.RoomSvc.ImportRoom(teacher, class.ID, room, []ImportMatch{{"Marco", rossi.ID}})
+	res, err = s.RoomTransfer.ImportRoom(teacher, class.ID, room, []ImportMatch{{"Marco", rossi.ID}})
 	if err != nil || res.Sessions != 1 || res.Discarded != 1 {
 		t.Fatalf("import room: %v %+v", err, res)
 	}

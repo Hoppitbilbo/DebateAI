@@ -4,19 +4,34 @@ import (
 	"encoding/json"
 	"errors"
 	"strings"
+	"time"
 
 	"github.com/Hoppitbilbo/DebateAI/server/internal/domain"
 )
 
-// Room export and import. The export file is encrypted and authenticated
-// with the server secret (AES-GCM): a file edited by hand is refused, and a
-// lost file does not expose the students' conversations. Teachers read the
-// results in the Excel export; this file only travels back into a class.
+// roomTransfer takes the work out of a room: an export (Excel, or an
+// encrypted file) and an import into a class, where each guest is matched
+// with a student. The file is encrypted and authenticated with the server
+// secret (AES-GCM): a file edited by hand is refused, and a lost file does
+// not expose the students' conversations.
+type roomTransfer struct {
+	rooms       roomStore
+	sessions    sessionStore
+	assignments assignmentStore
+	classes     classStore
+	classSvc    *classService
+	crypto      *Crypto
+	endRoom     func(*domain.Room) error
+	now         func() time.Time
+}
 
 const roomExportFormat = "debateai-room"
 const roomExportVersion = 1
 
-var ErrBadExportFile = errors.New("this is not a valid room file of this site")
+var (
+	ErrBadExportFile    = errors.New("this is not a valid room file of this site")
+	ErrBadImportMapping = errors.New("a guest can only be matched with a student of the class")
+)
 
 // RoomExport is the content of an exported room.
 type RoomExport struct {
@@ -46,12 +61,12 @@ type roomFile struct {
 }
 
 // Export collects the guests of a room with their attempts.
-func (svc *roomService) Export(room *domain.Room) (*RoomExport, error) {
+func (svc *roomTransfer) Export(room *domain.Room) (*RoomExport, error) {
 	guests, err := svc.rooms.Guests(room.ID)
 	if err != nil {
 		return nil, err
 	}
-	out := &RoomExport{Title: room.Title, AppType: room.AppType, AssignmentID: room.AssignmentID, CreatedAt: room.CreatedAt, ExportedAt: svc.nowString(), Guests: []ExportedGuest{}}
+	out := &RoomExport{Title: room.Title, AppType: room.AppType, AssignmentID: room.AssignmentID, CreatedAt: room.CreatedAt, ExportedAt: svc.now().UTC().Format(time.RFC3339), Guests: []ExportedGuest{}}
 	for _, g := range guests {
 		list, err := svc.sessions.ListForUser(g.UserID, roomAttemptsPerGuest)
 		if err != nil {
@@ -70,7 +85,7 @@ func (svc *roomService) Export(room *domain.Room) (*RoomExport, error) {
 }
 
 // SealExport returns the downloadable file of an export.
-func (svc *roomService) SealExport(e *RoomExport) ([]byte, error) {
+func (svc *roomTransfer) SealExport(e *RoomExport) ([]byte, error) {
 	plain, err := json.Marshal(e)
 	if err != nil {
 		return nil, err
@@ -81,7 +96,7 @@ func (svc *roomService) SealExport(e *RoomExport) ([]byte, error) {
 
 // OpenExport reads a downloaded file back; ErrBadExportFile when it was not
 // made by this server or was changed.
-func (svc *roomService) OpenExport(file string) (*RoomExport, error) {
+func (svc *roomTransfer) OpenExport(file string) (*RoomExport, error) {
 	var f roomFile
 	if err := json.Unmarshal([]byte(file), &f); err != nil || f.Format != roomExportFormat || f.Version != roomExportVersion {
 		return nil, ErrBadExportFile
@@ -113,7 +128,7 @@ type ImportResult struct {
 
 // studentMatches validates the matches against the students of a class and
 // returns them by nickname.
-func (svc *roomService) studentMatches(classID int64, matches []ImportMatch) (map[string]int64, error) {
+func (svc *roomTransfer) studentMatches(classID int64, matches []ImportMatch) (map[string]int64, error) {
 	students, err := svc.classes.Students(classID)
 	if err != nil {
 		return nil, err
@@ -137,7 +152,7 @@ func (svc *roomService) studentMatches(classID int64, matches []ImportMatch) (ma
 
 // ImportRoom gives the attempts of the matched guests of an open room to
 // the students of a class, then ends the room (the rest is deleted).
-func (svc *roomService) ImportRoom(u *domain.User, classID int64, room *domain.Room, matches []ImportMatch) (*ImportResult, error) {
+func (svc *roomTransfer) ImportRoom(u *domain.User, classID int64, room *domain.Room, matches []ImportMatch) (*ImportResult, error) {
 	if !svc.classSvc.CanManage(u, classID) {
 		return nil, ErrNotYourClass
 	}
@@ -164,13 +179,13 @@ func (svc *roomService) ImportRoom(u *domain.User, classID int64, room *domain.R
 		students[studentID] = true
 	}
 	res.Students = len(students)
-	return res, svc.End(room)
+	return res, svc.endRoom(room)
 }
 
 // ImportFile stores the attempts of the matched guests of an exported room
 // for the students of a class. An attempt keeps its assignment only when
 // the assignment belongs to that class.
-func (svc *roomService) ImportFile(u *domain.User, classID int64, file string, matches []ImportMatch) (*ImportResult, error) {
+func (svc *roomTransfer) ImportFile(u *domain.User, classID int64, file string, matches []ImportMatch) (*ImportResult, error) {
 	if !svc.classSvc.CanManage(u, classID) {
 		return nil, ErrNotYourClass
 	}
@@ -223,7 +238,7 @@ type PreviewGuest struct {
 	Sessions int    `json:"sessions"`
 }
 
-func (svc *roomService) PreviewFile(file string) (*RoomPreview, error) {
+func (svc *roomTransfer) PreviewFile(file string) (*RoomPreview, error) {
 	e, err := svc.OpenExport(file)
 	if err != nil {
 		return nil, err

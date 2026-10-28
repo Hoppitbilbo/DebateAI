@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
 import { Loader2, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { api } from "@/lib/api";
+import { useBusyAction } from "@/hooks/useBusyAction";
 import { ClassDetail, useMyClasses } from "@/features/teacher/teacherApi";
 import { ImportResult, roomApi } from "@/features/room/roomApi";
 import { avatarUrl } from "@/features/room/avatars";
@@ -39,7 +39,7 @@ const RoomImportDialog = ({ open, onOpenChange, source, classId: fixedClass, onD
   const [file, setFile] = useState<string | null>(null);
   const [fileGuests, setFileGuests] = useState<ImportGuest[] | null>(null);
   const [matches, setMatches] = useState<Record<string, number>>({});
-  const [busy, setBusy] = useState(false);
+  const { busy, run } = useBusyAction();
 
   const detail = useQuery({
     queryKey: ["class", classId],
@@ -55,33 +55,21 @@ const RoomImportDialog = ({ open, onOpenChange, source, classId: fixedClass, onD
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [guests, detail.data]);
 
-  const readFile = async (f: File | undefined) => {
+  const readFile = (f: File | undefined) => run(async () => {
     if (!f || !classId) return;
-    try {
-      const text = await f.text();
-      const preview = await roomApi.importPreview(classId, text);
-      setFile(text);
-      setFileGuests(preview.guests);
-    } catch (e) {
-      toast.error((e as Error).message);
-    }
-  };
+    const text = await f.text();
+    const preview = await roomApi.importPreview(classId, text);
+    setFile(text);
+    setFileGuests(preview.guests);
+  });
 
-  const confirm = async () => {
+  const confirm = () => run(async () => {
     if (!classId) return;
-    setBusy(true);
-    try {
-      const list = Object.entries(matches).map(([nickname, studentId]) => ({ nickname, studentId }));
-      const from = source.kind === "room" ? { roomId: source.roomId, hostKey: source.hostKey } : { file: file ?? "" };
-      const r = await roomApi.importIntoClass(classId, from, list);
-      onDone(classId, r);
-      onOpenChange(false);
-    } catch (e) {
-      toast.error((e as Error).message);
-    } finally {
-      setBusy(false);
-    }
-  };
+    const list = Object.entries(matches).map(([nickname, studentId]) => ({ nickname, studentId }));
+    const from = source.kind === "room" ? { roomId: source.roomId, hostKey: source.hostKey } : { file: file ?? "" };
+    onDone(classId, await roomApi.importIntoClass(classId, from, list));
+    onOpenChange(false);
+  });
 
   const matched = Object.values(matches).filter(Boolean).length;
 

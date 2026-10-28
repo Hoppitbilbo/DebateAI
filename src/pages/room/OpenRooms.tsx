@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { Clock, Users, Zap } from "lucide-react";
-import { roomApi } from "@/features/room/roomApi";
+import { REFRESH_MS, roomApi } from "@/features/room/roomApi";
 import { formatCountdown, useCountdown } from "@/features/room/useCountdown";
 import type { Room } from "@/features/room/roomApi";
 import { Panel } from "../dashboard/common";
@@ -28,7 +28,7 @@ const RoomLink = ({ room }: { room: Room }) => {
 /** The teacher's rooms that are still open, on top of the dashboard. */
 const OpenRooms = () => {
   const { t } = useTranslation();
-  const rooms = useQuery({ queryKey: ["rooms", "mine"], queryFn: roomApi.listMine, refetchInterval: 30000 });
+  const rooms = useQuery({ queryKey: ["rooms", "mine"], queryFn: roomApi.listMine, refetchInterval: REFRESH_MS.openRooms });
   if (!rooms.data?.length) return null;
   return (
     <Panel title={t("room.dashboard.openRooms")}>

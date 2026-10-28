@@ -43,13 +43,13 @@ func TestRoomsGuestsAndLookup(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if _, err := r.AddGuest(room.ID, "marco r", "owl", "it"); !errors.Is(err, ErrNicknameTaken) {
+	if _, err := r.AddGuest(room.ID, "marco r", "owl", "it"); !errors.Is(err, domain.ErrNicknameTaken) {
 		t.Fatalf("nicknames are unique ignoring case: %v", err)
 	}
 	if _, err := r.AddGuest(room.ID, "Sara", "cat", "it"); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := r.AddGuest(room.ID, "Luca", "dog", "it"); !errors.Is(err, ErrRoomFull) {
+	if _, err := r.AddGuest(room.ID, "Luca", "dog", "it"); !errors.Is(err, domain.ErrRoomFull) {
 		t.Fatalf("room must be full: %v", err)
 	}
 

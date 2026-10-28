@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 	"time"
 
 	"github.com/Hoppitbilbo/DebateAI/server/internal/app"
@@ -22,7 +21,7 @@ import (
 
 const roomKeyHeader = "X-Room-Key"
 
-// roomErrStatus maps the room errors to HTTP answers.
+// writeRoomErr answers a room error with its HTTP status.
 func writeRoomErr(w http.ResponseWriter, err error) {
 	switch {
 	case errors.Is(err, app.ErrRoomNotFound), errors.Is(err, app.ErrGuestNotFound), errors.Is(err, app.ErrSessionNotFound):
@@ -253,7 +252,6 @@ func (s *Server) handleUpdateRoom(w http.ResponseWriter, r *http.Request) {
 			writeErr(w, 500, "internal", err.Error())
 			return
 		}
-		room.Locked = *in.Locked
 	}
 	s.handleGetRoom(w, r)
 }
@@ -321,41 +319,45 @@ func (s *Server) handleRoomSession(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, 200, d)
 }
 
-// handleRoomExportXLSX sends the results of the room as an Excel sheet.
-func (s *Server) handleRoomExportXLSX(w http.ResponseWriter, r *http.Request) {
+// exportedRoom returns the {id} room the request manages, with its export.
+func (s *Server) exportedRoom(w http.ResponseWriter, r *http.Request) (*domain.Room, *app.RoomExport, bool) {
 	room, ok := s.hostedRoom(w, r)
 	if !ok {
-		return
+		return nil, nil, false
 	}
-	e, err := s.RoomSvc.Export(room)
+	e, err := s.RoomTransfer.Export(room)
 	if err != nil {
 		writeErr(w, 500, "internal", err.Error())
-		return
+		return nil, nil, false
 	}
-	writeRoomXLSX(w, e, r.URL.Query().Get("lang"))
+	return room, e, true
+}
+
+// handleRoomExportXLSX sends the results of the room as an Excel sheet.
+func (s *Server) handleRoomExportXLSX(w http.ResponseWriter, r *http.Request) {
+	if _, e, ok := s.exportedRoom(w, r); ok {
+		writeRoomXLSX(w, e, r.URL.Query().Get("lang"))
+	}
 }
 
 // handleRoomExportFile sends the encrypted file that can be imported into a class.
 func (s *Server) handleRoomExportFile(w http.ResponseWriter, r *http.Request) {
-	room, ok := s.hostedRoom(w, r)
+	room, e, ok := s.exportedRoom(w, r)
 	if !ok {
 		return
 	}
-	e, err := s.RoomSvc.Export(room)
+	file, err := s.RoomTransfer.SealExport(e)
 	if err != nil {
 		writeErr(w, 500, "internal", err.Error())
 		return
 	}
-	file, err := s.RoomSvc.SealExport(e)
-	if err != nil {
-		writeErr(w, 500, "internal", err.Error())
-		return
-	}
-	name := safeFileName(fmt.Sprintf("aula-%s-%s", room.Title, room.CreatedAt[:10])) + ".aula"
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename="room.aula"; filename*=UTF-8''%s`, url.PathEscape(name)))
+	name := safeFileName(fmt.Sprintf("aula-%s-%s", room.Title, fileDay(room.CreatedAt))) + ".aula"
+	sendDownload(w, "application/json", "room.aula", name)
 	_, _ = w.Write(file)
 }
+
+// fileDay is the date of a stored timestamp (YYYY-MM-DD), for file names.
+func fileDay(ts string) string { return domain.ParseTime(ts).Format(time.DateOnly) }
 
 // roomImportIn imports either an open room (its id, or its host key) or an
 // exported file into a class.
@@ -364,6 +366,14 @@ type roomImportIn struct {
 	HostKey string            `json:"hostKey"`
 	File    string            `json:"file"`
 	Matches []app.ImportMatch `json:"matches"`
+}
+
+// importedRoom is the open room an import names, by host key or as its teacher.
+func (s *Server) importedRoom(u *domain.User, in roomImportIn) (*domain.Room, error) {
+	if in.HostKey != "" {
+		return s.RoomSvc.ForHost(in.HostKey)
+	}
+	return s.RoomSvc.ForTeacher(u, in.RoomID)
 }
 
 func (s *Server) handleRoomImport(w http.ResponseWriter, r *http.Request) {
@@ -377,20 +387,12 @@ func (s *Server) handleRoomImport(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var res *app.ImportResult
-	var err error
+	room, err := s.importedRoom(u, in)
 	switch {
 	case in.File != "":
-		res, err = s.RoomSvc.ImportFile(u, classID, in.File, in.Matches)
-	case in.HostKey != "":
-		var room *domain.Room
-		if room, err = s.RoomSvc.ForHost(in.HostKey); err == nil {
-			res, err = s.RoomSvc.ImportRoom(u, classID, room, in.Matches)
-		}
-	default:
-		var room *domain.Room
-		if room, err = s.RoomSvc.ForTeacher(u, in.RoomID); err == nil {
-			res, err = s.RoomSvc.ImportRoom(u, classID, room, in.Matches)
-		}
+		res, err = s.RoomTransfer.ImportFile(u, classID, in.File, in.Matches)
+	case err == nil:
+		res, err = s.RoomTransfer.ImportRoom(u, classID, room, in.Matches)
 	}
 	if err != nil {
 		writeRoomErr(w, err)
@@ -409,7 +411,7 @@ func (s *Server) handleRoomImportPreview(w http.ResponseWriter, r *http.Request)
 		writeErr(w, 400, "bad_request", err.Error())
 		return
 	}
-	p, err := s.RoomSvc.PreviewFile(in.File)
+	p, err := s.RoomTransfer.PreviewFile(in.File)
 	if err != nil {
 		writeRoomErr(w, err)
 		return

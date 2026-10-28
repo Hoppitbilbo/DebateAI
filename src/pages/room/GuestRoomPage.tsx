@@ -6,7 +6,7 @@ import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth";
 import { APPS } from "@/features/activity/types";
-import { roomApi } from "@/features/room/roomApi";
+import { REFRESH_MS, roomApi } from "@/features/room/roomApi";
 import { avatarUrl } from "@/features/room/avatars";
 import { formatCountdown, useCountdown } from "@/features/room/useCountdown";
 import { Spinner } from "../dashboard/common";
@@ -16,7 +16,7 @@ import ConfirmButton from "../dashboard/ConfirmButton";
 const GuestRoomPage = () => {
   const { t } = useTranslation();
   const { user, loading, logout } = useAuth();
-  const room = useQuery({ queryKey: ["guest-room"], queryFn: roomApi.myRoom, enabled: !!user?.roomId, retry: false, refetchInterval: 60000 });
+  const room = useQuery({ queryKey: ["guest-room"], queryFn: roomApi.myRoom, enabled: !!user?.roomId, retry: false, refetchInterval: REFRESH_MS.guestRoom });
   const left = useCountdown(room.data?.expiresAt);
 
   if (loading) return <Spinner />;

@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"errors"
 	"strings"
 	"time"
 	"unicode"
@@ -10,6 +11,11 @@ import (
 // a nickname and an avatar, without an account. Every guest is a student
 // account bound to the room; the room and everything in it is deleted when
 // it expires.
+
+var (
+	ErrNicknameTaken = errors.New("nickname already used in this room")
+	ErrRoomFull      = errors.New("the room is full")
+)
 
 // MaxRoomDuration is the longest a room may stay open.
 const MaxRoomDuration = 2 * time.Hour

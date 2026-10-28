@@ -35,6 +35,7 @@ type Services struct {
 	AssignmentSvc *assignmentService
 	SessionSvc    *sessionService
 	RoomSvc       *roomService
+	RoomTransfer  *roomTransfer
 }
 
 // Option changes how NewServices builds the application.
@@ -74,8 +75,10 @@ func NewServices(cfg Config, db *sql.DB, opts ...Option) *Services {
 	sv.SessionSvc = &sessionService{sessions: sv.Sessions, assignments: sv.Assignments, classes: sv.Classes, classSvc: sv.ClassSvc,
 		judge: sv.Gateway, jevSettings: sv.Settings.Jev,
 		listeners: []feedbackListener{feedbackMailer{users: sv.Users, mail: sv.Mailer, siteName: siteName}}}
-	sv.RoomSvc = &roomService{rooms: sv.Rooms, sessions: sv.Sessions, assignments: sv.Assignments, classes: sv.Classes, classSvc: sv.ClassSvc,
-		accounts: sv.Accounts, usage: sv.Usage, crypto: sv.Crypto, settings: sv.Settings.Rooms, now: time.Now}
+	sv.RoomSvc = &roomService{rooms: sv.Rooms, sessions: sv.Sessions, assignments: sv.Assignments, classSvc: sv.ClassSvc,
+		accounts: sv.Accounts, usage: sv.Usage, settings: sv.Settings.Rooms, now: time.Now}
+	sv.RoomTransfer = &roomTransfer{rooms: sv.Rooms, sessions: sv.Sessions, assignments: sv.Assignments, classes: sv.Classes, classSvc: sv.ClassSvc,
+		crypto: sv.Crypto, endRoom: sv.RoomSvc.End, now: time.Now}
 	for _, opt := range opts {
 		opt(sv)
 	}

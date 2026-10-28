@@ -20,11 +20,8 @@ type Rooms struct{ db *sql.DB }
 
 func NewRooms(db *sql.DB) *Rooms { return &Rooms{db: db} }
 
-var (
-	ErrNicknameTaken = errors.New("nickname already used in this room")
-	ErrRoomFull      = errors.New("the room is full")
-	errNoRoomCode    = errors.New("could not create room")
-)
+// errNoRoomCode means no free room code was found after several attempts.
+var errNoRoomCode = errors.New("could not create room")
 
 const roomSelect = `SELECT r.id, r.code, r.title, r.instructions, r.app_type, r.assignment_id, r.teacher_id, r.locked, r.max_guests, r.created_at, r.expires_at,
 	(SELECT COUNT(*) FROM room_guests g WHERE g.room_id = r.id)
@@ -105,7 +102,7 @@ func (r *Rooms) SetLocked(id int64, locked bool) error {
 }
 
 // AddGuest creates the student account of a guest and puts it in the room;
-// it fails with ErrNicknameTaken or ErrRoomFull.
+// it fails with domain.ErrNicknameTaken or domain.ErrRoomFull.
 func (r *Rooms) AddGuest(roomID int64, nickname, avatar, locale string) (int64, error) {
 	tx, err := r.db.Begin()
 	if err != nil {
@@ -117,14 +114,14 @@ func (r *Rooms) AddGuest(roomID int64, nickname, avatar, locale string) (int64, 
 		return 0, err
 	}
 	if guests >= max {
-		return 0, ErrRoomFull
+		return 0, domain.ErrRoomFull
 	}
 	var taken int
 	if err := tx.QueryRow(`SELECT COUNT(*) FROM room_guests WHERE room_id = ? AND nickname = ?`, roomID, nickname).Scan(&taken); err != nil {
 		return 0, err
 	}
 	if taken > 0 {
-		return 0, ErrNicknameTaken
+		return 0, domain.ErrNicknameTaken
 	}
 	res, err := tx.Exec(`INSERT INTO users(email, name, password_hash, role, locale, created_at) VALUES(?,?,'',?,?,?)`,
 		guestEmail(), nickname, domain.RoleStudent, locale, domain.Now())
@@ -134,7 +131,7 @@ func (r *Rooms) AddGuest(roomID int64, nickname, avatar, locale string) (int64, 
 	userID, _ := res.LastInsertId()
 	if _, err := tx.Exec(`INSERT INTO room_guests(user_id, room_id, nickname, avatar) VALUES(?,?,?,?)`, userID, roomID, nickname, avatar); err != nil {
 		if strings.Contains(err.Error(), "UNIQUE") {
-			return 0, ErrNicknameTaken
+			return 0, domain.ErrNicknameTaken
 		}
 		return 0, err
 	}

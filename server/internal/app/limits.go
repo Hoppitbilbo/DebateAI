@@ -42,6 +42,7 @@ const (
 // Temporary rooms ("aula lampo").
 const (
 	defaultRoomMinutes   = 60
+	roomHostKeyBytes     = 24 // entropy of the secret link that manages a room
 	rejoinPINTTL         = 10 * time.Minute
 	rejoinPINDigits      = 4
 	maxRoomTitleChars    = 120

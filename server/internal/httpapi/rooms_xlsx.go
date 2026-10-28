@@ -4,10 +4,10 @@ import (
 	"net/http"
 
 	"github.com/Hoppitbilbo/DebateAI/server/internal/app"
-	"github.com/xuri/excelize/v2"
 )
 
-// Results of a temporary room as an Excel workbook: one row per attempt.
+// Results of a temporary room as an Excel workbook: one row per attempt,
+// one empty row for a guest who did not start.
 
 var roomHeaders = map[string][]string{
 	"it": {"Nickname", "Attività", "Stato", "Turni", "Progresso %", "Voto conversazione (IA)", "Voto riflessione (IA)", "Riflessione", "Iniziata", "Ultimo aggiornamento"},
@@ -19,44 +19,20 @@ var roomHeaders = map[string][]string{
 
 func writeRoomXLSX(w http.ResponseWriter, e *app.RoomExport, locale string) {
 	locale = app.NormLocale(locale)
-	f := excelize.NewFile()
-	defer f.Close()
-	const sheet = "Sheet1"
-	headers := roomHeaders[locale]
-	head := make([]any, len(headers))
-	for i, h := range headers {
-		head[i] = h
-	}
-	_ = f.SetSheetRow(sheet, "A1", &head)
-	optional := func(v *int) any {
-		if v == nil {
-			return ""
-		}
-		return *v
-	}
-	row := 2
+	sheet := newResultSheet(roomHeaders[locale])
+	defer sheet.Close()
 	for _, g := range e.Guests {
 		if len(g.Sessions) == 0 {
-			cell, _ := excelize.CoordinatesToCellName(1, row)
-			_ = f.SetSheetRow(sheet, cell, &[]any{g.Nickname, "", gradeStatuses[locale]["todo"]})
-			row++
-			continue
+			sheet.addRow(g.Nickname, "", gradeStatuses[locale]["todo"])
 		}
 		for _, s := range g.Sessions {
 			title := s.Title
 			if title == "" {
 				title = s.AppType
 			}
-			cell, _ := excelize.CoordinatesToCellName(1, row)
-			_ = f.SetSheetRow(sheet, cell, &[]any{g.Nickname, title, gradeStatuses[locale][s.Status], s.Turns, s.Progress,
-				optional(s.ScoreConversation), optional(s.ScoreReflection), s.Reflection, s.StartedAt, s.UpdatedAt})
-			row++
+			sheet.addRow(g.Nickname, title, gradeStatuses[locale][s.Status], s.Turns, s.Progress,
+				optionalInt(s.ScoreConversation), optionalInt(s.ScoreReflection), s.Reflection, s.StartedAt, s.UpdatedAt)
 		}
 	}
-	bold, _ := f.NewStyle(&excelize.Style{Font: &excelize.Font{Bold: true}})
-	last, _ := excelize.ColumnNumberToName(len(headers))
-	_ = f.SetCellStyle(sheet, "A1", last+"1", bold)
-	_ = f.SetColWidth(sheet, "A", last, 18)
-	_ = f.SetPanes(sheet, &excelize.Panes{Freeze: true, YSplit: 1, TopLeftCell: "A2", ActivePane: "bottomLeft"})
-	sendXLSX(w, f, "room.xlsx", safeFileName(e.Title+" "+e.CreatedAt[:10])+".xlsx")
+	sheet.send(w, "room.xlsx", safeFileName(e.Title+" "+fileDay(e.CreatedAt))+".xlsx")
 }

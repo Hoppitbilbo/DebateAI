@@ -32,38 +32,72 @@ var gradeStatuses = map[string]map[string]string{
 // writeGradesXLSX sends rows as an .xlsx download named after title.
 func writeGradesXLSX(w http.ResponseWriter, title, locale string, rows []app.GradeRow) {
 	locale = app.NormLocale(locale)
-	f := excelize.NewFile()
-	defer f.Close()
-	const sheet = "Sheet1"
-	headers := gradeHeaders[locale]
-	head := make([]any, len(headers))
-	for i, h := range headers {
-		head[i] = h
-	}
-	_ = f.SetSheetRow(sheet, "A1", &head)
-	optional := func(v *int) any {
-		if v == nil {
-			return ""
-		}
-		return *v
-	}
-	for i, r := range rows {
+	sheet := newResultSheet(gradeHeaders[locale])
+	defer sheet.Close()
+	for _, r := range rows {
 		status, progress, updated := gradeStatuses[locale]["todo"], any(""), ""
 		var conv, refl, teacher any = "", "", ""
 		if s := r.Session; s != nil {
 			status, progress, updated = gradeStatuses[locale][s.Status], s.Progress, s.UpdatedAt
-			conv, refl, teacher = optional(s.ScoreConversation), optional(s.ScoreReflection), optional(s.TeacherScore)
+			conv, refl, teacher = optionalInt(s.ScoreConversation), optionalInt(s.ScoreReflection), optionalInt(s.TeacherScore)
 		}
-		cell, _ := excelize.CoordinatesToCellName(1, i+2)
-		_ = f.SetSheetRow(sheet, cell, &[]any{r.Student, r.Email, r.Assignment, status, progress, conv, refl, teacher, r.Attempts, updated})
+		sheet.addRow(r.Student, r.Email, r.Assignment, status, progress, conv, refl, teacher, r.Attempts, updated)
 	}
+	sheet.send(w, "grades.xlsx", safeFileName(title)+".xlsx")
+}
+
+// resultSheet is a one-sheet workbook of results: a bold, frozen header
+// row and one row per line added.
+type resultSheet struct {
+	*excelize.File
+	columns int
+	next    int // row of the next line
+}
+
+const resultSheetName = "Sheet1"
+
+func newResultSheet(headers []string) *resultSheet {
+	f := excelize.NewFile()
+	head := make([]any, len(headers))
+	for i, h := range headers {
+		head[i] = h
+	}
+	_ = f.SetSheetRow(resultSheetName, "A1", &head)
 	bold, _ := f.NewStyle(&excelize.Style{Font: &excelize.Font{Bold: true}})
 	last, _ := excelize.ColumnNumberToName(len(headers))
-	_ = f.SetCellStyle(sheet, "A1", last+"1", bold)
-	_ = f.SetColWidth(sheet, "A", last, 18)
-	_ = f.SetPanes(sheet, &excelize.Panes{Freeze: true, YSplit: 1, TopLeftCell: "A2", ActivePane: "bottomLeft"})
+	_ = f.SetCellStyle(resultSheetName, "A1", last+"1", bold)
+	_ = f.SetColWidth(resultSheetName, "A", last, 18)
+	_ = f.SetPanes(resultSheetName, &excelize.Panes{Freeze: true, YSplit: 1, TopLeftCell: "A2", ActivePane: "bottomLeft"})
+	return &resultSheet{File: f, columns: len(headers), next: 2}
+}
 
-	sendXLSX(w, f, "grades.xlsx", safeFileName(title)+".xlsx")
+func (rs *resultSheet) addRow(values ...any) {
+	cell, _ := excelize.CoordinatesToCellName(1, rs.next)
+	_ = rs.SetSheetRow(resultSheetName, cell, &values)
+	rs.next++
+}
+
+// send writes the workbook as a download; fallback is the ASCII file name.
+func (rs *resultSheet) send(w http.ResponseWriter, fallback, name string) {
+	sendDownload(w, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fallback, name)
+	if err := rs.Write(w); err != nil {
+		writeErr(w, 500, "internal", err.Error())
+	}
+}
+
+// optionalInt is the cell value of an optional score.
+func optionalInt(v *int) any {
+	if v == nil {
+		return ""
+	}
+	return *v
+}
+
+// sendDownload sets the headers of a file download; fallback is the ASCII
+// file name for old browsers.
+func sendDownload(w http.ResponseWriter, contentType, fallback, name string) {
+	w.Header().Set("Content-Type", contentType)
+	w.Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename="%s"; filename*=UTF-8''%s`, fallback, url.PathEscape(name)))
 }
 
 // safeFileName replaces the characters that file systems refuse.
@@ -74,15 +108,6 @@ func safeFileName(s string) string {
 		}
 		return r
 	}, s)
-}
-
-// sendXLSX sends a workbook as a download; fallback is the ASCII file name.
-func sendXLSX(w http.ResponseWriter, f *excelize.File, fallback, name string) {
-	w.Header().Set("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-	w.Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename="%s"; filename*=UTF-8''%s`, fallback, url.PathEscape(name)))
-	if err := f.Write(w); err != nil {
-		writeErr(w, 500, "internal", err.Error())
-	}
 }
 
 // handleClassGrades exports the grades of every assignment of a class.

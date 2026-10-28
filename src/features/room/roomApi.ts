@@ -64,6 +64,12 @@ export interface ImportMatch { nickname: string; studentId: number }
 
 export interface ImportResult { sessions: number; students: number; discarded: number }
 
+/** Text limits, the same as the server's (domain.MaxNicknameChars, app/limits.go). */
+export const ROOM_LIMITS = { nickname: 20, title: 120, instructions: 4000 } as const;
+
+/** How often the screens refresh (ms): the teacher's lobby, the dashboard list, the guest's room. */
+export const REFRESH_MS = { lobby: 4000, openRooms: 30000, guestRoom: 60000 } as const;
+
 // ---------- host key ----------
 
 /** The secret key of a room lives in this browser only. */
@@ -99,20 +105,23 @@ export const hostLink = (roomId: number, key: string) => `${window.location.orig
 /** The link students open, with the code already filled in. */
 export const joinLink = (code: string) => `${window.location.origin}/entra?c=${code}`;
 
+/** The host key header, when this browser has the key of the room. */
+const hostHeaders = (roomId: number): Record<string, string> => {
+  const key = hostKeys.get(roomId);
+  return key ? { "X-Room-Key": key } : {};
+};
+
 /** Calls a room endpoint with the host key when this browser has it. */
 async function hostRequest<T>(method: string, roomId: number, path: string, body?: unknown): Promise<T> {
-  const key = hostKeys.get(roomId);
   const res = await fetch(`/api/rooms/${roomId}${path}`, {
     method,
     credentials: "same-origin",
-    headers: { ...(body !== undefined ? { "Content-Type": "application/json" } : {}), ...(key ? { "X-Room-Key": key } : {}) },
+    headers: { ...(body !== undefined ? { "Content-Type": "application/json" } : {}), ...hostHeaders(roomId) },
     body: body !== undefined ? JSON.stringify(body) : undefined,
   });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new ApiError(res.status, err.error || "error", err.message || res.statusText);
-  }
-  return (res.headers.get("Content-Type")?.includes("json") ? res.json() : res.blob()) as Promise<T>;
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new ApiError(res.status, data.error || "error", data.message || res.statusText);
+  return data as T;
 }
 
 /** Saves a downloaded file under the name the server suggests. */
@@ -126,8 +135,7 @@ const saveBlob = (blob: Blob, fallback: string, disposition?: string | null) => 
 };
 
 async function download(roomId: number, path: string, fallback: string) {
-  const key = hostKeys.get(roomId);
-  const res = await fetch(`/api/rooms/${roomId}${path}`, { credentials: "same-origin", headers: key ? { "X-Room-Key": key } : {} });
+  const res = await fetch(`/api/rooms/${roomId}${path}`, { credentials: "same-origin", headers: hostHeaders(roomId) });
   if (!res.ok) throw new ApiError(res.status, "download_failed", res.statusText);
   saveBlob(await res.blob(), fallback, res.headers.get("Content-Disposition"));
 }
@@ -165,7 +173,7 @@ export const useRoomView = (roomId: number) => {
     view: useQuery({
       queryKey: ["room", roomId],
       queryFn: () => roomApi.view(roomId),
-      refetchInterval: (q) => (q.state.error ? false : 4000),
+      refetchInterval: (q) => (q.state.error ? false : REFRESH_MS.lobby),
       retry: false,
     }),
     refresh: () => void qc.invalidateQueries({ queryKey: ["room", roomId] }),

@@ -6,11 +6,11 @@ import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { cn } from "@/lib/utils";
 import { ApiError } from "@/lib/api";
 import { useAuth } from "@/context/auth";
-import { roomApi, RoomInfo } from "@/features/room/roomApi";
-import { avatarUrl, randomAvatar, ROOM_AVATARS } from "@/features/room/avatars";
+import { ROOM_LIMITS, roomApi, RoomInfo } from "@/features/room/roomApi";
+import { randomAvatar } from "@/features/room/avatars";
+import AvatarPicker from "./AvatarPicker";
 
 type Step = "code" | "profile" | "rejoin";
 
@@ -119,30 +119,12 @@ const JoinRoomPage = () => {
             {info && <p className="text-center text-sm">{t("room.join.roomTitle")} <strong>{info.title || t(`platform.appNames.${info.appType}`)}</strong> · <span className="font-mono">{code}</span></p>}
             <div className="space-y-2">
               <Label htmlFor="nickname">{t("room.join.nicknameLabel")}</Label>
-              <Input id="nickname" value={nickname} onChange={(e) => setNickname(e.target.value)} maxLength={20} autoFocus autoComplete="off" className="h-12 text-lg" aria-describedby="nickname-hint" />
+              <Input id="nickname" value={nickname} onChange={(e) => setNickname(e.target.value)} maxLength={ROOM_LIMITS.nickname} autoFocus autoComplete="off" className="h-12 text-lg" aria-describedby="nickname-hint" />
               <p id="nickname-hint" className="text-xs text-muted-foreground">{t("room.join.nicknameHint")}</p>
             </div>
 
             {step === "profile" ? (
-              <fieldset>
-                <legend className="mb-2 text-sm font-medium">{t("room.join.avatarLabel")}</legend>
-                <div className="grid grid-cols-6 gap-2 sm:grid-cols-8" role="radiogroup">
-                  {ROOM_AVATARS.map((a) => (
-                    <button
-                      key={a}
-                      type="button"
-                      role="radio"
-                      aria-checked={avatar === a}
-                      aria-label={t(`room.avatars.${a}`)}
-                      title={t(`room.avatars.${a}`)}
-                      onClick={() => setAvatar(a)}
-                      className={cn("rounded-lg border-2 p-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring", avatar === a ? "border-primary bg-sun-light" : "border-transparent hover:border-border")}
-                    >
-                      <img src={avatarUrl(a)} alt="" className="h-full w-full" width={64} height={64} />
-                    </button>
-                  ))}
-                </div>
-              </fieldset>
+              <AvatarPicker value={avatar} onChange={setAvatar} />
             ) : (
               <div className="space-y-2">
                 <Label htmlFor="pin">{t("room.join.pinLabel")}</Label>
