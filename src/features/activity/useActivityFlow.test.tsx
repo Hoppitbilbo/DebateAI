@@ -85,10 +85,13 @@ describe("useActivityFlow", () => {
     expect(result.current.phase).toBe("setup");
   });
 
-  it("moves to the reflection with a toast when the server ends the chat", () => {
+  it("keeps the chat on screen when the server ends it, so the last reply can be read", () => {
     const { result } = renderHook(() => useActivityFlow("convinci-tu"));
+    act(() => result.current.setPhase("chat"));
     act(() => lastEngineOptions().onEnded("goal_reached"));
     expect(mocks.toast).toHaveBeenCalledWith("platform.activity.goalReachedToast");
+    expect(result.current.phase).toBe("chat");
+    act(() => result.current.finishChat());
     expect(result.current.phase).toBe("reflection");
   });
 

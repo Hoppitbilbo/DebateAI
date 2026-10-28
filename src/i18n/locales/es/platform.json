@@ -147,7 +147,10 @@
     "loginRequired": "Este servidor requiere una cuenta para usar las apps.",
     "loginForAssignment": "Este enlace abre una tarea: inicia sesión para guardar tu trabajo para el docente.",
     "assignmentError": "No se pudo cargar la tarea (puede ser de otra app o no estar asignada a ti).",
-    "retry": "Reintentar"
+    "retry": "Reintentar",
+    "endedGoal": "¡Objetivos alcanzados! Lee con calma la última respuesta y luego sigue.",
+    "endedTurns": "Has usado todos los turnos. Lee con calma la última respuesta y luego sigue.",
+    "continueToReflection": "Siguiente: reflexión"
   },
   "assignment": {
     "label": "Tarea",
@@ -196,7 +199,9 @@
     "conversation": "Conversación",
     "newActivity": "Nueva actividad",
     "download": "Descargar",
-    "backToAssignments": "Volver a mis tareas"
+    "backToAssignments": "Volver a mis tareas",
+    "diffusionOn": "Efecto difusión activado: la valoración se formará a partir del ruido. Tres clics en el título para apagarlo.",
+    "diffusionOff": "Efecto difusión desactivado."
   },
   "apps": {
     "common": {

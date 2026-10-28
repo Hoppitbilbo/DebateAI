@@ -148,6 +148,14 @@ const PersonaggioMisteriosoPage = () => {
     </SetupCard>
   );
 
+  const startGuess = () => {
+    engine.live.stopLive();
+    setGuessing(true);
+  };
+  const chatEndMessage = endedByJudge
+    ? t("platform.apps.personaggioMisterioso.judgeEndedChat")
+    : t("platform.apps.personaggioMisterioso.readLastAnswer");
+
   return (
     <ActivityRunner
       app={app}
@@ -199,14 +207,13 @@ const PersonaggioMisteriosoPage = () => {
         placeholder: t("platform.apps.personaggioMisterioso.placeholder"),
         live: engine.live,
         disabled: questionsOver || questionsLeft === 0 || engine.ended,
-        disabledReason: endedByJudge
-          ? t("platform.apps.personaggioMisterioso.judgeEndedChat")
-          : t("platform.apps.personaggioMisterioso.readLastAnswer"),
-        onEnd: () => {
-          engine.live.stopLive();
-          setGuessing(true);
-        },
+        disabledReason: chatEndMessage,
+        onEnd: startGuess,
         endLabel: t("platform.apps.personaggioMisterioso.guessNow"),
+        // Out of questions: read the last answer, then guess (never straight to the reflection).
+        ended: questionsOver || engine.ended
+          ? { message: chatEndMessage, continueLabel: t("platform.apps.personaggioMisterioso.guessNow"), onContinue: startGuess }
+          : null,
         canEnd: session.turns >= 1 || questionsOver,
         footerNote: (
           <span className="inline-flex items-center gap-1">

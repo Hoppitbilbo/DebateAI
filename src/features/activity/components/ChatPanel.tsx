@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Flag, Loader2, Mic, MicOff, Radio, Send } from "lucide-react";
+import { ArrowRight, Flag, Loader2, Mic, MicOff, Radio, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
@@ -34,7 +34,35 @@ interface ChatPanelProps {
   canRetry?: (id: string) => boolean;
   /** Picture for an AI speaker whose Wikipedia page has none (default: a person). */
   avatarFallback?: AvatarFallback;
+  /**
+   * The server ended the chat: the messages stay readable and this notice,
+   * with its continue button, replaces the input.
+   */
+  ended?: ChatEnd | null;
 }
+
+export interface ChatEnd {
+  message: string;
+  continueLabel: string;
+  onContinue: () => void;
+}
+
+/**
+ * Shown in place of the input when the server ended the chat. The continue
+ * button takes the focus (the input it replaces had it), so Enter moves on.
+ */
+const ChatEndNotice = ({ end }: { end: ChatEnd }) => {
+  const button = useRef<HTMLButtonElement>(null);
+  useEffect(() => button.current?.focus({ preventScroll: true }), []);
+  return (
+    <div role="status" className="phase-enter flex flex-col items-center gap-3 rounded-md bg-primary/10 p-4 text-center sm:flex-row sm:justify-between sm:text-left">
+      <p className="text-sm font-medium text-primary">{end.message}</p>
+      <Button ref={button} onClick={end.onContinue} className="shrink-0">
+        {end.continueLabel}<ArrowRight className="ml-2 h-4 w-4" />
+      </Button>
+    </div>
+  );
+};
 
 /** The one chat component used by every app. */
 const ChatPanel = ({
@@ -56,6 +84,7 @@ const ChatPanel = ({
   onRetry,
   canRetry,
   avatarFallback,
+  ended,
 }: ChatPanelProps) => {
   const { t, i18n } = useTranslation();
   const [input, setInput] = useState("");
@@ -102,7 +131,9 @@ const ChatPanel = ({
       {toolbar && <div className="border-t border-border px-4 py-2">{toolbar}</div>}
 
       <div className="space-y-3 border-t border-border p-4">
-        {disabled && disabledReason ? (
+        {ended ? (
+          <ChatEndNotice end={ended} />
+        ) : disabled && disabledReason ? (
           <p className="rounded-md bg-primary/10 p-3 text-center text-sm font-medium text-primary">{disabledReason}</p>
         ) : (
           <div className="flex items-end gap-2">
@@ -139,7 +170,7 @@ const ChatPanel = ({
             </Button>
           </div>
         )}
-        {(onEnd || footerNote) && (
+        {!ended && (onEnd || footerNote) && (
           <div className="flex flex-col items-center justify-between gap-2 sm:flex-row">
             <div className="text-xs text-muted-foreground">{footerNote}</div>
             {onEnd && (

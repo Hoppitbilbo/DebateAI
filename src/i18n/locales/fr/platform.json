@@ -147,7 +147,10 @@
     "loginRequired": "Ce serveur exige un compte pour utiliser les applis.",
     "loginForAssignment": "Ce lien ouvre un devoir : connectez-vous pour enregistrer votre travail pour l'enseignant.",
     "assignmentError": "Impossible de charger le devoir (il concerne peut-être une autre appli ou ne vous est pas attribué).",
-    "retry": "Réessayer"
+    "retry": "Réessayer",
+    "endedGoal": "Objectifs atteints ! Prends le temps de lire la dernière réponse, puis continue.",
+    "endedTurns": "Tu as utilisé tous tes tours. Prends le temps de lire la dernière réponse, puis continue.",
+    "continueToReflection": "Suite : réflexion"
   },
   "assignment": {
     "label": "Devoir",
@@ -196,7 +199,9 @@
     "conversation": "Conversation",
     "newActivity": "Nouvelle activité",
     "download": "Télécharger",
-    "backToAssignments": "Retour à mes devoirs"
+    "backToAssignments": "Retour à mes devoirs",
+    "diffusionOn": "Effet diffusion activé : le retour se formera à partir du bruit. Trois clics sur le titre pour l'éteindre.",
+    "diffusionOff": "Effet diffusion désactivé."
   },
   "apps": {
     "common": {

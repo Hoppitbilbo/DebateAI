@@ -147,7 +147,10 @@
     "loginRequired": "Questo server richiede un account per usare le app.",
     "loginForAssignment": "Questo link apre un compito: accedi per salvare il tuo lavoro per il docente.",
     "assignmentError": "Impossibile caricare il compito (potrebbe essere per un'altra app o non assegnato a te).",
-    "retry": "Riprova"
+    "retry": "Riprova",
+    "endedGoal": "Obiettivi raggiunti! Leggi con calma l'ultima risposta, poi vai avanti.",
+    "endedTurns": "Hai usato tutti i turni. Leggi con calma l'ultima risposta, poi vai avanti.",
+    "continueToReflection": "Avanti: riflessione"
   },
   "assignment": {
     "label": "Compito",
@@ -196,7 +199,9 @@
     "conversation": "Conversazione",
     "newActivity": "Nuova attività",
     "download": "Scarica",
-    "backToAssignments": "Torna ai miei compiti"
+    "backToAssignments": "Torna ai miei compiti",
+    "diffusionOn": "Effetto diffusione attivato: il feedback si formerà dal rumore. Tre clic sul titolo per spegnerlo.",
+    "diffusionOff": "Effetto diffusione spento."
   },
   "apps": {
     "common": {

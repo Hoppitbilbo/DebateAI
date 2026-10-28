@@ -147,7 +147,10 @@
     "loginRequired": "Dieser Server erfordert ein Konto, um die Apps zu nutzen.",
     "loginForAssignment": "Dieser Link öffnet eine Aufgabe: melde dich an, um deine Arbeit für die Lehrkraft zu speichern.",
     "assignmentError": "Die Aufgabe konnte nicht geladen werden (sie gehört vielleicht zu einer anderen App oder ist dir nicht zugewiesen).",
-    "retry": "Erneut versuchen"
+    "retry": "Erneut versuchen",
+    "endedGoal": "Ziele erreicht! Lies in Ruhe die letzte Antwort, dann geht es weiter.",
+    "endedTurns": "Du hast alle Runden genutzt. Lies in Ruhe die letzte Antwort, dann geht es weiter.",
+    "continueToReflection": "Weiter: Reflexion"
   },
   "assignment": {
     "label": "Aufgabe",
@@ -196,7 +199,9 @@
     "conversation": "Gespräch",
     "newActivity": "Neue Aktivität",
     "download": "Herunterladen",
-    "backToAssignments": "Zurück zu meinen Aufgaben"
+    "backToAssignments": "Zurück zu meinen Aufgaben",
+    "diffusionOn": "Diffusionseffekt an: Das Feedback entsteht aus Rauschen. Drei Klicks auf den Titel schalten ihn aus.",
+    "diffusionOff": "Diffusionseffekt aus."
   },
   "apps": {
     "common": {

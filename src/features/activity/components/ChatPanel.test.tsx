@@ -26,6 +26,19 @@ const history: ActivityMessage[] = [
 ];
 
 describe("ChatPanel", () => {
+  it("keeps the last reply readable when the chat ends and moves on with the continue button", () => {
+    const onContinue = vi.fn();
+    const onEnd = vi.fn();
+    render(<ChatPanel messages={history} onSend={vi.fn()} disabled onEnd={onEnd} ended={{ message: "Obiettivi raggiunti", continueLabel: "Avanti", onContinue }} />);
+    expect(screen.getByText("Una risposta")).toBeTruthy();
+    expect(screen.queryByRole("textbox")).toBeNull();
+    expect(screen.getByRole("status").textContent).toContain("Obiettivi raggiunti");
+    expect(screen.queryByText("platform.activity.endAndReflect")).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: /Avanti/ }));
+    expect(onContinue).toHaveBeenCalledOnce();
+    expect(onEnd).not.toHaveBeenCalled();
+  });
+
   it("does not reparse completed messages when typing or streaming another reply", () => {
     const messages = Array.from({ length: 200 }, (_, i): ActivityMessage => ({ id: String(i), role: "assistant", content: `Risposta ${i}` }));
     const props = { messages, onSend: vi.fn() };
