@@ -199,7 +199,9 @@
     "conversation": "Conversation",
     "newActivity": "Nouvelle activité",
     "download": "Télécharger",
-    "backToAssignments": "Retour à mes devoirs"
+    "backToAssignments": "Retour à mes devoirs",
+    "diffusionOn": "Effet diffusion activé : le retour se formera à partir du bruit. Trois clics sur le titre pour l'éteindre.",
+    "diffusionOff": "Effet diffusion désactivé."
   },
   "apps": {
     "common": {

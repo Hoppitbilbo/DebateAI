@@ -199,7 +199,9 @@
     "conversation": "Conversazione",
     "newActivity": "Nuova attività",
     "download": "Scarica",
-    "backToAssignments": "Torna ai miei compiti"
+    "backToAssignments": "Torna ai miei compiti",
+    "diffusionOn": "Effetto diffusione attivato: il feedback si formerà dal rumore. Tre clic sul titolo per spegnerlo.",
+    "diffusionOff": "Effetto diffusione spento."
   },
   "apps": {
     "common": {

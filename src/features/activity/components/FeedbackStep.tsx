@@ -1,4 +1,6 @@
+import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import { Award, Bot, Download, LayoutDashboard, Loader2, MessagesSquare, RotateCcw, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -6,6 +8,24 @@ import MarkdownViewer from "@/components/shared/MarkdownViewer";
 import { useAuth } from "@/context/auth";
 import type { ActivityMessage } from "../types";
 import type { EvaluationResult } from "@/utils/evaluationUtils";
+import DiffusionText from "../diffusion/DiffusionText";
+import { useDiffusionPreference } from "../diffusion/useDiffusionPreference";
+
+/** The easter egg: this many clicks on the feedback title, close together, switch the diffusion effect. */
+const SECRET_CLICKS = 3;
+const SECRET_WINDOW_MS = 800;
+
+/** Counts quick clicks; calls `onSecret` at the third one. */
+const useSecretClicks = (onSecret: () => void) => {
+  const clicks = useRef<number[]>([]);
+  return () => {
+    const now = Date.now();
+    clicks.current = [...clicks.current.filter((t) => now - t < SECRET_WINDOW_MS), now];
+    if (clicks.current.length < SECRET_CLICKS) return;
+    clicks.current = [];
+    onSecret();
+  };
+};
 
 interface FeedbackStepProps {
   evaluation: EvaluationResult | null;
@@ -30,6 +50,19 @@ const ScoreCard = ({ label, value }: { label: string; value?: number }) => (
 const FeedbackStep = ({ evaluation, partial, loading, error, reflection, messages, facts, onRestart, isAssignment, title }: FeedbackStepProps) => {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const diffusion = useDiffusionPreference();
+  /** The feedback text the diffusion already settled into (it plays once per text). */
+  const [settledFor, setSettledFor] = useState<string | null>(null);
+  const onTitleClick = useSecretClicks(() => {
+    toast(diffusion.enabled ? t("platform.feedback.diffusionOff") : t("platform.feedback.diffusionOn"));
+    diffusion.toggle();
+    setSettledFor(null);
+  });
+  const final = evaluation?.markdown ?? "";
+  const shown = evaluation?.markdown || partial;
+  // With the effect on, the streamed text stays hidden: it appears all at once, from noise.
+  const diffusing = diffusion.active && !!final && !loading && settledFor !== final;
+  const waiting = diffusion.active ? loading || !final : !shown;
 
   const download = () => {
     const lines = [
@@ -80,18 +113,23 @@ const FeedbackStep = ({ evaluation, partial, loading, error, reflection, message
 
       <section className="rounded-lg border border-border bg-card p-6 text-card-foreground shadow-sm">
         <h3 className="mb-3 flex items-center gap-2 font-semibold">
-          <Bot className="h-5 w-5 text-primary" /> {t("platform.feedback.aiFeedback")}
+          <Bot className="h-5 w-5 text-primary" />
+          <button type="button" onClick={onTitleClick} className="cursor-text select-none text-left [font:inherit]">{t("platform.feedback.aiFeedback")}</button>
         </h3>
         {error ? (
           <p className="text-destructive">{error}</p>
-        ) : (evaluation?.markdown || partial) ? (
-          <MarkdownViewer content={evaluation?.markdown || partial} />
-        ) : (
+        ) : diffusing ? (
+          <DiffusionText markdown={final} onDone={() => setSettledFor(final)} />
+        ) : waiting ? (
           <p className="flex items-center gap-2 text-muted-foreground">
             <Loader2 className="h-4 w-4 animate-spin" /> {t("platform.feedback.generating")}
           </p>
+        ) : (
+          <div className={diffusion.active ? "phase-enter" : undefined}>
+            <MarkdownViewer content={shown} />
+          </div>
         )}
-        {loading && (evaluation?.markdown || partial) && <Loader2 className="mt-2 h-4 w-4 animate-spin text-primary" />}
+        {loading && !waiting && <Loader2 className="mt-2 h-4 w-4 animate-spin text-primary" />}
       </section>
 
       {reflection && (

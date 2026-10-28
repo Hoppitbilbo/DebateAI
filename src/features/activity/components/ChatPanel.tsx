@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ArrowRight, Flag, Loader2, Mic, MicOff, Radio, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -46,6 +46,23 @@ export interface ChatEnd {
   continueLabel: string;
   onContinue: () => void;
 }
+
+/**
+ * Shown in place of the input when the server ended the chat. The continue
+ * button takes the focus (the input it replaces had it), so Enter moves on.
+ */
+const ChatEndNotice = ({ end }: { end: ChatEnd }) => {
+  const button = useRef<HTMLButtonElement>(null);
+  useEffect(() => button.current?.focus({ preventScroll: true }), []);
+  return (
+    <div role="status" className="phase-enter flex flex-col items-center gap-3 rounded-md bg-primary/10 p-4 text-center sm:flex-row sm:justify-between sm:text-left">
+      <p className="text-sm font-medium text-primary">{end.message}</p>
+      <Button ref={button} onClick={end.onContinue} className="shrink-0">
+        {end.continueLabel}<ArrowRight className="ml-2 h-4 w-4" />
+      </Button>
+    </div>
+  );
+};
 
 /** The one chat component used by every app. */
 const ChatPanel = ({
@@ -115,12 +132,7 @@ const ChatPanel = ({
 
       <div className="space-y-3 border-t border-border p-4">
         {ended ? (
-          <div role="status" className="phase-enter flex flex-col items-center gap-3 rounded-md bg-primary/10 p-4 text-center sm:flex-row sm:justify-between sm:text-left">
-            <p className="text-sm font-medium text-primary">{ended.message}</p>
-            <Button onClick={ended.onContinue} autoFocus className="shrink-0">
-              {ended.continueLabel}<ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-          </div>
+          <ChatEndNotice end={ended} />
         ) : disabled && disabledReason ? (
           <p className="rounded-md bg-primary/10 p-3 text-center text-sm font-medium text-primary">{disabledReason}</p>
         ) : (

@@ -199,7 +199,9 @@
     "conversation": "Gespräch",
     "newActivity": "Neue Aktivität",
     "download": "Herunterladen",
-    "backToAssignments": "Zurück zu meinen Aufgaben"
+    "backToAssignments": "Zurück zu meinen Aufgaben",
+    "diffusionOn": "Diffusionseffekt an: Das Feedback entsteht aus Rauschen. Drei Klicks auf den Titel schalten ihn aus.",
+    "diffusionOff": "Diffusionseffekt aus."
   },
   "apps": {
     "common": {

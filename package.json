@@ -20,6 +20,7 @@
     "render:tutorials": "node scripts/render-tutorial-videos.mjs"
   },
   "dependencies": {
+    "@chenglou/pretext": "^1.0.0",
     "@fontsource/press-start-2p": "^5.3.0",
     "@fontsource/vt323": "^5.3.0",
     "@google/genai": "^1.16.0",

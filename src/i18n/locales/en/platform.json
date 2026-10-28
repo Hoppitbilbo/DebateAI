@@ -199,7 +199,9 @@
     "conversation": "Conversation",
     "newActivity": "New activity",
     "download": "Download",
-    "backToAssignments": "Back to my assignments"
+    "backToAssignments": "Back to my assignments",
+    "diffusionOn": "Diffusion effect on: the feedback will form out of noise. Three clicks on the title to switch it off.",
+    "diffusionOff": "Diffusion effect off."
   },
   "apps": {
     "common": {

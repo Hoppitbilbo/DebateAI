@@ -199,7 +199,9 @@
     "conversation": "Conversación",
     "newActivity": "Nueva actividad",
     "download": "Descargar",
-    "backToAssignments": "Volver a mis tareas"
+    "backToAssignments": "Volver a mis tareas",
+    "diffusionOn": "Efecto difusión activado: la valoración se formará a partir del ruido. Tres clics en el título para apagarlo.",
+    "diffusionOff": "Efecto difusión desactivado."
   },
   "apps": {
     "common": {
