@@ -83,6 +83,14 @@ export const i18nReady = i18n
   })
   .then(() => undefined, () => undefined);
 
+// The page language follows the interface (screen readers, hyphenation,
+// spell checking); index.html says "it" until the detected language is known.
+const syncDocumentLang = (lng?: string) => {
+  if (lng && typeof document !== 'undefined') document.documentElement.lang = lng.slice(0, 2);
+};
+i18n.on('languageChanged', syncDocumentLang);
+syncDocumentLang(i18n.language);
+
 // Gestione avanzata delle chiavi mancanti
 i18n.on('missingKey', (lng, ns, key, res) => {
   const errorMessage = `🚨 I18N: Chiave '${key}' mancante per lingua '${lng}' nel namespace '${ns}'`;
