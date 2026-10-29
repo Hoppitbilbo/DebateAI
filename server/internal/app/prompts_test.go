@@ -11,8 +11,8 @@ import (
 	"github.com/Hoppitbilbo/DebateAI/server/internal/domain"
 )
 
-// promptCase is one case of testdata/prompts.json, written from prompts.ts
-// by src/features/activity/promptFixtures.test.ts.
+// promptCase is one case of testdata/prompts.json, first written from the
+// browser's prompts.ts (see prompts.go).
 type promptCase struct {
 	Name       string             `json:"name"`
 	Recipe     PromptRecipe       `json:"recipe"`
@@ -21,7 +21,7 @@ type promptCase struct {
 	Opening    *string            `json:"opening"`
 }
 
-func TestBuildPromptMatchesTypeScript(t *testing.T) {
+func TestBuildPromptMatchesFixtures(t *testing.T) {
 	data, err := os.ReadFile("testdata/prompts.json")
 	if err != nil {
 		t.Fatal(err)

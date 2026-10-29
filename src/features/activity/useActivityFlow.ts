@@ -10,7 +10,6 @@ import { useChatEngine } from "./useChatEngine";
 import { useEvaluationFlow } from "./useEvaluationFlow";
 
 interface LiveConfig {
-  systemInstruction?: string;
   recipe?: PromptRecipe;
   characterName?: string;
   characterBio?: string;

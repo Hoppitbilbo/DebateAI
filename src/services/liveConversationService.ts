@@ -12,7 +12,6 @@ export interface LiveAudioChunk {
 }
 
 export interface StartLiveConversationOptions {
-  systemInstruction?: string;
   /** The server writes the instructions from it and locks them in the token. */
   recipe?: PromptRecipe;
   voiceName?: string;
@@ -62,7 +61,6 @@ export const startLiveConversation = async (options: StartLiveConversationOption
   const [tokenInfo, { GoogleGenAI, Modality }] = await Promise.all([
     api.post<LiveTokenResponse>("/api/ai/live/token", {
       sessionId: options.sessionId ?? 0,
-      systemInstruction: options.systemInstruction ?? "",
       ...(options.recipe ? { recipe: { ...options.recipe, kind: "reply" } } : {}),
       voiceName: options.voiceName ?? "",
     }),
@@ -97,7 +95,6 @@ export const startLiveConversation = async (options: StartLiveConversationOption
       inputAudioTranscription: {},
       outputAudioTranscription: {},
       speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: tokenInfo.voiceName || "Aoede" } } },
-      ...(options.systemInstruction ? { systemInstruction: { parts: [{ text: options.systemInstruction }] } } : {}),
     },
     callbacks: {
       onmessage: (message: LiveServerMessage) => {

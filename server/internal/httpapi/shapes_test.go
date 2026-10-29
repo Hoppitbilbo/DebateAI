@@ -133,7 +133,7 @@ func TestResponseShapes(t *testing.T) {
 
 	sess := call(stud, "create session", "POST", "/api/sessions", map[string]any{"appType": "wiki-chatbot", "assignmentId": assignmentID})
 	sessionID := int64(sess["id"].(float64))
-	call(stud, "generate", "POST", "/api/ai/generate", map[string]any{"sessionId": sessionID, "messages": []map[string]string{{"role": "user", "content": "ciao"}}})
+	call(stud, "generate", "POST", "/api/ai/generate", map[string]any{"sessionId": sessionID, "recipe": wikiRecipe, "messages": []map[string]string{{"role": "user", "content": "ciao"}}})
 	var me struct{ User struct{ ID int64 } }
 	stud.do("GET", "/api/auth/me", nil, &me)
 	now := time.Now().UTC()

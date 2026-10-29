@@ -32,6 +32,9 @@ const uiCode = () => (i18n.language || "it").slice(0, 2);
 /** The interface language as a practice language (Italian when unknown). */
 export const uiPracticeLanguage = (): PracticeLanguage => byCode(uiCode()) ?? PRACTICE_LANGUAGES[0];
 
+/** The English name of the interface language, for the teacher helpers' prompts. */
+export const uiLanguage = () => uiPracticeLanguage().prompt;
+
 /** The language the characters of an assignment speak. */
 export const practiceLanguage = (assignment?: Pick<Assignment, "config"> | null): PracticeLanguage =>
   byCode(assignment?.config.language) ?? uiPracticeLanguage();

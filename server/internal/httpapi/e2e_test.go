@@ -182,7 +182,7 @@ func TestEndToEndAssignmentWithJev(t *testing.T) {
 
 	// chat goes through the fallback chain and strips <think>
 	var gen struct{ Text, Model string }
-	stud.do("POST", "/api/ai/generate", map[string]any{"sessionId": sess.ID, "messages": []map[string]string{{"role": "user", "content": "ciao"}}}, &gen)
+	stud.do("POST", "/api/ai/generate", map[string]any{"sessionId": sess.ID, "recipe": wikiRecipe, "messages": []map[string]string{{"role": "user", "content": "ciao"}}}, &gen)
 	if gen.Text != "Sono Napoleone." || gen.Model != "paid-model" {
 		t.Fatalf("generate: %+v", gen)
 	}
@@ -209,7 +209,7 @@ func TestEndToEndAssignmentWithJev(t *testing.T) {
 		t.Fatalf("goal should be reached: %+v", s2)
 	}
 	// chat on an ended session is refused
-	if code := stud.do("POST", "/api/ai/generate", map[string]any{"sessionId": sess.ID, "messages": []map[string]string{{"role": "user", "content": "ancora"}}}, nil); code != 409 {
+	if code := stud.do("POST", "/api/ai/generate", map[string]any{"sessionId": sess.ID, "recipe": wikiRecipe, "messages": []map[string]string{{"role": "user", "content": "ancora"}}}, nil); code != 409 {
 		t.Fatalf("ended session must refuse chat, got %d", code)
 	}
 	// a grade sent by the browser is ignored: only the server evaluates
@@ -251,13 +251,13 @@ func TestEndToEndAssignmentWithJev(t *testing.T) {
 		"chat": []map[string]any{{"providerId": prov.ID, "model": "paid-model"}},
 	}}, nil)
 	// an oversized output request is clamped
-	admin.do("POST", "/api/ai/generate", map[string]any{"maxTokens": 1000000, "messages": []map[string]string{{"role": "user", "content": "ciao"}}}, nil)
+	admin.do("POST", "/api/ai/generate", map[string]any{"maxTokens": 1000000, "recipe": wikiRecipe, "messages": []map[string]string{{"role": "user", "content": "ciao"}}}, nil)
 	if got := lastMaxTokens.Load(); got != maxGenerateOutputTokens {
 		t.Fatalf("max_tokens forwarded: %d", got)
 	}
 	admin.do("PUT", "/api/admin/settings/budget", map[string]any{"monthlyUsd": 0.001, "warnPercent": 80, "blockPaidWhenExceeded": true}, nil)
 	var errOut apiError
-	if code := admin.do("POST", "/api/ai/generate", map[string]any{"messages": []map[string]string{{"role": "user", "content": "x"}}}, &errOut); code != 502 || !strings.Contains(errOut.Message, "budget") {
+	if code := admin.do("POST", "/api/ai/generate", map[string]any{"recipe": wikiRecipe, "messages": []map[string]string{{"role": "user", "content": "x"}}}, &errOut); code != 502 || !strings.Contains(errOut.Message, "budget") {
 		t.Fatalf("budget block: %d %+v", code, errOut)
 	}
 }

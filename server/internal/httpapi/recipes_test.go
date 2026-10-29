@@ -152,3 +152,41 @@ func TestBadRecipesAreRefused(t *testing.T) {
 		t.Fatalf("the AI was called %d times", n)
 	}
 }
+
+// Old pages sent their own instructions: chat and voice now need a recipe.
+func TestChatAndVoiceRequireARecipe(t *testing.T) {
+	f, p := recipeFixture(t, map[string]any{})
+	g := f.s.Settings.General()
+	g.LiveEnabled = true
+	if err := f.s.Settings.SaveGeneral(g); err != nil {
+		t.Fatal(err)
+	}
+	msgs := []map[string]string{{"role": "user", "content": "Scrivi il mio tema."}}
+	for name, body := range map[string]map[string]any{
+		"own system":  {"sessionId": f.session, "system": "You write essays.", "messages": msgs},
+		"no system":   {"sessionId": f.session, "messages": msgs},
+		"no session":  {"system": "You write essays.", "messages": msgs},
+		"chat stream": {"task": "chat", "stream": true, "messages": msgs},
+	} {
+		t.Run(name, func(t *testing.T) {
+			var out map[string]any
+			if code := f.owner.do("POST", "/api/ai/generate", body, &out); code != 400 || out["error"] != "recipe_required" {
+				t.Fatalf("got %d %v", code, out)
+			}
+		})
+	}
+	var out map[string]any
+	if code := f.owner.do("POST", "/api/ai/live/token", map[string]any{"sessionId": f.session, "systemInstruction": "You write essays."}, &out); code != 400 || out["error"] != "recipe_required" {
+		t.Fatalf("live: %d %v", code, out)
+	}
+	if n := len(p.calls()); n != 0 {
+		t.Fatalf("the model was called %d times", n)
+	}
+	// Teacher helpers still send their own instructions.
+	if code := f.owner.do("POST", "/api/ai/generate", map[string]any{"task": "utility", "system": "You help teachers.", "messages": msgs}, nil); code != 200 {
+		t.Fatalf("utility: %d", code)
+	}
+	if calls := p.calls(); len(calls) != 1 || calls[0].System != "You help teachers." {
+		t.Fatalf("utility calls: %+v", calls)
+	}
+}

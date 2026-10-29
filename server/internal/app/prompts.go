@@ -16,10 +16,12 @@ import (
 // never the instructions themselves, and the recipe is checked against what
 // the teacher locked in the assignment.
 //
-// The templates are a port of src/features/activity/prompts.ts and
-// difficulty.ts; testdata/prompts.json (written by promptFixtures.test.ts)
-// proves the text is the same. The only differences: the moderated debate's
-// style is in English, and every prompt ends with guardLine.
+// The templates were ported from the browser's prompts.ts and difficulty.ts
+// (removed after the move); testdata/prompts.json, written from them,
+// proved the text was the same and now fixes it: a deliberate change to a
+// template goes in the expected text there too. The only differences from
+// the browser: the moderated debate's style is in English, and every prompt
+// ends with guardLine.
 //
 // Fields each app uses:
 //

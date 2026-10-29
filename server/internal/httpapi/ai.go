@@ -97,7 +97,7 @@ func (s *Server) handleAIStatus(w http.ResponseWriter, r *http.Request) {
 type generateIn struct {
 	Task        string            `json:"task"`
 	System      string            `json:"system"`
-	Recipe      *app.PromptRecipe `json:"recipe"` // chat: the server writes the system prompt
+	Recipe      *app.PromptRecipe `json:"recipe"` // chat: required, the server writes the system prompt
 	Messages    []ai.Message      `json:"messages"`
 	SessionID   int64             `json:"sessionId"`
 	Stream      bool              `json:"stream"`
@@ -135,11 +135,15 @@ func (s *Server) handleGenerate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// Before the messages check: an opening arrives without messages.
-	if in.Recipe != nil {
-		if in.Task != app.TaskChat {
-			writeErr(w, 400, "bad_recipe", "recipes are for chat")
-			return
-		}
+	switch {
+	case in.Task == app.TaskChat && in.Recipe == nil:
+		// A character's instructions are written only by the server.
+		writeErr(w, 400, "recipe_required", "reload the page: the app was updated")
+		return
+	case in.Recipe != nil && in.Task != app.TaskChat:
+		writeErr(w, 400, "bad_recipe", "recipes are for chat")
+		return
+	case in.Recipe != nil:
 		system, opening, ok := s.promptFor(w, *in.Recipe, sessionID)
 		if !ok {
 			return
@@ -305,10 +309,9 @@ func (s *Server) handleLiveToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var in struct {
-		SessionID         int64             `json:"sessionId"`
-		Recipe            *app.PromptRecipe `json:"recipe"`
-		SystemInstruction string            `json:"systemInstruction"` // old pages, without a recipe
-		VoiceName         string            `json:"voiceName"`
+		SessionID int64             `json:"sessionId"`
+		Recipe    *app.PromptRecipe `json:"recipe"`
+		VoiceName string            `json:"voiceName"`
 	}
 	if err := readJSON(r, &in); err != nil {
 		writeErr(w, 400, "bad_request", err.Error())
@@ -322,20 +325,21 @@ func (s *Server) handleLiveToken(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 409, "session_ended", "this activity has ended")
 		return
 	}
-	if in.Recipe != nil {
-		rec := *in.Recipe
-		rec.Kind = "reply" // a voice conversation is opened by the student
-		system, _, ok := s.promptFor(w, rec, sessionID)
-		if !ok {
-			return
-		}
-		in.SystemInstruction = system
+	if in.Recipe == nil {
+		writeErr(w, 400, "recipe_required", "reload the page: the app was updated")
+		return
+	}
+	rec := *in.Recipe
+	rec.Kind = "reply" // a voice conversation is opened by the student
+	system, _, ok := s.promptFor(w, rec, sessionID)
+	if !ok {
+		return
 	}
 	var userID *int64
 	if u != nil {
 		userID = &u.ID
 	}
-	tok, err := s.Gateway.LiveToken(r.Context(), in.SystemInstruction, in.VoiceName, userID, sessionID)
+	tok, err := s.Gateway.LiveToken(r.Context(), system, in.VoiceName, userID, sessionID)
 	if err != nil {
 		writeErr(w, 502, "live_unavailable", err.Error())
 		return

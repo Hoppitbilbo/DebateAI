@@ -8,7 +8,6 @@ import { ActivityMessage, newId } from "./types";
 import { useMessageState } from "./useMessageState";
 
 interface LiveConfig {
-  systemInstruction?: string;
   /** The server writes the voice instructions from it. */
   recipe?: PromptRecipe;
   characterName?: string;
@@ -26,9 +25,8 @@ interface Options {
 }
 
 interface RespondArgs {
-  system?: string;
-  /** The server writes the system prompt from it (preferred to `system`). */
-  recipe?: PromptRecipe;
+  /** What the character is; the server writes its instructions from it. */
+  recipe: PromptRecipe;
   history?: ChatMessage[];
   name?: string;
   speakerKey?: string;
@@ -116,7 +114,7 @@ export const useChatEngine = ({ session, live, context, onEnded }: Options) => {
     let partial = "";
     try {
       const text = await ai.generateStream(
-        { task: "chat", system: args.system, recipe: args.recipe, messages: args.history ?? toHistory(messagesRef.current.filter((m) => m.id !== msg.id), args.speakerKey), sessionId: session.getSessionId(), maxTokens: args.maxTokens, signal },
+        { task: "chat", recipe: args.recipe, messages: args.history ?? toHistory(messagesRef.current.filter((m) => m.id !== msg.id), args.speakerKey), sessionId: session.getSessionId(), maxTokens: args.maxTokens, signal },
         (_d, full) => {
           partial = full;
           streamMessages((prev) => prev.map((m) => m.id === msg.id ? { ...m, content: full } : m));
@@ -145,18 +143,12 @@ export const useChatEngine = ({ session, live, context, onEnded }: Options) => {
 
   /**
    * The character speaks first, in its own voice, prompted by a hidden stage
-   * direction (written by the server for a recipe, else `cue`); `fallback`
-   * is shown if no model answers.
+   * direction the server writes from the recipe; `fallback` is shown if no
+   * model answers.
    */
   const open = useCallback(
-    (args: Omit<RespondArgs, "history"> & { cue?: string; fallback: RespondArgs["fallback"] }) =>
-      withBusy(() =>
-        respond({
-          ...args,
-          recipe: args.recipe && { ...args.recipe, kind: "opening" },
-          history: args.cue ? [{ role: "user", content: args.cue }] : [],
-        }),
-      ),
+    (args: Omit<RespondArgs, "history"> & { fallback: RespondArgs["fallback"] }) =>
+      withBusy(() => respond({ ...args, recipe: { ...args.recipe, kind: "opening" }, history: [] })),
     [withBusy, respond],
   );
 
@@ -166,7 +158,6 @@ export const useChatEngine = ({ session, live, context, onEnded }: Options) => {
 
   const liveCtl = useLiveAi({
     disabled: !live || !session.allowLive || ended,
-    systemInstruction: live?.systemInstruction,
     recipe: live?.recipe,
     characterName: live?.characterName,
     characterBio: live?.characterBio,

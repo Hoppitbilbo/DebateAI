@@ -14,8 +14,7 @@ import { formatAiError } from "@/services/aiService";
 export type LiveState = "off" | "connecting" | "listening" | "speaking";
 
 export interface UseLiveAiOptions {
-  systemInstruction?: string;
-  /** The server writes the voice instructions from it (preferred to `systemInstruction`). */
+  /** The character; the server writes the voice instructions from it. */
   recipe?: PromptRecipe;
   characterName?: string;
   characterBio?: string;
@@ -111,7 +110,7 @@ export const useLiveAi = (opts: UseLiveAiOptions) => {
     setLiveState("off");
   }, [stopPlayback]);
 
-  const { systemInstruction, characterName, characterBio, sessionId } = opts;
+  const { characterName, characterBio, sessionId } = opts;
   // A recipe is a new object on every render: reconnect only when its content changes.
   const recipeKey = opts.recipe ? JSON.stringify(opts.recipe) : "";
 
@@ -127,7 +126,6 @@ export const useLiveAi = (opts: UseLiveAiOptions) => {
         const voice = characterName ? await getBestVoiceForCharacter(characterName, characterBio || "") : undefined;
         if (cancelled) return;
         const ctrl = await startLiveConversation({
-          systemInstruction,
           recipe: recipeKey ? (JSON.parse(recipeKey) as PromptRecipe) : undefined,
           voiceName: voice,
           sessionId,
@@ -177,7 +175,7 @@ export const useLiveAi = (opts: UseLiveAiOptions) => {
       cancelled = true;
       disconnect();
     };
-  }, [liveMode, systemInstruction, recipeKey, characterName, characterBio, sessionId, disconnect, playChunk, stopPlayback, t]);
+  }, [liveMode, recipeKey, characterName, characterBio, sessionId, disconnect, playChunk, stopPlayback, t]);
 
   useEffect(() => () => disconnect(), [disconnect]);
 
