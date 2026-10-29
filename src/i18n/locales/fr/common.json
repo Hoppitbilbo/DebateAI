@@ -86,5 +86,7 @@
     "teachersShare": "Enseignants, partagez vos idées et expérimentations en classe !"
   },
   "startVoiceInput": "Démarrer la saisie vocale",
-  "stopVoiceInput": "Arrêter la saisie vocale"
+  "stopVoiceInput": "Arrêter la saisie vocale",
+  "typeToSearch": "Écris un nom pour chercher.",
+  "searchFailed": "Wikipédia n'a pas répondu : vérifie la connexion."
 }

@@ -1,34 +1,39 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { htmlToText } from "@/lib/text";
 import i18n from "@/i18n";
 import type { WikiRef } from "@/lib/api";
 
-const wikiLang = () => {
-  const l = (i18n.language || "it").slice(0, 2);
+/** The Wikipedia of an interface language ("en-US" → "en"); Italian for the others. */
+export const wikiLanguage = (lng: string = i18n.language) => {
+  const l = (lng || "it").slice(0, 2).toLowerCase();
   return ["it", "en", "es", "fr", "de"].includes(l) ? l : "it";
 };
 
+// Whole extracts, by language and title: callers asking for different
+// lengths share one download and each gets its own cut.
 const cache = new Map<string, string>();
 
 /** Fetches the intro extract of a Wikipedia page in the UI language. */
 export const fetchWikiSummary = async (title: string, maxChars = 4000): Promise<string> => {
-  const lang = wikiLang();
+  const lang = wikiLanguage();
   const key = `${lang}:${title}`;
-  if (cache.has(key)) return cache.get(key)!;
+  if (cache.has(key)) return cache.get(key)!.slice(0, maxChars);
   const url = `https://${lang}.wikipedia.org/w/api.php?action=query&prop=extracts&exintro&explaintext&redirects=1&format=json&origin=*&titles=${encodeURIComponent(title)}`;
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Wikipedia ${res.status}`);
   const data = await res.json();
   const pages = data?.query?.pages ?? {};
   const first = pages[Object.keys(pages)[0]];
-  const text: string = (first?.extract ?? "").slice(0, maxChars);
+  const text: string = first?.extract ?? "";
   cache.set(key, text);
-  return text;
+  return text.slice(0, maxChars);
 };
 
 /** Loads summaries for the given characters; `ready` once all are loaded. */
 export const useWikiSummaries = (refs: (WikiRef | null | undefined)[]) => {
   const titles = refs.map((r) => r?.title ?? "").join("|");
+  const lang = wikiLanguage(useTranslation().i18n.language); // the summaries follow the interface language
   const [state, setState] = useState<{ summaries: Record<string, string>; loading: boolean; error: boolean }>({ summaries: {}, loading: false, error: false });
 
   useEffect(() => {
@@ -47,7 +52,7 @@ export const useWikiSummaries = (refs: (WikiRef | null | undefined)[]) => {
     return () => {
       cancelled = true;
     };
-  }, [titles]);
+  }, [titles, lang]);
 
   return state;
 };

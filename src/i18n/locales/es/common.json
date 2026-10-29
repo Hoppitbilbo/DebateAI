@@ -74,5 +74,7 @@
     "teachersShare": "¡Profesores, compartid vuestras ideas y experimentos en clase!"
   },
   "startVoiceInput": "Iniciar entrada de voz",
-  "stopVoiceInput": "Detener entrada de voz"
+  "stopVoiceInput": "Detener entrada de voz",
+  "typeToSearch": "Escribe un nombre para buscar.",
+  "searchFailed": "Wikipedia no ha respondido: revisa la conexión."
 }
