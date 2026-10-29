@@ -22,6 +22,13 @@ import (
 //   - the teacher's hints of the mystery game, recognised from the assignment.
 // Voice lines go from the browser to the provider directly: an attempt that
 // used voice keeps them (they cannot be checked) and is marked as such.
+//
+// The app's own notices (role "system": the written intro when the opening
+// failed, the mystery game's final-guess log) are written by the browser
+// too, and the judge would read them as coming from the platform. They are
+// left out of the evidence; what they say that matters reaches the
+// evaluation as the activity's facts. They are not counted: the real ones
+// are part of every normal attempt.
 
 type replyStore interface {
 	Record(sessionID int64, text string) error
@@ -52,6 +59,9 @@ func checkTranscript(msgs []TranscriptMessage, replies, hints []string, voice bo
 	for _, m := range msgs {
 		if m.Role == ai.RoleUser {
 			studentSpoke = true
+		}
+		if m.Role == roleSystem {
+			continue
 		}
 		if m.Role != ai.RoleAssistant || producedByServer(m.Content, replies, hints) {
 			c.evidence = append(c.evidence, m)
