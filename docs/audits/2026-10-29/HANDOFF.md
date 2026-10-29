@@ -7,11 +7,11 @@ Read this instead of re-deriving the work. The source audit is `REVIEW.md` in th
 - Repo: `DebateAI/` (Go server in `server/`, React/Vite frontend in `src/`).
 - `AGENTS.md` → read `docs/REFACTORING.md` first. Audit fixes are **behaviour changes, not refactoring**: do not tick refactoring tasks. Add one row per commit to the *Registro* table and keep the "Correzioni dell'audit" line in *Stato attuale* current. Copy commit hashes from `git log`, never from memory. The document is written in Italian; keep it that way.
 - One fix = one commit, e.g. `fix(<area>): <what> (audit #N)`.
-- Branch: `fix/audit-pass1`, based on `master@f1d7178`. **Not pushed, not merged.** Merging to `master` deploys to production on Vercel, so ask the user before pushing, opening a PR or merging.
+- Branch: `fix/audit-pass1`, based on `master@f1d7178`. Pushed; **PR #21** is open, not merged. Merging to `master` deploys to production on Vercel, so ask the user before merging. Push new commits to the same branch (the PR follows).
 - Verification (all were green at hand-off):
   - `cd server && go vet ./... && go test ./...`; for concurrent code also `go test -race ./internal/...`. Sockets work in this environment, so the `httptest` suites run.
-  - `npm run lint && npx tsc --noEmit -p tsconfig.app.json && npm test && npm run build` (218 Vitest tests).
-  - `npm run check:i18n` (950 keys, 5 locales: it, en, es, fr, de). Every new UI string goes into all five `src/i18n/locales/*/platform.json`.
+  - `npm run lint && npx tsc --noEmit -p tsconfig.app.json && npm test && npm run build` (228 Vitest tests).
+  - `npm run check:i18n` (955 keys, 5 locales: it, en, es, fr, de). Every new UI string goes into all five `src/i18n/locales/*/platform.json`.
   - API contract: `TestResponseShapes` compares against `server/internal/httpapi/testdata/shapes.json`. If a change is intended, regenerate with `cd server && UPDATE_SHAPES=1 go test ./internal/httpapi -run ResponseShapes` and say so in the Registro.
 
 ## Done on the branch (commits after `b9c5991`, which adds the audit doc; the second session starts at `b1711aa`)
@@ -31,6 +31,13 @@ Read this instead of re-deriving the work. The source audit is `REVIEW.md` in th
 | #9 | `37bfee3` | `BestPerUser`, `LatestPerAssignment` (window functions, `rankedSessions`), `StatsForClass`, `CountMemberships()`, `SpendPerUserSince`. |
 | test | `2821bb8` | MarkdownViewer highlight check waits up to 5 s (flaky under the full parallel run). |
 | #3 | `adb16af` | `POST /api/sessions/{id}/evaluate` (SSE, `app/evaluation.go`, `httpapi.handleEvaluateSession`): the server grades the stored transcript and hands in. `/complete` is reflection-only and once-only (409 `session_completed`). Client: `session.evaluate` in `useActivitySession`, `evaluateSession`/`postEventStream` in `aiService.ts`. |
+| #8 | `51bede5`, `1ce5cb4`, `74672ff`, `38b370e` | Intent preloading (`features/navigation/intentPreload.ts`; `data-preload` on non-link elements). i18n: Italian bundled, other languages and tutorial namespaces through a small backend in `src/i18n/index.ts`; `main.tsx` renders after `i18nReady`; tutorial routes use `withTexts` in `App.tsx`. Voice SDK and diffusion lazy. Chunk budget 750 kB. |
+| #13 | `525fd43` | Composer enabled while busy, Stop (`engine.stop`, one `AbortController` per `withBusy`), IME-safe Enter. |
+| #14 | `90e321c` | Mystery: prompt confirms a correct name; judge question `identified` (also without goals); `domain.ReasonIdentified`; client `ask()` in `PersonaggioMisteriosoPage` forces judging when the name appears and falls back to `isCorrectGuess` when the turn was not judged (`session.judgedLastTurn()`). Unchanged transcripts are not re-judged. |
+| #11 | `0b225ed`, `f08a62b` | `lobbyDelay`/`roomIsGone` in `roomApi.ts`; `cachedSettings` (`app/settings_cache.go`), `memoPrices` (`routing.go`). |
+| #12 | `b4eb55a`, `35ec5ae` | Hold only for chat; `firstTextBudget`/`generateDeadline`; `targetHealth` (`app/target_health.go`); `first_delta_ms`/`first_text_ms` via `firstDeltaClock` + `meterTimed`. |
+| #15 | `7c22709` | `mail_outbox`, `store/outbox.go`, `app/outbox.go` (`outboxMailer`, `mailOutbox.Run/Deliver`); started in `NewServer`, also run by the cron. |
+| fixes | `f04cbf1`, `6fe2214` | Found in the browser walkthrough: evaluation now survives a disconnect (`context.WithoutCancel`, `evaluationDeadline`); stopped held-back streams are estimated from the provider's text. |
 
 ## Invariants: do not break
 
@@ -54,28 +61,19 @@ Read this instead of re-deriving the work. The source audit is `REVIEW.md` in th
 
 ## Remaining work, in suggested order
 
-### Pass 1 leftovers (correctness)
+### Correctness leftovers
 
-- **#3 leftovers.**
-  - Teacher-locked setup (assignment config) is enforced only in the UI; validate the session `context` against the assignment on `POST /api/sessions` and on transcript save.
-  - `/api/ai/generate` still accepts any `system` prompt and history from the browser (chat). The evaluation no longer goes through it for saved attempts.
-  - The activity description (`activity`, `characters`, `extraFacts`) sent to `/evaluate` still comes from the browser; it is bounded (`maxEvaluationLabelChars`, `maxEvaluationFacts`) but not verified.
-- **#4 leftovers.** Reservations use a fixed estimate (`reserveCharsPerToken`, `reservedOutputTokens`), released after the call rather than reconciled into the row; live voice is not reserved (only granted, see #5).
-- **#1 leftovers.** A local draft of unsent text (scoped to user and session, with expiry) and a resumable session route: hydrate from `GET /api/sessions/{id}`, which now includes `revision`; set `revisionRef` from it. Restart must clearly mean a new attempt.
+- **#1 local draft and resume.** A local draft of unsent text (scoped to user and session, with expiry) and a resumable session route: hydrate from `GET /api/sessions/{id}`, which includes `revision`; set `revisionRef` from it. Restart must clearly mean a new attempt.
+- **#3 prompts built by the browser.** Each page builds the character's system prompt (`features/activity/prompts.ts`) and sends it to `/api/ai/generate`; checking the saved `context` against the assignment would only make the record match, not the prompt. Real protection means building prompts on the server for the six apps (a large change: prompts, i18n, Wikipedia bios). Decide with the user before starting.
+- **#4** Reservations use a fixed estimate, released after the call rather than reconciled; live voice is granted but not reserved.
 
-### Pass 2 (cost and responsiveness)
+### Pass 2 leftovers
 
-- #9 and #10 are done (see above). `Grades` still runs two queries per assignment (students + `BestPerUser`); fine unless exports get slow. Leave `SetMaxOpenConns(1)` unless measured.
-- **#8 bundle:**
-  - `src/features/navigation/MorphGate.tsx` calls `preloadPrefix('/apps')` on every visit; change it to intent-based preloading.
-  - `src/i18n/index.ts` eagerly imports all five locales and the tutorial namespaces; load the active language plus a fallback.
-  - Lazy-import `@google/genai` (`src/services/liveConversationService.ts`) when voice starts, and the diffusion effect (`features/activity/diffusion`, `@chenglou/pretext`).
-  - `vite.config.ts:63` sets `chunkSizeWarningLimit: 1600`; restore a real budget.
-- **#11 settings cache and polling.** Settings are re-read from SQL during routing and budget checks, and price lookup runs inside sort comparators. The host lobby polls every 4 s (`REFRESH_MS`); add backoff, refresh after local actions, and keep data on transient errors.
-- **#12 latency.** `gateway.go:183` sets `firstTokenTimeout` to 25 s per target with no total deadline across fallbacks. `answer_check.go:25` `refusalProbeChars = 160` buffers even tasks that need no refusal check. Measure provider first delta and visible first text separately.
-- **#13 chat interaction.** `ChatPanel.tsx:153/164` disables the composer while busy: allow drafting and gate only sending. Add Stop, and pass an `AbortSignal` through `useChatEngine` to `generateStream`. Check `isComposing` in the Enter handler for IME input.
-- **#14** JEV `EvaluateEvery` defaults to 1. Deduplicate judgements per revision; `judged_revision` now makes this easy. The audit owner also asks (REVIEW.md #14): in Personaggio misterioso, when the student names the character, the game should end after the AI's answer ("exactly, I am… congratulations"); revise the prompt and let JEV stop the game.
-- **#15 mail.** `app/mail.go:210` starts a goroutine per mail; switch to a DB outbox with a bounded worker and deadlines.
+- `Grades` still runs two queries per assignment. Leave `SetMaxOpenConns(1)` unless measured.
+- #8: Prism Light with only the needed languages, if code highlighting matters (the optional chunk is ~640 kB).
+- #13: the active message still reparses its Markdown on every streamed update; profile on a slow device before changing.
+- #14: `EvaluateEvery` defaults to 1; raising it is a cost/accuracy decision for the user.
+- #7 (multi-instance): provider cache invalidation only reaches the instance that handled the admin change.
 
 ### Pass 3 (UI)
 
@@ -83,14 +81,20 @@ See the "UI and usability" section of `REVIEW.md`:
 - Phone header overflow at 390 px.
 - Compact app selection.
 - `WikiSearchSelect.tsx` search states, stale-request aborts and locale normalization.
-- Error versus empty/closed states (StudentDashboard, AdminCosts, HostRoomPage/`useRoomView`).
+- Error versus empty states in StudentDashboard and AdminCosts (HostRoomPage is done in `0b225ed`).
 - `index.html` has a hard-coded `lang="it"`.
 - Pale amber/sky text colors on light backgrounds.
 - WikiChat tutorial card copy.
 - Status semantics: `turn_limit` and `goal_reached` versus submitted.
 
+### Browser walkthrough recipe
+
+A full flow was run with the real Go server (`go build`, `PORT=8091 DATA_DIR=… APP_SECRET=… ADMIN_EMAIL=… ADMIN_PASSWORD=…`), a Node mock of an OpenAI-compatible provider (free model via `/models` pricing `"0"`, slow SSE answers, an evaluation answer with `SCORE_` lines) added through `POST /api/admin/providers`, and Playwright from `node_modules/playwright` (skip the tour with the text "Salta"; the character search is the `combobox`). Kill the old server before restarting: it was started as `./debateai`.
+
 ## Gotchas learned
 
+- `session.evaluate` and `/evaluate`: the evaluation keeps running after the browser disconnects; do not tie it back to the request context.
+- Chat answers shorter than 160 characters become visible only when complete (refusal check); `first_text_ms` shows it.
 - Old browsers still on the previous frontend hand in through `/complete` with their own evaluation: it is now ignored, so those attempts are stored without evaluation/scores until reload. Mention at deploy time.
 - `useActivitySession.test.tsx` also mocks `@/services/aiService` (only `evaluateSession`).
 - Vitest has **no jest-dom matchers**: use `el.textContent`, `container.innerHTML`, etc. Component tests mock `react-i18next` with `t: (k) => k`.
