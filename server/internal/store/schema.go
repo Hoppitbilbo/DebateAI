@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS auth_sessions (
   created_at TEXT NOT NULL,
   expires_at TEXT NOT NULL
 );
+CREATE INDEX IF NOT EXISTS idx_auth_sessions_expires ON auth_sessions(expires_at);
 
 CREATE TABLE IF NOT EXISTS invites (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -61,6 +62,7 @@ CREATE TABLE IF NOT EXISTS class_members (
   joined_at TEXT NOT NULL,
   PRIMARY KEY (class_id, user_id)
 );
+CREATE INDEX IF NOT EXISTS idx_class_members_user ON class_members(user_id, class_id);
 
 CREATE TABLE IF NOT EXISTS assignments (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -81,6 +83,7 @@ CREATE TABLE IF NOT EXISTS assignments (
   created_at TEXT NOT NULL,
   updated_at TEXT NOT NULL
 );
+CREATE INDEX IF NOT EXISTS idx_assignments_class ON assignments(class_id);
 
 CREATE TABLE IF NOT EXISTS activity_sessions (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -108,8 +111,9 @@ CREATE TABLE IF NOT EXISTS activity_sessions (
   revision INTEGER NOT NULL DEFAULT 0,
   judged_revision INTEGER NOT NULL DEFAULT 0
 );
-CREATE INDEX IF NOT EXISTS idx_sessions_user ON activity_sessions(user_id);
+DROP INDEX IF EXISTS idx_sessions_user; -- covered by idx_sessions_user_assignment
 CREATE INDEX IF NOT EXISTS idx_sessions_assignment ON activity_sessions(assignment_id);
+CREATE INDEX IF NOT EXISTS idx_sessions_user_assignment ON activity_sessions(user_id, assignment_id, started_at DESC);
 
 CREATE TABLE IF NOT EXISTS live_grants (
   id TEXT PRIMARY KEY,
@@ -160,7 +164,8 @@ CREATE TABLE IF NOT EXISTS usage_log (
   unpriced INTEGER NOT NULL DEFAULT 0
 );
 CREATE INDEX IF NOT EXISTS idx_usage_created ON usage_log(created_at);
-CREATE INDEX IF NOT EXISTS idx_usage_user ON usage_log(user_id);
+DROP INDEX IF EXISTS idx_usage_user; -- covered by idx_usage_user_created
+CREATE INDEX IF NOT EXISTS idx_usage_user_created ON usage_log(user_id, created_at);
 
 CREATE TABLE IF NOT EXISTS ai_inflight (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
