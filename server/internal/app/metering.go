@@ -37,21 +37,32 @@ func (g *aiGateway) meterText(m ai.TextModel, entry usageEntry) ai.TextModel {
 func (m meteredTextModel) Generate(ctx context.Context, req ai.Request) (*ai.Response, error) {
 	start := time.Now()
 	res, err := m.TextModel.Generate(ctx, req)
-	m.record(start, res, err)
+	m.record(start, req, res, 0, err)
 	return res, err
 }
 
 func (m meteredTextModel) Stream(ctx context.Context, req ai.Request, onDelta func(string) error) (*ai.Response, error) {
 	start := time.Now()
-	res, err := m.TextModel.Stream(ctx, req, onDelta)
-	m.record(start, res, err)
+	streamed := 0
+	res, err := m.TextModel.Stream(ctx, req, func(d string) error {
+		streamed += len(d)
+		return onDelta(d)
+	})
+	m.record(start, req, res, streamed, err)
 	return res, err
 }
 
-func (m meteredTextModel) record(start time.Time, res *ai.Response, err error) {
+// record logs the call. A stream that produced text but no usage (it was
+// interrupted, or the provider sent none) is logged with tokens estimated
+// from the text, marked as estimated.
+func (m meteredTextModel) record(start time.Time, req ai.Request, res *ai.Response, streamed int, err error) {
 	var usage ai.Usage
 	if res != nil {
 		usage = res.Usage
+	}
+	if usage.InputTokens == 0 && usage.OutputTokens == 0 && usage.CostUSD == nil && streamed > 0 {
+		usage = ai.Usage{InputTokens: requestChars(req) / estimatedCharsPerToken, OutputTokens: streamed / estimatedCharsPerToken}
+		m.entry.Estimated = true
 	}
 	m.gw.recordUsage(m.entry, start, usage, err)
 }

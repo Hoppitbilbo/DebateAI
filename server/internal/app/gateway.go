@@ -25,6 +25,7 @@ type aiGateway struct {
 	usage     usageStore
 	sessions  sessionStore // to add the cost of a call to its session
 	grants    liveGrantStore
+	inflight  inflightStore
 	settings  *settingsService
 	crypto    *Crypto
 
@@ -113,11 +114,12 @@ func (g *aiGateway) MonthSpend() float64 {
 	return v
 }
 
-// BudgetExceeded reports whether paid models are blocked. When the spending
-// cannot be read it fails closed: only free models are used.
+// BudgetExceeded reports whether paid models are blocked: the month's
+// spending plus the reservations of the paid calls in flight reach the
+// budget. When either cannot be read it fails closed: only free models are used.
 func (g *aiGateway) BudgetExceeded() bool {
-	b := g.settings.Budget()
-	if b.MonthlyUSD <= 0 || !b.BlockPaidWhenExceeded {
+	budget, on := g.budgetEnforced()
+	if !on {
 		return false
 	}
 	spent, err := g.usage.SpendSince(MonthStart())
@@ -125,7 +127,12 @@ func (g *aiGateway) BudgetExceeded() bool {
 		log.Printf("budget: cannot read the month's spending, blocking paid models: %v", err)
 		return true
 	}
-	return spent >= b.MonthlyUSD
+	reserved, err := g.inflight.Reserved()
+	if err != nil {
+		log.Printf("budget: cannot read the reservations, blocking paid models: %v", err)
+		return true
+	}
+	return spent+reserved >= budget
 }
 
 // ---------- usage log ----------
@@ -141,20 +148,25 @@ type usageEntry struct {
 	OK         bool
 	Latency    time.Duration
 	Err        string
+	Estimated  bool // Usage is estimated from the text, not reported
 }
 
+// logUsage writes a call to the usage log and returns its cost. A model
+// without a known price is logged as unpriced rather than as free.
 func (g *aiGateway) logUsage(e usageEntry) float64 {
 	var cost float64
+	unpriced := false
 	if e.Usage.CostUSD != nil && *e.Usage.CostUSD >= 0 {
 		cost = *e.Usage.CostUSD
 	} else {
 		p := g.priceFor(e.ProviderID, e.Model)
 		cost = (float64(e.Usage.InputTokens)*p.In + float64(e.Usage.OutputTokens)*p.Out) / 1e6
+		unpriced = !p.Known && e.Usage.InputTokens+e.Usage.OutputTokens > 0
 	}
 	logIfErr("usage log", g.usage.Insert(domain.UsageRecord{
 		UserID: e.UserID, SessionID: e.SessionID, ProviderID: e.ProviderID, Provider: e.Provider, Model: e.Model, Task: e.Task,
 		InputTokens: e.Usage.InputTokens, OutputTokens: e.Usage.OutputTokens, CostUSD: cost, OK: e.OK,
-		LatencyMs: e.Latency.Milliseconds(), Error: e.Err,
+		LatencyMs: e.Latency.Milliseconds(), Error: e.Err, Estimated: e.Estimated, Unpriced: unpriced,
 	}))
 	if e.SessionID != nil && cost > 0 {
 		logIfErr("add session cost", g.sessions.AddCost(*e.SessionID, cost))
@@ -261,10 +273,14 @@ func (g *aiGateway) tryTarget(ctx context.Context, c genCall, t RouteTarget, cp 
 	if r.ReasoningEffort == "" && (c.task == TaskChat || c.task == TaskUtility) {
 		r.ReasoningEffort = ai.EffortLow // characters must answer quickly
 	}
+	release, err := g.reserve(t, requestChars(r), r.MaxTokens)
+	if err != nil {
+		return nil, err
+	}
+	defer release()
 	model := g.meterText(screenAnswers(ai.WithFirstTokenTimeout(tm, firstTokenTimeout), c.task),
 		usageEntry{UserID: c.userID, SessionID: c.sessionID, ProviderID: t.ProviderID, Provider: cp.name, Model: t.Model, Task: c.task})
 	var res *ai.Response
-	var err error
 	if c.onDelta != nil {
 		res, err = model.Stream(ctx, r, c.onDelta)
 	} else {

@@ -74,7 +74,10 @@
     "live_disabled": "La conversazione vocale non è abilitata per il tuo account.",
     "live_unavailable": "La conversazione vocale non è disponibile al momento.",
     "server_unreachable": "Il server non è raggiungibile.",
-    "ai_error": "Il personaggio non riesce a rispondere in questo momento. Riprova tra poco: se il problema continua, avvisa il docente."
+    "ai_error": "Il personaggio non riesce a rispondere in questo momento. Riprova tra poco: se il problema continua, avvisa il docente.",
+    "busy": "Stai già aspettando delle risposte: attendi che finiscano e riprova.",
+    "too_large": "La conversazione è troppo lunga per essere inviata all'IA. Inizia un nuovo tentativo.",
+    "usage_unavailable": "Non è possibile verificare i limiti di uso dell'IA in questo momento. Riprova tra poco."
   },
   "auth": {
     "login": "Accedi",
@@ -537,7 +540,11 @@
       "tokensIn": "Token in",
       "tokensOut": "Token out",
       "log": "Ultime richieste",
-      "noData": "Nessun dato nel periodo."
+      "noData": "Nessun dato nel periodo.",
+      "estimated": "stimato",
+      "estimatedHint": "Il fornitore non ha comunicato i token (risposta interrotta): sono stimati dalla lunghezza del testo.",
+      "unpriced": "senza prezzo",
+      "unpricedHint": "Il modello non ha un prezzo noto: il costo reale è sconosciuto, non zero."
     },
     "ai": {
       "providers": "Provider di IA",

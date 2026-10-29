@@ -146,9 +146,14 @@ const AdminCosts = () => {
                       {r.provider} / {r.model}
                     </td>
                     <td className="py-1 pr-2 text-right tabular-nums">{num(r.inputTokens)}</td>
-                    <td className="py-1 pr-2 text-right tabular-nums">{num(r.outputTokens)}</td>
+                    <td className="py-1 pr-2 text-right tabular-nums">
+                      {num(r.outputTokens)}
+                      {r.estimated && <span className="ml-1 text-muted-foreground" title={t("platform.admin.costs.estimatedHint")}>({t("platform.admin.costs.estimated")})</span>}
+                    </td>
                     <td className="py-1 pr-2 text-right tabular-nums">{r.latencyMs}</td>
-                    <td className="py-1 text-right tabular-nums">{usd(r.costUsd)}</td>
+                    <td className="py-1 text-right tabular-nums">
+                      {r.unpriced ? <span className="text-muted-foreground" title={t("platform.admin.costs.unpricedHint")}>{t("platform.admin.costs.unpriced")}</span> : usd(r.costUsd)}
+                    </td>
                   </tr>
                 ))}
               </tbody>

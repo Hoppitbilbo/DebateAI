@@ -36,6 +36,25 @@ const (
 	liveGrantTTL = time.Hour
 )
 
+// Admission and budget reservations (admission.go).
+const (
+	// inflightTTL bounds how long a generation slot or a budget reservation
+	// survives a process that died before releasing it.
+	inflightTTL = 10 * time.Minute
+	// reservedOutputTokens is the output reserved for a call that sets no
+	// max_tokens.
+	reservedOutputTokens = 4096
+	// reserveCharsPerToken is a cautious (low) characters-per-token ratio
+	// for the reservation; estimatedCharsPerToken is the usual one, used to
+	// estimate the usage of a call the provider did not report.
+	reserveCharsPerToken   = 3
+	estimatedCharsPerToken = 4
+)
+
+// unpricedReserve is the price per million tokens reserved for a paid
+// model without a known price, at the high end of current models.
+var unpricedReserve = price{In: 15, Out: 75, Known: true}
+
 // Authentication and invites.
 const (
 	resetLinkTTL = 2 * time.Hour

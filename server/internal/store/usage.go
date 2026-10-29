@@ -12,9 +12,9 @@ type Usage struct{ db *sql.DB }
 func NewUsage(db *sql.DB) *Usage { return &Usage{db: db} }
 
 func (r *Usage) Insert(u domain.UsageRecord) error {
-	_, err := r.db.Exec(`INSERT INTO usage_log(created_at, user_id, session_id, provider_id, provider_name, model, task, input_tokens, output_tokens, cost_usd, ok, latency_ms, error)
-		VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)`, domain.Now(), u.UserID, u.SessionID, u.ProviderID, u.Provider, u.Model, u.Task,
-		u.InputTokens, u.OutputTokens, u.CostUSD, boolInt(u.OK), u.LatencyMs, u.Error)
+	_, err := r.db.Exec(`INSERT INTO usage_log(created_at, user_id, session_id, provider_id, provider_name, model, task, input_tokens, output_tokens, cost_usd, ok, latency_ms, error, estimated, unpriced)
+		VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`, domain.Now(), u.UserID, u.SessionID, u.ProviderID, u.Provider, u.Model, u.Task,
+		u.InputTokens, u.OutputTokens, u.CostUSD, boolInt(u.OK), u.LatencyMs, u.Error, boolInt(u.Estimated), boolInt(u.Unpriced))
 	return err
 }
 
@@ -85,7 +85,7 @@ func (r *Usage) Aggregate(since string, by domain.UsageGrouping, limit int) []do
 
 // Recent returns the latest calls, newest first.
 func (r *Usage) Recent(limit int) ([]domain.UsageLogRow, error) {
-	rows, err := r.db.Query(`SELECT l.id, l.created_at, COALESCE(u.name,''), l.session_id, l.provider_name, l.model, l.task, l.input_tokens, l.output_tokens, l.cost_usd, l.ok, l.latency_ms, l.error
+	rows, err := r.db.Query(`SELECT l.id, l.created_at, COALESCE(u.name,''), l.session_id, l.provider_name, l.model, l.task, l.input_tokens, l.output_tokens, l.cost_usd, l.ok, l.latency_ms, l.error, l.estimated, l.unpriced
 		FROM usage_log l LEFT JOIN users u ON u.id = l.user_id ORDER BY l.id DESC LIMIT ?`, limit)
 	if err != nil {
 		return nil, err
@@ -95,12 +95,13 @@ func (r *Usage) Recent(limit int) ([]domain.UsageLogRow, error) {
 	for rows.Next() {
 		var x domain.UsageLogRow
 		var sid sql.NullInt64
-		var ok int
-		if rows.Scan(&x.ID, &x.CreatedAt, &x.User, &sid, &x.Provider, &x.Model, &x.Task, &x.InputTokens, &x.OutputTokens, &x.CostUSD, &ok, &x.LatencyMs, &x.Error) == nil {
+		var ok, estimated, unpriced int
+		if rows.Scan(&x.ID, &x.CreatedAt, &x.User, &sid, &x.Provider, &x.Model, &x.Task, &x.InputTokens, &x.OutputTokens, &x.CostUSD, &ok, &x.LatencyMs, &x.Error, &estimated, &unpriced) == nil {
 			if sid.Valid {
 				x.SessionID = &sid.Int64
 			}
 			x.OK = ok == 1
+			x.Estimated, x.Unpriced = estimated == 1, unpriced == 1
 			out = append(out, x)
 		}
 	}

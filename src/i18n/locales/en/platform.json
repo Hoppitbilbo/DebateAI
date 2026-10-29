@@ -74,7 +74,10 @@
     "live_disabled": "Voice conversation is not enabled for your account.",
     "live_unavailable": "Voice conversation is not available right now.",
     "server_unreachable": "The server is not reachable.",
-    "ai_error": "The character can't answer right now. Try again in a moment; if it keeps happening, tell your teacher."
+    "ai_error": "The character can't answer right now. Try again in a moment; if it keeps happening, tell your teacher.",
+    "busy": "You are already waiting for answers: wait for them to finish and try again.",
+    "too_large": "The conversation is too long to send to the AI. Start a new attempt.",
+    "usage_unavailable": "AI usage limits cannot be checked right now. Try again shortly."
   },
   "auth": {
     "login": "Log in",
@@ -537,7 +540,11 @@
       "tokensIn": "Tokens in",
       "tokensOut": "Tokens out",
       "log": "Latest requests",
-      "noData": "No data for this period."
+      "noData": "No data for this period.",
+      "estimated": "estimated",
+      "estimatedHint": "The provider reported no tokens (interrupted answer): they are estimated from the text length.",
+      "unpriced": "no price",
+      "unpricedHint": "The model has no known price: its real cost is unknown, not zero."
     },
     "ai": {
       "providers": "AI providers",

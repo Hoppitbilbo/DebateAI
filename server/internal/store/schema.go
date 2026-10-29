@@ -155,10 +155,20 @@ CREATE TABLE IF NOT EXISTS usage_log (
   cost_usd REAL NOT NULL DEFAULT 0,
   ok INTEGER NOT NULL DEFAULT 1,
   latency_ms INTEGER NOT NULL DEFAULT 0,
-  error TEXT NOT NULL DEFAULT ''
+  error TEXT NOT NULL DEFAULT '',
+  estimated INTEGER NOT NULL DEFAULT 0,
+  unpriced INTEGER NOT NULL DEFAULT 0
 );
 CREATE INDEX IF NOT EXISTS idx_usage_created ON usage_log(created_at);
 CREATE INDEX IF NOT EXISTS idx_usage_user ON usage_log(user_id);
+
+CREATE TABLE IF NOT EXISTS ai_inflight (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  scope TEXT NOT NULL,
+  cost_usd REAL NOT NULL DEFAULT 0,
+  expires_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_inflight_scope ON ai_inflight(scope, expires_at);
 
 CREATE TABLE IF NOT EXISTS settings (
   key TEXT PRIMARY KEY,
@@ -243,6 +253,8 @@ var migrations = []string{
 	`ALTER TABLE rooms ADD COLUMN own_class_id INTEGER REFERENCES classes(id) ON DELETE SET NULL`,
 	`ALTER TABLE activity_sessions ADD COLUMN revision INTEGER NOT NULL DEFAULT 0`,
 	`ALTER TABLE activity_sessions ADD COLUMN judged_revision INTEGER NOT NULL DEFAULT 0`,
+	`ALTER TABLE usage_log ADD COLUMN estimated INTEGER NOT NULL DEFAULT 0`,
+	`ALTER TABLE usage_log ADD COLUMN unpriced INTEGER NOT NULL DEFAULT 0`,
 }
 
 func applyMigrations(db *sql.DB) error {

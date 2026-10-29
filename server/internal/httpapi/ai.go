@@ -126,8 +126,9 @@ func (s *Server) handleGenerate(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 400, "bad_request", "messages required")
 		return
 	}
-	if len(in.Messages) > maxChatHistoryMessages {
-		in.Messages = in.Messages[len(in.Messages)-maxChatHistoryMessages:]
+	if in.Messages = boundHistory(in.System, in.Messages); in.Messages == nil {
+		writeErr(w, 413, "too_large", "the request is too long for the model")
+		return
 	}
 	in.MaxTokens = min(max(in.MaxTokens, 0), maxGenerateOutputTokens)
 	var userID *int64
@@ -143,6 +144,15 @@ func (s *Server) handleGenerate(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 409, "session_ended", "this activity has ended")
 		return
 	}
+	release, err := s.Gateway.Admit(s.generationScopes(r, u))
+	if errors.Is(err, app.ErrTooManyGenerations) {
+		writeErr(w, 429, "busy", err.Error())
+		return
+	} else if err != nil {
+		writeErr(w, 503, "usage_unavailable", err.Error())
+		return
+	}
+	defer release()
 	req := ai.Request{System: in.System, Messages: in.Messages, JSON: in.JSON, Temperature: in.Temperature, MaxTokens: in.MaxTokens}
 
 	if !in.Stream {
@@ -176,6 +186,38 @@ func (s *Server) handleGenerate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	_ = send(streamDone{Done: true, Provider: res.Provider, Model: res.Model})
+}
+
+// boundHistory keeps the newest messages within maxChatHistoryMessages and
+// maxChatInputChars. It returns nil when even the last message does not fit.
+func boundHistory(system string, msgs []ai.Message) []ai.Message {
+	if len(msgs) > maxChatHistoryMessages {
+		msgs = msgs[len(msgs)-maxChatHistoryMessages:]
+	}
+	total := len(system)
+	for i := len(msgs) - 1; i >= 0; i-- {
+		total += len(msgs[i].Content)
+		if total > maxChatInputChars {
+			if i == len(msgs)-1 {
+				return nil
+			}
+			return msgs[i+1:]
+		}
+	}
+	return msgs
+}
+
+// generationScopes are the concurrency limits of an AI request of u (nil
+// without an account).
+func (s *Server) generationScopes(r *http.Request, u *domain.User) []app.Admission {
+	if u == nil {
+		return []app.Admission{{Scope: "ip:" + s.clientIP(r), Limit: maxGenerationsPerNetwork}}
+	}
+	scopes := []app.Admission{{Scope: fmt.Sprintf("user:%d", u.ID), Limit: maxGenerationsPerUser}}
+	if u.IsGuest() && u.RoomID != nil {
+		scopes = append(scopes, app.Admission{Scope: fmt.Sprintf("room:%d", *u.RoomID), Limit: maxGenerationsPerRoom})
+	}
+	return scopes
 }
 
 func (s *Server) handleLiveToken(w http.ResponseWriter, r *http.Request) {

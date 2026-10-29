@@ -133,6 +133,19 @@ func jevState(in judgeInput, goals []string, maxChars int) map[string]any {
 	return state
 }
 
+// judgeInputChars approximates the size of the state sent to the judge,
+// for the budget reservation.
+func judgeInputChars(in judgeInput, maxChars int) int {
+	n := len(in.Instructions) + len(in.Context)
+	for _, m := range in.Transcript {
+		n += len(m.Content)
+	}
+	if maxChars > 0 {
+		n = min(n, maxChars)
+	}
+	return n
+}
+
 func (g *aiGateway) judge(ctx context.Context, in judgeInput, userID, sessionID *int64) JudgeResult {
 	js := g.settings.Jev()
 	res := JudgeResult{Engine: "none", EvaluatedAt: now()}
@@ -157,6 +170,11 @@ func (g *aiGateway) judge(ctx context.Context, in judgeInput, userID, sessionID 
 		if !ok {
 			return errSkipTarget
 		}
+		release, err := g.reserve(t, judgeInputChars(in, js.MaxStateChars), 0)
+		if err != nil {
+			return err
+		}
+		defer release()
 		start := time.Now()
 		r, usage, err := engine.evaluate(ctx, t.Model, in, js.MaxStateChars)
 		// An unusable answer (e.g. invalid JSON) is logged as a failed attempt.

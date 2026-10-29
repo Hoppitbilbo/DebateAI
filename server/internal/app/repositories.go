@@ -107,6 +107,15 @@ type sessionStore interface {
 	Import(userID int64, assignmentID *int64, d domain.SessionDetail) (int64, error)
 }
 
+// inflightStore holds the AI calls in progress: generation slots and budget
+// reservations, each checked and taken in one atomic statement.
+type inflightStore interface {
+	Acquire(scope string, limit int, expiresAt string) (id int64, ok bool, err error)
+	ReserveBudget(cost, budget float64, monthStart, expiresAt string) (id int64, ok bool, err error)
+	Reserved() (float64, error)
+	Release(id int64) error
+}
+
 type liveGrantStore interface {
 	Create(g domain.LiveGrant) error
 	Consume(id string) (*domain.LiveGrant, error)
