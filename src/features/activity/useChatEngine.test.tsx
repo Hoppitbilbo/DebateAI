@@ -234,6 +234,17 @@ describe("useChatEngine", () => {
     expect(result.current.messages[1]).toMatchObject({ role: "system", content: "intro" });
     expect(mocks.toastError).not.toHaveBeenCalled();
   });
+
+  it("opens from a recipe: the server writes the cue", async () => {
+    const { result } = renderHook(() => useChatEngine({ session: fakeSession() }), { wrapper: withAi });
+    mocks.generateStream.mockResolvedValueOnce("Ave!");
+    const recipe = { app: "wiki-chatbot" as const, kind: "reply" as const, character: "Colosseo", difficulty: "medium" as const, uiLang: "it" };
+    await act(() => result.current.open({ recipe, name: "Colosseo", fallback: { role: "system", content: "intro" } }));
+    const sent = mocks.generateStream.mock.calls[0][0];
+    expect(sent.recipe).toEqual({ ...recipe, kind: "opening" });
+    expect(sent.messages).toEqual([]);
+    expect(sent.system).toBeUndefined();
+  });
 });
 
 describe("stop", () => {
