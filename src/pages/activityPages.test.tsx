@@ -150,6 +150,12 @@ describe("DoppiaIntervistaPage", () => {
     expect(mocks.begin).toHaveBeenCalledWith("Person Character 1 & Person Character 2", {
       characters: [{ title: "Person Character 1" }, { title: "Person Character 2" }],
     });
+    // each character opens with its own recipe, the other one swapped in
+    const recipes = mocks.generateStream.mock.calls.map(([o]) => o.recipe);
+    expect(recipes).toMatchObject([
+      { app: "doppia-intervista", kind: "opening", character: "Person Character 1", other: "Person Character 2" },
+      { app: "doppia-intervista", kind: "opening", character: "Person Character 2", other: "Person Character 1" },
+    ]);
     expect(screen.getAllByText(/Person Character 2/).length).toBeGreaterThan(0);
   });
 });

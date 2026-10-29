@@ -7,7 +7,7 @@ import { CharacterPicker } from "@/features/activity/components/SetupCard";
 import { useActivityFlow } from "@/features/activity/useActivityFlow";
 import { toHistory } from "@/features/activity/useChatEngine";
 import { bioOf, useWikiSummaries } from "@/features/activity/wiki";
-import { openings, prompts } from "@/features/activity/prompts";
+import { recipeFor } from "@/features/activity/recipe";
 import { APPS } from "@/features/activity/types";
 
 const app = APPS["doppia-intervista"];
@@ -27,7 +27,11 @@ const DoppiaIntervistaPage = () => {
   const { summaries, loading } = useWikiSummaries(chars);
 
   const flow = useActivityFlow(app.type, { context: { characters: [a?.title, b?.title] } });
-  const { preset, engine, session } = flow;
+  const { preset, engine } = flow;
+
+  /** The recipe of one character's answers; the server writes the instructions. */
+  const recipeOf = (me: WikiRef, other: WikiRef) =>
+    recipeFor(app.type, { character: me.title, bio: bioOf(me, summaries), other: other.title });
 
   useEffect(() => {
     if (preset.characters?.length === 2) setChars([preset.characters[0], preset.characters[1]]);
@@ -41,8 +45,7 @@ const DoppiaIntervistaPage = () => {
     // each character introduces itself in its own voice
     for (const [key, me, other] of [["a", a, b], ["b", b, a]] as const) {
       await engine.open({
-        system: prompts.interview(me.title, bioOf(me, summaries), other.title, session.assignment),
-        cue: openings.interview(other.title),
+        recipe: recipeOf(me, other),
         name: me.title,
         speakerKey: key,
         fallback: { role: "assistant", content: t("platform.apps.doppiaIntervista.greeting", { name: me.title }) },
@@ -61,7 +64,7 @@ const DoppiaIntervistaPage = () => {
           const me = key === "a" ? a : b;
           const other = key === "a" ? b : a;
           await engine.respond({
-            system: prompts.interview(me.title, bioOf(me, summaries), other.title, session.assignment),
+            recipe: recipeOf(me, other),
             history: toHistory(engine.messagesRef.current, key),
             name: me.title,
             speakerKey: key,
