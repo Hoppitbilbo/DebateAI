@@ -73,3 +73,27 @@ func TestAssignmentVisibility(t *testing.T) {
 		t.Fatalf("progress: %+v", p)
 	}
 }
+
+func TestCompleteRejectsScoresOffTheScale(t *testing.T) {
+	s, _, _, stud, _ := visibilityFixture(t)
+	ss, err := s.SessionSvc.Start(stud, NewAttempt{AppType: "wiki-chatbot"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	d, _, err := s.SessionSvc.Load(stud, ss.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, bad := range []int{-1, 11, 100} {
+		if err := s.SessionSvc.Complete(d, Completion{ScoreConversation: &bad}); !IsInvalid(err) {
+			t.Fatalf("score %d: %v", bad, err)
+		}
+		if err := s.SessionSvc.Complete(d, Completion{ScoreReflection: &bad}); !IsInvalid(err) {
+			t.Fatalf("reflection score %d: %v", bad, err)
+		}
+	}
+	ok := 10
+	if err := s.SessionSvc.Complete(d, Completion{ScoreConversation: &ok}); err != nil {
+		t.Fatal(err)
+	}
+}

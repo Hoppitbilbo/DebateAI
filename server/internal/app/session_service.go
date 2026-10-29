@@ -104,7 +104,7 @@ func (svc *sessionService) GiveFeedback(u *domain.User, id int64, f domain.Teach
 	if owner || (u.Role != domain.RoleTeacher && u.Role != domain.RoleAdmin) {
 		return nil, ErrFeedbackForbidden
 	}
-	if f.Score != nil && (*f.Score < 0 || *f.Score > 10) {
+	if !validScore(f.Score) {
 		return nil, invalid(errors.New("score must be between 0 and 10"))
 	}
 	f.Text = truncate(strings.TrimSpace(f.Text), maxTeacherFeedbackChars)
@@ -129,8 +129,16 @@ type Completion struct {
 	ScoreReflection   *int   `json:"scoreReflection"`
 }
 
+// validScore accepts a missing score or one on the 0-10 scale.
+func validScore(s *int) bool { return s == nil || (*s >= 0 && *s <= 10) }
+
 // Complete closes the attempt with the student's reflection and evaluation.
+// The scores still come from the browser (audit 2026-10-29, item 3): until the
+// server grades the submission itself, at least keep them on the scale.
 func (svc *sessionService) Complete(d *domain.SessionDetail, c Completion) error {
+	if !validScore(c.ScoreConversation) || !validScore(c.ScoreReflection) {
+		return invalid(errors.New("scores must be between 0 and 10"))
+	}
 	return svc.sessions.Complete(d.ID, domain.SessionCompletion{
 		Reflection: truncate(c.Reflection, maxReflectionChars), Evaluation: truncate(c.Evaluation, maxEvaluationChars),
 		ScoreConversation: c.ScoreConversation, ScoreReflection: c.ScoreReflection,

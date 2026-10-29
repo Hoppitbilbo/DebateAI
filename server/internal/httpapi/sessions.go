@@ -113,7 +113,7 @@ func (s *Server) handleCompleteSession(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err := s.SessionSvc.Complete(d, in); err != nil {
-		writeErr(w, 500, "internal", err.Error())
+		writeServiceErr(w, err)
 		return
 	}
 	writeOK(w)
