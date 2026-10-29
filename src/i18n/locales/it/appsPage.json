@@ -4,19 +4,27 @@
   "appCards": {
     "youModerate": {
       "title": "Modera tu",
-      "description": "Due personaggi discutono su un tema che scegli tu. Tu fai il moderatore: dai la parola, fai domande, riporti la discussione in tema."
+      "description": "Due personaggi discutono su un tema che scegli tu. Tu fai il moderatore: dai la parola, fai domande, riporti la discussione in tema.",
+      "skill": "Moderare un dibattito e fare domande",
+      "duration": "15–20 min"
     },
     "doppiaIntervista": {
       "title": "Doppia intervista",
-      "description": "Fai le stesse domande a due personaggi e confronta le risposte, come nelle doppie interviste in TV."
+      "description": "Fai le stesse domande a due personaggi e confronta le risposte, come nelle doppie interviste in TV.",
+      "skill": "Confrontare due punti di vista",
+      "duration": "15 min"
     },
     "wikiChatbot": {
       "title": "WikiChat",
-      "description": "Parla con una pagina di Wikipedia: una persona, un luogo, un evento o un'idea ti risponde in prima persona."
+      "description": "Parla con una pagina di Wikipedia: una persona, un luogo, un evento o un'idea ti risponde in prima persona.",
+      "skill": "Fare ricerca con domande mirate",
+      "duration": "10–15 min"
     },
     "personaggioMisterioso": {
       "title": "Personaggio misterioso",
-      "description": "Un personaggio nasconde chi è. Hai poche domande per scoprirlo, poi provi a indovinare."
+      "description": "Un personaggio nasconde chi è. Hai poche domande per scoprirlo, poi provi a indovinare.",
+      "skill": "Ragionare per indizi e ipotesi",
+      "duration": "10 min"
     },
     "promptEngineer": {
       "title": "Prompt per la didattica",
@@ -24,11 +32,15 @@
     },
     "convinciTu": {
       "title": "Convinci tu",
-      "description": "Scegli un'idea e prova a convincere un personaggio storico. Cambia idea solo se i tuoi argomenti reggono."
+      "description": "Scegli un'idea e prova a convincere un personaggio storico. Cambia idea solo se i tuoi argomenti reggono.",
+      "skill": "Argomentare e persuadere",
+      "duration": "15–20 min"
     },
     "impersonaTu": {
       "title": "Impersona tu",
-      "description": "Interpreta un personaggio storico mentre l'AI ne interpreta un altro. Ti fa domande per capire quanto lo conosci."
+      "description": "Interpreta un personaggio storico mentre l'AI ne interpreta un altro. Ti fa domande per capire quanto lo conosci.",
+      "skill": "Immedesimarsi in un personaggio storico",
+      "duration": "15–20 min"
     }
   },
   "badges": {
@@ -39,5 +51,10 @@
     "launchApp": "Inizia",
     "comingSoon": "In arrivo",
     "launchNamed": "Inizia {{name}}"
+  },
+  "facts": {
+    "skill": "Allena",
+    "duration": "Durata",
+    "characters": "Personaggi IA"
   }
 }

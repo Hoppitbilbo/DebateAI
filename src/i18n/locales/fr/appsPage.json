@@ -13,19 +13,27 @@
   "appCards": {
     "youModerate": {
       "title": "Modère toi",
-      "description": "Deux personnages débattent d'un sujet que tu choisis. Tu modères : tu donnes la parole, poses des questions, les ramènes au sujet."
+      "description": "Deux personnages débattent d'un sujet que tu choisis. Tu modères : tu donnes la parole, poses des questions, les ramènes au sujet.",
+      "skill": "Animer un débat et poser des questions",
+      "duration": "15–20 min"
     },
     "doppiaIntervista": {
       "title": "Double interview",
-      "description": "Pose les mêmes questions à deux personnages et compare leurs réponses, comme dans une double interview à la télé."
+      "description": "Pose les mêmes questions à deux personnages et compare leurs réponses, comme dans une double interview à la télé.",
+      "skill": "Comparer deux points de vue",
+      "duration": "15 min"
     },
     "wikiChatbot": {
       "title": "WikiChat",
-      "description": "Parle avec une page Wikipédia : une personne, un lieu, un événement ou une idée te répond à la première personne."
+      "description": "Parle avec une page Wikipédia : une personne, un lieu, un événement ou une idée te répond à la première personne.",
+      "skill": "Faire des recherches par questions ciblées",
+      "duration": "10–15 min"
     },
     "personaggioMisterioso": {
       "title": "Personnage mystère",
-      "description": "Un personnage cache son identité. Tu as peu de questions pour la découvrir, puis tu tentes ta chance."
+      "description": "Un personnage cache son identité. Tu as peu de questions pour la découvrir, puis tu tentes ta chance.",
+      "skill": "Raisonner par indices et hypothèses",
+      "duration": "10 min"
     },
     "promptEngineer": {
       "title": "Prompts pour la classe",
@@ -33,11 +41,20 @@
     },
     "convinciTu": {
       "title": "Convaincs-le",
-      "description": "Choisis une idée et essaie de convaincre un personnage historique. Il ne change d'avis que si tes arguments tiennent."
+      "description": "Choisis une idée et essaie de convaincre un personnage historique. Il ne change d'avis que si tes arguments tiennent.",
+      "skill": "Argumenter et convaincre",
+      "duration": "15–20 min"
     },
     "impersonaTu": {
       "title": "Incarne-le",
-      "description": "Joue un personnage historique pendant que l'IA en joue un autre. Elle te pose des questions pour voir si tu le connais bien."
+      "description": "Joue un personnage historique pendant que l'IA en joue un autre. Elle te pose des questions pour voir si tu le connais bien.",
+      "skill": "Se mettre dans la peau d'un personnage historique",
+      "duration": "15–20 min"
     }
+  },
+  "facts": {
+    "skill": "Entraîne à",
+    "duration": "Durée",
+    "characters": "Personnages IA"
   }
 }

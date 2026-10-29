@@ -18,6 +18,16 @@ export type OpenApp = AppMeta & { slug: AppType };
 const listed = (type: AppType): OpenApp => ({ ...APPS[type], slug: type });
 const upcoming: ListedApp = { ...UPCOMING_APP, upcoming: true };
 
+/** How many AI characters speak in each app (shown on the apps page). */
+export const AI_CHARACTERS: Record<AppType, number> = {
+  "you-moderate": 2,
+  "doppia-intervista": 2,
+  "wiki-chatbot": 1,
+  "personaggio-misterioso": 1,
+  "convinci-tu": 1,
+  "impersona-tu": 1,
+};
+
 /** Home page cards; the hero also picks one of these at random. */
 export const HOME_APPS = (["you-moderate", "personaggio-misterioso", "doppia-intervista", "convinci-tu", "impersona-tu"] as const).map(listed);
 
