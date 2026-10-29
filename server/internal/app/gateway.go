@@ -24,6 +24,7 @@ type aiGateway struct {
 	prices    priceStore
 	usage     usageStore
 	sessions  sessionStore // to add the cost of a call to its session
+	grants    liveGrantStore
 	settings  *settingsService
 	crypto    *Crypto
 

@@ -111,6 +111,17 @@ CREATE TABLE IF NOT EXISTS activity_sessions (
 CREATE INDEX IF NOT EXISTS idx_sessions_user ON activity_sessions(user_id);
 CREATE INDEX IF NOT EXISTS idx_sessions_assignment ON activity_sessions(assignment_id);
 
+CREATE TABLE IF NOT EXISTS live_grants (
+  id TEXT PRIMARY KEY,
+  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  session_id INTEGER REFERENCES activity_sessions(id) ON DELETE SET NULL,
+  provider_id INTEGER NOT NULL,
+  model TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  expires_at TEXT NOT NULL,
+  used_at TEXT
+);
+
 CREATE TABLE IF NOT EXISTS providers (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT NOT NULL,

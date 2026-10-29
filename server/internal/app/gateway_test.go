@@ -462,3 +462,30 @@ func TestBudgetFailsClosedWhenSpendingIsUnreadable(t *testing.T) {
 		t.Fatal("without blocking, the budget never blocks")
 	}
 }
+
+func TestLiveUsageOnlyAgainstOwnGrant(t *testing.T) {
+	s := newTestServer(t)
+	now := time.Now().UTC()
+	owner, _ := s.Accounts.CreateUser("a@x.it", "", "", domain.RoleStudent, "it")
+	other, _ := s.Accounts.CreateUser("b@x.it", "", "", domain.RoleStudent, "it")
+	grant := func(id string, user *int64) {
+		if err := s.LiveGrants.Create(domain.LiveGrant{ID: id, UserID: user, ProviderID: 1, Model: "live", CreatedAt: now.Format(time.RFC3339), ExpiresAt: now.Add(time.Hour).Format(time.RFC3339)}); err != nil {
+			t.Fatal(err)
+		}
+	}
+	grant("mine", &owner)
+	if _, err := s.Gateway.RecordLiveUsage(LiveUsage{GrantID: "mine", UserID: &other, InputTokens: 1}); !errors.Is(err, ErrLiveGrant) {
+		t.Fatalf("another user's grant: %v", err)
+	}
+	grant("anon", nil)
+	if _, err := s.Gateway.RecordLiveUsage(LiveUsage{GrantID: "anon", UserID: &owner, InputTokens: 1}); !errors.Is(err, ErrLiveGrant) {
+		t.Fatalf("an anonymous grant reported by a user: %v", err)
+	}
+	grant("again", &owner)
+	if _, err := s.Gateway.RecordLiveUsage(LiveUsage{GrantID: "again", UserID: &owner, InputTokens: 1}); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := s.Gateway.RecordLiveUsage(LiveUsage{GrantID: "again", UserID: &owner, InputTokens: 1}); !errors.Is(err, ErrLiveGrant) {
+		t.Fatalf("reported twice: %v", err)
+	}
+}

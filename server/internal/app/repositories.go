@@ -107,6 +107,11 @@ type sessionStore interface {
 	Import(userID int64, assignmentID *int64, d domain.SessionDetail) (int64, error)
 }
 
+type liveGrantStore interface {
+	Create(g domain.LiveGrant) error
+	Consume(id string) (*domain.LiveGrant, error)
+}
+
 type roomStore interface {
 	Create(n domain.NewRoom) (int64, error)
 	Get(id int64) (*domain.Room, error)

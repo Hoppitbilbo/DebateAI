@@ -12,9 +12,11 @@ import (
 	"sort"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/Hoppitbilbo/DebateAI/server/internal/ai"
 	"github.com/Hoppitbilbo/DebateAI/server/internal/app"
+	"github.com/Hoppitbilbo/DebateAI/server/internal/domain"
 )
 
 // TestResponseShapes pins the JSON shape (keys and value types, recursively)
@@ -132,7 +134,21 @@ func TestResponseShapes(t *testing.T) {
 	sess := call(stud, "create session", "POST", "/api/sessions", map[string]any{"appType": "wiki-chatbot", "assignmentId": assignmentID})
 	sessionID := int64(sess["id"].(float64))
 	call(stud, "generate", "POST", "/api/ai/generate", map[string]any{"sessionId": sessionID, "messages": []map[string]string{{"role": "user", "content": "ciao"}}})
-	call(stud, "live usage", "POST", "/api/ai/live/usage", map[string]any{"providerId": chatID, "model": "m", "inputTokens": 10, "outputTokens": 5, "seconds": 3})
+	var me struct{ User struct{ ID int64 } }
+	stud.do("GET", "/api/auth/me", nil, &me)
+	now := time.Now().UTC()
+	grant := domain.LiveGrant{ID: "grant-1", UserID: &me.User.ID, ProviderID: chatID, Model: "m",
+		CreatedAt: now.Format(time.RFC3339), ExpiresAt: now.Add(time.Hour).Format(time.RFC3339)}
+	if err := s.LiveGrants.Create(grant); err != nil {
+		t.Fatal(err)
+	}
+	call(stud, "live usage", "POST", "/api/ai/live/usage", map[string]any{"grantId": "grant-1", "inputTokens": 10, "outputTokens": 5})
+	if code := stud.do("POST", "/api/ai/live/usage", map[string]any{"grantId": "grant-1", "inputTokens": 10, "outputTokens": 5}, nil); code != 409 {
+		t.Fatalf("a grant is reported once, got %d", code)
+	}
+	if code := stud.do("POST", "/api/ai/live/usage", map[string]any{"grantId": "made-up", "inputTokens": 10}, nil); code != 409 {
+		t.Fatalf("an unknown grant is refused, got %d", code)
+	}
 	call(stud, "transcript (judged)", "PUT", fmtPath("/api/sessions/%d/transcript", sessionID), map[string]any{"messages": userTurns(1)})
 	call(stud, "transcript (ended)", "PUT", fmtPath("/api/sessions/%d/transcript", sessionID), map[string]any{"messages": userTurns(2)})
 	call(stud, "complete session", "POST", fmtPath("/api/sessions/%d/complete", sessionID), map[string]any{"reflection": "r"})

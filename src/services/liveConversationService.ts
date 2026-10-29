@@ -29,6 +29,8 @@ export interface LiveConversationController {
 }
 
 interface LiveTokenResponse {
+  /** Identifies this conversation when its usage is reported (once). */
+  grantId: string;
   token: string;
   model: string;
   providerId: number;
@@ -64,7 +66,6 @@ export const startLiveConversation = async (options: StartLiveConversationOption
   let manuallyClosed = false;
   let micMuted = false;
   const usage = { input: 0, output: 0 };
-  const startedAt = Date.now();
 
   let stream: MediaStream | null = null;
   let audioContext: AudioContext | null = null;
@@ -73,13 +74,11 @@ export const startLiveConversation = async (options: StartLiveConversationOption
   let source: MediaStreamAudioSourceNode | null = null;
 
   const reportUsage = () => {
+    // The server takes provider, model, attempt and duration from the grant.
     void api.post("/api/ai/live/usage", {
-      sessionId: options.sessionId ?? 0,
-      providerId: tokenInfo.providerId,
-      model: tokenInfo.model,
+      grantId: tokenInfo.grantId,
       inputTokens: usage.input,
       outputTokens: usage.output,
-      seconds: Math.round((Date.now() - startedAt) / 1000),
     }).catch(() => undefined);
   };
 

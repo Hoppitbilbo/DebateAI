@@ -201,14 +201,19 @@ func (s *Server) handleLiveToken(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 400, "bad_request", err.Error())
 		return
 	}
-	if _, status, err := s.sessionFor(u, in.SessionID); err != nil {
+	sessionID, status, err := s.sessionFor(u, in.SessionID)
+	if err != nil {
 		writeErr(w, 403, "bad_session", err.Error())
 		return
 	} else if status != "" && status != domain.SessionActive {
 		writeErr(w, 409, "session_ended", "this activity has ended")
 		return
 	}
-	tok, err := s.Gateway.LiveToken(r.Context(), in.SystemInstruction, in.VoiceName)
+	var userID *int64
+	if u != nil {
+		userID = &u.ID
+	}
+	tok, err := s.Gateway.LiveToken(r.Context(), in.SystemInstruction, in.VoiceName, userID, sessionID)
 	if err != nil {
 		writeErr(w, 502, "live_unavailable", err.Error())
 		return
@@ -218,16 +223,13 @@ func (s *Server) handleLiveToken(w http.ResponseWriter, r *http.Request) {
 
 // handleLiveUsage records token usage reported by the browser at the end of a
 // Live session (the WebSocket goes directly to Google, so the server only
-// learns usage from the client).
+// learns usage from the client). Only once per grant from /live/token.
 func (s *Server) handleLiveUsage(w http.ResponseWriter, r *http.Request) {
 	u := s.userFromRequest(r)
 	var in struct {
-		SessionID    int64  `json:"sessionId"`
-		ProviderID   int64  `json:"providerId"`
-		Model        string `json:"model"`
+		GrantID      string `json:"grantId"`
 		InputTokens  int    `json:"inputTokens"`
 		OutputTokens int    `json:"outputTokens"`
-		Seconds      int    `json:"seconds"`
 	}
 	if err := readJSON(r, &in); err != nil {
 		writeErr(w, 400, "bad_request", err.Error())
@@ -242,8 +244,10 @@ func (s *Server) handleLiveUsage(w http.ResponseWriter, r *http.Request) {
 	if u != nil {
 		userID = &u.ID
 	}
-	sessionID, _, _ := s.sessionFor(u, in.SessionID)
-	cost := s.Gateway.RecordLiveUsage(app.LiveUsage{UserID: userID, SessionID: sessionID, ProviderID: in.ProviderID, Model: in.Model,
-		InputTokens: in.InputTokens, OutputTokens: in.OutputTokens, Seconds: in.Seconds})
+	cost, err := s.Gateway.RecordLiveUsage(app.LiveUsage{GrantID: in.GrantID, UserID: userID, InputTokens: in.InputTokens, OutputTokens: in.OutputTokens})
+	if err != nil {
+		writeErr(w, 409, "bad_grant", err.Error())
+		return
+	}
 	writeJSON(w, 200, liveUsageResponse{OK: true, CostUSD: cost})
 }

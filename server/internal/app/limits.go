@@ -31,6 +31,9 @@ const (
 	modelRefreshTimeout = 30 * time.Second
 	providerTestTimeout = 60 * time.Second
 	liveTokenTimeout    = 20 * time.Second
+	// liveGrantTTL is how long after the token the browser may report a
+	// voice conversation's usage; it also bounds the reported duration.
+	liveGrantTTL = time.Hour
 )
 
 // Authentication and invites.

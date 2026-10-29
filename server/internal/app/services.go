@@ -25,6 +25,7 @@ type Services struct {
 	Prices        priceStore
 	Usage         usageStore
 	Rooms         roomStore
+	LiveGrants    liveGrantStore
 
 	Crypto        *Crypto
 	Settings      *settingsService
@@ -61,12 +62,14 @@ func NewServices(cfg Config, db *sql.DB, opts ...Option) *Services {
 		Prices:        store.NewPrices(db),
 		Usage:         store.NewUsage(db),
 		Rooms:         store.NewRooms(db),
+		LiveGrants:    store.NewLiveGrants(db),
 		Crypto:        NewCrypto(cfg.Secret),
 	}
 	sv.Settings = &settingsService{store: sv.SettingsStore, crypto: sv.Crypto, smtpDefaults: cfg.SMTP}
 	sv.Mailer = smtpMailer{settings: sv.Settings}
 	siteName := func() string { return sv.Settings.General().SiteName }
 	sv.Gateway = newAIGateway(sv.Providers, sv.Prices, sv.Usage, sv.Sessions, sv.Settings, sv.Crypto)
+	sv.Gateway.grants = sv.LiveGrants
 	sv.Accounts = &authService{users: sv.Users, logins: sv.Logins, invites: sv.Invites, classes: sv.Classes, mail: sv.Mailer, siteName: siteName}
 	sv.ClassSvc = &classService{classes: sv.Classes, rooms: sv.Rooms, users: sv.Users, accounts: sv.Accounts, mail: sv.Mailer,
 		siteName: siteName, mailOn: sv.Settings.MailConfigured}
