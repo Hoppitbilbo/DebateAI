@@ -116,6 +116,15 @@ describe("ImpersonaTuPage", () => {
       topic: "la pace",
       difficulty: "medium",
     });
+    const [opening] = mocks.generateStream.mock.calls[0];
+    expect(opening.system).toBeUndefined();
+    expect(opening.recipe).toMatchObject({
+      app: "impersona-tu",
+      kind: "opening",
+      character: "Person AI character",
+      userCharacter: "Person Your character (you play them)",
+      topic: "la pace",
+    });
     expect(screen.getAllByText(/Person AI character/).length).toBeGreaterThan(0);
   });
 });
