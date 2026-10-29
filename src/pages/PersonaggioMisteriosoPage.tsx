@@ -109,7 +109,9 @@ const PersonaggioMisteriosoPage = () => {
    * teacher's hints come first, in order; then the character makes one up.
    */
   const askHint = () => {
-    const teacherHint = nextTeacherHint(preset.hints, hintsUsed);
+    // The teacher's hints describe the character the teacher chose: with a
+    // character picked by the student (or at random) they would mislead.
+    const teacherHint = preset.character ? nextTeacherHint(preset.hints, hintsUsed) : null;
     setHintsUsed((n) => n + 1);
     void engine.runTurn(t("platform.apps.personaggioMisterioso.hintRequest"), async () => {
       if (teacherHint) engine.addMessage({ role: "assistant", name: "???", content: t("platform.apps.personaggioMisterioso.teacherHint", { hint: teacherHint }) });

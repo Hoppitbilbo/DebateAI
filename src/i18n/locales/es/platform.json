@@ -427,7 +427,8 @@
       },
       "hints": "Pistas (opcionales)",
       "hintsHint": "De la más vaga a la más clara. El estudiante las recibe en orden al pulsar «Pedir una pista»; agotadas estas, la pista la inventa el personaje. Cada pista cuesta una pregunta.",
-      "hintN": "Pista {{n}}"
+      "hintN": "Pista {{n}}",
+      "hintsNeedCharacter": "Las pistas describen el personaje que eliges: elígelo primero y luego escribe las pistas. Sin personaje fijado, las pistas las da el propio personaje."
     },
     "exportExcel": "Exportar notas (Excel)",
     "teacherScore": "Nota docente"

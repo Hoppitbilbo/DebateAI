@@ -427,7 +427,8 @@
       },
       "hints": "Indices (facultatifs)",
       "hintsHint": "Du plus vague au plus clair. L'élève les reçoit dans l'ordre avec « Demander un indice » ; ensuite, le personnage en invente un. Chaque indice coûte une question.",
-      "hintN": "Indice {{n}}"
+      "hintN": "Indice {{n}}",
+      "hintsNeedCharacter": "Les indices décrivent le personnage que tu choisis : choisis-le d'abord, puis écris les indices. Sans personnage fixé, c'est le personnage qui donne les indices."
     },
     "exportExcel": "Exporter les notes (Excel)",
     "teacherScore": "Note enseignant"

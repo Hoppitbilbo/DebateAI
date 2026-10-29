@@ -36,9 +36,12 @@ export const draftOf = (a?: Assignment | null): AssignmentDraft => ({
 export const draftLimits = (d: AssignmentDraft) =>
   reconcileLimits({ appType: d.appType, minTurns: d.minTurns, maxTurns: d.maxTurns, questions: d.appType === "personaggio-misterioso" ? d.config.questions : undefined });
 
-/** The mystery game's hints without the empty ones; none for the other apps. */
+/**
+ * The mystery game's hints without the empty ones. They describe the
+ * character the teacher fixed, so without one (and for other apps) none.
+ */
 const cleanHints = (d: AssignmentDraft) => {
-  const hints = d.appType === "personaggio-misterioso" ? d.config.hints?.map((h) => h.trim()).filter(Boolean) : undefined;
+  const hints = d.appType === "personaggio-misterioso" && d.config.character ? d.config.hints?.map((h) => h.trim()).filter(Boolean) : undefined;
   return hints?.length ? hints : undefined;
 };
 

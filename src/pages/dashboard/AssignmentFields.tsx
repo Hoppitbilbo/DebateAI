@@ -155,8 +155,8 @@ const AssignmentFields = ({ draft, onChange, showLive = true, idPrefix = "a" }: 
         {appType === "personaggio-misterioso" && (
           <fieldset className="space-y-2">
             <legend className="text-sm font-medium">{t("platform.teacher.form.hints")}</legend>
-            <p className="text-xs text-muted-foreground">{t("platform.teacher.form.hintsHint")}</p>
-            {Array.from({ length: MAX_TEACHER_HINTS }, (_, i) => (
+            <p className="text-xs text-muted-foreground">{config.character ? t("platform.teacher.form.hintsHint") : t("platform.teacher.form.hintsNeedCharacter")}</p>
+            {config.character && Array.from({ length: MAX_TEACHER_HINTS }, (_, i) => (
               <Input
                 key={i}
                 aria-label={t("platform.teacher.form.hintN", { n: i + 1 })}

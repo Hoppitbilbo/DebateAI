@@ -427,7 +427,8 @@
       },
       "hints": "Indizi (facoltativi)",
       "hintsHint": "Dal più vago al più chiaro. Lo studente li riceve in ordine quando preme «Chiedi un indizio»; finiti questi, l'indizio lo inventa il personaggio. Ogni indizio costa una domanda.",
-      "hintN": "Indizio {{n}}"
+      "hintN": "Indizio {{n}}",
+      "hintsNeedCharacter": "Gli indizi valgono per il personaggio che scegli: sceglilo prima, poi scrivi gli indizi. Senza personaggio fissato, gli indizi li dà il personaggio stesso."
     },
     "exportExcel": "Esporta voti (Excel)",
     "teacherScore": "Voto docente"
