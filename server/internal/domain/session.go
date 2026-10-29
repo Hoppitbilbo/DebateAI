@@ -1,6 +1,9 @@
 package domain
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"errors"
+)
 
 // Session statuses.
 const (
@@ -38,9 +41,29 @@ type SessionDetail struct {
 	Jev        json.RawMessage `json:"jev"`
 	Reflection string          `json:"reflection"`
 	Evaluation string          `json:"evaluation"`
+	// Revision grows by one at every transcript save.
+	Revision int64 `json:"revision"`
 	// Written by the teacher after reading the conversation.
 	TeacherFeedback   string  `json:"teacherFeedback"`
 	TeacherFeedbackAt *string `json:"teacherFeedbackAt,omitempty"`
+}
+
+// Errors of the conditional session writes.
+var (
+	// ErrStaleRevision: the transcript was saved on top of an older revision.
+	ErrStaleRevision = errors.New("the conversation was saved meanwhile from another request; reload it")
+	// ErrSessionCompleted: a handed-in attempt is not rewritten.
+	ErrSessionCompleted = errors.New("this attempt has already been handed in")
+)
+
+// TranscriptSave is a new revision of an attempt's conversation.
+type TranscriptSave struct {
+	JSON    string
+	Turns   int
+	Context *string // replaces the activity setup when not nil
+	// BaseRevision, when set, is the revision the client saw: the save is
+	// refused with ErrStaleRevision if another one came in meanwhile.
+	BaseRevision *int64
 }
 
 // NewSession holds the values of an activity attempt to start.

@@ -57,7 +57,10 @@ export const useChatEngine = ({ session, live, context, onEnded }: Options) => {
 
   const ended = session.endReason === "goal_reached" || session.endReason === "turn_limit";
 
-  /** Saves the transcript after a turn; `judge` asks for a judgement even when the attempt already ended. */
+  /**
+   * Saves the transcript after a turn. `judge: true` asks for a judgement even
+   * when the attempt already ended; `judge: false` saves without one.
+   */
   const afterTurn = useCallback(async (opts: { judge?: boolean } = {}) => {
     const reason = await session.sync(messagesRef.current, contextRef.current, opts);
     if (reason) onEndedRef.current?.(reason);

@@ -60,8 +60,8 @@ func (r *ActivitySessions) Detail(id int64) (*domain.SessionDetail, error) {
 	var d domain.SessionDetail
 	var ctx, tr, jev string
 	var feedbackAt sql.NullString
-	ss, err := scanSummary(r.db.QueryRow(`SELECT `+sessionSummaryCols+`, s.context_json, s.transcript_json, s.jev_json, s.reflection, s.evaluation, s.teacher_feedback, s.teacher_feedback_at`+sessionFrom+` WHERE s.id = ?`, id),
-		&ctx, &tr, &jev, &d.Reflection, &d.Evaluation, &d.TeacherFeedback, &feedbackAt)
+	ss, err := scanSummary(r.db.QueryRow(`SELECT `+sessionSummaryCols+`, s.context_json, s.transcript_json, s.jev_json, s.reflection, s.evaluation, s.teacher_feedback, s.teacher_feedback_at, s.revision`+sessionFrom+` WHERE s.id = ?`, id),
+		&ctx, &tr, &jev, &d.Reflection, &d.Evaluation, &d.TeacherFeedback, &feedbackAt, &d.Revision)
 	if err != nil {
 		return nil, err
 	}
@@ -160,34 +160,64 @@ func (r *ActivitySessions) AbandonEmpty(userID, assignmentID int64) error {
 	return err
 }
 
-// SaveTranscript stores the conversation and its turn count; context
-// replaces the stored activity setup when not nil.
-func (r *ActivitySessions) SaveTranscript(id int64, transcriptJSON string, turns int, context *string) error {
+// SaveTranscript stores a new revision of the conversation and returns its
+// number. A completed attempt is not rewritten (domain.ErrSessionCompleted);
+// with s.BaseRevision set, a save that lost a race is refused
+// (domain.ErrStaleRevision).
+func (r *ActivitySessions) SaveTranscript(id int64, s domain.TranscriptSave) (int64, error) {
 	tx, err := r.db.Begin()
 	if err != nil {
-		return err
+		return 0, err
 	}
 	defer tx.Rollback()
-	if _, err := tx.Exec(`UPDATE activity_sessions SET transcript_json = ?, turns = ?, updated_at = ? WHERE id = ?`, transcriptJSON, turns, domain.Now(), id); err != nil {
-		return err
+	var status string
+	var revision int64
+	if err := tx.QueryRow(`SELECT status, revision FROM activity_sessions WHERE id = ?`, id).Scan(&status, &revision); err != nil {
+		return 0, err
 	}
-	if context != nil {
-		if _, err := tx.Exec(`UPDATE activity_sessions SET context_json = ? WHERE id = ?`, *context, id); err != nil {
-			return err
-		}
+	switch {
+	case status == domain.SessionCompleted:
+		return revision, domain.ErrSessionCompleted
+	case s.BaseRevision != nil && *s.BaseRevision != revision:
+		return revision, domain.ErrStaleRevision
 	}
-	return tx.Commit()
+	// The revision in WHERE keeps the write conditional on remote databases,
+	// where the read above does not lock the row.
+	res, err := tx.Exec(`UPDATE activity_sessions SET transcript_json = ?, turns = ?, updated_at = ?, revision = revision + 1, context_json = COALESCE(?, context_json)
+		WHERE id = ? AND revision = ? AND status != ?`, s.JSON, s.Turns, domain.Now(), s.Context, id, revision, domain.SessionCompleted)
+	if err != nil {
+		return 0, err
+	}
+	if n, err := res.RowsAffected(); err != nil {
+		return 0, err
+	} else if n == 0 {
+		return revision, domain.ErrStaleRevision
+	}
+	return revision + 1, tx.Commit()
 }
 
-// SaveJudgement stores the judge's verdict and the resulting progress.
-func (r *ActivitySessions) SaveJudgement(id int64, judgementJSON string, progress int) error {
-	_, err := r.db.Exec(`UPDATE activity_sessions SET jev_json = ?, progress = ? WHERE id = ?`, judgementJSON, progress, id)
-	return err
+// SaveJudgement stores the judge's verdict on a transcript revision and the
+// resulting progress, unless a verdict on a newer revision is already there
+// (judges can finish out of order). It reports whether it was stored.
+func (r *ActivitySessions) SaveJudgement(id int64, judgementJSON string, progress int, revision int64) (bool, error) {
+	res, err := r.db.Exec(`UPDATE activity_sessions SET jev_json = ?, progress = ?, judged_revision = ? WHERE id = ? AND judged_revision < ?`,
+		judgementJSON, progress, revision, id, revision)
+	return affected(res, err)
 }
 
-func (r *ActivitySessions) SetStatus(id int64, status string) error {
-	_, err := r.db.Exec(`UPDATE activity_sessions SET status = ?, updated_at = ? WHERE id = ?`, status, domain.Now(), id)
-	return err
+// SetStatus moves the attempt from status from to status to, and reports
+// whether it did: a request that loaded an older status changes nothing.
+func (r *ActivitySessions) SetStatus(id int64, from, to string) (bool, error) {
+	res, err := r.db.Exec(`UPDATE activity_sessions SET status = ?, updated_at = ? WHERE id = ? AND status = ?`, to, domain.Now(), id, from)
+	return affected(res, err)
+}
+
+func affected(res sql.Result, err error) (bool, error) {
+	if err != nil {
+		return false, err
+	}
+	n, err := res.RowsAffected()
+	return n > 0, err
 }
 
 // Complete marks the attempt completed with the student's reflection and evaluation.

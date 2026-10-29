@@ -104,7 +104,9 @@ CREATE TABLE IF NOT EXISTS activity_sessions (
   cost_usd REAL NOT NULL DEFAULT 0,
   started_at TEXT NOT NULL,
   updated_at TEXT NOT NULL,
-  completed_at TEXT
+  completed_at TEXT,
+  revision INTEGER NOT NULL DEFAULT 0,
+  judged_revision INTEGER NOT NULL DEFAULT 0
 );
 CREATE INDEX IF NOT EXISTS idx_sessions_user ON activity_sessions(user_id);
 CREATE INDEX IF NOT EXISTS idx_sessions_assignment ON activity_sessions(assignment_id);
@@ -228,6 +230,8 @@ var migrations = []string{
 	`ALTER TABLE activity_sessions ADD COLUMN teacher_score INTEGER`,
 	`ALTER TABLE activity_sessions ADD COLUMN teacher_feedback_at TEXT`,
 	`ALTER TABLE rooms ADD COLUMN own_class_id INTEGER REFERENCES classes(id) ON DELETE SET NULL`,
+	`ALTER TABLE activity_sessions ADD COLUMN revision INTEGER NOT NULL DEFAULT 0`,
+	`ALTER TABLE activity_sessions ADD COLUMN judged_revision INTEGER NOT NULL DEFAULT 0`,
 }
 
 func applyMigrations(db *sql.DB) error {

@@ -14,6 +14,7 @@ interface SyncResponse {
   reason?: string;
   maxTurns?: number;
   jev?: JudgeResult;
+  revision: number;
 }
 
 /**
@@ -37,6 +38,11 @@ export const useActivitySession = (appType: AppType) => {
   const [endReason, setEndReason] = useState<EndReason>(null);
   const sessionRef = useRef<number | null>(null);
   const syncSeq = useRef(0);
+  // Saves go out one at a time, each on top of the revision the previous one
+  // returned: the server refuses a save that lost a race instead of letting
+  // an older transcript overwrite a newer one.
+  const saveQueue = useRef<Promise<unknown>>(Promise.resolve());
+  const revisionRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (!assignmentId) {
@@ -72,6 +78,7 @@ export const useActivitySession = (appType: AppType) => {
     setTurns(0);
     setEndReason(null);
     sessionRef.current = null;
+    revisionRef.current = null;
     setSessionId(null);
     if (!user) return null;
     try {
@@ -82,6 +89,7 @@ export const useActivitySession = (appType: AppType) => {
         context,
       });
       sessionRef.current = s.id;
+      revisionRef.current = 0;
       setSessionId(s.id);
       return s.id;
     } catch (e) {
@@ -110,8 +118,18 @@ export const useActivitySession = (appType: AppType) => {
       .map((m) => ({ role: m.role, content: m.content, name: m.name }));
     const seq = ++syncSeq.current;
     if (assignment) setJudging(true);
+    const save = async () => {
+      const base = sessionRef.current === id ? revisionRef.current : null;
+      const res = await api.put<SyncResponse>(`/api/sessions/${id}/transcript`, {
+        messages: transcript, context, ...(opts.judge !== undefined ? { judge: opts.judge } : {}), ...(base !== null ? { baseRevision: base } : {}),
+      });
+      if (sessionRef.current === id && typeof res.revision === "number") revisionRef.current = res.revision;
+      return res;
+    };
+    const queued = saveQueue.current.then(save);
+    saveQueue.current = queued.catch(() => undefined);
     try {
-      const res = await api.put<SyncResponse>(`/api/sessions/${id}/transcript`, { messages: transcript, context, ...(opts.judge ? { judge: true } : {}) });
+      const res = await queued;
       if (seq !== syncSeq.current) return null; // a newer sync superseded this one
       if (res.jev && res.jev.engine !== "none") setJev(res.jev);
       if (res.ended && res.reason) {
@@ -120,6 +138,9 @@ export const useActivitySession = (appType: AppType) => {
         return reason;
       }
     } catch (e) {
+      // Saved elsewhere meanwhile (e.g. a retried request that did go
+      // through): the next save goes out without a base revision.
+      if ((e as { code?: string }).code === "stale_revision" && sessionRef.current === id) revisionRef.current = null;
       console.warn("Transcript sync failed", e);
     } finally {
       if (seq === syncSeq.current) setJudging(false);

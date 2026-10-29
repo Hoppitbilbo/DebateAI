@@ -94,9 +94,9 @@ type sessionStore interface {
 	Owner(id int64) (userID *int64, status string, err error)
 	Create(n domain.NewSession) (int64, error)
 	AbandonEmpty(userID, assignmentID int64) error
-	SaveTranscript(id int64, transcriptJSON string, turns int, context *string) error
-	SaveJudgement(id int64, judgementJSON string, progress int) error
-	SetStatus(id int64, status string) error
+	SaveTranscript(id int64, s domain.TranscriptSave) (revision int64, err error)
+	SaveJudgement(id int64, judgementJSON string, progress int, revision int64) (bool, error)
+	SetStatus(id int64, from, to string) (bool, error)
 	Complete(id int64, c domain.SessionCompletion) error
 	SetTeacherFeedback(id int64, f domain.TeacherFeedback) error
 	AddCost(id int64, usd float64) error

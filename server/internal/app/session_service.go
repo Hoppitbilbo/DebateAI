@@ -156,6 +156,9 @@ type TranscriptUpdate struct {
 	Messages []TranscriptMessage `json:"messages"`
 	Context  json.RawMessage     `json:"context"`
 	Judge    *bool               `json:"judge"` // force (true) or skip (false) judging
+	// BaseRevision is the revision the client last saw (optional, see
+	// domain.TranscriptSave).
+	BaseRevision *int64 `json:"baseRevision"`
 }
 
 // SaveTranscript stores the conversation of session d, owned by u, and for
@@ -167,12 +170,13 @@ func (svc *sessionService) SaveTranscript(ctx context.Context, u *domain.User, d
 	if len(in.Context) > 0 {
 		newContext = ptr(string(in.Context))
 	}
-	if err := svc.sessions.SaveTranscript(d.ID, mustJSON(msgs), turns, newContext); err != nil {
-		return TranscriptSync{}, err
+	revision, err := svc.sessions.SaveTranscript(d.ID, domain.TranscriptSave{JSON: mustJSON(msgs), Turns: turns, Context: newContext, BaseRevision: in.BaseRevision})
+	if err != nil {
+		return TranscriptSync{Revision: revision}, err
 	}
 
 	state := domain.StateOf(d.Status)
-	resp := TranscriptSync{Status: state.Status(), Turns: turns, Progress: d.Progress, Ended: state.Ended()}
+	resp := TranscriptSync{Status: state.Status(), Turns: turns, Progress: d.Progress, Ended: state.Ended(), Revision: revision}
 	if d.AssignmentID == nil {
 		return resp, nil
 	}
@@ -181,7 +185,7 @@ func (svc *sessionService) SaveTranscript(ctx context.Context, u *domain.User, d
 		return resp, nil
 	}
 	judge := func() (*JudgeResult, error) {
-		return svc.judgeAndSave(ctx, u, d, a, msgs, firstNonEmpty(in.Context, d.Context), turns, &resp)
+		return svc.judgeAndSave(ctx, u, d, a, msgs, firstNonEmpty(in.Context, d.Context), turns, revision, &resp)
 	}
 
 	// An ended attempt is judged again only on request: the last lines may
@@ -206,25 +210,48 @@ func (svc *sessionService) SaveTranscript(ctx context.Context, u *domain.User, d
 
 	next, reason := state.Next(outcome)
 	if next.Status() != state.Status() {
-		if err := svc.sessions.SetStatus(d.ID, next.Status()); err != nil {
+		moved, err := svc.sessions.SetStatus(d.ID, state.Status(), next.Status())
+		if err != nil {
 			return resp, err
+		}
+		if !moved {
+			// Another request (a newer save, the hand-in) changed the status
+			// first: report it as it is.
+			return svc.currentStatus(d.ID, resp)
 		}
 	}
 	resp.Status, resp.Ended, resp.Reason = next.Status(), next.Ended(), &reason
 	return resp, nil
 }
 
-// judgeAndSave asks the judge about the assignment goals, stores its
-// verdict and puts it in resp.
-func (svc *sessionService) judgeAndSave(ctx context.Context, u *domain.User, d *domain.SessionDetail, a *domain.Assignment, msgs []TranscriptMessage, activity json.RawMessage, turns int, resp *TranscriptSync) (*JudgeResult, error) {
+// currentStatus puts the stored status of session id in resp.
+func (svc *sessionService) currentStatus(id int64, resp TranscriptSync) (TranscriptSync, error) {
+	ss, err := svc.sessions.Summary(id)
+	if err != nil {
+		return resp, err
+	}
+	state := domain.StateOf(ss.Status)
+	resp.Status, resp.Ended, resp.Progress = state.Status(), state.Ended(), ss.Progress
+	return resp, nil
+}
+
+// judgeAndSave asks the judge about the assignment goals on transcript
+// revision, stores its verdict and puts it in resp. A verdict that arrives
+// after one on a newer revision is dropped, so progress never goes back.
+func (svc *sessionService) judgeAndSave(ctx context.Context, u *domain.User, d *domain.SessionDetail, a *domain.Assignment, msgs []TranscriptMessage, activity json.RawMessage, turns int, revision int64, resp *TranscriptSync) (*JudgeResult, error) {
 	jr := svc.evaluate(ctx, u, d, a, msgs, activity, turns)
-	resp.Jev = &jr
 	if jr.Engine == "none" {
+		resp.Jev = &jr
 		return &jr, nil
 	}
-	if err := svc.sessions.SaveJudgement(d.ID, mustJSON(jr), jr.Progress); err != nil {
+	stored, err := svc.sessions.SaveJudgement(d.ID, mustJSON(jr), jr.Progress, revision)
+	if err != nil {
 		return &jr, err
 	}
+	if !stored {
+		return &JudgeResult{}, nil
+	}
+	resp.Jev = &jr
 	resp.Progress = jr.Progress
 	return &jr, nil
 }

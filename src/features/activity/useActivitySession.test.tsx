@@ -122,6 +122,7 @@ describe("server session", () => {
         { role: "user", content: "ciao", name: "Io" },
       ],
       context: { topic: "guerra" },
+      baseRevision: 0,
     });
     expect(reason).toBe("goal_reached");
     expect(result.current.endReason).toBe("goal_reached");
@@ -139,25 +140,44 @@ describe("server session", () => {
     expect(result.current.endReason).toBeNull();
   });
 
-  it("drops the answer of a sync superseded by a newer one", async () => {
+  it("sends saves one at a time on the previous revision and drops a superseded answer", async () => {
     const { result } = await loggedIn();
     let resolveFirst: (v: unknown) => void = () => {};
     mocks.api.put
       .mockImplementationOnce(() => new Promise((r) => (resolveFirst = r)))
-      .mockResolvedValueOnce({ status: "active", turns: 2, progress: 0, ended: false });
+      .mockResolvedValueOnce({ status: "active", turns: 2, progress: 0, ended: false, revision: 2 });
 
     let first: Promise<unknown> = Promise.resolve();
+    let second: Promise<unknown> = Promise.resolve();
     await act(async () => {
       first = result.current.sync([msg("user", "uno")]);
-      await result.current.sync([msg("user", "uno"), msg("user", "due")]);
+      second = result.current.sync([msg("user", "uno"), msg("user", "due")]);
     });
+    // the second save waits for the first
+    expect(mocks.api.put).toHaveBeenCalledTimes(1);
     let firstReason: unknown;
     await act(async () => {
-      resolveFirst({ status: "turn_limit", ended: true, reason: "turn_limit" });
+      resolveFirst({ status: "turn_limit", ended: true, reason: "turn_limit", revision: 1 });
       firstReason = await first;
+      await second;
     });
+    expect(mocks.api.put).toHaveBeenCalledTimes(2);
+    expect(mocks.api.put.mock.calls[0][1].baseRevision).toBe(0);
+    expect(mocks.api.put.mock.calls[1][1].baseRevision).toBe(1);
     expect(firstReason).toBeNull();
     expect(result.current.endReason).toBeNull();
+  });
+
+  it("saves without a base revision after a stale one", async () => {
+    const { result } = await loggedIn();
+    mocks.api.put
+      .mockRejectedValueOnce(Object.assign(new Error("stale"), { code: "stale_revision" }))
+      .mockResolvedValueOnce({ status: "active", turns: 1, progress: 0, ended: false, revision: 5 });
+    await act(async () => {
+      await result.current.sync([msg("user", "uno")]);
+      await result.current.sync([msg("user", "uno")]);
+    });
+    expect(mocks.api.put.mock.calls[1][1]).not.toHaveProperty("baseRevision");
   });
 
   it("swallows sync errors", async () => {

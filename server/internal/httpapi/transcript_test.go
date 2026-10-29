@@ -85,7 +85,7 @@ func keys(m map[string]any) string {
 func TestSaveTranscriptResponseShape(t *testing.T) {
 	f := newTranscriptFixture(t, map[string]any{"maxTurns": 10, "autoEnd": false}, 0.2)
 	out := f.save(t, map[string]any{"messages": userTurns(1)})
-	if got := keys(out); got != "ended,jev,maxTurns,progress,reason,status,turns" {
+	if got := keys(out); got != "ended,jev,maxTurns,progress,reason,revision,status,turns" {
 		t.Fatalf("response keys changed: %s", got)
 	}
 	if out["status"] != "active" || out["ended"] != false || out["turns"] != 1.0 || out["maxTurns"] != 10.0 || out["reason"] != "" {
@@ -108,7 +108,7 @@ func TestSaveTranscriptFreeSessionIsNotJudged(t *testing.T) {
 	f.session = sess.ID
 
 	out := f.save(t, map[string]any{"messages": userTurns(3)})
-	if got := keys(out); got != "ended,progress,status,turns" {
+	if got := keys(out); got != "ended,progress,revision,status,turns" {
 		t.Fatalf("free session keys: %s", got)
 	}
 	if f.judge.decisions != 0 {
@@ -128,7 +128,7 @@ func TestSaveTranscriptAutoEndsWhenGoalReached(t *testing.T) {
 	if out["status"] != "goal_reached" || out["ended"] != true || f.judge.decisions != 1 || out["turns"] != 2.0 {
 		t.Fatalf("ended session: %v (decisions %d)", out, f.judge.decisions)
 	}
-	if got := keys(out); got != "ended,progress,status,turns" {
+	if got := keys(out); got != "ended,progress,revision,status,turns" {
 		t.Fatalf("ended session keys: %s", got)
 	}
 }

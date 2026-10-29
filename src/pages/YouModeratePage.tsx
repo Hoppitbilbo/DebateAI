@@ -66,8 +66,14 @@ const YouModeratePage = () => {
     setNextSpeaker(key === "a" ? "b" : "a");
   };
 
-  /** Lets a debater speak without a moderator message (the chat stays busy meanwhile). */
-  const speakAlone = (key: Key) => engine.withBusy(() => speak(key));
+  /**
+   * Lets a debater speak without a moderator message (the chat stays busy
+   * meanwhile). The line is saved; no student turn, so no new judgement.
+   */
+  const speakAlone = async (key: Key) => {
+    await engine.withBusy(() => speak(key));
+    await engine.afterTurn({ judge: false });
+  };
 
   /** The first debater opens, then the floor passes to the second. */
   const start = async () => {

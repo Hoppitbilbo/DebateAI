@@ -73,7 +73,14 @@ func (s *Server) handleSaveTranscript(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	resp, err := s.SessionSvc.SaveTranscript(r.Context(), u, d, in)
-	if err != nil {
+	switch {
+	case errors.Is(err, domain.ErrStaleRevision):
+		writeErr(w, 409, "stale_revision", err.Error())
+		return
+	case errors.Is(err, domain.ErrSessionCompleted):
+		writeErr(w, 409, "session_completed", err.Error())
+		return
+	case err != nil:
 		writeErr(w, 500, "internal", err.Error())
 		return
 	}
