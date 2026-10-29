@@ -546,7 +546,8 @@
       "estimated": "stimato",
       "estimatedHint": "Il fornitore non ha comunicato i token (risposta interrotta): sono stimati dalla lunghezza del testo.",
       "unpriced": "senza prezzo",
-      "unpricedHint": "Il modello non ha un prezzo noto: il costo reale è sconosciuto, non zero."
+      "unpricedHint": "Il modello non ha un prezzo noto: il costo reale è sconosciuto, non zero.",
+      "firstText": "Primo testo visto dopo {{text}} ms (dal fornitore dopo {{delta}} ms)"
     },
     "ai": {
       "providers": "Provider di IA",

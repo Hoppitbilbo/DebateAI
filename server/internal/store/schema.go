@@ -161,7 +161,9 @@ CREATE TABLE IF NOT EXISTS usage_log (
   latency_ms INTEGER NOT NULL DEFAULT 0,
   error TEXT NOT NULL DEFAULT '',
   estimated INTEGER NOT NULL DEFAULT 0,
-  unpriced INTEGER NOT NULL DEFAULT 0
+  unpriced INTEGER NOT NULL DEFAULT 0,
+  first_delta_ms INTEGER NOT NULL DEFAULT 0,
+  first_text_ms INTEGER NOT NULL DEFAULT 0
 );
 CREATE INDEX IF NOT EXISTS idx_usage_created ON usage_log(created_at);
 DROP INDEX IF EXISTS idx_usage_user; -- covered by idx_usage_user_created
@@ -260,6 +262,8 @@ var migrations = []string{
 	`ALTER TABLE activity_sessions ADD COLUMN judged_revision INTEGER NOT NULL DEFAULT 0`,
 	`ALTER TABLE usage_log ADD COLUMN estimated INTEGER NOT NULL DEFAULT 0`,
 	`ALTER TABLE usage_log ADD COLUMN unpriced INTEGER NOT NULL DEFAULT 0`,
+	`ALTER TABLE usage_log ADD COLUMN first_delta_ms INTEGER NOT NULL DEFAULT 0`,
+	`ALTER TABLE usage_log ADD COLUMN first_text_ms INTEGER NOT NULL DEFAULT 0`,
 }
 
 func applyMigrations(db *sql.DB) error {

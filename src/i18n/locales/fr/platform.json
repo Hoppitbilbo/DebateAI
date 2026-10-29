@@ -546,7 +546,8 @@
       "estimated": "estimé",
       "estimatedHint": "Le fournisseur n'a pas communiqué les tokens (réponse interrompue) : ils sont estimés d'après la longueur du texte.",
       "unpriced": "sans prix",
-      "unpricedHint": "Le modèle n'a pas de prix connu : son coût réel est inconnu, pas nul."
+      "unpricedHint": "Le modèle n'a pas de prix connu : son coût réel est inconnu, pas nul.",
+      "firstText": "Premier texte vu après {{text}} ms (du fournisseur après {{delta}} ms)"
     },
     "ai": {
       "providers": "Fournisseurs d'IA",

@@ -151,6 +151,8 @@ type usageEntry struct {
 	Latency    time.Duration
 	Err        string
 	Estimated  bool // Usage is estimated from the text, not reported
+	// Stream timings from the start of the call (0 when not streamed or no text).
+	FirstDelta, FirstText time.Duration
 }
 
 // logUsage writes a call to the usage log and returns its cost. A model
@@ -169,6 +171,7 @@ func (g *aiGateway) logUsage(e usageEntry) float64 {
 		UserID: e.UserID, SessionID: e.SessionID, ProviderID: e.ProviderID, Provider: e.Provider, Model: e.Model, Task: e.Task,
 		InputTokens: e.Usage.InputTokens, OutputTokens: e.Usage.OutputTokens, CostUSD: cost, OK: e.OK,
 		LatencyMs: e.Latency.Milliseconds(), Error: e.Err, Estimated: e.Estimated, Unpriced: unpriced,
+		FirstDeltaMs: e.FirstDelta.Milliseconds(), FirstTextMs: e.FirstText.Milliseconds(),
 	}))
 	if e.SessionID != nil && cost > 0 {
 		logIfErr("add session cost", g.sessions.AddCost(*e.SessionID, cost))
@@ -290,8 +293,9 @@ func (g *aiGateway) tryTarget(ctx context.Context, c genCall, t RouteTarget, cp 
 	if err != nil {
 		return nil, err
 	}
-	model := g.meterText(screenAnswers(ai.WithFirstTokenTimeout(tm, wait), c.task),
-		usageEntry{UserID: c.userID, SessionID: c.sessionID, ProviderID: t.ProviderID, Provider: cp.name, Model: t.Model, Task: c.task})
+	clock := &firstDeltaClock{TextModel: tm}
+	model := g.meterTimed(screenAnswers(ai.WithFirstTokenTimeout(clock, wait), c.task),
+		usageEntry{UserID: c.userID, SessionID: c.sessionID, ProviderID: t.ProviderID, Provider: cp.name, Model: t.Model, Task: c.task}, clock)
 	var res *ai.Response
 	if c.onDelta != nil {
 		res, err = model.Stream(ctx, r, c.onDelta)

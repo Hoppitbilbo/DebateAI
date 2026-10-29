@@ -546,7 +546,8 @@
       "estimated": "estimated",
       "estimatedHint": "The provider reported no tokens (interrupted answer): they are estimated from the text length.",
       "unpriced": "no price",
-      "unpricedHint": "The model has no known price: its real cost is unknown, not zero."
+      "unpricedHint": "The model has no known price: its real cost is unknown, not zero.",
+      "firstText": "First text seen after {{text}} ms (from the provider after {{delta}} ms)"
     },
     "ai": {
       "providers": "AI providers",

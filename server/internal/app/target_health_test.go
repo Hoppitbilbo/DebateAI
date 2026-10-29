@@ -55,3 +55,18 @@ func TestFallbackStopsWhenTheFirstTextBudgetIsUsedUp(t *testing.T) {
 		t.Fatalf("the model must not be called: %v", fp.calls)
 	}
 }
+
+// The log keeps when the provider sent its first text and when the student
+// saw it: the refusal check holds a chat answer back in between.
+func TestStreamLogsProviderAndVisibleFirstText(t *testing.T) {
+	s := newTestServer(t)
+	useProvider(s, 1, ai.KindOpenAI, &fakeProvider{slow: map[string]time.Duration{"a": 30 * time.Millisecond}})
+	setChatRoute(t, s, "ordered", RouteTarget{1, "a"})
+	if _, err := s.Gateway.Generate(context.Background(), TaskChat, chatRequest(), nil, nil, func(string) error { return nil }); err != nil {
+		t.Fatal(err)
+	}
+	rows, _ := s.Usage.Recent(1)
+	if rows[0].FirstDeltaMs < 30 || rows[0].FirstTextMs < rows[0].FirstDeltaMs {
+		t.Fatalf("timings: provider %d ms, visible %d ms", rows[0].FirstDeltaMs, rows[0].FirstTextMs)
+	}
+}

@@ -546,7 +546,8 @@
       "estimated": "geschätzt",
       "estimatedHint": "Der Anbieter hat keine Tokens gemeldet (abgebrochene Antwort): sie sind aus der Textlänge geschätzt.",
       "unpriced": "ohne Preis",
-      "unpricedHint": "Für das Modell ist kein Preis bekannt: die echten Kosten sind unbekannt, nicht null."
+      "unpricedHint": "Für das Modell ist kein Preis bekannt: die echten Kosten sind unbekannt, nicht null.",
+      "firstText": "Erster Text sichtbar nach {{text}} ms (vom Anbieter nach {{delta}} ms)"
     },
     "ai": {
       "providers": "KI-Anbieter",

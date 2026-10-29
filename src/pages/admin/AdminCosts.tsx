@@ -150,7 +150,12 @@ const AdminCosts = () => {
                       {num(r.outputTokens)}
                       {r.estimated && <span className="ml-1 text-muted-foreground" title={t("platform.admin.costs.estimatedHint")}>({t("platform.admin.costs.estimated")})</span>}
                     </td>
-                    <td className="py-1 pr-2 text-right tabular-nums">{r.latencyMs}</td>
+                    <td
+                      className="py-1 pr-2 text-right tabular-nums"
+                      title={r.firstTextMs ? t("platform.admin.costs.firstText", { text: r.firstTextMs, delta: r.firstDeltaMs ?? 0 }) : undefined}
+                    >
+                      {r.latencyMs}
+                    </td>
                     <td className="py-1 text-right tabular-nums">
                       {r.unpriced ? <span className="text-muted-foreground" title={t("platform.admin.costs.unpricedHint")}>{t("platform.admin.costs.unpriced")}</span> : usd(r.costUsd)}
                     </td>

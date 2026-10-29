@@ -26,12 +26,35 @@ func (g *aiGateway) recordUsage(entry usageEntry, start time.Time, usage ai.Usag
 
 type meteredTextModel struct {
 	ai.TextModel
-	gw    *aiGateway
-	entry usageEntry
+	gw       *aiGateway
+	entry    usageEntry
+	provider *firstDeltaClock // optional: when the provider's first text came
 }
 
 func (g *aiGateway) meterText(m ai.TextModel, entry usageEntry) ai.TextModel {
 	return meteredTextModel{TextModel: m, gw: g, entry: entry}
+}
+
+// meterTimed is meterText that also logs when the provider sent its first
+// text (clock, the innermost decorator) as well as when the student saw it.
+func (g *aiGateway) meterTimed(m ai.TextModel, entry usageEntry, clock *firstDeltaClock) ai.TextModel {
+	return meteredTextModel{TextModel: m, gw: g, entry: entry, provider: clock}
+}
+
+// firstDeltaClock notes when the provider sent its first text, before the
+// answer screening may hold it back.
+type firstDeltaClock struct {
+	ai.TextModel
+	at time.Time
+}
+
+func (c *firstDeltaClock) Stream(ctx context.Context, req ai.Request, onDelta func(string) error) (*ai.Response, error) {
+	return c.TextModel.Stream(ctx, req, func(d string) error {
+		if c.at.IsZero() {
+			c.at = time.Now()
+		}
+		return onDelta(d)
+	})
 }
 
 func (m meteredTextModel) Generate(ctx context.Context, req ai.Request) (*ai.Response, error) {
@@ -45,9 +68,15 @@ func (m meteredTextModel) Stream(ctx context.Context, req ai.Request, onDelta fu
 	start := time.Now()
 	streamed := 0
 	res, err := m.TextModel.Stream(ctx, req, func(d string) error {
+		if streamed == 0 {
+			m.entry.FirstText = time.Since(start)
+		}
 		streamed += len(d)
 		return onDelta(d)
 	})
+	if m.provider != nil && !m.provider.at.IsZero() {
+		m.entry.FirstDelta = m.provider.at.Sub(start)
+	}
 	m.record(start, req, res, streamed, err)
 	return res, err
 }
