@@ -75,6 +75,7 @@ describe("app lists", () => {
       "/apps/impersona-tu",
       "/apps/impersona-tu/tutorial",
       "/apps/wiki-chatbot",
+      "/apps/wiki-chatbot/tutorial", // every app has the students' tutorial
       "/teacher-guide",
       "/apps",
       "/about",
