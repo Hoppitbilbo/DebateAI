@@ -43,6 +43,7 @@ Read this instead of re-deriving the work. The source audit is `REVIEW.md` in th
 | tests | `b26b65a` | `src/test/setup.ts` starts every file in Italian (lazy languages race otherwise). |
 | #3 (verified transcripts) | `124f734` | Branch `safe-the-grade`. `ai_replies` (`store/replies.go`), recorded in `handleGenerate` for chat with a session; `checkTranscript`/`sessionService.check` in `app/verification.go`; `SaveTranscript` judges `checked.evidence`, `Evaluate` too; `unverifiedLines` in `SessionSummary`, `voice` in `SessionDetail` (from `live_grants.session_id`). |
 | #3 (prompts built by the server) | `3111b4f`…`0dcb5e2` | Branch `server-prompts` (from `safe-the-grade`), plan in `PLAN_SERVER_PROMPTS.md`. `app/prompts.go`: `PromptRecipe`, `validate` (limits in `limits.go`), `buildPrompt` (templates ported from the removed `prompts.ts`/`difficulty.ts`, English moderated style, guard line), `checkLocked`, `ComposePrompt`. `/api/ai/generate` (chat) and `/api/ai/live/token` take `recipe` and refuse `system`/`systemInstruction` alone (400 `recipe_required`); a recipe that contradicts the assignment gets 409 `setting_locked` before any AI call; 400 `bad_recipe`. `SessionSvc.AssignmentOf`. Client: `recipeFor()` (`features/activity/recipe.ts`), `useChatEngine.respond/open` and `useLiveAi` take a recipe only. Parity reference: `app/testdata/prompts.json` (`TestBuildPromptMatchesFixtures`). |
+| pass 4 | `dbec15f`…`f798769` | Branch `fix/audit-pass4` (from `master@ac05a15`). #3 system lines left out of the evidence (`checkTranscript`). #4 voice reserves budget per grant (`reserveTokens`, `liveReservedTokens`, `live_grants.reservation_id`), released on the usage report. `Grades`: `BestPerUserIn`, one query. #7 `providerCacheTTL` (30 s). #8 Prism Light, 12 languages (79 kB). Apps page facts (skill, duration, `AI_CHARACTERS`). #1 resume after reload (`?session=ID`, `session.resume/forget`, `FlowOptions.restore`, `restoredMessages`). #13 evaluation preview once per frame (the chat measured: 0.36 ms per answer, unchanged). |
 
 ## Invariants: do not break
 
@@ -65,25 +66,15 @@ Read this instead of re-deriving the work. The source audit is `REVIEW.md` in th
 10. **Start of assigned work**: `useActivityFlow.begin` returns `false` and stays on setup when a logged-in user has an assignment but the session could not be created. All six pages do `if (!(await flow.begin(...))) return;`. Free practice continues, with `session.startFailed` driving the "not being saved" notice.
 11. The submission notice distinguishes `submitted` (assignment, "Handed in") from `savedToHistory` (free practice). AI feedback and hand-in are separate states.
 12. **Chat and voice instructions are built only by `buildPrompt`; the browser sends recipes.** `/api/ai/generate` with `task: chat` and `/api/ai/live/token` refuse a request without `recipe` (`recipe_required`), and every recipe goes through `checkLocked` against the attempt's assignment before the AI is called. Do not add a path that forwards a browser-written system prompt for a character. A deliberate change to a template must also change the expected text in `app/testdata/prompts.json`.
+13. **The attempt in the address is the one resumed.** `begin` writes `?session=ID`, `restart` removes it, and `useActivityFlow` resumes only the id present when the page opened (writing the new id must not trigger a resume: it would reset the chat and cancel the opening). A page that adds setup state must also restore it in `restore` from the saved `context`.
 
 ## Remaining work, in suggested order
 
-### Correctness leftovers
+### Decisions for the user (no code change until decided)
 
-- **#1 resume after reload.** A resumable session route: hydrate from `GET /api/sessions/{id}` (it includes `revision`; set `revisionRef` from it) and rebuild each page's setup (characters, topic) from the saved `context`. Per-app work on six pages; restart must clearly mean a new attempt. The unsent draft is already kept (`draft.ts`).
-- **#3 system lines.** Verified transcripts (`safe-the-grade`) check only AI lines; the app's own `system` lines (e.g. the mystery final-guess log) are still taken as sent.
-- **#3 recipes without a session.** Locked settings are checked against the attempt sent as `sessionId`. A request that leaves it out is free practice (no lock), but then its replies are not recorded and the saved transcript shows them as unverified lines. Bios still come from the browser (accepted risk in the plan).
-- **#4** Reservations use a fixed estimate, released after the call rather than reconciled; live voice is granted but not reserved.
-
-### Smaller leftovers
-
-- `Grades` still runs two queries per assignment. Leave `SetMaxOpenConns(1)` unless measured.
-- #8: Prism Light with only the needed languages, if code highlighting matters (the optional chunk is ~640 kB).
-- #13: the active message still reparses its Markdown on every streamed update; profile on a slow device before changing.
-- #14: `EvaluateEvery` defaults to 1; raising it is a cost/accuracy decision for the user.
-- #7 (multi-instance): provider cache invalidation only reaches the instance that handled the admin change.
-- Apps page: per-app guidance (skill practiced, typical duration, speakers) needs copy in five languages.
+- **#14** `EvaluateEvery` defaults to 1 (the judge runs after every student turn): raising it lowers cost but notices a reached goal later.
 - Chat answers under 160 characters appear only when complete (refusal check): a product trade-off, visible in `first_text_ms`.
+- **#3 recipes without a session.** A request without `sessionId` skips the assignment lock; its replies are not recorded, so the saved transcript shows them as unverified and the judge ignores them. Accepted for now; requiring a session for logged-in users would break free practice when the attempt cannot be created.
 
 ### Browser walkthrough recipe
 
