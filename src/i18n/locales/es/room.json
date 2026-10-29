@@ -112,7 +112,9 @@
     "closedTitle": "Aula cerrada",
     "closedText": "El aula ha terminado o el enlace no es válido: sus datos se han borrado.",
     "openAnother": "Abrir una nueva aula",
-    "aiMissing": "El chat no funcionará: no hay ningún modelo de IA disponible para las aulas rápidas. Avisa al administrador (Admin → IA → Aula rápida)."
+    "aiMissing": "El chat no funcionará: no hay ningún modelo de IA disponible para las aulas rápidas. Avisa al administrador (Admin → IA → Aula rápida).",
+    "copyInvite": "Copiar enlace de invitación",
+    "inviteCopied": "Enlace copiado: quien lo abra entra sin escribir el código."
   },
   "import": {
     "title": "Importar el trabajo en una clase",

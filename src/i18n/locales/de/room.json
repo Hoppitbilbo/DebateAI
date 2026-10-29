@@ -112,7 +112,9 @@
     "closedTitle": "Raum geschlossen",
     "closedText": "Der Raum ist beendet oder der Link ist ungültig: Seine Daten wurden gelöscht.",
     "openAnother": "Neuen Raum öffnen",
-    "aiMissing": "Der Chat wird nicht funktionieren: Für Blitzräume ist kein KI-Modell verfügbar. Sag der Administration Bescheid (Admin → KI → Blitzraum)."
+    "aiMissing": "Der Chat wird nicht funktionieren: Für Blitzräume ist kein KI-Modell verfügbar. Sag der Administration Bescheid (Admin → KI → Blitzraum).",
+    "copyInvite": "Einladungslink kopieren",
+    "inviteCopied": "Einladungslink kopiert: Wer ihn öffnet, tritt ohne Code bei."
   },
   "import": {
     "title": "Arbeit in eine Klasse importieren",

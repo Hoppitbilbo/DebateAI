@@ -112,7 +112,9 @@
     "closedTitle": "Aula chiusa",
     "closedText": "L'aula è terminata o il link non è valido: i dati sono stati cancellati.",
     "openAnother": "Apri una nuova aula",
-    "aiMissing": "La chat non funzionerà: nessun modello di IA è disponibile per le aule lampo. Avvisa l'amministratore (Admin → AI → Aula lampo)."
+    "aiMissing": "La chat non funzionerà: nessun modello di IA è disponibile per le aule lampo. Avvisa l'amministratore (Admin → AI → Aula lampo).",
+    "copyInvite": "Copia link d'invito",
+    "inviteCopied": "Link d'invito copiato: chi lo apre entra senza scrivere il codice."
   },
   "import": {
     "title": "Importa il lavoro in una classe",

@@ -112,7 +112,9 @@
     "closedTitle": "Salle fermée",
     "closedText": "La salle est terminée ou le lien n'est pas valide : ses données ont été effacées.",
     "openAnother": "Ouvrir une nouvelle salle",
-    "aiMissing": "Le chat ne fonctionnera pas : aucun modèle d'IA n'est disponible pour les salles éclair. Préviens l'administrateur (Admin → IA → Salle éclair)."
+    "aiMissing": "Le chat ne fonctionnera pas : aucun modèle d'IA n'est disponible pour les salles éclair. Préviens l'administrateur (Admin → IA → Salle éclair).",
+    "copyInvite": "Copier le lien d'invitation",
+    "inviteCopied": "Lien copié : qui l'ouvre entre sans taper le code."
   },
   "import": {
     "title": "Importer le travail dans une classe",

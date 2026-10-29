@@ -26,7 +26,7 @@ const Navbar = () => {
   const morph = useMorphClick();
   const tour = useTour();
 
-  const links = [
+  const links: { to: string; label: string; end?: boolean; highlight?: boolean }[] = [
     { to: "/", label: t("navigation.home"), end: true },
     { to: "/apps", label: t("navigation.apps") },
     { to: "/tutorials", label: t("platform.nav.tutorials") },
@@ -34,10 +34,13 @@ const Navbar = () => {
   ];
   // Temporary rooms: students enter with a code, guests go back to their room.
   if (user?.roomId) links.push({ to: "/aula", label: t("room.nav.myRoom"), end: true });
-  else if (!user && config?.roomsEnabled) links.push({ to: "/entra", label: t("room.nav.join"), end: true });
+  else if (!user && config?.roomsEnabled) links.push({ to: "/entra", label: t("room.nav.join"), end: true, highlight: true });
 
   const linkClass = ({ isActive }: { isActive: boolean }) =>
     cn("rounded-md px-3 py-2 text-sm font-medium transition-colors", isActive ? "text-education" : "text-foreground/75 hover:text-foreground");
+  /** "Join with code" stands out with a slow pulse, except on its own page. */
+  const classOf = (l: (typeof links)[number]) => (s: { isActive: boolean }) =>
+    l.highlight ? cn("rounded-full bg-primary/10 px-3 py-1.5 text-sm font-semibold text-primary", !s.isActive && "attention-pulse") : linkClass(s);
 
   const doLogout = async () => {
     await logout();
@@ -53,7 +56,7 @@ const Navbar = () => {
         </Link>
 
         <nav className="hidden items-center gap-1 md:flex" aria-label={t("platform.nav.main")} data-tour="nav-links">
-          {links.map((l) => <NavLink key={l.to} to={l.to} end={l.end} className={linkClass} onClick={morph(l.to)}>{l.label}</NavLink>)}
+          {links.map((l) => <NavLink key={l.to} to={l.to} end={l.end} className={classOf(l)} onClick={morph(l.to)}>{l.label}</NavLink>)}
         </nav>
 
         <div className="flex items-center gap-1">
@@ -100,7 +103,7 @@ const Navbar = () => {
       {open && (
         <nav className="space-y-1 border-t border-border/60 px-4 pb-4 pt-2 md:hidden" aria-label={t("platform.nav.main")}>
           {links.map((l) => (
-            <NavLink key={l.to} to={l.to} end={l.end} className={(s) => cn(linkClass(s), "block")} onClick={morph(l.to, () => setOpen(false))}>{l.label}</NavLink>
+            <NavLink key={l.to} to={l.to} end={l.end} className={(s) => cn(classOf(l)(s), "block")} onClick={morph(l.to, () => setOpen(false))}>{l.label}</NavLink>
           ))}
           {!user && (
             <NavLink to="/login" className={(s) => cn(linkClass(s), "block")} onClick={() => setOpen(false)}>{t("platform.auth.login")}</NavLink>

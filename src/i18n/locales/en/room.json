@@ -112,7 +112,9 @@
     "closedTitle": "Room closed",
     "closedText": "The room has ended or the link is not valid: its data has been deleted.",
     "openAnother": "Open a new room",
-    "aiMissing": "The chat will not work: no AI model is available for quick rooms. Tell the administrator (Admin → AI → Quick rooms)."
+    "aiMissing": "The chat will not work: no AI model is available for quick rooms. Tell the administrator (Admin → AI → Quick rooms).",
+    "copyInvite": "Copy invite link",
+    "inviteCopied": "Invite link copied: whoever opens it joins without typing the code."
   },
   "import": {
     "title": "Import the work into a class",
