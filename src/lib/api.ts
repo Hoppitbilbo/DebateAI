@@ -120,6 +120,8 @@ export interface SessionSummary {
   startedAt: string;
   updatedAt: string;
   completedAt?: string;
+  /** AI lines of the saved conversation the server did not produce (left out of the grading). */
+  unverifiedLines?: number;
 }
 
 export interface GoalStatus {
@@ -154,6 +156,8 @@ export interface SessionDetail extends SessionSummary {
   evaluation: string;
   teacherFeedback: string;
   teacherFeedbackAt?: string;
+  /** Part of the conversation was spoken: its AI lines cannot be checked. */
+  voice?: boolean;
 }
 
 export interface Assignment {

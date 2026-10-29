@@ -355,7 +355,10 @@
     "saveFeedback": "Send feedback",
     "feedbackSaved": "Feedback sent to the student",
     "feedbackHint": "The student will see it on this page and get an e-mail.",
-    "givenOn": "Written on {{date}}"
+    "givenOn": "Written on {{date}}",
+    "unverifiedLines_one": "{{count}} AI line in this conversation was not produced by the platform (edited or invented): it was left out of the automatic judgement and of the evaluation.",
+    "unverifiedLines_other": "{{count}} AI lines in this conversation were not produced by the platform (edited or invented): they were left out of the automatic judgement and of the evaluation.",
+    "voiceUnchecked": "This conversation includes voice parts: what the character said by voice cannot be checked by the platform."
   },
   "teacher": {
     "title": "My classes",

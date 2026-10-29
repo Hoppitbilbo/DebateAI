@@ -355,7 +355,10 @@
     "saveFeedback": "Envoyer le retour",
     "feedbackSaved": "Retour envoyé à l'élève",
     "feedbackHint": "L'élève le verra sur cette page et recevra un e-mail.",
-    "givenOn": "Écrit le {{date}}"
+    "givenOn": "Écrit le {{date}}",
+    "unverifiedLines_one": "{{count}} réponse de l'IA dans cette conversation n'a pas été produite par la plateforme (modifiée ou inventée) : elle a été écartée du jugement automatique et de l'évaluation.",
+    "unverifiedLines_other": "{{count}} réponses de l'IA dans cette conversation n'ont pas été produites par la plateforme (modifiées ou inventées) : elles ont été écartées du jugement automatique et de l'évaluation.",
+    "voiceUnchecked": "La conversation comprend des parties vocales : ce que le personnage a dit à voix haute ne peut pas être vérifié par la plateforme."
   },
   "teacher": {
     "title": "Mes classes",

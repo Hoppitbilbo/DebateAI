@@ -355,7 +355,10 @@
     "saveFeedback": "Invia feedback",
     "feedbackSaved": "Feedback inviato allo studente",
     "feedbackHint": "Lo studente lo vedrà in questa pagina e riceverà un'email.",
-    "givenOn": "Scritto il {{date}}"
+    "givenOn": "Scritto il {{date}}",
+    "unverifiedLines_one": "{{count}} risposta dell'IA in questa conversazione non risulta prodotta dalla piattaforma (modificata o inventata): non è stata usata dal giudizio automatico né dalla valutazione.",
+    "unverifiedLines_other": "{{count}} risposte dell'IA in questa conversazione non risultano prodotte dalla piattaforma (modificate o inventate): non sono state usate dal giudizio automatico né dalla valutazione.",
+    "voiceUnchecked": "La conversazione comprende parti a voce: quello che il personaggio ha detto a voce non può essere verificato dalla piattaforma."
   },
   "teacher": {
     "title": "Le mie classi",

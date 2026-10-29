@@ -119,6 +119,7 @@ type inflightStore interface {
 type liveGrantStore interface {
 	Create(g domain.LiveGrant) error
 	Consume(id string) (*domain.LiveGrant, error)
+	UsedBySession(sessionID int64) (bool, error)
 }
 
 type roomStore interface {

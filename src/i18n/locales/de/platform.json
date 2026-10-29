@@ -355,7 +355,10 @@
     "saveFeedback": "Feedback senden",
     "feedbackSaved": "Feedback an die Schülerin / den Schüler gesendet",
     "feedbackHint": "Die Lernenden sehen es auf dieser Seite und erhalten eine E-Mail.",
-    "givenOn": "Geschrieben am {{date}}"
+    "givenOn": "Geschrieben am {{date}}",
+    "unverifiedLines_one": "{{count}} KI-Antwort in diesem Gespräch wurde nicht von der Plattform erzeugt (geändert oder erfunden): Sie wurde bei der automatischen Beurteilung und der Bewertung nicht berücksichtigt.",
+    "unverifiedLines_other": "{{count}} KI-Antworten in diesem Gespräch wurden nicht von der Plattform erzeugt (geändert oder erfunden): Sie wurden bei der automatischen Beurteilung und der Bewertung nicht berücksichtigt.",
+    "voiceUnchecked": "Das Gespräch enthält gesprochene Teile: Was die Figur gesprochen hat, kann die Plattform nicht prüfen."
   },
   "teacher": {
     "title": "Meine Klassen",

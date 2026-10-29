@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/Hoppitbilbo/DebateAI/server/internal/ai"
@@ -147,18 +148,32 @@ func (s *Server) handleGenerate(w http.ResponseWriter, r *http.Request) {
 	}
 	req := ai.Request{System: in.System, Messages: in.Messages, JSON: in.JSON, Temperature: in.Temperature, MaxTokens: in.MaxTokens}
 
+	// A character's lines are kept for the attempt, so that the saved
+	// conversation can be checked against them (see app/verification.go).
+	record := func(text string) {
+		if sessionID != nil && in.Task == app.TaskChat {
+			s.SessionSvc.RecordReply(*sessionID, text)
+		}
+	}
+
 	if !in.Stream {
 		res, err := s.Gateway.Generate(aiContext(r, u), in.Task, req, userID, sessionID, nil)
 		if err != nil {
 			writeErr(w, 502, "ai_error", err.Error())
 			return
 		}
+		record(res.Text)
 		writeJSON(w, 200, generateResponse{Text: res.Text, Provider: res.Provider, Model: res.Model})
 		return
 	}
 
 	send := startEventStream(w)
-	res, err := s.Gateway.Generate(aiContext(r, u), in.Task, req, userID, sessionID, func(d string) error { return send(streamDelta{Delta: d}) })
+	var sent strings.Builder // also what the student saw of an answer they stopped
+	res, err := s.Gateway.Generate(aiContext(r, u), in.Task, req, userID, sessionID, func(d string) error {
+		sent.WriteString(d)
+		return send(streamDelta{Delta: d})
+	})
+	record(sent.String())
 	if err != nil {
 		_ = send(streamError{Error: err.Error()})
 		return

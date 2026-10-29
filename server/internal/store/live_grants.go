@@ -49,3 +49,9 @@ func (r *LiveGrants) Consume(id string) (*domain.LiveGrant, error) {
 	}
 	return &g, nil
 }
+
+// UsedBySession tells whether a voice conversation was granted for a session.
+func (r *LiveGrants) UsedBySession(sessionID int64) (bool, error) {
+	n, err := countErr(r.db, `SELECT COUNT(*) FROM live_grants WHERE session_id = ?`, sessionID)
+	return n > 0, err
+}

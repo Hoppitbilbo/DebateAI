@@ -32,6 +32,10 @@ type SessionSummary struct {
 	StartedAt         string  `json:"startedAt"`
 	UpdatedAt         string  `json:"updatedAt"`
 	CompletedAt       *string `json:"completedAt,omitempty"`
+	// UnverifiedLines counts the AI lines of the saved conversation that the
+	// server did not produce (after the student's first message): edited or
+	// invented lines, or voice lines, which the server never sees.
+	UnverifiedLines int `json:"unverifiedLines,omitempty"`
 }
 
 type SessionDetail struct {
@@ -43,6 +47,8 @@ type SessionDetail struct {
 	Evaluation string          `json:"evaluation"`
 	// Revision grows by one at every transcript save.
 	Revision int64 `json:"revision"`
+	// Voice: part of the conversation was spoken (its AI lines cannot be checked).
+	Voice bool `json:"voice,omitempty"`
 	// Written by the teacher after reading the conversation.
 	TeacherFeedback   string  `json:"teacherFeedback"`
 	TeacherFeedbackAt *string `json:"teacherFeedbackAt,omitempty"`
@@ -64,6 +70,8 @@ type TranscriptSave struct {
 	// BaseRevision, when set, is the revision the client saw: the save is
 	// refused with ErrStaleRevision if another one came in meanwhile.
 	BaseRevision *int64
+	// Unverified is the UnverifiedLines of this revision.
+	Unverified int
 }
 
 // NewSession holds the values of an activity attempt to start.

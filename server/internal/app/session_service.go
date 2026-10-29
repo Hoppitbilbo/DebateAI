@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"log"
 	"strings"
 
 	"github.com/Hoppitbilbo/DebateAI/server/internal/ai"
@@ -20,6 +21,8 @@ type sessionService struct {
 	classSvc    *classService
 	judge       goalEvaluator
 	generator   textGenerator
+	replies     replyStore
+	voice       voiceStore
 	jevSettings func() JevSettings
 	listeners   []feedbackListener
 }
@@ -78,6 +81,9 @@ func (svc *sessionService) Load(u *domain.User, id int64) (*domain.SessionDetail
 	d, err := svc.sessions.Detail(id)
 	if err != nil {
 		return nil, false, ErrSessionNotFound
+	}
+	if d.Voice, err = svc.voice.UsedBySession(id); err != nil {
+		log.Printf("session %d: %v", id, err)
 	}
 	owner := d.UserID != nil && *d.UserID == u.ID
 	if owner || u.Role == domain.RoleAdmin {
@@ -165,22 +171,26 @@ func (svc *sessionService) SaveTranscript(ctx context.Context, u *domain.User, d
 	if len(in.Context) > 0 {
 		newContext = ptr(string(in.Context))
 	}
-	revision, err := svc.sessions.SaveTranscript(d.ID, domain.TranscriptSave{JSON: mustJSON(msgs), Turns: turns, Context: newContext, BaseRevision: in.BaseRevision})
+	var a *domain.Assignment
+	if d.AssignmentID != nil {
+		a, _ = svc.assignments.Get(*d.AssignmentID)
+	}
+	// The transcript is stored as the student saw it; the judge reads only
+	// the AI lines the server produced (see verification.go).
+	checked := svc.check(d, a, msgs)
+	revision, err := svc.sessions.SaveTranscript(d.ID, domain.TranscriptSave{JSON: mustJSON(msgs), Turns: turns, Context: newContext,
+		BaseRevision: in.BaseRevision, Unverified: checked.unverified})
 	if err != nil {
 		return TranscriptSync{Revision: revision}, err
 	}
 
 	state := domain.StateOf(d.Status)
 	resp := TranscriptSync{Status: state.Status(), Turns: turns, Progress: d.Progress, Ended: state.Ended(), Revision: revision}
-	if d.AssignmentID == nil {
-		return resp, nil
-	}
-	a, err := svc.assignments.Get(*d.AssignmentID)
-	if err != nil {
+	if a == nil {
 		return resp, nil
 	}
 	judge := func() (*JudgeResult, error) {
-		return svc.judgeAndSave(ctx, u, d, a, msgs, firstNonEmpty(in.Context, d.Context), turns, revision, &resp)
+		return svc.judgeAndSave(ctx, u, d, a, checked.evidence, firstNonEmpty(in.Context, d.Context), turns, revision, &resp)
 	}
 
 	// An ended attempt is judged again only on request: the last lines may
