@@ -16,6 +16,7 @@ func TestSessionStateTransitions(t *testing.T) {
 		{"goals met, no auto end", SessionActive, TurnOutcome{Turns: 1, GoalsCompleted: true}, SessionActive, ""},
 		{"turn limit", SessionActive, TurnOutcome{Turns: 5, MaxTurns: 5}, SessionTurnLimit, SessionTurnLimit},
 		{"goal wins over limit", SessionActive, TurnOutcome{Turns: 5, MaxTurns: 5, GoalsCompleted: true, AutoEnd: true}, SessionGoalReached, SessionGoalReached},
+		{"character identified, no auto end needed", SessionActive, TurnOutcome{Turns: 2, MaxTurns: 5, Identified: true}, SessionGoalReached, ReasonIdentified},
 		{"ended stays ended", SessionTurnLimit, TurnOutcome{Turns: 9, GoalsCompleted: true, AutoEnd: true}, SessionTurnLimit, ""},
 		{"completed is final", SessionCompleted, TurnOutcome{Turns: 9, MaxTurns: 1}, SessionCompleted, ""},
 	}

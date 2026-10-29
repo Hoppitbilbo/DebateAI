@@ -280,6 +280,7 @@
       "judgeEnded": "JEV a estimé que tu as atteint l'objectif : la partie est terminée. Écris ta réponse finale.",
       "readLastAnswer": "Plus de questions ! Relis les réponses tranquillement, puis appuie sur « Deviner maintenant ».",
       "judgeEndedChat": "JEV a décidé que tu as atteint l'objectif : plus de questions. Relis les réponses, puis appuie sur « Deviner maintenant ».",
+      "foundInChat": "Bien trouvé : c'est {{name}} ! Lis la réponse, puis passe à la réflexion.",
       "askHint": "Demander un indice",
       "hintCost": "Un indice coûte une question.",
       "hintRequest": "Tu peux me donner un indice ?",

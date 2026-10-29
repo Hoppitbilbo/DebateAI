@@ -280,6 +280,7 @@
       "judgeEnded": "JEV ha decidido que has alcanzado el objetivo: la partida ha terminado. Escribe tu respuesta final.",
       "readLastAnswer": "¡Se acabaron las preguntas! Relee las respuestas con calma y luego pulsa «Intenta adivinar».",
       "judgeEndedChat": "JEV ha decidido que alcanzaste el objetivo: no hay más preguntas. Relee las respuestas y luego pulsa «Intenta adivinar».",
+      "foundInChat": "¡Lo has adivinado: es {{name}}! Lee la respuesta y pasa a la reflexión.",
       "askHint": "Pedir una pista",
       "hintCost": "Una pista cuesta una pregunta.",
       "hintRequest": "¿Me das una pista?",

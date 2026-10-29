@@ -55,7 +55,7 @@ export const useChatEngine = ({ session, live, context, onEnded }: Options) => {
   const onEndedRef = useRef(onEnded);
   onEndedRef.current = onEnded;
 
-  const ended = session.endReason === "goal_reached" || session.endReason === "turn_limit";
+  const ended = session.endReason === "goal_reached" || session.endReason === "turn_limit" || session.endReason === "identified";
 
   /**
    * Saves the transcript after a turn. `judge: true` asks for a judgement even
@@ -186,15 +186,15 @@ export const useChatEngine = ({ session, live, context, onEnded }: Options) => {
 
   /**
    * Runs a full turn: adds the student's message, lets `reply` produce the AI
-   * answer(s), then syncs with the server (JEV). In live mode the text is
-   * forwarded to the voice session instead.
+   * answer(s), then syncs with the server (JEV; `save.judge` forces or skips
+   * the judgement). In live mode the text is forwarded to the voice session instead.
    */
-  const runTurn = useCallback(async (text: string, reply: () => Promise<unknown>, userName?: string, target?: string) => {
+  const runTurn = useCallback(async (text: string, reply: () => Promise<unknown>, userName?: string, target?: string, save: { judge?: boolean } = {}) => {
     if (!text.trim() || busy || ended) return;
     addMessage({ role: "user", content: text.trim(), name: userName, speakerKey: target });
     if (liveCtl.liveMode && liveCtl.sendLiveText(text.trim())) return;
     await withBusy(reply);
-    await afterTurn();
+    await afterTurn(save);
   }, [busy, ended, addMessage, afterTurn, liveCtl, withBusy]);
 
   useEffect(() => {

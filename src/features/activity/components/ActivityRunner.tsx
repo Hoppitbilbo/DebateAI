@@ -89,7 +89,7 @@ const ActivityRunner = ({ app, flow, onRestart, phaseLabels, setup, chat, reflec
             onRetry={(id) => void engine.retry(id)}
             canRetry={engine.canRetry}
             ended={engine.ended && !engine.busy ? {
-              message: t(session.endReason === "goal_reached" ? "platform.activity.endedGoal" : "platform.activity.endedTurns"),
+              message: t(session.endReason === "turn_limit" ? "platform.activity.endedTurns" : "platform.activity.endedGoal"),
               continueLabel: t("platform.activity.continueToReflection"),
               onContinue: flow.finishChat,
             } : null}

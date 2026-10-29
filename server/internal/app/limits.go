@@ -23,6 +23,8 @@ const (
 	defaultJudgeThreshold = 0.7
 	// offTopicThreshold flags off-topic or manipulative student messages.
 	offTopicThreshold = 0.8
+	// identifiedThreshold: the judge is sure the mystery character was found.
+	identifiedThreshold = 0.8
 )
 
 // AI gateway and providers.

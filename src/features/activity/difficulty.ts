@@ -26,7 +26,7 @@ const RULES: Record<PromptApp, Record<Difficulty, string>> = {
   mystery: {
     easy: "Difficulty: EASY. Give generous clues: mention your era, country and field clearly, and describe your best-known achievements in recognisable terms (still never your name).",
     medium: "Difficulty: MEDIUM. Give fair clues: era and field may be guessed from your answers, but describe your achievements indirectly.",
-    hard: "Difficulty: HARD. This overrides the answer rules above: answer every question ONLY with \"Yes.\" or \"No.\" (in the conversation language), with no other word, detail or clue. If a question cannot be answered with yes or no, say only, in character, that you answer only yes or no. The only exception: when the student explicitly asks for a hint, give one short, vague clue.",
+    hard: "Difficulty: HARD. This overrides the answer rules above: answer every question ONLY with \"Yes.\" or \"No.\" (in the conversation language), with no other word, detail or clue. If a question cannot be answered with yes or no, say only, in character, that you answer only yes or no. The only exceptions: when the student explicitly asks for a hint, give one short, vague clue; when the student names you correctly, confirm it and congratulate them as the rules above say.",
   },
   convinciTu: {
     easy: "Difficulty: EASY. You are open-minded: a couple of reasonable arguments are enough to make you change your mind, and you help the student by saying what would convince you.",

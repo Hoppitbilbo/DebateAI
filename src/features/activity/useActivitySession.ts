@@ -5,7 +5,8 @@ import { useAuth } from "@/context/auth";
 import { evaluateSession, EvaluationRequest, SessionEvaluation } from "@/services/aiService";
 import type { ActivityMessage } from "./types";
 
-export type EndReason = "goal_reached" | "turn_limit" | "manual" | null;
+/** Why the conversation ended; "identified": the mystery character was found (judged by the server). */
+export type EndReason = "goal_reached" | "turn_limit" | "identified" | "manual" | null;
 
 /** Whether the last transcript save reached the server. */
 export type SaveState = "idle" | "saving" | "saved" | "failed";
@@ -62,6 +63,9 @@ export const useActivitySession = (appType: AppType) => {
   // an older transcript overwrite a newer one.
   const saveQueue = useRef<Promise<unknown>>(Promise.resolve());
   const revisionRef = useRef<number | null>(null);
+  // Whether the last saved turn was judged by the server (JEV configured,
+  // an assignment): otherwise the app decides what the judge would have.
+  const judgedRef = useRef(false);
 
   useEffect(() => {
     if (!assignmentId) {
@@ -101,6 +105,7 @@ export const useActivitySession = (appType: AppType) => {
     setSubmitState("idle");
     lastSave.current = null;
     lastCompletion.current = null;
+    judgedRef.current = false;
     sessionRef.current = null;
     revisionRef.current = null;
     setSessionId(null);
@@ -162,6 +167,7 @@ export const useActivitySession = (appType: AppType) => {
       const res = await queued;
       if (seq !== syncSeq.current) return null; // a newer sync superseded this one
       setSaveState("saved");
+      judgedRef.current = !!res.jev && res.jev.engine !== "none" && !res.jev.error;
       if (res.jev && res.jev.engine !== "none") setJev(res.jev);
       if (res.ended && res.reason) {
         const reason = res.reason as EndReason;
@@ -231,6 +237,8 @@ export const useActivitySession = (appType: AppType) => {
   }, [complete]);
 
   const getSessionId = useCallback(() => sessionRef.current, []);
+  /** Whether the server judged the last saved turn. */
+  const judgedLastTurn = useCallback(() => judgedRef.current, []);
 
   const markManualEnd = useCallback(() => setEndReason((r) => r ?? "manual"), []);
 
@@ -244,6 +252,7 @@ export const useActivitySession = (appType: AppType) => {
     loadingAssignment,
     sessionId,
     getSessionId,
+    judgedLastTurn,
     jev,
     judging,
     turns,

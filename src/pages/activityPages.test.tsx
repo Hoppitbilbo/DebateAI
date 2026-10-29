@@ -25,6 +25,7 @@ const mocks = vi.hoisted(() => ({
   begin: vi.fn().mockResolvedValue(7),
   generateStream: vi.fn(),
   sync: vi.fn(),
+  judged: false,
 }));
 
 vi.mock("@/features/activity/useActivitySession", () => ({
@@ -40,6 +41,7 @@ vi.mock("@/features/activity/useActivitySession", () => ({
     begin: mocks.begin,
     sync: mocks.sync,
     markManualEnd: vi.fn(),
+    judgedLastTurn: () => mocks.judged,
   }),
 }));
 vi.mock("@/features/activity/components/ActivityShell", () => ({ default: ({ children }: { children: ReactNode }) => <div>{children}</div> }));
@@ -67,6 +69,7 @@ beforeEach(() => {
   vi.clearAllMocks();
   mocks.generateStream.mockResolvedValue("risposta");
   mocks.sync.mockResolvedValue(null);
+  mocks.judged = false;
 });
 afterEach(cleanup);
 
@@ -216,5 +219,42 @@ describe("PersonaggioMisteriosoPage end of game", () => {
     expect(screen.getByText(/No questions left!/)).toBeTruthy();
     expect(screen.queryByRole("textbox")).toBeNull();
     expect(screen.queryByLabelText("Your answer")).toBeNull();
+  });
+});
+
+describe("PersonaggioMisteriosoPage found in the chat", () => {
+  // The picked character is "Person Secret character" (see the CharacterPicker mock).
+  const askName = async () => {
+    fireEvent.change(screen.getByRole("textbox"), { target: { value: "Are you Person Secret character?" } });
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: "Send" }));
+    });
+  };
+
+  it("without a judge, naming the character wins after its answer and goes on to the reflection", async () => {
+    render(<PersonaggioMisteriosoPage />);
+    pickAll();
+    await start();
+    mocks.generateStream.mockResolvedValueOnce("Yes, it's me! Congratulations!");
+    await askName();
+    expect(mocks.sync).toHaveBeenLastCalledWith(expect.any(Array), expect.anything(), { judge: true });
+    expect(screen.getByText("Yes, it's me! Congratulations!")).toBeTruthy();
+    expect(screen.getByText(/You got it: it's Person Secret character!/)).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: /Next: reflection/ }));
+    expect(screen.queryByLabelText("Your answer")).toBeNull(); // no separate guess
+  });
+
+  it("with a judge, the judge decides: identified wins, otherwise the game goes on", async () => {
+    render(<PersonaggioMisteriosoPage />);
+    pickAll();
+    await start();
+    mocks.judged = true;
+    await askName(); // the judge did not confirm it
+    expect(screen.queryByText(/You got it/)).toBeNull();
+    expect(screen.getByRole("textbox")).toBeTruthy();
+
+    mocks.sync.mockResolvedValue("identified");
+    await askName();
+    expect(screen.getByText(/You got it: it's Person Secret character!/)).toBeTruthy();
   });
 });

@@ -280,6 +280,7 @@
       "judgeEnded": "JEV decided you have reached the goal: the game is over. Write your final answer.",
       "readLastAnswer": "No questions left! Take your time to reread the answers, then press “Make your guess”.",
       "judgeEndedChat": "JEV decided you reached the goal: no more questions. Reread the answers, then press “Make your guess”.",
+      "foundInChat": "You got it: it's {{name}}! Read the answer, then go on to the reflection.",
       "askHint": "Ask for a hint",
       "hintCost": "A hint costs a question.",
       "hintRequest": "Can you give me a hint?",

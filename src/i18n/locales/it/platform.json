@@ -280,6 +280,7 @@
       "judgeEnded": "JEV ha stabilito che hai raggiunto l'obiettivo: la partita è finita. Scrivi la tua risposta finale.",
       "readLastAnswer": "Domande finite! Rileggi le risposte con calma, poi premi «Prova a indovinare».",
       "judgeEndedChat": "JEV ha stabilito che hai raggiunto l'obiettivo: niente più domande. Rileggi le risposte, poi premi «Prova a indovinare».",
+      "foundInChat": "Hai indovinato: è {{name}}! Leggi la sua risposta, poi passa alla riflessione.",
       "askHint": "Chiedi un indizio",
       "hintCost": "Un indizio costa una domanda.",
       "hintRequest": "Mi dai un indizio?",

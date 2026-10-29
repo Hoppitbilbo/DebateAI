@@ -158,6 +158,9 @@ type TranscriptUpdate struct {
 func (svc *sessionService) SaveTranscript(ctx context.Context, u *domain.User, d *domain.SessionDetail, in TranscriptUpdate) (TranscriptSync, error) {
 	msgs := lastMessages(in.Messages, maxTranscriptMessages)
 	turns := countStudentTurns(msgs)
+	// The same conversation again (a retried save, a save without a new
+	// line) is not judged again unless the client asks for it.
+	unchanged := mustJSON(msgs) == string(d.Transcript)
 	var newContext *string
 	if len(in.Context) > 0 {
 		newContext = ptr(string(in.Context))
@@ -192,12 +195,13 @@ func (svc *sessionService) SaveTranscript(ctx context.Context, u *domain.User, d
 
 	resp.MaxTurns = &a.MaxTurns
 	outcome := domain.TurnOutcome{Turns: turns, MaxTurns: a.MaxTurns, AutoEnd: a.AutoEnd}
-	if svc.shouldJudge(turns, a.MaxTurns, in.Judge) {
+	if svc.shouldJudge(turns, a.MaxTurns, in.Judge) && !(unchanged && in.Judge == nil) {
 		jr, err := judge()
 		if err != nil {
 			return resp, err
 		}
 		outcome.GoalsCompleted = jr.Completed
+		outcome.Identified = jr.Identified
 	}
 
 	next, reason := state.Next(outcome)

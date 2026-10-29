@@ -280,6 +280,7 @@
       "judgeEnded": "JEV hat entschieden, dass du das Ziel erreicht hast: Das Spiel ist vorbei. Schreib deine endgültige Antwort.",
       "readLastAnswer": "Keine Fragen mehr! Lies die Antworten in Ruhe nach und drücke dann „Jetzt raten“.",
       "judgeEndedChat": "JEV hat entschieden, dass du das Ziel erreicht hast: keine Fragen mehr. Lies die Antworten nach und drücke dann „Jetzt raten“.",
+      "foundInChat": "Richtig geraten: Es ist {{name}}! Lies die Antwort und geh dann zur Reflexion.",
       "askHint": "Um einen Hinweis bitten",
       "hintCost": "Ein Hinweis kostet eine Frage.",
       "hintRequest": "Kannst du mir einen Hinweis geben?",
