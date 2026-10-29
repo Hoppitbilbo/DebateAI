@@ -1,7 +1,8 @@
 // Real-time voice conversation through the Gemini Live API (Google Gen AI SDK).
 // The server mints a single-use ephemeral token (model, voice and system
 // instruction are locked in it), so the real API key never reaches the browser.
-import { GoogleGenAI, LiveServerMessage, Modality, Session } from "@google/genai";
+// The SDK is downloaded when a voice conversation starts, not with every chat.
+import type { LiveServerMessage, Session } from "@google/genai";
 import { api } from "@/lib/api";
 
 export interface LiveAudioChunk {
@@ -55,11 +56,14 @@ const floatTo16BitBase64 = (input: Float32Array): string => {
 };
 
 export const startLiveConversation = async (options: StartLiveConversationOptions): Promise<LiveConversationController> => {
-  const tokenInfo = await api.post<LiveTokenResponse>("/api/ai/live/token", {
-    sessionId: options.sessionId ?? 0,
-    systemInstruction: options.systemInstruction ?? "",
-    voiceName: options.voiceName ?? "",
-  });
+  const [tokenInfo, { GoogleGenAI, Modality }] = await Promise.all([
+    api.post<LiveTokenResponse>("/api/ai/live/token", {
+      sessionId: options.sessionId ?? 0,
+      systemInstruction: options.systemInstruction ?? "",
+      voiceName: options.voiceName ?? "",
+    }),
+    import("@google/genai"),
+  ]);
 
   const ai = new GoogleGenAI({ apiKey: tokenInfo.token, httpOptions: { apiVersion: "v1alpha" } });
   let session: Session | null = null;

@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { lazy, Suspense, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
@@ -8,8 +8,11 @@ import MarkdownViewer from "@/components/shared/MarkdownViewer";
 import { useAuth } from "@/context/auth";
 import type { ActivityMessage } from "../types";
 import type { EvaluationResult } from "@/utils/evaluationUtils";
-import DiffusionText from "../diffusion/DiffusionText";
 import { useDiffusionPreference } from "../diffusion/useDiffusionPreference";
+
+// The diffusion effect is an easter egg, off by default: its code (and its
+// text-layout library) is downloaded only when it plays.
+const DiffusionText = lazy(() => import("../diffusion/DiffusionText"));
 
 /** The easter egg: this many clicks on the feedback title, close together, switch the diffusion effect. */
 const SECRET_CLICKS = 3;
@@ -123,7 +126,9 @@ const FeedbackStep = ({ evaluation, partial, loading, error, reflection, message
         {error ? (
           <p className="text-destructive">{error}</p>
         ) : diffusing ? (
-          <DiffusionText markdown={final} onDone={() => setSettledFor(final)} />
+          <Suspense fallback={<MarkdownViewer content={final} />}>
+            <DiffusionText markdown={final} onDone={() => setSettledFor(final)} />
+          </Suspense>
         ) : waiting ? (
           <p className="flex items-center gap-2 text-muted-foreground">
             <Loader2 className="h-4 w-4 animate-spin" /> {t("platform.feedback.generating")}
