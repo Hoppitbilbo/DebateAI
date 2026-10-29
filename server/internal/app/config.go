@@ -29,7 +29,10 @@ type Config struct {
 	TypeSafeKey   string
 	// CronSecret authenticates the scheduled calls of Vercel Cron.
 	CronSecret string
-	SMTP       SMTPSettings
+	// TrustedProxies lists the peers whose X-Forwarded-For is believed (see
+	// httpapi.parseProxyTrust). On Vercel it defaults to "*".
+	TrustedProxies string
+	SMTP           SMTPSettings
 }
 
 func env(key, def string) string {
@@ -41,18 +44,19 @@ func env(key, def string) string {
 
 func LoadConfig() Config {
 	c := Config{
-		Port:          env("PORT", "8080"),
-		DataDir:       env("DATA_DIR", "./data"),
-		PublicURL:     strings.TrimRight(env("PUBLIC_URL", ""), "/"),
-		StaticDir:     env("STATIC_DIR", ""),
-		AdminEmail:    env("ADMIN_EMAIL", ""),
-		AdminPassword: env("ADMIN_PASSWORD", ""),
-		AdminName:     env("ADMIN_NAME", "Admin"),
-		GeminiAPIKey:  env("GEMINI_API_KEY", env("VITE_GEMINI_API_KEY", "")),
-		OpencodeKey:   env("OPENCODE_API_KEY", ""),
-		OpenRouterKey: env("OPENROUTER_API_KEY", ""),
-		TypeSafeKey:   env("TYPESAFE_API_KEY", ""),
-		CronSecret:    env("CRON_SECRET", ""),
+		Port:           env("PORT", "8080"),
+		DataDir:        env("DATA_DIR", "./data"),
+		PublicURL:      strings.TrimRight(env("PUBLIC_URL", ""), "/"),
+		StaticDir:      env("STATIC_DIR", ""),
+		AdminEmail:     env("ADMIN_EMAIL", ""),
+		AdminPassword:  env("ADMIN_PASSWORD", ""),
+		AdminName:      env("ADMIN_NAME", "Admin"),
+		GeminiAPIKey:   env("GEMINI_API_KEY", env("VITE_GEMINI_API_KEY", "")),
+		OpencodeKey:    env("OPENCODE_API_KEY", ""),
+		OpenRouterKey:  env("OPENROUTER_API_KEY", ""),
+		TypeSafeKey:    env("TYPESAFE_API_KEY", ""),
+		CronSecret:     env("CRON_SECRET", ""),
+		TrustedProxies: env("TRUSTED_PROXIES", defaultTrustedProxies()),
 		SMTP: SMTPSettings{
 			Host:     env("SMTP_HOST", ""),
 			Port:     atoiDefault(env("SMTP_PORT", "587"), 587),
@@ -81,6 +85,15 @@ func LoadConfig() Config {
 		c.Secret = loadOrCreateSecret(filepath.Join(c.DataDir, "secret.key"))
 	}
 	return c
+}
+
+// defaultTrustedProxies is "*" on Vercel (it sets VERCEL=1 at runtime and the
+// function is only reachable through its edge); elsewhere the private networks.
+func defaultTrustedProxies() string {
+	if os.Getenv("VERCEL") != "" {
+		return "*"
+	}
+	return ""
 }
 
 // Storage describes where the data lives, for the startup log (never the token).

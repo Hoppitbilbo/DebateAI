@@ -67,7 +67,7 @@ type codeGuard struct {
 }
 
 func (s *Server) codeGuard(r *http.Request, scope string) codeGuard {
-	return codeGuard{s: s, key: "roomcode:" + scope + ":" + clientIP(r)}
+	return codeGuard{s: s, key: "roomcode:" + scope + ":" + s.clientIP(r)}
 }
 
 func (g codeGuard) blocked() bool {
@@ -176,7 +176,7 @@ func (s *Server) handleOpenRoom(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 403, "forbidden", "students cannot open rooms")
 		return
 	}
-	if u == nil && !s.limiter.allow("roomopen:"+clientIP(r), anonymousRoomsPerIPDay, 24*time.Hour) {
+	if u == nil && !s.limiter.allow("roomopen:"+s.clientIP(r), anonymousRoomsPerIPDay, 24*time.Hour) {
 		writeErr(w, 429, "rate_limited", "too many rooms opened from this network today, log in to open more")
 		return
 	}

@@ -96,7 +96,7 @@ func (s *Server) handleSetup(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleLogin(w http.ResponseWriter, r *http.Request) {
-	if !s.limiter.allow("login:"+clientIP(r), loginAttemptsLimit, loginAttemptsWindow) {
+	if !s.limiter.allow("login:"+s.clientIP(r), loginAttemptsLimit, loginAttemptsWindow) {
 		writeErr(w, 429, "rate_limited", "too many attempts, retry later")
 		return
 	}
@@ -201,7 +201,7 @@ func (s *Server) handleRegister(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleForgot(w http.ResponseWriter, r *http.Request) {
-	if !s.limiter.allow("forgot:"+clientIP(r), forgotRequestsLimit, time.Hour) {
+	if !s.limiter.allow("forgot:"+s.clientIP(r), forgotRequestsLimit, time.Hour) {
 		writeErr(w, 429, "rate_limited", "too many requests")
 		return
 	}

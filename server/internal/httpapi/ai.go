@@ -23,7 +23,7 @@ func (s *Server) aiAllowed(w http.ResponseWriter, r *http.Request) (*domain.User
 			writeErr(w, 401, "login_required", "login required to use the AI apps")
 			return nil, false
 		}
-		if !s.limiter.allow("guest:"+clientIP(r), g.GuestRequestsPerHour, time.Hour) {
+		if !s.limiter.allow("guest:"+s.clientIP(r), g.GuestRequestsPerHour, time.Hour) {
 			writeErr(w, 429, "rate_limited", "too many requests from this network, retry later or log in")
 			return nil, false
 		}
@@ -179,7 +179,7 @@ func (s *Server) handleLiveToken(w http.ResponseWriter, r *http.Request) {
 	if _, ok := s.aiAllowed(w, r); !ok {
 		return
 	}
-	if !s.limiter.allow(fmt.Sprintf("live:%s:%v", clientIP(r), u != nil), liveTokensLimit, time.Hour) {
+	if !s.limiter.allow(fmt.Sprintf("live:%s:%v", s.clientIP(r), u != nil), liveTokensLimit, time.Hour) {
 		writeErr(w, 429, "rate_limited", "too many live sessions, retry later")
 		return
 	}

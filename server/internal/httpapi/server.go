@@ -24,10 +24,11 @@ type Server struct {
 	*app.Services
 	static  fs.FS
 	limiter *rateLimiter
+	proxies proxyTrust
 }
 
 func NewServer(cfg app.Config, services *app.Services, static fs.FS) *Server {
-	s := &Server{cfg: cfg, Services: services, static: static, limiter: newRateLimiter()}
+	s := &Server{cfg: cfg, Services: services, static: static, limiter: newRateLimiter(), proxies: parseProxyTrust(cfg.TrustedProxies)}
 	go func() {
 		for range time.Tick(roomPurgeEvery) {
 			s.RoomSvc.Purge()
@@ -292,18 +293,8 @@ func pathID(r *http.Request, name string) int64 {
 	return n
 }
 
-func clientIP(r *http.Request) string {
-	if f := r.Header.Get("X-Forwarded-For"); f != "" {
-		return strings.TrimSpace(strings.Split(f, ",")[0])
-	}
-	if ip := r.Header.Get("X-Real-IP"); ip != "" {
-		return ip
-	}
-	host := r.RemoteAddr
-	if i := strings.LastIndex(host, ":"); i > 0 {
-		host = host[:i]
-	}
-	return host
+func (s *Server) clientIP(r *http.Request) string {
+	return s.proxies.clientIP(r)
 }
 
 // baseURL is used to build links in e-mails.
