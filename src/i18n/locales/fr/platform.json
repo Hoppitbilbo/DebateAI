@@ -273,7 +273,9 @@
       "hintCost": "Un indice coûte une question.",
       "hintRequest": "Tu peux me donner un indice ?",
       "teacherHint": "Indice : {{hint}}",
-      "hintsUsed": "Indices utilisés"
+      "hintsUsed": "Indices utilisés",
+      "roundOf": "Personnage {{n}} sur {{total}}",
+      "nextCharacter": "Personnage suivant ({{n}} sur {{total}})"
     },
     "impersonaTu": {
       "setupTitle": "Choisissez les rôles",
@@ -428,7 +430,11 @@
       "hints": "Indices (facultatifs)",
       "hintsHint": "Du plus vague au plus clair. L'élève les reçoit dans l'ordre avec « Demander un indice » ; ensuite, le personnage en invente un. Chaque indice coûte une question.",
       "hintN": "Indice {{n}}",
-      "hintsNeedCharacter": "Les indices décrivent le personnage que tu choisis : choisis-le d'abord, puis écris les indices. Sans personnage fixé, c'est le personnage qui donne les indices."
+      "hintsNeedCharacter": "Les indices valent quand tu fixes un seul personnage. Avec plusieurs, ou aucun, c'est le personnage qui donne les indices.",
+      "mysteryCharacters": "Personnages mystères",
+      "mysteryCharactersHint": "Ajoute-en un ou plusieurs : chaque élève les devine l'un après l'autre. Si tu n'en choisis aucun, l'élève choisit.",
+      "shuffle": "Mélanger l'ordre",
+      "shuffleHint": "Chaque élève les rencontre dans un ordre différent : en salle informatique, les voisins n'ont pas le même personnage."
     },
     "exportExcel": "Exporter les notes (Excel)",
     "teacherScore": "Note enseignant"
@@ -791,5 +797,42 @@
         "body": "Le tutoriel explique l'activité pas à pas."
       }
     }
+  },
+  "difficulty": {
+    "label": "Difficulté",
+    "locked": "Choisie par l'enseignant",
+    "levels": {
+      "easy": "Facile",
+      "medium": "Moyenne",
+      "hard": "Difficile",
+      "free": "Au choix des élèves"
+    },
+    "notes": {
+      "personaggioMisterioso": {
+        "easy": "Indices généreux : époque, pays et domaine se devinent vite.",
+        "medium": "Indices équilibrés : il faudra réfléchir un peu.",
+        "hard": "Réponses énigmatiques et détails peu connus : pour détectives confirmés.",
+        "free": "Chaque élève choisit la difficulté avant de commencer."
+      },
+      "convinciTu": {
+        "easy": "Le personnage est ouvert : deux bons arguments suffisent.",
+        "medium": "Il ne change d'avis qu'après plusieurs arguments solides.",
+        "hard": "Têtu et piquant : il démonte chaque raisonnement faible.",
+        "free": "Chaque élève choisit la difficulté avant de commencer."
+      },
+      "impersonaTu": {
+        "easy": "Des questions simples sur les faits les plus connus de ton personnage.",
+        "medium": "Des questions sur la vie, les idées et le contexte, avec corrections.",
+        "hard": "Des questions précises sur des détails peu connus : chaque erreur est relevée.",
+        "free": "Chaque élève choisit la difficulté avant de commencer."
+      }
+    }
+  },
+  "language": {
+    "label": "Langue des personnages",
+    "studentsOwn": "Celle de l'élève",
+    "practiceBadge": "On parle {{language}}",
+    "assignmentLabel": "Dans quelle langue parlent les personnages",
+    "assignmentHint": "Choisis une langue étrangère pour faire pratiquer les élèves : les personnages répondront uniquement dans cette langue, le reste du site reste dans la langue de chacun."
   }
 }

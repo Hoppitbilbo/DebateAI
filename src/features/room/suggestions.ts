@@ -122,6 +122,11 @@ export const suggestActivities = async (ai: AiClient, seed: { appType: AppType; 
   const main = seed.pages[0];
   const [links, summary] = await Promise.all([fetchLeadLinks(main), fetchWikiSummary(main, 1500).catch(() => "")]);
   const allowed = [...new Set([...seed.pages, ...links])];
+  // The mystery characters must stay hidden: the students see the titles of
+  // the whole path before playing the game.
+  const secret = seed.appType === "personaggio-misterioso"
+    ? `\nThe theme pages are the HIDDEN characters of a guessing game: never write their names (or obvious nicknames) in "title", "why" or "topic".`
+    : "";
   const res = await ai.generateJSON<{ suggestions?: RawSuggestion[] }>({
     task: "utility",
     system: `You help a teacher build a short path of school activities with AI characters around a theme.
@@ -129,7 +134,7 @@ ${APP_GUIDE}
 Suggest ${MAX_SUGGESTIONS + 2} varied activities related to the theme, mostly with apps different from the one already chosen, each one engaging for students aged 11-18.
 Use as characters ONLY titles copied exactly from the list of allowed pages; pick real people for every app except wiki-chatbot.
 Write "title" (max 6 words), "why" (one sentence) and "topic" (a debatable idea or question, when needed) in ${uiLanguage()}.
-Answer with JSON: {"suggestions":[{"appType":"...","title":"...","why":"...","characters":["..."],"topic":"..."}]}`,
+Answer with JSON: {"suggestions":[{"appType":"...","title":"...","why":"...","characters":["..."],"topic":"..."}]}${secret}`,
     messages: [{
       role: "user",
       content: `Theme: ${seed.pages.join(", ")} (already chosen for "${seed.appType}"; avoid: ${exclude.join(", ") || "none"})

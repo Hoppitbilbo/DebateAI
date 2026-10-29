@@ -35,8 +35,11 @@ export interface RoomGuest {
   lastActivity?: string;
 }
 
+/** One stop of a room's path; status and turns are the guest's latest attempt. */
+export interface RoomActivity { assignmentId: number; appType: AppType; title: string; status?: SessionDetail["status"]; turns?: number }
+
 /** aiReady is false when no AI model is usable for rooms: the guests could not chat. */
-export interface RoomView { room: Room; guests: RoomGuest[]; now: string; aiReady: boolean }
+export interface RoomView { room: Room; guests: RoomGuest[]; now: string; aiReady: boolean; activities: RoomActivity[] }
 
 export interface RoomInfo { title: string; appType: AppType; locked: boolean; full: boolean; expiresAt: string }
 
@@ -48,6 +51,8 @@ export interface GuestRoom {
   expiresAt: string;
   nickname: string;
   avatar: string;
+  /** The room's path, with this guest's progress. */
+  activities?: RoomActivity[];
 }
 
 /** A room opens on an assignment of the teacher's classes, or on one of its own. */
@@ -55,6 +60,8 @@ export interface RoomRequest {
   assignmentId?: number;
   /** The activity prepared for this room only (the fields of an assignment). */
   assignment?: ReturnType<typeof draftBody>;
+  /** The room's path: several activities prepared for it, done in order. */
+  assignments?: ReturnType<typeof draftBody>[];
   minutes: number;
   maxGuests?: number;
 }
@@ -106,7 +113,7 @@ export const hostKeys = {
 export const hostLink = (roomId: number, key: string) => `${window.location.origin}/aula/gestisci/${roomId}#k=${encodeURIComponent(key)}`;
 
 /** Where a guest works: the room's activity, with its assignment when it has one. */
-export const activityPath = (room: GuestRoom) =>
+export const activityPath = (room: Pick<GuestRoom, "appType" | "assignmentId">) =>
   `${APPS[room.appType].path}${room.assignmentId ? `?assignment=${room.assignmentId}` : ""}`;
 
 /** The link students open, with the code already filled in. */

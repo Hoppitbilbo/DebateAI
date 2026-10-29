@@ -20,7 +20,6 @@ import { characterOrder, mysteryCharacters, mysteryRounds } from "@/features/act
 import { Difficulty, difficultyOf } from "@/features/activity/difficulty";
 import DifficultyPicker from "@/features/activity/components/DifficultyPicker";
 import RoundDots from "@/features/activity/components/RoundDots";
-import { useAuth } from "@/context/auth";
 
 const app = APPS["personaggio-misterioso"];
 
@@ -42,7 +41,6 @@ const PersonaggioMisteriosoPage = () => {
   const [result, setResult] = useState<boolean | null>(null);
   const [endedByJudge, setEndedByJudge] = useState(false);
   const [chosenLevel, setChosenLevel] = useState<Difficulty>();
-  const { user } = useAuth();
 
   const { summaries, loading } = useWikiSummaries([character]);
   const bio = bioOf(character, summaries);
@@ -66,6 +64,7 @@ const PersonaggioMisteriosoPage = () => {
     onEnded,
   });
   const { preset, engine, session, phase } = flow;
+  const { user } = session;
   const level = levelFor(session.assignment);
   const [hintsUsed, setHintsUsed] = useState(0);
 

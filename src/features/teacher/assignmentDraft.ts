@@ -71,7 +71,7 @@ const cleanHints = (d: AssignmentDraft, mysteryList: number) => {
 const savedCharacters = (d: AssignmentDraft): Pick<AssignmentConfig, "character" | "characters" | "shuffle"> => {
   const list = d.config.characters?.filter(Boolean) ?? [];
   if (d.appType === MYSTERY) {
-    if (list.length > 1) return { character: undefined, characters: list.slice(0, MAX_MYSTERY_CHARACTERS), shuffle: d.config.shuffle || undefined };
+    if (list.length > 1) return { character: undefined, characters: list.slice(0, MAX_MYSTERY_CHARACTERS), shuffle: d.config.shuffle !== false };
     return { character: list[0] ?? d.config.character, characters: undefined, shuffle: undefined };
   }
   return { characters: PAIR_APPS.has(d.appType) && list.length === 2 ? list : undefined, shuffle: undefined };

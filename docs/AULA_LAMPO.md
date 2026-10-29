@@ -1,6 +1,6 @@
 # Aula lampo: accesso con codice, senza registrazione degli studenti
 
-Ultimo aggiornamento: 28 ottobre 2026 · Stato: **implementata sul branch `feat/aula-lampo` (L1-L9); manca la prova su preview Vercel (L10)**
+Ultimo aggiornamento: 29 ottobre 2026 · Stato: **implementata sul branch `feat/aula-lampo` (L1-L9); manca la prova su preview Vercel (L10)**
 
 Feature aggiuntiva, isolata dal resto: non cambia il comportamento delle classi, delle consegne
 o dell'accesso ospite esistente. Va sviluppata su un branch a parte (`feat/aula-lampo`), non
@@ -210,6 +210,34 @@ GET    /api/cron/purge-rooms              Vercel cron (CRON_SECRET)
 - [x] **L8** Admin → AI: sezione "Aula lampo" (attivazione, docenti senza account, solo gratuiti, limiti, modelli per task). Estratto `TaskTargets` da `RoutingEditor`.
 - [x] **L9** 24 avatar Icons8 `color` in `public/avatars/room/` (lock in `icons8.json`), `room.json` in 5 lingue, `check:i18n` esteso alle chiavi `room.*`.
 - [~] **L10** Prova end-to-end: fatta in locale con Playwright (supplente senza account, 3 studenti, nickname doppio, rientro con PIN, ingressi chiusi, chiusura; docente con account, aula su consegna, import con abbinamento). **Da fare:** preview Vercel con Turso e un provider gratuito vero.
+
+## Percorso, idee collegate, difficoltà e lingua (2026-10-29)
+
+Richiesta del 2026-10-29, branch `feat/aula-lampo-percorso`.
+
+- **Percorso:** un'aula ha fino a 6 attività (`RoomRequest.assignments`, `domain.MaxRoomActivities`),
+  create in ordine nella classe nascosta dell'aula (`rooms.own_class_id`, nessuna migrazione).
+  `rooms.assignment_id` resta la prima, così export, import e aule vecchie non cambiano.
+  L'ospite può svolgere ogni consegna della classe nascosta (`Room.Holds`); `GET /api/guest/room` e la vista
+  del docente restituiscono `activities` con lo stato dell'ultimo tentativo dell'ospite.
+- **Procedura guidata `/aula/nuova`** in tre passi (Tema → Percorso → Via!): carte delle app, tappe numerate
+  su una linea tratteggiata, opzioni avanzate (titolo, consegna, obiettivi, turni) chiuse in «Altre opzioni».
+  Lo studente con un percorso entra nella mappa `/aula`, non nella prima attività.
+- **Idee collegate** (`src/features/room/suggestions.ts`): dalla pagina Wikipedia del tema si leggono i link
+  dell'introduzione (`action=parse&section=0`) e il riassunto; il modello (task `utility`) propone attività
+  usando **solo** quei titoli; `checkSuggestions` scarta pagine inventate, app sconosciute, conteggi sbagliati.
+  Con un Personaggio misterioso come tema il prompt vieta di nominare i personaggi nascosti nei titoli.
+  Il docente senza account riceve idee solo se l'accesso ospite all'IA è attivo (`/api/ai/generate`).
+- **Più personaggi misteriosi** (`config.characters` + `config.shuffle`, attivo di default): ogni studente li
+  gioca uno per volta; con «mischia» l'ordine è un rimescolamento deterministico su consegna+utente, quindi
+  stabile per lo studente e diverso tra vicini di banco. Il giro raggiunto è salvato nel browser.
+  Gli indizi del docente valgono solo con un personaggio.
+- **Difficoltà** (`config.difficulty`) per Personaggio misterioso, Convinci tu e Impersona tu: regola aggiunta
+  al prompt; il docente la fissa o la lascia scegliere agli studenti (selettore animato).
+- **Lingua dei personaggi** (`config.language`): nell'aula vale per tutte le tappe ed è bloccata. Il prompt
+  impone la lingua e, se diversa da quella dell'interfaccia, chiede frasi semplici e di non tradurre; anche
+  la dettatura usa quella lingua. Valutazione e interfaccia restano nella lingua dello studente.
+  Disponibile anche nelle consegne delle classi.
 
 ## Deploy (Vercel Hobby)
 

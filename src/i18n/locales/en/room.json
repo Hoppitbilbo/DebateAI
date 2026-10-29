@@ -47,7 +47,17 @@
     "closedTitle": "The room is closed",
     "closedText": "Time is up or the teacher closed the room. Your data has been deleted.",
     "joinAnother": "Join another room",
-    "aiMissing": "The AI of this room is not ready yet: tell your teacher."
+    "aiMissing": "The AI of this room is not ready yet: tell your teacher.",
+    "backToPath": "Back to the path",
+    "pathTitle": "Your path",
+    "pathDone": "{{done}} of {{total}} done",
+    "stepDone": "Done",
+    "stepActive": "In progress",
+    "stepTodo": "To do",
+    "again": "Redo",
+    "go": "Go!",
+    "open": "Open",
+    "allDone": "Path complete! You can redo a stop or wait for your teacher."
   },
   "open": {
     "title": "Quick room",
@@ -114,7 +124,9 @@
     "openAnother": "Open a new room",
     "aiMissing": "The chat will not work: no AI model is available for quick rooms. Tell the administrator (Admin → AI → Quick rooms).",
     "copyInvite": "Copy invite link",
-    "inviteCopied": "Invite link copied: whoever opens it joins without typing the code."
+    "inviteCopied": "Invite link copied: whoever opens it joins without typing the code.",
+    "pathTitle_one": "Path: {{count}} activity",
+    "pathTitle_other": "Path: {{count}} activities"
   },
   "import": {
     "title": "Import the work into a class",
@@ -183,5 +195,60 @@
     "squirrel": "Squirrel",
     "flamingo": "Flamingo",
     "frog": "Frog"
+  },
+  "wizard": {
+    "progress": "Steps to open the room",
+    "steps": {
+      "theme": "Theme",
+      "path": "Path",
+      "launch": "Go!"
+    },
+    "titles": {
+      "theme": "What shall we start with?",
+      "path": "Build the path",
+      "launch": "All set?"
+    },
+    "subtitles": {
+      "theme": "Pick the first activity and its characters: it will be the theme of the lesson.",
+      "path": "Add more stops or take an idea related to the theme. Students do them in order.",
+      "launch": "Choose the characters' language and how long the room lasts. After at most {{hours}} hours everything is deleted."
+    },
+    "apps": {
+      "convinci-tu": "Convince a historical character of an idea.",
+      "doppia-intervista": "Interview two characters together and compare their answers.",
+      "wiki-chatbot": "Chat with a Wikipedia page.",
+      "personaggio-misterioso": "Guess who is hiding behind the answers.",
+      "impersona-tu": "Play a character and stand up for their ideas.",
+      "you-moderate": "Moderate a debate between two characters."
+    },
+    "mysterySummary_one": "{{count}} hidden character",
+    "mysterySummary_other": "{{count}} hidden characters",
+    "studentsChoose": "Characters chosen by the students",
+    "removeStep": "Remove this stop",
+    "closeStep": "Close",
+    "editStep": "Edit",
+    "moreOptions": "More options: title, instructions, goals, turns",
+    "suggestionsNeedTheme": "Pick a character in the first stop and we'll suggest related activities.",
+    "suggestionsTitle": "Ideas related to {{theme}}",
+    "suggestionsMore": "More ideas",
+    "suggestionsLoading": "Looking for related ideas…",
+    "suggestionsEmpty": "No new ideas: try «More ideas».",
+    "suggestionsError": "I can't suggest ideas right now.",
+    "addSuggestion": "Add",
+    "added": "«{{title}}» added to the path",
+    "languageLabel": "Which language the characters speak",
+    "languageHint": "It applies to every stop and is locked for students: pick a foreign language to let them practise. The site stays in their language.",
+    "pathSummary_one": "The path has {{count}} activity",
+    "pathSummary_other": "The path has {{count}} activities",
+    "mysteryTitle": "Who's hiding?",
+    "pickTheme": "Pick at least one activity.",
+    "useExisting": "Or open the room on an assignment of one of your classes",
+    "backToNew": "Prepare a new path instead",
+    "addWhich": "Which activity do you add?",
+    "addStep_one": "Add an activity ({{count}} left)",
+    "addStep_other": "Add an activity ({{count}} left)",
+    "back": "Back",
+    "next": "Next",
+    "suggestionsTitleMystery": "Ideas related to your mystery character"
   }
 }

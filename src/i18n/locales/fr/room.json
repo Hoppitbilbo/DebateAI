@@ -47,7 +47,17 @@
     "closedTitle": "La salle est fermée",
     "closedText": "Le temps est écoulé ou l'enseignant a fermé la salle. Tes données ont été effacées.",
     "joinAnother": "Entrer dans une autre salle",
-    "aiMissing": "L'IA de cette salle n'est pas encore prête : préviens l'enseignant."
+    "aiMissing": "L'IA de cette salle n'est pas encore prête : préviens l'enseignant.",
+    "backToPath": "Retour au parcours",
+    "pathTitle": "Ton parcours",
+    "pathDone": "{{done}} sur {{total}} faites",
+    "stepDone": "Faite",
+    "stepActive": "En cours",
+    "stepTodo": "À faire",
+    "again": "Refaire",
+    "go": "C'est parti !",
+    "open": "Ouvrir",
+    "allDone": "Parcours terminé ! Tu peux refaire une étape ou attendre l'enseignant."
   },
   "open": {
     "title": "Salle éclair",
@@ -114,7 +124,9 @@
     "openAnother": "Ouvrir une nouvelle salle",
     "aiMissing": "Le chat ne fonctionnera pas : aucun modèle d'IA n'est disponible pour les salles éclair. Préviens l'administrateur (Admin → IA → Salle éclair).",
     "copyInvite": "Copier le lien d'invitation",
-    "inviteCopied": "Lien copié : qui l'ouvre entre sans taper le code."
+    "inviteCopied": "Lien copié : qui l'ouvre entre sans taper le code.",
+    "pathTitle_one": "Parcours : {{count}} activité",
+    "pathTitle_other": "Parcours : {{count}} activités"
   },
   "import": {
     "title": "Importer le travail dans une classe",
@@ -183,5 +195,60 @@
     "squirrel": "Écureuil",
     "flamingo": "Flamant rose",
     "frog": "Grenouille"
+  },
+  "wizard": {
+    "progress": "Étapes pour ouvrir la salle",
+    "steps": {
+      "theme": "Thème",
+      "path": "Parcours",
+      "launch": "C'est parti !"
+    },
+    "titles": {
+      "theme": "On commence par quoi ?",
+      "path": "Construis le parcours",
+      "launch": "Tout est prêt ?"
+    },
+    "subtitles": {
+      "theme": "Choisis la première activité et ses personnages : ce sera le thème de la leçon.",
+      "path": "Ajoute d'autres étapes ou prends une idée liée au thème. Les élèves les font dans l'ordre.",
+      "launch": "Choisis la langue des personnages et la durée. Au bout de {{hours}} heures au maximum, tout est effacé."
+    },
+    "apps": {
+      "convinci-tu": "Convaincs un personnage historique d'une idée.",
+      "doppia-intervista": "Interviewe deux personnages en même temps et compare leurs réponses.",
+      "wiki-chatbot": "Discute avec une page de Wikipédia.",
+      "personaggio-misterioso": "Devine qui se cache derrière les réponses.",
+      "impersona-tu": "Joue un personnage et défends ses idées.",
+      "you-moderate": "Anime un débat entre deux personnages."
+    },
+    "mysterySummary_one": "{{count}} personnage caché",
+    "mysterySummary_other": "{{count}} personnages cachés",
+    "studentsChoose": "Personnages au choix des élèves",
+    "removeStep": "Retirer cette étape",
+    "closeStep": "Fermer",
+    "editStep": "Modifier",
+    "moreOptions": "Plus d'options : titre, consigne, objectifs, tours",
+    "suggestionsNeedTheme": "Choisis un personnage dans la première étape et nous te proposerons des activités liées.",
+    "suggestionsTitle": "Idées liées à {{theme}}",
+    "suggestionsMore": "Autres idées",
+    "suggestionsLoading": "Je cherche des idées liées…",
+    "suggestionsEmpty": "Pas de nouvelle idée : essaie « Autres idées ».",
+    "suggestionsError": "Je ne peux pas proposer d'idées pour l'instant.",
+    "addSuggestion": "Ajouter",
+    "added": "« {{title}} » ajoutée au parcours",
+    "languageLabel": "Dans quelle langue parlent les personnages",
+    "languageHint": "Elle vaut pour toutes les étapes et est bloquée pour les élèves : choisis une langue étrangère pour les faire pratiquer. Le site reste dans leur langue.",
+    "pathSummary_one": "Le parcours a {{count}} activité",
+    "pathSummary_other": "Le parcours a {{count}} activités",
+    "mysteryTitle": "Qui se cache ?",
+    "pickTheme": "Choisis au moins une activité.",
+    "useExisting": "Ou ouvre la salle sur un devoir d'une de tes classes",
+    "backToNew": "Préparer plutôt un nouveau parcours",
+    "addWhich": "Quelle activité ajoutes-tu ?",
+    "addStep_one": "Ajouter une activité (encore {{count}})",
+    "addStep_other": "Ajouter une activité (encore {{count}})",
+    "back": "Retour",
+    "next": "Suivant",
+    "suggestionsTitleMystery": "Idées liées à ton personnage mystère"
   }
 }

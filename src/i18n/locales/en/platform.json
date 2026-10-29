@@ -273,7 +273,9 @@
       "hintCost": "A hint costs a question.",
       "hintRequest": "Can you give me a hint?",
       "teacherHint": "Hint: {{hint}}",
-      "hintsUsed": "Hints used"
+      "hintsUsed": "Hints used",
+      "roundOf": "Character {{n}} of {{total}}",
+      "nextCharacter": "Next character ({{n}} of {{total}})"
     },
     "impersonaTu": {
       "setupTitle": "Choose the roles",
@@ -428,7 +430,11 @@
       "hints": "Hints (optional)",
       "hintsHint": "From the vaguest to the clearest. The student gets them in order with «Ask for a hint»; after them, the character makes one up. Each hint costs a question.",
       "hintN": "Hint {{n}}",
-      "hintsNeedCharacter": "Hints describe the character you choose: choose it first, then write the hints. Without a fixed character, the character gives the hints itself."
+      "hintsNeedCharacter": "Hints apply when you fix a single character. With several, or none, the character gives the hints itself.",
+      "mysteryCharacters": "Mystery characters",
+      "mysteryCharactersHint": "Add one or more: each student guesses them one after the other. If you choose none, the student chooses.",
+      "shuffle": "Shuffle the order",
+      "shuffleHint": "Each student meets them in a different order: in the computer lab, neighbours don't get the same character."
     },
     "exportExcel": "Export grades (Excel)",
     "teacherScore": "Teacher score"
@@ -791,5 +797,42 @@
         "body": "The tutorial explains the activity step by step."
       }
     }
+  },
+  "difficulty": {
+    "label": "Difficulty",
+    "locked": "Set by the teacher",
+    "levels": {
+      "easy": "Easy",
+      "medium": "Medium",
+      "hard": "Hard",
+      "free": "Students choose"
+    },
+    "notes": {
+      "personaggioMisterioso": {
+        "easy": "Generous clues: era, country and field come out quickly.",
+        "medium": "Fair clues: you'll have to think a bit.",
+        "hard": "Cryptic answers and little-known details: for expert detectives only.",
+        "free": "Each student picks the difficulty before starting."
+      },
+      "convinciTu": {
+        "easy": "The character is open-minded: a couple of good arguments are enough.",
+        "medium": "Changes their mind only after several solid arguments.",
+        "hard": "Stubborn and sharp: takes apart every weak argument.",
+        "free": "Each student picks the difficulty before starting."
+      },
+      "impersonaTu": {
+        "easy": "Simple questions on the best-known facts of your character.",
+        "medium": "Questions on life, ideas and context, with corrections.",
+        "hard": "Precise questions on little-known details: every mistake gets noticed.",
+        "free": "Each student picks the difficulty before starting."
+      }
+    }
+  },
+  "language": {
+    "label": "Characters' language",
+    "studentsOwn": "The student's own",
+    "practiceBadge": "Speaking {{language}}",
+    "assignmentLabel": "Which language the characters speak",
+    "assignmentHint": "Pick a foreign language to let students practise: the characters will answer only in that language, the rest of the site stays in each student's language."
   }
 }

@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { AlertTriangle, Lock, LockOpen, Trash2 } from "lucide-react";
+import { appIconSrc } from "@/lib/appArt";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth";
 import { useBusyAction } from "@/hooks/useBusyAction";
@@ -90,6 +91,19 @@ const HostRoomPage = () => {
           )}
         </Panel>
         <div className="space-y-6">
+          {view.data.activities?.length > 1 && (
+            <Panel title={t("room.host.pathTitle", { count: view.data.activities.length })}>
+              <ol className="space-y-2">
+                {view.data.activities.map((a, i) => (
+                  <li key={a.assignmentId} className="flex items-center gap-2 text-sm">
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 border-foreground bg-sun text-xs font-bold">{i + 1}</span>
+                    <img src={appIconSrc(a.appType)} alt="" width={24} height={24} className="h-6 w-6" />
+                    <span className="min-w-0 truncate">{a.title}</span>
+                  </li>
+                ))}
+              </ol>
+            </Panel>
+          )}
           <ResultsPanel room={room} canImport={isTeacher} onImport={() => setImporting(true)} />
           <DetailsPanel room={room} hostKey={key} />
         </div>

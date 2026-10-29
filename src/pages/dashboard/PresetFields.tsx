@@ -22,8 +22,10 @@ const DIFFICULTY_KEY = { "personaggio-misterioso": "personaggioMisterioso", "con
 const MysteryCharacters = ({ config, onChange }: { config: AssignmentConfig; onChange: (c: AssignmentConfig) => void }) => {
   const { t } = useTranslation();
   const list = config.characters ?? [];
+  // Shuffled by default as soon as there are two: neighbours in the lab
+  // should not play the same character at the same time.
   const set = (characters: WikiRef[]) =>
-    onChange({ ...config, characters: characters.length ? characters : undefined, shuffle: characters.length > 1 ? config.shuffle : undefined });
+    onChange({ ...config, characters: characters.length ? characters : undefined, shuffle: characters.length > 1 ? config.shuffle ?? true : undefined });
 
   return (
     <div className="space-y-2">
@@ -53,7 +55,7 @@ const MysteryCharacters = ({ config, onChange }: { config: AssignmentConfig; onC
               <span className="block text-xs text-muted-foreground">{t("platform.teacher.form.shuffleHint")}</span>
             </span>
           </span>
-          <Switch checked={!!config.shuffle} onCheckedChange={(v) => onChange({ ...config, shuffle: v || undefined })} />
+          <Switch checked={!!config.shuffle} onCheckedChange={(v) => onChange({ ...config, shuffle: v })} />
         </label>
       )}
     </div>
@@ -139,7 +141,7 @@ const PresetFields = ({ draft, onChange, idPrefix = "a", showQuestions = true }:
           allowFree
         />
       )}
-      {appType === "personaggio-misterioso" && <TeacherHints config={config} onChange={onChange} />}
+      {appType === "personaggio-misterioso" && (config.characters?.length ?? 0) <= 1 && <TeacherHints config={config} onChange={onChange} />}
       {appType === "personaggio-misterioso" && showQuestions && (
         <div className="space-y-2">
           <Label htmlFor={id("q")}>{t("platform.teacher.form.questions")}</Label>

@@ -739,3 +739,196 @@ html:has(> body[data-scroll-locked]) {
     animation: none;
   }
 }
+
+/* Aula lampo wizard. App tiles: an icon on a yellow blob that tilts on
+   hover; the chosen tile wears the ink offset shadow. */
+.app-tile {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  gap: 0.875rem;
+  border: 2px solid hsl(var(--border));
+  border-radius: 1rem;
+  background: hsl(var(--card));
+  padding: 0.875rem 1rem;
+  transition: transform 220ms cubic-bezier(0.34, 1.56, 0.64, 1), border-color 150ms, box-shadow 150ms;
+}
+
+.app-tile:hover {
+  transform: translateY(-3px);
+  border-color: hsl(var(--foreground) / 0.6);
+}
+
+.app-tile:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+
+.app-tile--active {
+  border-color: hsl(var(--foreground));
+  box-shadow: 4px 4px 0 0 hsl(var(--foreground));
+  transform: translateY(-3px);
+}
+
+.app-tile--compact {
+  padding: 0.625rem 0.75rem;
+}
+
+.app-tile__blob {
+  display: flex;
+  height: 3.5rem;
+  width: 3.5rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid hsl(var(--foreground));
+  border-radius: 46% 54% 52% 48% / 55% 45% 55% 45%;
+  background: hsl(var(--sun));
+  transition: transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.app-tile--compact .app-tile__blob {
+  height: 2.75rem;
+  width: 2.75rem;
+}
+
+.app-tile__icon {
+  height: 70%;
+  width: 70%;
+  object-fit: contain;
+  transition: transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.app-tile:hover .app-tile__blob,
+.app-tile--active .app-tile__blob {
+  transform: rotate(-8deg) scale(1.08);
+}
+
+.app-tile:hover .app-tile__icon,
+.app-tile--active .app-tile__icon {
+  transform: rotate(6deg) translateY(-2px);
+}
+
+/* The path: numbered stops joined by a dotted line. */
+.path-list {
+  position: relative;
+}
+
+.path-list::before {
+  content: "";
+  position: absolute;
+  top: 1.5rem;
+  bottom: 1.5rem;
+  left: 1.25rem;
+  border-left: 3px dotted hsl(var(--foreground) / 0.35);
+}
+
+.path-stop {
+  position: relative;
+  margin-left: 2.75rem;
+  border: 2px solid hsl(var(--border));
+  border-radius: 1rem;
+  background: hsl(var(--card));
+  transition: border-color 150ms, box-shadow 200ms;
+}
+
+.path-stop--open {
+  border-color: hsl(var(--foreground));
+  box-shadow: 4px 4px 0 0 hsl(var(--foreground));
+}
+
+.path-stop__number {
+  position: absolute;
+  top: 1rem;
+  left: -2.75rem;
+  display: flex;
+  height: 2.5rem;
+  width: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid hsl(var(--foreground));
+  border-radius: 9999px;
+  background: hsl(var(--sun));
+  font-weight: 700;
+}
+
+/* Wizard steps slide in from the side they come from. */
+.wizard-enter-forward {
+  animation: 360ms cubic-bezier(0, 0, 0.2, 1) both wizard-from-right;
+}
+
+.wizard-enter-back {
+  animation: 360ms cubic-bezier(0, 0, 0.2, 1) both wizard-from-left;
+}
+
+@keyframes wizard-from-right {
+  from {
+    opacity: 0;
+    transform: translateX(32px);
+  }
+}
+
+@keyframes wizard-from-left {
+  from {
+    opacity: 0;
+    transform: translateX(-32px);
+  }
+}
+
+/* Placeholder cards while the ideas load. */
+.shimmer {
+  background: linear-gradient(100deg, hsl(var(--muted)) 30%, hsl(var(--card)) 50%, hsl(var(--muted)) 70%);
+  background-size: 300% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: 0 0;
+  }
+}
+
+/* The launch button: a lightning bolt that jolts on hover. */
+.lampo-launch {
+  border: 2px solid hsl(var(--foreground));
+  box-shadow: 3px 3px 0 0 hsl(var(--foreground));
+  transition: transform 150ms, box-shadow 150ms;
+}
+
+.lampo-launch:hover:not(:disabled) {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 0 hsl(var(--foreground));
+}
+
+.lampo-launch:hover:not(:disabled) svg {
+  animation: lampo-jolt 500ms ease-in-out;
+}
+
+@keyframes lampo-jolt {
+  25% {
+    transform: rotate(-14deg) scale(1.15);
+  }
+  60% {
+    transform: rotate(10deg) scale(1.1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-tile,
+  .app-tile__blob,
+  .app-tile__icon,
+  .lampo-launch {
+    transition: none;
+  }
+
+  .wizard-enter-forward,
+  .wizard-enter-back,
+  .shimmer,
+  .lampo-launch:hover:not(:disabled) svg {
+    animation: none;
+  }
+}
