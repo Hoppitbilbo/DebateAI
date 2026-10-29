@@ -1,6 +1,6 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, beforeAll, describe, expect, it } from "vitest";
 import i18n from "@/i18n";
 import de from "@/i18n/tutorials/de.json";
 import en from "@/i18n/tutorials/en.json";
@@ -11,6 +11,8 @@ import TutorialSlides from "./TutorialSlides";
 import { TUTORIALS } from "./tutorials";
 
 afterEach(cleanup);
+// The tutorial texts are loaded on demand (see i18n), as their routes do.
+beforeAll(() => i18n.loadNamespaces("tutorial"));
 
 const lookup = (dict: unknown, path: string) =>
   path.split(".").reduce<unknown>((node, part) => (node as Record<string, unknown> | undefined)?.[part], dict);
