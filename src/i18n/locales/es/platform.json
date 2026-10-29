@@ -268,7 +268,12 @@
       "evalActivity": "juego de adivinar con preguntas limitadas",
       "judgeEnded": "JEV ha decidido que has alcanzado el objetivo: la partida ha terminado. Escribe tu respuesta final.",
       "readLastAnswer": "¡Se acabaron las preguntas! Relee las respuestas con calma y luego pulsa «Intenta adivinar».",
-      "judgeEndedChat": "JEV ha decidido que alcanzaste el objetivo: no hay más preguntas. Relee las respuestas y luego pulsa «Intenta adivinar»."
+      "judgeEndedChat": "JEV ha decidido que alcanzaste el objetivo: no hay más preguntas. Relee las respuestas y luego pulsa «Intenta adivinar».",
+      "askHint": "Pedir una pista",
+      "hintCost": "Una pista cuesta una pregunta.",
+      "hintRequest": "¿Me das una pista?",
+      "teacherHint": "Pista: {{hint}}",
+      "hintsUsed": "Pistas usadas"
     },
     "impersonaTu": {
       "setupTitle": "Elige los papeles",
@@ -419,7 +424,10 @@
         "questionsClamped": "Las preguntas van de {{min}} a {{max}}: fijadas en {{count}}.",
         "maxTurnsFromQuestions": "Cada pregunta es un mensaje: el máximo pasa de {{from}} a {{count}}, así el juego no se interrumpe antes.",
         "minTurnsLowered": "El mínimo ({{from}}) superaba el máximo: fijado en {{count}}."
-      }
+      },
+      "hints": "Pistas (opcionales)",
+      "hintsHint": "De la más vaga a la más clara. El estudiante las recibe en orden al pulsar «Pedir una pista»; agotadas estas, la pista la inventa el personaje. Cada pista cuesta una pregunta.",
+      "hintN": "Pista {{n}}"
     },
     "exportExcel": "Exportar notas (Excel)",
     "teacherScore": "Nota docente"

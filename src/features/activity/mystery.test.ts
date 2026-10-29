@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isCorrectGuess } from "./mystery";
+import { isCorrectGuess, nextTeacherHint } from "./mystery";
 
 describe("isCorrectGuess (strict)", () => {
   it("accepts the full name or a significant word of it, ignoring case and accents", () => {
@@ -19,5 +19,15 @@ describe("isCorrectGuess (strict)", () => {
     expect(isCorrectGuess("Galilei Galileo?", "Galileo Galilei")).toBe(true);
     expect(isCorrectGuess("Galile", "Galileo Galilei")).toBe(false);
     expect(isCorrectGuess("Newton", "Galileo Galilei")).toBe(false);
+  });
+});
+
+describe("nextTeacherHint", () => {
+  it("gives the teacher's hints in order, then leaves it to the character", () => {
+    const hints = ["Visse in Europa", "  ", "Fu un imperatore"];
+    expect(nextTeacherHint(hints, 0)).toBe("Visse in Europa");
+    expect(nextTeacherHint(hints, 1)).toBe("Fu un imperatore");
+    expect(nextTeacherHint(hints, 2)).toBeNull();
+    expect(nextTeacherHint(undefined, 0)).toBeNull();
   });
 });

@@ -165,26 +165,35 @@ func (svc *sessionService) SaveTranscript(ctx context.Context, u *domain.User, d
 
 	state := domain.StateOf(d.Status)
 	resp := TranscriptSync{Status: state.Status(), Turns: turns, Progress: d.Progress, Ended: state.Ended()}
-	if d.AssignmentID == nil || state.Ended() {
+	if d.AssignmentID == nil {
 		return resp, nil
 	}
 	a, err := svc.assignments.Get(*d.AssignmentID)
 	if err != nil {
 		return resp, nil
 	}
-	resp.MaxTurns = &a.MaxTurns
+	judge := func() (*JudgeResult, error) {
+		return svc.judgeAndSave(ctx, u, d, a, msgs, firstNonEmpty(in.Context, d.Context), turns, &resp)
+	}
 
+	// An ended attempt is judged again only on request: the last lines may
+	// complete a goal (e.g. the final guess of the mystery game). The
+	// progress changes, the state does not.
+	if state.Ended() {
+		if in.Judge != nil && *in.Judge && turns > 0 {
+			_, err = judge()
+		}
+		return resp, err
+	}
+
+	resp.MaxTurns = &a.MaxTurns
 	outcome := domain.TurnOutcome{Turns: turns, MaxTurns: a.MaxTurns, AutoEnd: a.AutoEnd}
 	if svc.shouldJudge(turns, a.MaxTurns, in.Judge) {
-		jr := svc.evaluate(ctx, u, d, a, msgs, firstNonEmpty(in.Context, d.Context), turns)
-		resp.Jev = &jr
-		if jr.Engine != "none" {
-			if err := svc.sessions.SaveJudgement(d.ID, mustJSON(jr), jr.Progress); err != nil {
-				return resp, err
-			}
-			resp.Progress = jr.Progress
-			outcome.GoalsCompleted = jr.Completed
+		jr, err := judge()
+		if err != nil {
+			return resp, err
 		}
+		outcome.GoalsCompleted = jr.Completed
 	}
 
 	next, reason := state.Next(outcome)
@@ -195,6 +204,21 @@ func (svc *sessionService) SaveTranscript(ctx context.Context, u *domain.User, d
 	}
 	resp.Status, resp.Ended, resp.Reason = next.Status(), next.Ended(), &reason
 	return resp, nil
+}
+
+// judgeAndSave asks the judge about the assignment goals, stores its
+// verdict and puts it in resp.
+func (svc *sessionService) judgeAndSave(ctx context.Context, u *domain.User, d *domain.SessionDetail, a *domain.Assignment, msgs []TranscriptMessage, activity json.RawMessage, turns int, resp *TranscriptSync) (*JudgeResult, error) {
+	jr := svc.evaluate(ctx, u, d, a, msgs, activity, turns)
+	resp.Jev = &jr
+	if jr.Engine == "none" {
+		return &jr, nil
+	}
+	if err := svc.sessions.SaveJudgement(d.ID, mustJSON(jr), jr.Progress); err != nil {
+		return &jr, err
+	}
+	resp.Progress = jr.Progress
+	return &jr, nil
 }
 
 // shouldJudge: every EvaluateEvery turns and on the last allowed turn,

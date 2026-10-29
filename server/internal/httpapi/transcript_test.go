@@ -237,3 +237,31 @@ func TestSaveTranscriptOnlyOwner(t *testing.T) {
 		t.Fatalf("non-owner must get 404, got %d", code)
 	}
 }
+
+// The final guess of the mystery game comes after the last question: a
+// requested judgement still updates the progress, without reopening.
+func TestSaveTranscriptJudgesAnEndedAttemptOnlyOnRequest(t *testing.T) {
+	f := newTranscriptFixture(t, map[string]any{"maxTurns": 1, "autoEnd": true}, 0.1)
+	if out := f.save(t, map[string]any{"messages": userTurns(1)}); out["status"] != "turn_limit" {
+		t.Fatalf("expected turn_limit: %v", out)
+	}
+	decisions := f.judge.decisions
+	guess := append(userTurns(1), map[string]string{"role": "system", "content": "Risposta finale: Napoleone. Il personaggio era Napoleone."})
+	f.save(t, map[string]any{"messages": guess})
+	if f.judge.decisions != decisions {
+		t.Fatal("an ended attempt is not judged by default")
+	}
+	f.judge.scores["goal_0"] = 0.95
+	out := f.save(t, map[string]any{"messages": guess, "judge": true})
+	if f.judge.decisions != decisions+1 || out["progress"] != float64(100) {
+		t.Fatalf("the requested judgement updates the progress: %v", out)
+	}
+	if out["status"] != "turn_limit" || out["ended"] != true {
+		t.Fatalf("the attempt stays ended: %v", out)
+	}
+	var d domain.SessionDetail
+	f.owner.do("GET", fmtPath("/api/sessions/%d", f.session), nil, &d)
+	if d.Progress != 100 || d.Status != "turn_limit" {
+		t.Fatalf("stored: %d %s", d.Progress, d.Status)
+	}
+}

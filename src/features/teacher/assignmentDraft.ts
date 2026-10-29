@@ -36,6 +36,12 @@ export const draftOf = (a?: Assignment | null): AssignmentDraft => ({
 export const draftLimits = (d: AssignmentDraft) =>
   reconcileLimits({ appType: d.appType, minTurns: d.minTurns, maxTurns: d.maxTurns, questions: d.appType === "personaggio-misterioso" ? d.config.questions : undefined });
 
+/** The mystery game's hints without the empty ones; none for the other apps. */
+const cleanHints = (d: AssignmentDraft) => {
+  const hints = d.appType === "personaggio-misterioso" ? d.config.hints?.map((h) => h.trim()).filter(Boolean) : undefined;
+  return hints?.length ? hints : undefined;
+};
+
 /** What the server receives: empty goals dropped, a pair only when complete, consistent limits. */
 export const draftBody = (d: AssignmentDraft) => {
   const limits = draftLimits(d);
@@ -45,7 +51,7 @@ export const draftBody = (d: AssignmentDraft) => {
     appType: d.appType,
     instructions: d.instructions,
     goals: d.goals.map((g) => g.trim()).filter(Boolean),
-    config: { ...d.config, characters: pair && pair.length === 2 ? pair : undefined, questions: limits.questions },
+    config: { ...d.config, characters: pair && pair.length === 2 ? pair : undefined, questions: limits.questions, hints: cleanHints(d) },
     minTurns: limits.minTurns,
     maxTurns: limits.maxTurns,
     autoEnd: d.autoEnd,

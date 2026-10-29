@@ -14,6 +14,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { htmlToText } from "@/lib/text";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
@@ -77,7 +78,7 @@ const WikiSearchSelect = ({ onSelect }: WikiSearchSelectProps) => {
       
       const results: WikiSearchResult[] = (data.query?.search ?? []).map((item) => ({
         title: item.title,
-        snippet: item.snippet.replace(/<\/?[^>]+(>|$)/g, ""), // Rimuove i tag HTML
+        snippet: htmlToText(item.snippet),
         pageid: item.pageid,
       }));
       

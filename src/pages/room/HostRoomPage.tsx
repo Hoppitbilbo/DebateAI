@@ -73,6 +73,12 @@ const HostRoomPage = () => {
         </p>
       )}
 
+      {!view.data.aiReady && (
+        <p role="alert" className="flex items-center gap-2 rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
+          <AlertTriangle className="h-5 w-5 shrink-0" />{t("room.host.aiMissing")}
+        </p>
+      )}
+
       <ProjectorPanel room={room} guests={guests.length} secondsLeft={left} />
 
       <div className="grid gap-6 lg:grid-cols-3">

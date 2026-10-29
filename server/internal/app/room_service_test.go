@@ -354,3 +354,35 @@ func TestRoomWithItsOwnAssignment(t *testing.T) {
 		t.Fatal("the room assignment ends with the room")
 	}
 }
+
+// The case met in production: a paid model chosen for rooms while FreeOnly
+// is on leaves the guests without a model. The teacher's view and the
+// admin page must say so.
+func TestRoomAIReadiness(t *testing.T) {
+	s := newTestServer(t)
+	useProvider(s, 1, ai.KindOpenAI, &fakeProvider{})
+	cfg := DefaultRooms()
+	cfg.Tasks = map[string][]RouteTarget{TaskChat: {{1, "deepseek-chat"}}}
+	s.Settings.SaveRooms(cfg)
+	opened, _ := s.RoomSvc.Open(nil, RoomRequest{Assignment: &AssignmentInput{Title: ptr("Prova"), AppType: ptr("wiki-chatbot")}})
+	room, _ := s.RoomSvc.ForHost(opened.HostKey)
+
+	if view, _ := s.RoomSvc.View(room); view.AIReady {
+		t.Fatal("a paid model with FreeOnly leaves the room without chat")
+	}
+	if got := s.Gateway.RoomTargets()[TaskChat]; len(got) != 0 {
+		t.Fatalf("the paid model is left out: %+v", got)
+	}
+
+	cfg.FreeOnly = false
+	s.Settings.SaveRooms(cfg)
+	if view, _ := s.RoomSvc.View(room); !view.AIReady {
+		t.Fatal("without FreeOnly the room uses its model")
+	}
+	cfg.FreeOnly = true
+	cfg.Tasks = map[string][]RouteTarget{TaskChat: {{1, "deepseek-chat"}, {1, "llama:free"}}}
+	s.Settings.SaveRooms(cfg)
+	if got := s.Gateway.RoomTargets()[TaskChat]; len(got) != 1 || got[0].Model != "llama:free" {
+		t.Fatalf("only the free model is kept: %+v", got)
+	}
+}

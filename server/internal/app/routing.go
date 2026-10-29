@@ -149,3 +149,20 @@ func (g *aiGateway) TargetsFor(ctx context.Context, task string) []RouteTarget {
 	}
 	return strategy.order(list, g)
 }
+
+// RoomTargets returns, for each task rooms may use, the targets a room
+// guest would really get: the admin page shows which configured models are
+// left out (e.g. not free while FreeOnly is on).
+func (g *aiGateway) RoomTargets() map[string][]RouteTarget {
+	ctx := WithRoomRouting(context.Background())
+	out := map[string][]RouteTarget{}
+	for _, task := range RoomTasks {
+		out[task] = g.TargetsFor(ctx, task)
+	}
+	return out
+}
+
+// RoomChatReady tells whether room guests have a model to chat with.
+func (g *aiGateway) RoomChatReady() bool {
+	return len(g.TargetsFor(WithRoomRouting(context.Background()), TaskChat)) > 0
+}

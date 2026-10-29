@@ -46,7 +46,8 @@
     "leaveText": "Um zurückzukommen, brauchst du eine PIN von der Lehrkraft. Deine Arbeit bleibt gespeichert.",
     "closedTitle": "Der Raum ist geschlossen",
     "closedText": "Die Zeit ist um oder die Lehrkraft hat den Raum geschlossen. Deine Daten wurden gelöscht.",
-    "joinAnother": "Einen anderen Raum betreten"
+    "joinAnother": "Einen anderen Raum betreten",
+    "aiMissing": "Die KI dieses Raums ist noch nicht bereit: Sag deiner Lehrkraft Bescheid."
   },
   "open": {
     "title": "Blitzraum",
@@ -110,7 +111,10 @@
     "copied": "Link kopiert",
     "closedTitle": "Raum geschlossen",
     "closedText": "Der Raum ist beendet oder der Link ist ungültig: Seine Daten wurden gelöscht.",
-    "openAnother": "Neuen Raum öffnen"
+    "openAnother": "Neuen Raum öffnen",
+    "aiMissing": "Der Chat wird nicht funktionieren: Für Blitzräume ist kein KI-Modell verfügbar. Sag der Administration Bescheid (Admin → KI → Blitzraum).",
+    "copyInvite": "Einladungslink kopieren",
+    "inviteCopied": "Einladungslink kopiert: Wer ihn öffnet, tritt ohne Code bei."
   },
   "import": {
     "title": "Arbeit in eine Klasse importieren",
@@ -150,7 +154,9 @@
     "limitsHint": "Die Grenzen gelten pro Person und pro Raum, nie pro IP-Adresse: Im Computerraum gehen alle Rechner über denselben Router hinaus. 0 = keine Grenze.",
     "modelsTitle": "Modelle für die Räume",
     "modelsHint": "Wähle Anbieter und Schlüssel für diesen Zweck (z. B. kostenloses DeepSeek oder Gemini Flash). Füge den Anbieter vorher oben mit seinem Schlüssel hinzu.",
-    "useMain": "Kein Modell: Die Räume nutzen das Haupt-Routing (nur kostenlose, wenn die Option aktiv ist)."
+    "useMain": "Kein Modell: Die Räume nutzen das Haupt-Routing (nur kostenlose, wenn die Option aktiv ist).",
+    "noChatModel": "Achtung: Mit diesen Einstellungen haben die Schüler/innen der Räume kein Modell für den Chat. Wähle unten ein kostenloses Modell, setze seinen Preis unter «Preise» auf 0 oder schalte «Nur kostenlose Modelle» aus.",
+    "ignoredNotFree": "Nicht verwendet: Es ist nicht als kostenlos bekannt und «Nur kostenlose Modelle» ist an. Setze seinen Preis unter «Preise» auf 0, wenn es kostenlos ist."
   },
   "avatars": {
     "fox": "Fuchs",

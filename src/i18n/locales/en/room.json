@@ -46,7 +46,8 @@
     "leaveText": "To come back you will need a PIN from your teacher. Your work stays saved.",
     "closedTitle": "The room is closed",
     "closedText": "Time is up or the teacher closed the room. Your data has been deleted.",
-    "joinAnother": "Join another room"
+    "joinAnother": "Join another room",
+    "aiMissing": "The AI of this room is not ready yet: tell your teacher."
   },
   "open": {
     "title": "Quick room",
@@ -110,7 +111,10 @@
     "copied": "Link copied",
     "closedTitle": "Room closed",
     "closedText": "The room has ended or the link is not valid: its data has been deleted.",
-    "openAnother": "Open a new room"
+    "openAnother": "Open a new room",
+    "aiMissing": "The chat will not work: no AI model is available for quick rooms. Tell the administrator (Admin → AI → Quick rooms).",
+    "copyInvite": "Copy invite link",
+    "inviteCopied": "Invite link copied: whoever opens it joins without typing the code."
   },
   "import": {
     "title": "Import the work into a class",
@@ -150,7 +154,9 @@
     "limitsHint": "Limits apply per student and per room, never per IP address: in a computer lab every computer goes out through the same router. 0 = no limit.",
     "modelsTitle": "Models for rooms",
     "modelsHint": "Pick a provider and key dedicated to this use (e.g. free DeepSeek or Gemini Flash). Add the provider with its key above first.",
-    "useMain": "No model: rooms use the main routing (free models only when that option is on)."
+    "useMain": "No model: rooms use the main routing (free models only when that option is on).",
+    "noChatModel": "Warning: with these settings room students have no chat model. Pick a free model below, set its price to 0 in «Prices», or switch off «Free models only».",
+    "ignoredNotFree": "Not used: it is not known to be free and «Free models only» is on. Set its price to 0 in «Prices» if it is free."
   },
   "avatars": {
     "fox": "Fox",

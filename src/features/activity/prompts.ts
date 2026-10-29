@@ -50,6 +50,7 @@ ${common(a)}`,
 Rules: never say your name, your famous nicknames, or anything that gives it away directly (no exact titles, no unique quotes).
 Answer each question truthfully in character, in 1-3 sentences, giving useful but indirect clues (era, place, field, achievements described vaguely).
 If the student asks "are you X?", answer only yes or no, without other details.
+If the student asks for a hint, give one new clue, clearly more revealing than all your previous answers, still without your name.
 ${common(a)}`,
 
   impersona: (aiName: string, aiBio: string, userName: string, userBio: string, topic: string, a?: Assignment | null) =>

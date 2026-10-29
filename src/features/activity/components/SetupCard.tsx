@@ -1,6 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { ArrowRight, Loader2, Lock, UserRound, X } from "lucide-react";
+import { htmlToText } from "@/lib/text";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import WikiSearchSelect from "@/components/WikiSearchSelect";
@@ -62,7 +63,7 @@ export const CharacterPicker = ({ label, value, onChange, locked, hint, conceal 
           <UserRound className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
           <div className="min-w-0 flex-1">
             <p className="font-semibold">{conceal ? t("platform.activity.hiddenCharacter") : value.title}</p>
-            {!conceal && value.snippet && <p className="line-clamp-2 text-sm text-muted-foreground">{value.snippet}</p>}
+            {!conceal && value.snippet && <p className="line-clamp-2 text-sm text-muted-foreground">{htmlToText(value.snippet)}</p>}
           </div>
           {!locked && (
             <Button variant="ghost" size="icon" onClick={() => onChange(null)} aria-label={t("platform.activity.change")}>

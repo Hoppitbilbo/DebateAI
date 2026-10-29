@@ -94,7 +94,7 @@ export const useActivitySession = (appType: AppType) => {
    * Saves the transcript and, for assignments, runs the JEV judge.
    * Returns the end reason when the server decided the activity is over.
    */
-  const sync = useCallback(async (messages: ActivityMessage[], context?: Record<string, unknown>): Promise<EndReason> => {
+  const sync = useCallback(async (messages: ActivityMessage[], context?: Record<string, unknown>, opts: { judge?: boolean } = {}): Promise<EndReason> => {
     const userTurns = messages.filter((m) => m.role === "user" && m.content.trim()).length;
     setTurns(userTurns);
     const id = sessionRef.current;
@@ -111,7 +111,7 @@ export const useActivitySession = (appType: AppType) => {
     const seq = ++syncSeq.current;
     if (assignment) setJudging(true);
     try {
-      const res = await api.put<SyncResponse>(`/api/sessions/${id}/transcript`, { messages: transcript, context });
+      const res = await api.put<SyncResponse>(`/api/sessions/${id}/transcript`, { messages: transcript, context, ...(opts.judge ? { judge: true } : {}) });
       if (seq !== syncSeq.current) return null; // a newer sync superseded this one
       if (res.jev && res.jev.engine !== "none") setJev(res.jev);
       if (res.ended && res.reason) {

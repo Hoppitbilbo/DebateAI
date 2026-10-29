@@ -268,7 +268,12 @@
       "evalActivity": "gioco di indovinare il personaggio con domande limitate",
       "judgeEnded": "JEV ha stabilito che hai raggiunto l'obiettivo: la partita è finita. Scrivi la tua risposta finale.",
       "readLastAnswer": "Domande finite! Rileggi le risposte con calma, poi premi «Prova a indovinare».",
-      "judgeEndedChat": "JEV ha stabilito che hai raggiunto l'obiettivo: niente più domande. Rileggi le risposte, poi premi «Prova a indovinare»."
+      "judgeEndedChat": "JEV ha stabilito che hai raggiunto l'obiettivo: niente più domande. Rileggi le risposte, poi premi «Prova a indovinare».",
+      "askHint": "Chiedi un indizio",
+      "hintCost": "Un indizio costa una domanda.",
+      "hintRequest": "Mi dai un indizio?",
+      "teacherHint": "Indizio: {{hint}}",
+      "hintsUsed": "Indizi usati"
     },
     "impersonaTu": {
       "setupTitle": "Scegli i ruoli",
@@ -419,7 +424,10 @@
         "questionsClamped": "Le domande vanno da {{min}} a {{max}}: impostate a {{count}}.",
         "maxTurnsFromQuestions": "Ogni domanda è un messaggio: il massimo passa da {{from}} a {{count}}, così il gioco non si interrompe prima.",
         "minTurnsLowered": "Il minimo ({{from}}) superava il massimo: portato a {{count}}."
-      }
+      },
+      "hints": "Indizi (facoltativi)",
+      "hintsHint": "Dal più vago al più chiaro. Lo studente li riceve in ordine quando preme «Chiedi un indizio»; finiti questi, l'indizio lo inventa il personaggio. Ogni indizio costa una domanda.",
+      "hintN": "Indizio {{n}}"
     },
     "exportExcel": "Esporta voti (Excel)",
     "teacherScore": "Voto docente"

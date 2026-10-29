@@ -13,7 +13,7 @@ import { useAiClient } from "@/services/aiClient";
 import { CharacterPicker } from "@/features/activity/components/SetupCard";
 import { uiLanguage } from "@/features/activity/prompts";
 import { APP_TYPES } from "@/features/activity/appCatalog";
-import { QUESTIONS } from "@/features/activity/mystery";
+import { MAX_TEACHER_HINTS, QUESTIONS } from "@/features/activity/mystery";
 import { TURN_BOUNDS } from "@/features/teacher/assignmentLimits";
 import { AssignmentDraft, draftLimits } from "@/features/teacher/assignmentDraft";
 import { AppName } from "./common";
@@ -151,6 +151,24 @@ const AssignmentFields = ({ draft, onChange, showLive = true, idPrefix = "a" }: 
             <Label htmlFor={id("topic")}>{t("platform.teacher.form.topic")}</Label>
             <Input id={id("topic")} value={config.topic ?? ""} onChange={(e) => setConfig({ ...config, topic: e.target.value || undefined })} />
           </div>
+        )}
+        {appType === "personaggio-misterioso" && (
+          <fieldset className="space-y-2">
+            <legend className="text-sm font-medium">{t("platform.teacher.form.hints")}</legend>
+            <p className="text-xs text-muted-foreground">{t("platform.teacher.form.hintsHint")}</p>
+            {Array.from({ length: MAX_TEACHER_HINTS }, (_, i) => (
+              <Input
+                key={i}
+                aria-label={t("platform.teacher.form.hintN", { n: i + 1 })}
+                placeholder={t("platform.teacher.form.hintN", { n: i + 1 })}
+                value={config.hints?.[i] ?? ""}
+                onChange={(e) => {
+                  const hints = Array.from({ length: MAX_TEACHER_HINTS }, (_, j) => (j === i ? e.target.value : config.hints?.[j] ?? ""));
+                  setConfig({ ...config, hints: hints.some((h) => h.trim()) ? hints : undefined });
+                }}
+              />
+            ))}
+          </fieldset>
         )}
         {appType === "personaggio-misterioso" && (
           <div className="space-y-2">

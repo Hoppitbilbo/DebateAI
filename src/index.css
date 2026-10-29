@@ -588,3 +588,26 @@ html:has(> body[data-scroll-locked]) {
     animation: none;
   }
 }
+
+
+/* A link that asks for attention ("Join with code" in the navbar): a soft
+   ring grows and fades every 2.4 s, well below any flashing threshold. */
+.attention-pulse {
+  animation: attention-pulse 2.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes attention-pulse {
+  0% {
+    box-shadow: 0 0 0 0 hsl(var(--primary) / 0.45);
+  }
+  70%,
+  100% {
+    box-shadow: 0 0 0 10px hsl(var(--primary) / 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .attention-pulse {
+    animation: none;
+  }
+}

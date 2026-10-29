@@ -46,7 +46,8 @@
     "leaveText": "Per rientrare ti servirà un PIN dal docente. Il tuo lavoro resta salvato.",
     "closedTitle": "L'aula è chiusa",
     "closedText": "Il tempo è finito o il docente ha chiuso l'aula. I tuoi dati sono stati cancellati.",
-    "joinAnother": "Entra in un'altra aula"
+    "joinAnother": "Entra in un'altra aula",
+    "aiMissing": "L'IA di quest'aula non è ancora pronta: avvisa il docente."
   },
   "open": {
     "title": "Aula lampo",
@@ -110,7 +111,10 @@
     "copied": "Link copiato",
     "closedTitle": "Aula chiusa",
     "closedText": "L'aula è terminata o il link non è valido: i dati sono stati cancellati.",
-    "openAnother": "Apri una nuova aula"
+    "openAnother": "Apri una nuova aula",
+    "aiMissing": "La chat non funzionerà: nessun modello di IA è disponibile per le aule lampo. Avvisa l'amministratore (Admin → AI → Aula lampo).",
+    "copyInvite": "Copia link d'invito",
+    "inviteCopied": "Link d'invito copiato: chi lo apre entra senza scrivere il codice."
   },
   "import": {
     "title": "Importa il lavoro in una classe",
@@ -150,7 +154,9 @@
     "limitsHint": "I limiti valgono per studente e per aula, mai per indirizzo IP: in aula informatica tutti i computer escono dallo stesso router. 0 = nessun limite.",
     "modelsTitle": "Modelli per le aule",
     "modelsHint": "Scegli provider e chiave dedicati a questo caso d'uso (es. DeepSeek o Gemini Flash gratuiti). Aggiungi prima il provider con la sua chiave qui sopra.",
-    "useMain": "Nessun modello: le aule usano il routing principale (solo gratuiti se l'opzione è attiva)."
+    "useMain": "Nessun modello: le aule usano il routing principale (solo gratuiti se l'opzione è attiva).",
+    "noChatModel": "Attenzione: con queste impostazioni gli studenti delle aule non hanno nessun modello per la chat. Scegli un modello gratuito qui sotto, mettigli prezzo 0 in «Prezzi», oppure spegni «Solo modelli gratuiti».",
+    "ignoredNotFree": "Non usato: non risulta gratuito e «Solo modelli gratuiti» è attivo. Mettigli prezzo 0 in «Prezzi» se è gratuito."
   },
   "avatars": {
     "fox": "Volpe",

@@ -46,7 +46,8 @@
     "leaveText": "Pour revenir, il te faudra un PIN de l'enseignant. Ton travail reste enregistré.",
     "closedTitle": "La salle est fermée",
     "closedText": "Le temps est écoulé ou l'enseignant a fermé la salle. Tes données ont été effacées.",
-    "joinAnother": "Entrer dans une autre salle"
+    "joinAnother": "Entrer dans une autre salle",
+    "aiMissing": "L'IA de cette salle n'est pas encore prête : préviens l'enseignant."
   },
   "open": {
     "title": "Salle éclair",
@@ -110,7 +111,10 @@
     "copied": "Lien copié",
     "closedTitle": "Salle fermée",
     "closedText": "La salle est terminée ou le lien n'est pas valide : ses données ont été effacées.",
-    "openAnother": "Ouvrir une nouvelle salle"
+    "openAnother": "Ouvrir une nouvelle salle",
+    "aiMissing": "Le chat ne fonctionnera pas : aucun modèle d'IA n'est disponible pour les salles éclair. Préviens l'administrateur (Admin → IA → Salle éclair).",
+    "copyInvite": "Copier le lien d'invitation",
+    "inviteCopied": "Lien copié : qui l'ouvre entre sans taper le code."
   },
   "import": {
     "title": "Importer le travail dans une classe",
@@ -150,7 +154,9 @@
     "limitsHint": "Les limites s'appliquent par élève et par salle, jamais par adresse IP : en salle informatique tous les ordinateurs sortent par le même routeur. 0 = sans limite.",
     "modelsTitle": "Modèles pour les salles",
     "modelsHint": "Choisis un fournisseur et une clé dédiés à cet usage (ex. DeepSeek ou Gemini Flash gratuits). Ajoute d'abord le fournisseur avec sa clé ci-dessus.",
-    "useMain": "Aucun modèle : les salles utilisent le routage principal (gratuits seulement si l'option est activée)."
+    "useMain": "Aucun modèle : les salles utilisent le routage principal (gratuits seulement si l'option est activée).",
+    "noChatModel": "Attention : avec ces réglages, les élèves des salles n'ont aucun modèle pour le chat. Choisis un modèle gratuit ci-dessous, mets son prix à 0 dans « Prix », ou désactive « Modèles gratuits seulement ».",
+    "ignoredNotFree": "Non utilisé : il n'est pas connu comme gratuit et « Modèles gratuits seulement » est activé. Mets son prix à 0 dans « Prix » s'il est gratuit."
   },
   "avatars": {
     "fox": "Renard",
