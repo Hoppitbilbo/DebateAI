@@ -262,7 +262,7 @@ func TestRoomExportAndImport(t *testing.T) {
 	marco := joinRoom(t, s, opened.Room.Code, "Marco")
 	joinRoom(t, s, opened.Room.Code, "Anon")
 	ss, _ := s.SessionSvc.Start(marco, NewAttempt{AppType: "convinci-tu", AssignmentID: a.ID, Title: "Tentativo"})
-	s.Sessions.SaveTranscript(ss.ID, `[{"role":"user","content":"ciao"}]`, 1, nil)
+	s.Sessions.SaveTranscript(ss.ID, domain.TranscriptSave{JSON: `[{"role":"user","content":"ciao"}]`, Turns: 1})
 	room, _ := s.RoomSvc.ForTeacher(teacher, opened.Room.ID)
 
 	export, err := s.RoomTransfer.Export(room)

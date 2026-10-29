@@ -1,6 +1,7 @@
 package store
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/Hoppitbilbo/DebateAI/server/internal/domain"
@@ -28,11 +29,11 @@ func TestActivitySessionsLifecycle(t *testing.T) {
 	}
 
 	ctx := `{"topic":"guerra"}`
-	if err := r.SaveTranscript(id, `[{"role":"user","content":"ciao"}]`, 1, &ctx); err != nil {
-		t.Fatal(err)
+	if rev, err := r.SaveTranscript(id, domain.TranscriptSave{JSON: `[{"role":"user","content":"ciao"}]`, Turns: 1, Context: &ctx}); err != nil || rev != 1 {
+		t.Fatal(rev, err)
 	}
-	r.SaveJudgement(id, `{"engine":"jev"}`, 60)
-	r.SetStatus(id, domain.SessionGoalReached)
+	r.SaveJudgement(id, `{"engine":"jev"}`, 60, 1)
+	r.SetStatus(id, domain.SessionActive, domain.SessionGoalReached)
 	r.AddCost(id, 0.5)
 	r.AddCost(id, 0.25)
 	d, err := r.Detail(id)
@@ -48,13 +49,61 @@ func TestActivitySessionsLifecycle(t *testing.T) {
 	if latest := r.Latest(stud, aid); latest == nil || r.Latest(teacher, aid) != nil {
 		t.Fatal("latest")
 	}
-	if r.CountStarted(aid) != 1 || r.CountFinished(aid) != 1 || r.CountAttempts(stud, aid) != 2 || r.CountWithTurns() != 1 {
-		t.Fatal("counts")
+	if stats, _ := r.StatsForClass(classID); stats[aid].Started != 1 || stats[aid].Completed != 1 || r.CountWithTurns() != 1 {
+		t.Fatalf("counts: %+v", stats)
+	}
+	if best, _ := r.BestPerUser(aid); best[stud].Session == nil || best[stud].Session.ID != id || best[stud].Attempts != 2 {
+		t.Fatalf("best per user: %+v", best)
+	}
+	if latest, _ := r.LatestPerAssignment(stud); latest[aid] == nil || latest[aid].ID != r.Latest(stud, aid).ID {
+		t.Fatalf("latest per assignment: %+v", latest)
 	}
 	if cells, _ := r.BestPerStudent(classID); len(cells) != 1 || cells[0].SessionID != id || *cells[0].Score != 8 {
 		t.Fatalf("best per student: %+v", cells)
 	}
 	if owner, status, err := r.Owner(id); err != nil || *owner != stud || status != domain.SessionCompleted {
 		t.Fatalf("owner: %v %v %s", err, owner, status)
+	}
+}
+
+func TestActivitySessionsConditionalWrites(t *testing.T) {
+	db := openTestDB(t)
+	stud, _ := NewUsers(db).Create("s@x.it", "Sara", "", domain.RoleStudent, "it")
+	r := NewActivitySessions(db)
+	id, _ := r.Create(domain.NewSession{UserID: stud, AppType: "wiki-chatbot", Title: "1", Context: "{}"})
+	save := func(turns int, base *int64) (int64, error) {
+		return r.SaveTranscript(id, domain.TranscriptSave{JSON: "[]", Turns: turns, BaseRevision: base})
+	}
+
+	rev1, _ := save(1, nil)
+	rev2, _ := save(2, &rev1)
+	if rev2 != 2 {
+		t.Fatalf("revision %d", rev2)
+	}
+	if _, err := save(2, &rev1); !errors.Is(err, domain.ErrStaleRevision) {
+		t.Fatalf("a save on an old revision must be refused: %v", err)
+	}
+
+	// the verdict on revision 2 arrives first; the late one on revision 1 is dropped
+	if ok, _ := r.SaveJudgement(id, `{"n":2}`, 80, rev2); !ok {
+		t.Fatal("newer verdict not stored")
+	}
+	if ok, _ := r.SaveJudgement(id, `{"n":1}`, 30, rev1); ok {
+		t.Fatal("older verdict overwrote a newer one")
+	}
+	if d, _ := r.Detail(id); d.Progress != 80 || d.Revision != 2 {
+		t.Fatalf("detail: %+v", d)
+	}
+
+	// a status change based on an old status does nothing
+	r.Complete(id, domain.SessionCompletion{Reflection: "r"})
+	if moved, _ := r.SetStatus(id, domain.SessionActive, domain.SessionGoalReached); moved {
+		t.Fatal("a late judge reopened a completed attempt")
+	}
+	if _, err := save(3, nil); !errors.Is(err, domain.ErrSessionCompleted) {
+		t.Fatalf("a completed attempt must not be rewritten: %v", err)
+	}
+	if ss, _ := r.Summary(id); ss.Status != domain.SessionCompleted || ss.Turns != 2 {
+		t.Fatalf("summary: %+v", ss)
 	}
 }

@@ -49,7 +49,7 @@ func newTranscriptFixture(t *testing.T, assignment map[string]any, goalScore flo
 	var a domain.Assignment
 	owner.do("POST", fmtPath("/api/classes/%d/assignments", cls.ID), fields, &a)
 	var sess domain.SessionSummary
-	if code := owner.do("POST", "/api/sessions", map[string]any{"appType": "wiki-chatbot", "assignmentId": a.ID}, &sess); code != 201 {
+	if code := owner.do("POST", "/api/sessions", map[string]any{"appType": fields["appType"], "assignmentId": a.ID}, &sess); code != 201 {
 		t.Fatalf("create session %d", code)
 	}
 	return &transcriptFixture{s: s, owner: owner, session: sess.ID, judge: d}
@@ -85,7 +85,7 @@ func keys(m map[string]any) string {
 func TestSaveTranscriptResponseShape(t *testing.T) {
 	f := newTranscriptFixture(t, map[string]any{"maxTurns": 10, "autoEnd": false}, 0.2)
 	out := f.save(t, map[string]any{"messages": userTurns(1)})
-	if got := keys(out); got != "ended,jev,maxTurns,progress,reason,status,turns" {
+	if got := keys(out); got != "ended,jev,maxTurns,progress,reason,revision,status,turns" {
 		t.Fatalf("response keys changed: %s", got)
 	}
 	if out["status"] != "active" || out["ended"] != false || out["turns"] != 1.0 || out["maxTurns"] != 10.0 || out["reason"] != "" {
@@ -108,7 +108,7 @@ func TestSaveTranscriptFreeSessionIsNotJudged(t *testing.T) {
 	f.session = sess.ID
 
 	out := f.save(t, map[string]any{"messages": userTurns(3)})
-	if got := keys(out); got != "ended,progress,status,turns" {
+	if got := keys(out); got != "ended,progress,revision,status,turns" {
 		t.Fatalf("free session keys: %s", got)
 	}
 	if f.judge.decisions != 0 {
@@ -128,7 +128,7 @@ func TestSaveTranscriptAutoEndsWhenGoalReached(t *testing.T) {
 	if out["status"] != "goal_reached" || out["ended"] != true || f.judge.decisions != 1 || out["turns"] != 2.0 {
 		t.Fatalf("ended session: %v (decisions %d)", out, f.judge.decisions)
 	}
-	if got := keys(out); got != "ended,progress,status,turns" {
+	if got := keys(out); got != "ended,progress,revision,status,turns" {
 		t.Fatalf("ended session keys: %s", got)
 	}
 }
@@ -263,5 +263,35 @@ func TestSaveTranscriptJudgesAnEndedAttemptOnlyOnRequest(t *testing.T) {
 	f.owner.do("GET", fmtPath("/api/sessions/%d", f.session), nil, &d)
 	if d.Progress != 100 || d.Status != "turn_limit" {
 		t.Fatalf("stored: %d %s", d.Progress, d.Status)
+	}
+}
+
+func TestSaveTranscriptDoesNotJudgeTheSameConversationTwice(t *testing.T) {
+	f := newTranscriptFixture(t, map[string]any{"autoEnd": false}, 0.1)
+	f.save(t, map[string]any{"messages": userTurns(1)})
+	f.save(t, map[string]any{"messages": userTurns(1)}) // e.g. a retried save
+	if f.judge.decisions != 1 {
+		t.Fatalf("an unchanged transcript must not be judged again: %d", f.judge.decisions)
+	}
+	f.save(t, map[string]any{"messages": userTurns(1), "judge": true})
+	if f.judge.decisions != 2 {
+		t.Fatal("judge:true still forces it")
+	}
+}
+
+// In the mystery game the judge may end the game once the character is
+// found, also without goals: reason "identified".
+func TestSaveTranscriptMysteryEndsWhenTheCharacterIsIdentified(t *testing.T) {
+	f := newTranscriptFixture(t, map[string]any{"appType": "personaggio-misterioso", "instructions": "", "goals": []string{}, "autoEnd": false}, 0)
+	msgs := []map[string]string{{"role": "user", "content": "Sei Napoleone?"}, {"role": "assistant", "content": "Esatto, sono io! Complimenti!"}}
+	ctx := map[string]any{"character": "Napoleone Bonaparte"}
+	if out := f.save(t, map[string]any{"messages": msgs, "context": ctx}); out["ended"] == true {
+		t.Fatalf("not identified yet: %v", out)
+	}
+	f.judge.scores["identified"] = 0.95
+	msgs = append(msgs, map[string]string{"role": "user", "content": "Sei Napoleone Bonaparte?"})
+	out := f.save(t, map[string]any{"messages": msgs, "context": ctx, "judge": true})
+	if out["ended"] != true || out["reason"] != "identified" || out["status"] != "goal_reached" {
+		t.Fatalf("identified: %v", out)
 	}
 }

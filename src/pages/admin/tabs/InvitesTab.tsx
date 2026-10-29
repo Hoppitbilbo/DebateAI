@@ -30,7 +30,7 @@ const InvitesTab = () => {
                     <td className="py-2 pr-3">{inv.invitedBy}</td>
                     <td className="py-2 pr-3 text-xs">
                       {inv.acceptedAt ? <span className="text-primary">{t("platform.admin.invites.accepted", { date: formatDate(inv.acceptedAt, i18n.language) })}</span>
-                        : expired ? <span className="text-amber-400">{t("platform.admin.invites.expired")}</span>
+                        : expired ? <span className="text-warning">{t("platform.admin.invites.expired")}</span>
                         : <span>{inv.emailSent ? t("platform.invite.emailSent") : t("platform.invite.emailNotSent")}</span>}
                     </td>
                     <td className="py-2 text-right whitespace-nowrap">

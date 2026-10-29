@@ -37,6 +37,7 @@
   },
   "buttons": {
     "launchApp": "Empezar",
-    "comingSoon": "Próximamente"
+    "comingSoon": "Próximamente",
+    "launchNamed": "Empezar {{name}}"
   }
 }

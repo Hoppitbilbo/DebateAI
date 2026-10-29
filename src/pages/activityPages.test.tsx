@@ -2,7 +2,8 @@ import type { ReactNode } from "react";
 import { act, cleanup, fireEvent, render as renderPage, screen } from "@testing-library/react";
 import type { AiClient } from "@/services/aiClient";
 import AiClientProvider from "@/services/AiClientProvider";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import i18n from "@/i18n";
 import ConvinciTuPage from "./ConvinciTuPage";
 import ImpersonaTuPage from "./ImpersonaTuPage";
 import WikiChatbotPage from "./WikiChatbotPage";
@@ -25,6 +26,7 @@ const mocks = vi.hoisted(() => ({
   begin: vi.fn().mockResolvedValue(7),
   generateStream: vi.fn(),
   sync: vi.fn(),
+  judged: false,
 }));
 
 vi.mock("@/features/activity/useActivitySession", () => ({
@@ -40,6 +42,7 @@ vi.mock("@/features/activity/useActivitySession", () => ({
     begin: mocks.begin,
     sync: mocks.sync,
     markManualEnd: vi.fn(),
+    judgedLastTurn: () => mocks.judged,
   }),
 }));
 vi.mock("@/features/activity/components/ActivityShell", () => ({ default: ({ children }: { children: ReactNode }) => <div>{children}</div> }));
@@ -63,10 +66,14 @@ const fakeAi = {
 } as unknown as AiClient;
 const render = (page: ReactNode) => renderPage(<AiClientProvider client={fakeAi}>{page}</AiClientProvider>);
 
+// The labels below are the English ones.
+beforeAll(() => i18n.changeLanguage("en"));
+
 beforeEach(() => {
   vi.clearAllMocks();
   mocks.generateStream.mockResolvedValue("risposta");
   mocks.sync.mockResolvedValue(null);
+  mocks.judged = false;
 });
 afterEach(cleanup);
 
@@ -88,6 +95,9 @@ describe("ConvinciTuPage", () => {
     expect(startButton().disabled).toBe(false);
     await start();
     expect(mocks.begin).toHaveBeenCalledWith("Person Character: la guerra", { character: { title: "Person Character" }, topic: "la guerra", difficulty: "medium" });
+    const [opening] = mocks.generateStream.mock.calls[0];
+    expect(opening.system).toBeUndefined();
+    expect(opening.recipe).toMatchObject({ app: "convinci-tu", kind: "opening", character: "Person Character", topic: "la guerra", difficulty: "medium" });
     expect(screen.getByText(/Person Character/)).toBeTruthy(); // the intro names the character
     expect(screen.getByRole("textbox")).toBeTruthy(); // the chat input
   });
@@ -106,6 +116,15 @@ describe("ImpersonaTuPage", () => {
       topic: "la pace",
       difficulty: "medium",
     });
+    const [opening] = mocks.generateStream.mock.calls[0];
+    expect(opening.system).toBeUndefined();
+    expect(opening.recipe).toMatchObject({
+      app: "impersona-tu",
+      kind: "opening",
+      character: "Person AI character",
+      userCharacter: "Person Your character (you play them)",
+      topic: "la pace",
+    });
     expect(screen.getAllByText(/Person AI character/).length).toBeGreaterThan(0);
   });
 });
@@ -116,6 +135,10 @@ describe("WikiChatbotPage", () => {
     pickAll();
     await start();
     expect(mocks.begin).toHaveBeenCalledWith(expect.stringMatching(/^Person /), expect.objectContaining({ page: expect.anything() }));
+    // the server writes the prompt and the opening cue from the recipe
+    const [opening] = mocks.generateStream.mock.calls[0];
+    expect(opening.system).toBeUndefined();
+    expect(opening.recipe).toMatchObject({ app: "wiki-chatbot", kind: "opening", character: expect.stringMatching(/^Person /), uiLang: "en" });
   });
 });
 
@@ -127,6 +150,12 @@ describe("DoppiaIntervistaPage", () => {
     expect(mocks.begin).toHaveBeenCalledWith("Person Character 1 & Person Character 2", {
       characters: [{ title: "Person Character 1" }, { title: "Person Character 2" }],
     });
+    // each character opens with its own recipe, the other one swapped in
+    const recipes = mocks.generateStream.mock.calls.map(([o]) => o.recipe);
+    expect(recipes).toMatchObject([
+      { app: "doppia-intervista", kind: "opening", character: "Person Character 1", other: "Person Character 2" },
+      { app: "doppia-intervista", kind: "opening", character: "Person Character 2", other: "Person Character 1" },
+    ]);
     expect(screen.getAllByText(/Person Character 2/).length).toBeGreaterThan(0);
   });
 });
@@ -139,6 +168,14 @@ describe("YouModeratePage", () => {
     await start();
     expect(mocks.begin).toHaveBeenCalledWith("Person Character 1 vs Person Character 2: il potere", expect.anything());
     expect(mocks.generateStream).toHaveBeenCalledTimes(1); // the opening statement
+    expect(mocks.generateStream.mock.calls[0][0].recipe).toMatchObject({
+      app: "you-moderate",
+      kind: "opening",
+      character: "Person Character 1",
+      other: "Person Character 2",
+      topic: "il potere",
+      style: "a",
+    });
     expect(screen.getByText("risposta")).toBeTruthy();
   });
 });
@@ -150,8 +187,10 @@ describe("PersonaggioMisteriosoPage", () => {
     await start();
     expect(mocks.begin).toHaveBeenCalledWith(expect.any(String), { character: expect.stringMatching(/^Person /), questions: 7 });
     // the hidden character opens the game in its own voice, prompted by a stage direction
+    // the server writes the stage direction, announcing the questions of the recipe
     const [opening] = mocks.generateStream.mock.calls[0];
-    expect(opening.messages[0].content).toMatch(/7 questions/);
+    expect(opening.system).toBeUndefined();
+    expect(opening.recipe).toMatchObject({ app: "personaggio-misterioso", kind: "opening", questions: 7, character: expect.stringMatching(/^Person /) });
     expect(screen.getByText("risposta")).toBeTruthy();
     expect(screen.getByText("???")).toBeTruthy();
   });
@@ -216,5 +255,42 @@ describe("PersonaggioMisteriosoPage end of game", () => {
     expect(screen.getByText(/No questions left!/)).toBeTruthy();
     expect(screen.queryByRole("textbox")).toBeNull();
     expect(screen.queryByLabelText("Your answer")).toBeNull();
+  });
+});
+
+describe("PersonaggioMisteriosoPage found in the chat", () => {
+  // The picked character is "Person Secret character" (see the CharacterPicker mock).
+  const askName = async () => {
+    fireEvent.change(screen.getByRole("textbox"), { target: { value: "Are you Person Secret character?" } });
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: "Send" }));
+    });
+  };
+
+  it("without a judge, naming the character wins after its answer and goes on to the reflection", async () => {
+    render(<PersonaggioMisteriosoPage />);
+    pickAll();
+    await start();
+    mocks.generateStream.mockResolvedValueOnce("Yes, it's me! Congratulations!");
+    await askName();
+    expect(mocks.sync).toHaveBeenLastCalledWith(expect.any(Array), expect.anything(), { judge: true });
+    expect(screen.getByText("Yes, it's me! Congratulations!")).toBeTruthy();
+    expect(screen.getByText(/You got it: it's Person Secret character!/)).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: /Next: reflection/ }));
+    expect(screen.queryByLabelText("Your answer")).toBeNull(); // no separate guess
+  });
+
+  it("with a judge, the judge decides: identified wins, otherwise the game goes on", async () => {
+    render(<PersonaggioMisteriosoPage />);
+    pickAll();
+    await start();
+    mocks.judged = true;
+    await askName(); // the judge did not confirm it
+    expect(screen.queryByText(/You got it/)).toBeNull();
+    expect(screen.getByRole("textbox")).toBeTruthy();
+
+    mocks.sync.mockResolvedValue("identified");
+    await askName();
+    expect(screen.getByText(/You got it: it's Person Secret character!/)).toBeTruthy();
   });
 });

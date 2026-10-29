@@ -15,6 +15,25 @@ type priceBook interface {
 	priceFor(providerID int64, model string) price
 }
 
+// memoPrices answers each provider/model once (Decorator): the strategies
+// ask inside sort comparators, and each lookup reads the database.
+type memoPrices struct {
+	priceBook
+	seen map[RouteTarget]price
+}
+
+func memoize(b priceBook) memoPrices { return memoPrices{b, map[RouteTarget]price{}} }
+
+func (m memoPrices) priceFor(providerID int64, model string) price {
+	k := RouteTarget{ProviderID: providerID, Model: model}
+	if p, ok := m.seen[k]; ok {
+		return p
+	}
+	p := m.priceBook.priceFor(providerID, model)
+	m.seen[k] = p
+	return p
+}
+
 func isFreeTarget(prices priceBook, t RouteTarget) bool {
 	p := prices.priceFor(t.ProviderID, t.Model)
 	return p.Known && p.In == 0 && p.Out == 0
@@ -112,7 +131,7 @@ func (g *aiGateway) Targets(task string) []RouteTarget {
 	if g.BudgetExceeded() {
 		strategy = freeOnly{strategy}
 	}
-	return strategy.order(taskTargets(rt.Tasks, task), g)
+	return strategy.order(taskTargets(rt.Tasks, task), memoize(g))
 }
 
 // roomRoutingKey marks a context whose AI calls come from a room guest.
@@ -147,7 +166,7 @@ func (g *aiGateway) TargetsFor(ctx context.Context, task string) []RouteTarget {
 	if rs.FreeOnly || g.BudgetExceeded() {
 		strategy = freeOnly{strategy}
 	}
-	return strategy.order(list, g)
+	return strategy.order(list, memoize(g))
 }
 
 // RoomTargets returns, for each task rooms may use, the targets a room

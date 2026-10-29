@@ -65,7 +65,7 @@ type classStore interface {
 	Members(classID int64) []domain.Member
 	Students(classID int64) ([]domain.User, error)
 	CountStudents(classID int64) int
-	CountMemberships(userID int64) int
+	CountMemberships() (map[int64]int, error)
 	AddMember(classID, userID int64, role string) error
 	RemoveMember(classID, userID int64) error
 	IsMember(classID, userID int64) bool
@@ -94,17 +94,32 @@ type sessionStore interface {
 	Owner(id int64) (userID *int64, status string, err error)
 	Create(n domain.NewSession) (int64, error)
 	AbandonEmpty(userID, assignmentID int64) error
-	SaveTranscript(id int64, transcriptJSON string, turns int, context *string) error
-	SaveJudgement(id int64, judgementJSON string, progress int) error
-	SetStatus(id int64, status string) error
+	SaveTranscript(id int64, s domain.TranscriptSave) (revision int64, err error)
+	SaveJudgement(id int64, judgementJSON string, progress int, revision int64) (bool, error)
+	SetStatus(id int64, from, to string) (bool, error)
 	Complete(id int64, c domain.SessionCompletion) error
 	SetTeacherFeedback(id int64, f domain.TeacherFeedback) error
 	AddCost(id int64, usd float64) error
 	CountWithTurns() int
-	CountStarted(assignmentID int64) int
-	CountFinished(assignmentID int64) int
-	CountAttempts(userID, assignmentID int64) int
+	BestPerUser(assignmentID int64) (map[int64]domain.BestAttempt, error)
+	LatestPerAssignment(userID int64) (map[int64]*domain.SessionSummary, error)
+	StatsForClass(classID int64) (map[int64]domain.AssignStats, error)
 	Import(userID int64, assignmentID *int64, d domain.SessionDetail) (int64, error)
+}
+
+// inflightStore holds the AI calls in progress: generation slots and budget
+// reservations, each checked and taken in one atomic statement.
+type inflightStore interface {
+	Acquire(scope string, limit int, expiresAt string) (id int64, ok bool, err error)
+	ReserveBudget(cost, budget float64, monthStart, expiresAt string) (id int64, ok bool, err error)
+	Reserved() (float64, error)
+	Release(id int64) error
+}
+
+type liveGrantStore interface {
+	Create(g domain.LiveGrant) error
+	Consume(id string) (*domain.LiveGrant, error)
+	UsedBySession(sessionID int64) (bool, error)
 }
 
 type roomStore interface {
@@ -149,11 +164,11 @@ type priceStore interface {
 
 type usageStore interface {
 	Insert(u domain.UsageRecord) error
-	SpendSince(since string) float64
-	UserSpendSince(userID int64, since string) float64
+	SpendSince(since string) (float64, error)
+	SpendPerUserSince(since string) (map[int64]float64, error)
 	CountSince(since string, onlyErrors bool) int
-	CountUserRequestsSince(userID int64, since, excludedTask string) int
-	CountRoomRequestsSince(roomID int64, since, excludedTask string) int
+	CountUserRequestsSince(userID int64, since, excludedTask string) (int, error)
+	CountRoomRequestsSince(roomID int64, since, excludedTask string) (int, error)
 	Aggregate(since string, by domain.UsageGrouping, limit int) []domain.UsageAggregate
 	Recent(limit int) ([]domain.UsageLogRow, error)
 }

@@ -10,10 +10,12 @@ import { useActivitySession } from "./useActivitySession";
 const mocks = vi.hoisted(() => ({
   user: null as null | { id: number },
   api: { get: vi.fn(), post: vi.fn(), put: vi.fn() },
+  evaluateSession: vi.fn(),
 }));
 
 vi.mock("@/context/auth", () => ({ useAuth: () => ({ user: mocks.user }) }));
 vi.mock("@/lib/api", () => ({ api: mocks.api }));
+vi.mock("@/services/aiService", () => ({ evaluateSession: mocks.evaluateSession }));
 
 const assignment = { id: 5, appType: "convinci-tu", maxTurns: 3, minTurns: 1, allowLive: false, requireReflection: false };
 
@@ -32,6 +34,7 @@ const msg = (role: ActivityMessage["role"], content: string, extra: Partial<Acti
 beforeEach(() => {
   mocks.user = null;
   Object.values(mocks.api).forEach((fn) => fn.mockReset());
+  mocks.evaluateSession.mockReset();
   vi.spyOn(console, "warn").mockImplementation(() => {});
 });
 
@@ -122,6 +125,7 @@ describe("server session", () => {
         { role: "user", content: "ciao", name: "Io" },
       ],
       context: { topic: "guerra" },
+      baseRevision: 0,
     });
     expect(reason).toBe("goal_reached");
     expect(result.current.endReason).toBe("goal_reached");
@@ -139,25 +143,44 @@ describe("server session", () => {
     expect(result.current.endReason).toBeNull();
   });
 
-  it("drops the answer of a sync superseded by a newer one", async () => {
+  it("sends saves one at a time on the previous revision and drops a superseded answer", async () => {
     const { result } = await loggedIn();
     let resolveFirst: (v: unknown) => void = () => {};
     mocks.api.put
       .mockImplementationOnce(() => new Promise((r) => (resolveFirst = r)))
-      .mockResolvedValueOnce({ status: "active", turns: 2, progress: 0, ended: false });
+      .mockResolvedValueOnce({ status: "active", turns: 2, progress: 0, ended: false, revision: 2 });
 
     let first: Promise<unknown> = Promise.resolve();
+    let second: Promise<unknown> = Promise.resolve();
     await act(async () => {
       first = result.current.sync([msg("user", "uno")]);
-      await result.current.sync([msg("user", "uno"), msg("user", "due")]);
+      second = result.current.sync([msg("user", "uno"), msg("user", "due")]);
     });
+    // the second save waits for the first
+    expect(mocks.api.put).toHaveBeenCalledTimes(1);
     let firstReason: unknown;
     await act(async () => {
-      resolveFirst({ status: "turn_limit", ended: true, reason: "turn_limit" });
+      resolveFirst({ status: "turn_limit", ended: true, reason: "turn_limit", revision: 1 });
       firstReason = await first;
+      await second;
     });
+    expect(mocks.api.put).toHaveBeenCalledTimes(2);
+    expect(mocks.api.put.mock.calls[0][1].baseRevision).toBe(0);
+    expect(mocks.api.put.mock.calls[1][1].baseRevision).toBe(1);
     expect(firstReason).toBeNull();
     expect(result.current.endReason).toBeNull();
+  });
+
+  it("saves without a base revision after a stale one", async () => {
+    const { result } = await loggedIn();
+    mocks.api.put
+      .mockRejectedValueOnce(Object.assign(new Error("stale"), { code: "stale_revision" }))
+      .mockResolvedValueOnce({ status: "active", turns: 1, progress: 0, ended: false, revision: 5 });
+    await act(async () => {
+      await result.current.sync([msg("user", "uno")]);
+      await result.current.sync([msg("user", "uno")]);
+    });
+    expect(mocks.api.put.mock.calls[1][1]).not.toHaveProperty("baseRevision");
   });
 
   it("swallows sync errors", async () => {
@@ -199,8 +222,87 @@ describe("server session", () => {
 
     mocks.api.post.mockResolvedValue({ ok: true });
     await act(async () => {
-      await result.current.complete({ reflection: "r", evaluation: "e" });
+      await result.current.complete({ reflection: "r" });
     });
-    expect(mocks.api.post).toHaveBeenLastCalledWith("/api/sessions/42/complete", { reflection: "r", evaluation: "e" });
+    expect(mocks.api.post).toHaveBeenLastCalledWith("/api/sessions/42/complete", { reflection: "r" });
+  });
+
+  it("reports a failed save and sends it again on retry", async () => {
+    const { result } = await loggedIn();
+    mocks.api.put.mockRejectedValueOnce(new Error("offline")).mockResolvedValueOnce({ status: "active", turns: 1, progress: 0, ended: false, revision: 1 });
+    await act(async () => {
+      await result.current.sync([msg("user", "ciao")]);
+    });
+    expect(result.current.saveState).toBe("failed");
+    await act(async () => {
+      await result.current.retrySave();
+    });
+    expect(mocks.api.put).toHaveBeenCalledTimes(2);
+    expect(mocks.api.put.mock.calls[1][1].messages).toEqual([{ role: "user", content: "ciao", name: undefined }]);
+    expect(result.current.saveState).toBe("saved");
+  });
+
+  it("tells a failed hand-in from a successful one", async () => {
+    const { result } = await loggedIn();
+    mocks.api.post.mockRejectedValueOnce(new Error("offline"));
+    let ok: unknown;
+    await act(async () => {
+      ok = await result.current.complete({ reflection: "r" });
+    });
+    expect(ok).toBe(false);
+    expect(result.current.submitState).toBe("failed");
+
+    mocks.api.post.mockResolvedValueOnce({ ok: true });
+    await act(async () => {
+      ok = await result.current.retrySubmit();
+    });
+    expect(ok).toBe(true);
+    expect(result.current.submitState).toBe("submitted");
+    expect(mocks.api.post).toHaveBeenLastCalledWith("/api/sessions/42/complete", { reflection: "r" });
+  });
+
+  it("counts an attempt the server already has as handed in", async () => {
+    const { result } = await loggedIn();
+    mocks.api.post.mockRejectedValueOnce(Object.assign(new Error("done"), { code: "session_completed" }));
+    let ok: unknown;
+    await act(async () => {
+      ok = await result.current.complete({ reflection: "r" });
+    });
+    expect(ok).toBe(true);
+    expect(result.current.submitState).toBe("submitted");
+  });
+
+  it("has the server evaluate after the last save, and keeps failed AI lines out of the transcript", async () => {
+    const { result } = await loggedIn();
+    let finishSave: (v: unknown) => void = () => {};
+    mocks.api.put.mockReturnValueOnce(new Promise((resolve) => (finishSave = resolve)));
+    mocks.evaluateSession.mockResolvedValue({ evaluation: "## Bravo", scoreConversation: 8 });
+    let graded: unknown;
+    await act(async () => {
+      void result.current.sync([msg("user", "ciao"), msg("assistant", "network down", { error: true })]);
+      const evaluation = result.current.evaluate({ reflection: "r", activity: "a", characters: "c", locale: "it" }, () => {});
+      await Promise.resolve();
+      expect(mocks.evaluateSession).not.toHaveBeenCalled();
+      finishSave({ status: "active", turns: 1, progress: 0, ended: false, revision: 1 });
+      graded = await evaluation;
+    });
+    expect(mocks.api.put.mock.calls[0][1].messages).toEqual([{ role: "user", content: "ciao", name: undefined }]);
+    expect(mocks.evaluateSession).toHaveBeenCalledWith(42, expect.objectContaining({ reflection: "r" }), expect.any(Function));
+    expect(graded).toEqual({ evaluation: "## Bravo", scoreConversation: 8 });
+    expect(result.current.submitState).toBe("submitted");
+  });
+
+  it("marks the attempt as not saved when it could not be created", async () => {
+    mocks.user = { id: 1 };
+    mocks.api.post.mockRejectedValue(new Error("down"));
+    const { result } = render();
+    let id: unknown = 1;
+    await act(async () => {
+      id = await result.current.begin("t");
+    });
+    expect(id).toBeNull();
+    expect(result.current.startFailed).toBe(true);
+    expect(result.current.starting).toBe(false);
   });
 });
+

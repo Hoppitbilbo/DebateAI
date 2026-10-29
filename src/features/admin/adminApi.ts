@@ -94,7 +94,7 @@ export interface UsageSummary {
   monthSpendUsd: number;
   budget: { monthlyUsd: number; warnPercent: number; blockPaidWhenExceeded: boolean };
 }
-export interface UsageLogRow { id: number; createdAt: string; user: string; sessionId?: number; provider: string; model: string; task: string; inputTokens: number; outputTokens: number; costUsd: number; ok: boolean; latencyMs: number; error?: string }
+export interface UsageLogRow { id: number; createdAt: string; user: string; sessionId?: number; provider: string; model: string; task: string; inputTokens: number; outputTokens: number; costUsd: number; ok: boolean; latencyMs: number; error?: string; estimated?: boolean; unpriced?: boolean; firstDeltaMs?: number; firstTextMs?: number }
 
 /** Usage aggregated over the last `days` days. */
 export const useUsageSummary = (days: string) =>

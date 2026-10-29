@@ -72,5 +72,7 @@
     "teachersShare": "Teachers, share your ideas and classroom experiments!"
   },
   "startVoiceInput": "Start voice input",
-  "stopVoiceInput": "Stop voice input"
+  "stopVoiceInput": "Stop voice input",
+  "typeToSearch": "Type a name to search.",
+  "searchFailed": "Wikipedia did not answer: check the connection."
 }

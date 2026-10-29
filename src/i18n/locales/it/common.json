@@ -84,5 +84,8 @@
     "teachersShare": "Docenti, condividete le vostre idee e sperimentazioni in classe!"
   },
   "startVoiceInput": "Avvia input vocale",
-  "stopVoiceInput": "Ferma input vocale"
+  "stopVoiceInput": "Ferma input vocale",
+  "typeToSearch": "Scrivi un nome per cercare.",
+  "searchFailed": "La ricerca su Wikipedia non ha risposto: controlla la connessione.",
+  "retry": "Riprova"
 }

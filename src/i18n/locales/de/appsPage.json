@@ -7,7 +7,8 @@
   },
   "buttons": {
     "launchApp": "Starten",
-    "comingSoon": "Bald verfügbar"
+    "comingSoon": "Bald verfügbar",
+    "launchNamed": "{{name}} starten"
   },
   "appCards": {
     "youModerate": {

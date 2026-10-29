@@ -440,3 +440,94 @@ func (f firstMessageProvider) Generate(ctx context.Context, req ai.Request) (*ai
 	*f.first = req.Messages[0]
 	return f.fakeProvider.Generate(ctx, req)
 }
+
+// failingSpend is a usage store whose spending cannot be read.
+type failingSpend struct{ usageStore }
+
+func (failingSpend) SpendSince(string) (float64, error) { return 0, errors.New("db down") }
+
+func TestBudgetFailsClosedWhenSpendingIsUnreadable(t *testing.T) {
+	s := newTestServer(t)
+	if err := s.Settings.SaveBudget(BudgetSettings{MonthlyUSD: 1, BlockPaidWhenExceeded: true}); err != nil {
+		t.Fatal(err)
+	}
+	s.Gateway.usage = failingSpend{s.Gateway.usage}
+	if !s.Gateway.BudgetExceeded() {
+		t.Fatal("an unreadable spending must block paid models")
+	}
+	if err := s.Settings.SaveBudget(BudgetSettings{MonthlyUSD: 1}); err != nil {
+		t.Fatal(err)
+	}
+	if s.Gateway.BudgetExceeded() {
+		t.Fatal("without blocking, the budget never blocks")
+	}
+}
+
+func TestLiveUsageOnlyAgainstOwnGrant(t *testing.T) {
+	s := newTestServer(t)
+	now := time.Now().UTC()
+	owner, _ := s.Accounts.CreateUser("a@x.it", "", "", domain.RoleStudent, "it")
+	other, _ := s.Accounts.CreateUser("b@x.it", "", "", domain.RoleStudent, "it")
+	grant := func(id string, user *int64) {
+		if err := s.LiveGrants.Create(domain.LiveGrant{ID: id, UserID: user, ProviderID: 1, Model: "live", CreatedAt: now.Format(time.RFC3339), ExpiresAt: now.Add(time.Hour).Format(time.RFC3339)}); err != nil {
+			t.Fatal(err)
+		}
+	}
+	grant("mine", &owner)
+	if _, err := s.Gateway.RecordLiveUsage(LiveUsage{GrantID: "mine", UserID: &other, InputTokens: 1}); !errors.Is(err, ErrLiveGrant) {
+		t.Fatalf("another user's grant: %v", err)
+	}
+	grant("anon", nil)
+	if _, err := s.Gateway.RecordLiveUsage(LiveUsage{GrantID: "anon", UserID: &owner, InputTokens: 1}); !errors.Is(err, ErrLiveGrant) {
+		t.Fatalf("an anonymous grant reported by a user: %v", err)
+	}
+	grant("again", &owner)
+	if _, err := s.Gateway.RecordLiveUsage(LiveUsage{GrantID: "again", UserID: &owner, InputTokens: 1}); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := s.Gateway.RecordLiveUsage(LiveUsage{GrantID: "again", UserID: &owner, InputTokens: 1}); !errors.Is(err, ErrLiveGrant) {
+		t.Fatalf("reported twice: %v", err)
+	}
+}
+
+// Only character answers are held back for the refusal check: an
+// evaluation shows its first words at once.
+func TestOnlyChatAnswersAreHeldBack(t *testing.T) {
+	for task, wantFirst := range map[string]string{TaskChat: "Hello there, ", TaskEvaluation: "Hello "} {
+		m := screenAnswers(wordStream{"Hello ", "there, ", "student."}, task)
+		var first string
+		if _, err := m.Stream(context.Background(), ai.Request{}, func(d string) error {
+			if first == "" {
+				first = d
+			}
+			return nil
+		}); err != nil {
+			t.Fatal(err)
+		}
+		// a chat answer shorter than the probe comes out whole, at the end
+		if task == TaskChat {
+			wantFirst = "Hello there, student."
+		}
+		if first != wantFirst {
+			t.Fatalf("%s: first delta %q, want %q", task, first, wantFirst)
+		}
+	}
+}
+
+// wordStream streams its words one by one.
+type wordStream []string
+
+func (w wordStream) Generate(ctx context.Context, req ai.Request) (*ai.Response, error) {
+	return &ai.Response{Text: strings.Join(w, "")}, nil
+}
+
+func (w wordStream) Stream(ctx context.Context, req ai.Request, onDelta func(string) error) (*ai.Response, error) {
+	for _, d := range w {
+		if err := onDelta(d); err != nil {
+			return nil, err
+		}
+	}
+	return &ai.Response{Text: strings.Join(w, "")}, nil
+}
+
+func (w wordStream) ListModels(ctx context.Context) ([]ai.ModelInfo, error) { return nil, nil }

@@ -126,7 +126,9 @@
     "copyInvite": "Copy invite link",
     "inviteCopied": "Invite link copied: whoever opens it joins without typing the code.",
     "pathTitle_one": "Path: {{count}} activity",
-    "pathTitle_other": "Path: {{count}} activities"
+    "pathTitle_other": "Path: {{count}} activities",
+    "loadFailed": "The room could not be loaded: check the connection.",
+    "connectionLost": "Connection lost, retrying… What you see may be out of date."
   },
   "import": {
     "title": "Import the work into a class",

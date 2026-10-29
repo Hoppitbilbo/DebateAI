@@ -10,7 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { AppType } from "@/lib/api";
 import { useAiClient } from "@/services/aiClient";
-import { uiLanguage } from "@/features/activity/prompts";
+import { uiLanguage } from "@/features/activity/language";
 import { APP_TYPES } from "@/features/activity/appCatalog";
 import LanguagePicker from "@/features/activity/components/LanguagePicker";
 import { TURN_BOUNDS } from "@/features/teacher/assignmentLimits";
@@ -121,7 +121,7 @@ export const LimitFields = ({ draft, onChange, idPrefix = "a" }: DraftProps) => 
 
       {limits.notes.length > 0 && (
         <div role="status" className="space-y-1 rounded-md border border-amber-400/50 bg-amber-400/10 p-3 text-sm">
-          <p className="flex items-center gap-2 font-medium"><AlertTriangle className="h-4 w-4 text-amber-400" /> {t("platform.teacher.form.limitsAdapted")}</p>
+          <p className="flex items-center gap-2 font-medium"><AlertTriangle className="h-4 w-4 text-warning" /> {t("platform.teacher.form.limitsAdapted")}</p>
           <ul className="list-disc space-y-0.5 pl-6 text-muted-foreground">
             {limits.notes.map((n) => <li key={n.key}>{t(`platform.teacher.form.limitNotes.${n.key}`, n.values)}</li>)}
           </ul>

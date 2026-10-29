@@ -7,6 +7,7 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "@/context/AuthContext";
 import { dashboardPath, useAuth } from "@/context/auth";
 import { lazyPage } from "@/lib/lazyPage";
+import i18n from "@/i18n";
 import { APP_TYPES } from "@/features/activity/appCatalog";
 import MorphGate from "@/features/navigation/MorphGate";
 import TourProvider from "@/features/tour/TourProvider";
@@ -23,9 +24,13 @@ const ConvinciTuPage = lazyPage(() => import("./pages/ConvinciTuPage"), ["/apps/
 const PersonaggioMisteriosoPage = lazyPage(() => import("./pages/PersonaggioMisteriosoPage"), ["/apps/personaggio-misterioso"]);
 const TeacherGuidePage = lazyPage(() => import("./pages/TeacherGuidePage"), ["/teacher-guide"]);
 const ImpersonaTuPage = lazyPage(() => import("./pages/ImpersonaTuPage"), ["/apps/impersona-tu"]);
-const TutorialsPage = lazyPage(() => import("./pages/TutorialsPage"), ["/tutorials"]);
-const TutorialPage = lazyPage(() => import("./pages/TutorialPage"), APP_TYPES.map((a) => `/apps/${a}/tutorial`));
-const TutorialPlayerPage = lazyPage(() => import("./pages/TutorialPlayerPage"), APP_TYPES.map((a) => `/tutorial-player/${a}`));
+// The tutorial texts are separate downloads (see i18n): their pages are ready
+// once the code and the texts have arrived.
+const withTexts = <M,>(load: () => Promise<M>, ...ns: string[]) => () =>
+  Promise.all([load(), i18n.loadNamespaces(ns)]).then(([m]) => m);
+const TutorialsPage = lazyPage(withTexts(() => import("./pages/TutorialsPage"), "tutorialsPage"), ["/tutorials"]);
+const TutorialPage = lazyPage(withTexts(() => import("./pages/TutorialPage"), "tutorial", "studentTutorial"), APP_TYPES.map((a) => `/apps/${a}/tutorial`));
+const TutorialPlayerPage = lazyPage(withTexts(() => import("./pages/TutorialPlayerPage"), "studentTutorial"), APP_TYPES.map((a) => `/tutorial-player/${a}`));
 const named = <T extends string>(loader: () => Promise<Record<T, React.ComponentType>>, key: T, paths: string[] = []) =>
   lazyPage(() => loader().then((m) => ({ default: m[key] })), paths);
 const authPages = () => import("./pages/auth/AuthPages");

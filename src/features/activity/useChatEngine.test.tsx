@@ -7,6 +7,7 @@ import type { ActivitySession } from "./useActivitySession";
 import type { AiClient } from "@/services/aiClient";
 import AiClientProvider from "@/services/AiClientProvider";
 import type { UseLiveAiOptions } from "@/hooks/useLiveAi";
+import type { PromptRecipe } from "@/services/aiService";
 
 // Characterization tests for useChatEngine (refactoring task 0.4).
 
@@ -39,6 +40,9 @@ const fakeSession = (overrides: Partial<ActivitySession> = {}) =>
     endReason: null,
     ...overrides,
   }) as unknown as ActivitySession;
+
+/** A character's recipe: the server writes its instructions. */
+const recipe: PromptRecipe = { app: "wiki-chatbot", kind: "reply", character: "Napoleone", difficulty: "medium", uiLang: "it" };
 
 const msg = (role: ActivityMessage["role"], content: string, extra: Partial<ActivityMessage> = {}): ActivityMessage => ({
   id: content,
@@ -89,7 +93,7 @@ describe("useChatEngine", () => {
     const session = fakeSession();
     const { result } = renderHook(() => useChatEngine({ session }), { wrapper: withAi });
     let turn: Promise<void>;
-    act(() => { turn = result.current.runTurn("Ciao", () => result.current.respond({ system: "s" })); });
+    act(() => { turn = result.current.runTurn("Ciao", () => result.current.respond({ recipe })); });
     act(() => onDelta("Uno", "Uno"));
     act(() => onDelta(" due", "Uno due"));
     expect(result.current.messages[1].content).toBe("");
@@ -176,12 +180,12 @@ describe("useChatEngine", () => {
 
     let text: unknown;
     await act(async () => {
-      text = await result.current.respond({ system: "sys", name: "Napoleone", maxTokens: 100 });
+      text = await result.current.respond({ recipe, name: "Napoleone", maxTokens: 100 });
     });
     expect(text).toBe("Salve");
     expect(mocks.generateStream.mock.calls[0][0]).toEqual({
       task: "chat",
-      system: "sys",
+      recipe,
       messages: [{ role: "user", content: "ciao" }],
       sessionId: 7,
       maxTokens: 100,
@@ -194,7 +198,7 @@ describe("useChatEngine", () => {
     const { result } = renderHook(() => useChatEngine({ session: fakeSession() }), { wrapper: withAi });
     let text: unknown;
     await act(async () => {
-      text = await result.current.respond({ system: "sys" });
+      text = await result.current.respond({ recipe });
     });
     expect(text).toBeNull();
     expect(result.current.messages[0]).toMatchObject({ content: "ERR: quota", error: true, streaming: false });
@@ -212,7 +216,7 @@ describe("useChatEngine", () => {
     const session = fakeSession();
     const { result } = renderHook(() => useChatEngine({ session }), { wrapper: withAi });
     mocks.generateStream.mockRejectedValueOnce(new Error("down")).mockResolvedValueOnce("eccomi");
-    await act(() => result.current.runTurn("ciao", () => result.current.respond({ system: "s", name: "N" })));
+    await act(() => result.current.runTurn("ciao", () => result.current.respond({ recipe, name: "N" })));
     const failed = result.current.messages[1];
     expect(failed).toMatchObject({ error: true, content: "ERR: down" });
     expect(result.current.canRetry(failed.id)).toBe(true);
@@ -222,16 +226,51 @@ describe("useChatEngine", () => {
     expect(session.sync).toHaveBeenCalledTimes(2);
   });
 
-  it("opens with the character's own words from a hidden stage direction", async () => {
+  it("opens with the character's own words, from a stage direction the server writes", async () => {
     const { result } = renderHook(() => useChatEngine({ session: fakeSession() }), { wrapper: withAi });
     mocks.generateStream.mockResolvedValueOnce("Sono Napoleone!");
-    await act(() => result.current.open({ system: "s", cue: "[apri]", name: "Napoleone", fallback: { role: "system", content: "intro" } }));
-    expect(mocks.generateStream.mock.calls[0][0].messages).toEqual([{ role: "user", content: "[apri]" }]);
+    await act(() => result.current.open({ recipe, name: "Napoleone", fallback: { role: "system", content: "intro" } }));
+    const sent = mocks.generateStream.mock.calls[0][0];
+    expect(sent.recipe).toEqual({ ...recipe, kind: "opening" });
+    expect(sent.messages).toEqual([]);
+    expect(sent.system).toBeUndefined();
     expect(result.current.messages).toMatchObject([{ role: "assistant", name: "Napoleone", content: "Sono Napoleone!" }]);
 
     mocks.generateStream.mockRejectedValueOnce(new Error("down"));
-    await act(() => result.current.open({ system: "s", cue: "[apri]", name: "Napoleone", fallback: { role: "system", content: "intro" } }));
+    await act(() => result.current.open({ recipe, name: "Napoleone", fallback: { role: "system", content: "intro" } }));
     expect(result.current.messages[1]).toMatchObject({ role: "system", content: "intro" });
     expect(mocks.toastError).not.toHaveBeenCalled();
+  });
+});
+
+describe("stop", () => {
+  it("keeps what was written, does not start the next speaker, and still saves the turn", async () => {
+    // The first reply writes a few words, then waits until it is aborted.
+    mocks.generateStream.mockImplementation((o: { signal?: AbortSignal }, onDelta: (d: string, full: string) => void) => {
+      onDelta("Ho vinto ", "Ho vinto ");
+      return new Promise((_, reject) => o.signal?.addEventListener("abort", () => reject(new DOMException("aborted", "AbortError"))));
+    });
+    const session = fakeSession();
+    const { result } = renderHook(() => useChatEngine({ session }), { wrapper: withAi });
+    let turn: Promise<unknown> = Promise.resolve();
+    act(() => {
+      turn = result.current.runTurn("Chi ha vinto?", async () => {
+        await result.current.respond({ recipe, name: "A" });
+        await result.current.respond({ recipe, name: "B" });
+      });
+    });
+    await act(async () => {
+      await Promise.resolve();
+      result.current.stop();
+      await turn;
+    });
+    expect(mocks.generateStream).toHaveBeenCalledTimes(1);
+    expect(result.current.messages.map((m) => [m.role, m.content, !!m.error, !!m.streaming])).toEqual([
+      ["user", "Chi ha vinto?", false, false],
+      ["assistant", "Ho vinto", false, false],
+    ]);
+    expect(mocks.toastError).not.toHaveBeenCalled();
+    expect(session.sync).toHaveBeenCalled();
+    expect(result.current.busy).toBe(false);
   });
 });

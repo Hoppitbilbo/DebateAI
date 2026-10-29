@@ -92,9 +92,15 @@ func (svc *assignmentService) ListForClass(classID int64) ([]*domain.Assignment,
 	if err != nil {
 		return nil, err
 	}
+	stats, err := svc.sessions.StatsForClass(classID)
+	if err != nil {
+		return nil, err
+	}
 	students := svc.classes.CountStudents(classID)
 	for _, a := range out {
-		a.Stats = &domain.AssignStats{Students: students, Started: svc.sessions.CountStarted(a.ID), Completed: svc.sessions.CountFinished(a.ID)}
+		st := stats[a.ID]
+		st.Students = students
+		a.Stats = &st
 	}
 	return out, nil
 }
@@ -102,10 +108,17 @@ func (svc *assignmentService) ListForClass(classID int64) ([]*domain.Assignment,
 // ListForStudent returns the student's assignments with their latest attempts.
 func (svc *assignmentService) ListForStudent(u *domain.User) ([]*domain.Assignment, error) {
 	out, err := svc.assignments.ListForStudent(u.ID)
-	for _, a := range out {
-		a.MySession = svc.sessions.Latest(u.ID, a.ID)
+	if err != nil {
+		return nil, err
 	}
-	return out, err
+	latest, err := svc.sessions.LatestPerAssignment(u.ID)
+	if err != nil {
+		return nil, err
+	}
+	for _, a := range out {
+		a.MySession = latest[a.ID]
+	}
+	return out, nil
 }
 
 // newAssignment reads the teacher's form for a new assignment, with the
@@ -190,10 +203,14 @@ func (svc *assignmentService) Progress(a *domain.Assignment) ([]StudentProgress,
 	if err != nil {
 		return nil, err
 	}
+	best, err := svc.sessions.BestPerUser(a.ID)
+	if err != nil {
+		return nil, err
+	}
 	out := []StudentProgress{}
 	for _, st := range students {
-		out = append(out, StudentProgress{UserID: st.ID, Name: st.Name, Email: st.Email,
-			Session: svc.sessions.Best(st.ID, a.ID), AttemptCount: svc.sessions.CountAttempts(st.ID, a.ID)})
+		b := best[st.ID]
+		out = append(out, StudentProgress{UserID: st.ID, Name: st.Name, Email: st.Email, Session: b.Session, AttemptCount: b.Attempts})
 	}
 	return out, nil
 }

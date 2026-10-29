@@ -7,7 +7,7 @@ import { appIconSrc } from "@/lib/appArt";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth";
 import { useBusyAction } from "@/hooks/useBusyAction";
-import { hostKeys, roomApi, RoomGuest, useRoomView } from "@/features/room/roomApi";
+import { hostKeys, roomApi, roomIsGone, RoomGuest, useRoomView } from "@/features/room/roomApi";
 import { useHostKey } from "@/features/room/useHostKey";
 import { formatCountdown, useCountdown } from "@/features/room/useCountdown";
 import { DashboardLayout, EmptyState, Panel, Spinner } from "../dashboard/common";
@@ -36,7 +36,19 @@ const HostRoomPage = () => {
   const [importing, setImporting] = useState(false);
 
   if (view.isLoading) return <DashboardLayout title="…"><Spinner /></DashboardLayout>;
-  if (view.isError || !view.data || left === 0) {
+  // "Closed" only when the server says so (or time is up); a network
+  // problem keeps the last view and keeps retrying.
+  if (!view.data && !roomIsGone(view.error)) {
+    return (
+      <DashboardLayout title="…">
+        <EmptyState>
+          {t("room.host.loadFailed")}{" "}
+          <Button variant="outline" size="sm" onClick={refresh}>{t("platform.activity.retry")}</Button>
+        </EmptyState>
+      </DashboardLayout>
+    );
+  }
+  if (roomIsGone(view.error) || !view.data || left === 0) {
     return (
       <DashboardLayout title={t("room.host.closedTitle")}>
         <EmptyState>{t("room.host.closedText")} <Link to="/aula/nuova" className="text-primary underline">{t("room.host.openAnother")}</Link></EmptyState>
@@ -68,6 +80,12 @@ const HostRoomPage = () => {
         </>
       }
     >
+      {view.isError && (
+        <p role="status" className="flex items-center gap-2 rounded-md border border-border bg-muted p-3 text-sm">
+          <AlertTriangle className="h-5 w-5 shrink-0" />{t("room.host.connectionLost")}
+        </p>
+      )}
+
       {left !== null && left <= SAVE_REMINDER_SECONDS && (
         <p role="status" className="flex items-center gap-2 rounded-md border border-amber-400 bg-amber-50 p-3 text-sm text-amber-900">
           <AlertTriangle className="h-5 w-5 shrink-0" />{t("room.host.saveReminder", { time: formatCountdown(left) })}

@@ -73,3 +73,79 @@ func TestAssignmentVisibility(t *testing.T) {
 		t.Fatalf("progress: %+v", p)
 	}
 }
+
+// Without an AI evaluation the attempt is handed in with the reflection
+// only, and once: a second hand-in does not rewrite it.
+func TestCompleteHandsInTheReflectionOnce(t *testing.T) {
+	s, _, _, stud, _ := visibilityFixture(t)
+	ss, err := s.SessionSvc.Start(stud, NewAttempt{AppType: "wiki-chatbot"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	d, _, err := s.SessionSvc.Load(stud, ss.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := s.SessionSvc.Complete(d, Completion{Reflection: "r"}); err != nil {
+		t.Fatal(err)
+	}
+	if err := s.SessionSvc.Complete(d, Completion{Reflection: "other"}); !errors.Is(err, domain.ErrSessionCompleted) {
+		t.Fatalf("second hand-in: %v", err)
+	}
+	if got, _ := s.Sessions.Detail(ss.ID); got.Reflection != "r" || got.ScoreConversation != nil || got.Status != domain.SessionCompleted {
+		t.Fatalf("stored: %+v", got)
+	}
+}
+
+// Progress, class stats and the student's list come from grouped queries:
+// each student gets their own best attempt and count, each assignment its
+// own latest attempt (audit #9).
+func TestProgressAndListsPerStudent(t *testing.T) {
+	s, _, _, anna, a := visibilityFixture(t)
+	published := true
+	s.AssignmentSvc.Update(a, AssignmentInput{Published: &published}, "http://site")
+	bea, _ := s.Accounts.CreateUser("b@x.it", "Bea", "", domain.RoleStudent, "it")
+	s.Classes.AddMember(a.ClassID, bea, domain.RoleStudent)
+
+	first, err := s.SessionSvc.Start(anna, NewAttempt{AppType: "wiki-chatbot", AssignmentID: a.ID})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := s.Sessions.SaveTranscript(first.ID, domain.TranscriptSave{JSON: `[]`, Turns: 1}); err != nil {
+		t.Fatal(err)
+	}
+	score := 7
+	if err := s.Sessions.Complete(first.ID, domain.SessionCompletion{Reflection: "r", ScoreConversation: &score}); err != nil {
+		t.Fatal(err)
+	}
+	second, err := s.SessionSvc.Start(anna, NewAttempt{AppType: "wiki-chatbot", AssignmentID: a.ID})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	p, err := s.AssignmentSvc.Progress(a)
+	if err != nil || len(p) != 2 {
+		t.Fatalf("progress: %v %+v", err, p)
+	}
+	for _, st := range p {
+		switch st.UserID {
+		case anna.ID:
+			if st.Session == nil || st.Session.ID != first.ID || st.AttemptCount != 2 {
+				t.Fatalf("anna's best is the completed attempt: %+v", st)
+			}
+		case bea:
+			if st.Session != nil || st.AttemptCount != 0 {
+				t.Fatalf("bea did not start: %+v", st)
+			}
+		}
+	}
+	list, err := s.AssignmentSvc.ListForClass(a.ClassID)
+	if err != nil || len(list) != 1 || *list[0].Stats != (domain.AssignStats{Students: 2, Started: 1, Completed: 1}) {
+		t.Fatalf("class stats: %v %+v", err, list[0].Stats)
+	}
+	mine, err := s.AssignmentSvc.ListForStudent(anna)
+	if err != nil || len(mine) != 1 || mine[0].MySession == nil || mine[0].MySession.ID != second.ID {
+		t.Fatalf("latest attempt: %v %+v", err, mine)
+	}
+
+}

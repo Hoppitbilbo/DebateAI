@@ -5,6 +5,7 @@ import { Loader2, MessageSquare, Search, Speech, User, Users, BookOpen } from "l
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/auth";
 import type { AppType, Role, SessionSummary } from "@/lib/api";
@@ -56,7 +57,7 @@ export const Panel = ({ title, actions, children, className, tour }: { title?: R
 export const StatTile = ({ label, value, hint, tone }: { label: string; value: React.ReactNode; hint?: React.ReactNode; tone?: "warn" | "ok" }) => (
   <div className="rounded-lg border border-border bg-card p-4 text-card-foreground">
     <p className="text-xs uppercase tracking-wide text-muted-foreground">{label}</p>
-    <p className={cn("mt-1 font-heading text-2xl font-bold", tone === "warn" ? "text-amber-400" : "text-foreground")}>{value}</p>
+    <p className={cn("mt-1 font-heading text-2xl font-bold", tone === "warn" ? "text-warning" : "text-foreground")}>{value}</p>
     {hint && <p className="mt-1 text-xs text-muted-foreground">{hint}</p>}
   </div>
 );
@@ -66,9 +67,9 @@ export const StatusBadge = ({ status }: { status?: SessionSummary["status"] | "t
   const s = status ?? "todo";
   const tone: Record<string, string> = {
     todo: "border-border text-muted-foreground",
-    active: "border-sky-400/60 text-sky-300",
+    active: "border-sky-400/60 text-info",
     goal_reached: "border-primary text-primary",
-    turn_limit: "border-amber-400/60 text-amber-300",
+    turn_limit: "border-amber-400/60 text-warning",
     completed: "border-primary bg-primary text-primary-foreground",
     abandoned: "border-border text-muted-foreground",
   };
@@ -78,6 +79,20 @@ export const StatusBadge = ({ status }: { status?: SessionSummary["status"] | "t
 export const EmptyState = ({ children }: { children: React.ReactNode }) => (
   <p className="rounded-md border border-dashed border-border p-6 text-center text-sm text-muted-foreground">{children}</p>
 );
+
+/**
+ * A list or page that could not be loaded: says so, instead of looking
+ * empty, and offers to try again.
+ */
+export const LoadError = ({ onRetry }: { onRetry: () => void }) => {
+  const { t } = useTranslation();
+  return (
+    <div role="alert" className="flex flex-col items-center gap-3 rounded-md border border-dashed border-destructive/50 p-6 text-center text-sm">
+      <p className="text-destructive">{t("platform.common.loadError")}</p>
+      <Button variant="outline" size="sm" onClick={onRetry}>{t("platform.activity.retry")}</Button>
+    </div>
+  );
+};
 
 export const Spinner = () => (
   <div className="flex justify-center p-8"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>

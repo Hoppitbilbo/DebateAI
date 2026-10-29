@@ -108,6 +108,12 @@ type (
 		Provider string `json:"provider"`
 		Model    string `json:"model"`
 	}
+	// evaluationDone ends the stream of an evaluation: the attempt is
+	// handed in with this result.
+	evaluationDone struct {
+		Done bool `json:"done"`
+		app.Evaluation
+	}
 )
 
 type liveUsageResponse struct {

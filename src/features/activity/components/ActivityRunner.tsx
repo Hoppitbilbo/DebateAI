@@ -4,9 +4,11 @@ import type { ActivityPhase, AppMeta } from "../types";
 import type { ActivityFlow, EvaluationBrief } from "../useActivityFlow";
 import ActivityShell from "./ActivityShell";
 import ChatPanel from "./ChatPanel";
+import { draftKey } from "../draft";
 import FeedbackStep from "./FeedbackStep";
 import ReflectionStep from "./ReflectionStep";
 import { SetupCard } from "./SetupCard";
+import { ChatSaveNotice, SubmitNotice } from "./SaveNotice";
 import { isForeignPractice, practiceLanguage } from "../language";
 
 type ChatPanelProps = ComponentProps<typeof ChatPanel>;
@@ -63,15 +65,23 @@ const ActivityRunner = ({ app, flow, onRestart, phaseLabels, setup, chat, reflec
       {/* Keyed by phase: each step enters with the phase-enter animation. */}
       <div key={phase} className="phase-enter">
         {phase === "setup" && (
-          <SetupCard title={setup.title} description={setup.description} onStart={setup.onStart} canStart={setup.canStart} starting={setup.starting}>
+          <SetupCard title={setup.title} description={setup.description} onStart={setup.onStart} canStart={setup.canStart} starting={setup.starting || session.starting}>
             {setup.children}
           </SetupCard>
+        )}
+
+        {phase === "chat" && (
+          <div className="mb-3 empty:hidden">
+            <ChatSaveNotice saveState={session.saveState} startFailed={session.startFailed} onRetry={() => void session.retrySave()} />
+          </div>
         )}
 
         {phase === "chat" && ready && (replacement ?? (
           <ChatPanel
             messages={engine.messages}
             busy={engine.busy}
+            onStop={engine.stop}
+            draftKey={draftKey(session.user?.id, `${app.type}:${session.assignment?.id ?? 0}`)}
             disabled={engine.ended}
             disabledReason={t("platform.activity.ended")}
             onEnd={flow.finishChat}
@@ -81,7 +91,7 @@ const ActivityRunner = ({ app, flow, onRestart, phaseLabels, setup, chat, reflec
             onRetry={(id) => void engine.retry(id)}
             canRetry={engine.canRetry}
             ended={engine.ended && !engine.busy ? {
-              message: t(session.endReason === "goal_reached" ? "platform.activity.endedGoal" : "platform.activity.endedTurns"),
+              message: t(session.endReason === "turn_limit" ? "platform.activity.endedTurns" : "platform.activity.endedGoal"),
               continueLabel: t("platform.activity.continueToReflection"),
               onContinue: flow.finishChat,
             } : null}
@@ -112,6 +122,7 @@ const ActivityRunner = ({ app, flow, onRestart, phaseLabels, setup, chat, reflec
             onRestart={onRestart}
             restartLabel={feedback.restartLabel}
             isAssignment={!!session.assignment}
+            submission={<SubmitNotice state={session.submitState} assignment={!!session.assignment} onRetry={() => void session.retrySubmit()} />}
           />
         )}
       </div>

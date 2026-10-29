@@ -204,9 +204,9 @@ func (r *Classes) CountStudents(classID int64) int {
 	return count(r.db, `SELECT COUNT(*) FROM class_members WHERE class_id = ? AND role = 'student'`, classID)
 }
 
-// CountMemberships counts the classes a user belongs to.
-func (r *Classes) CountMemberships(userID int64) int {
-	return count(r.db, `SELECT COUNT(*) FROM class_members WHERE user_id = ?`, userID)
+// CountMemberships counts the classes each user belongs to, by user id.
+func (r *Classes) CountMemberships() (map[int64]int, error) {
+	return groupedInts(r.db, `SELECT user_id, COUNT(*) FROM class_members GROUP BY user_id`)
 }
 
 // AddMember adds a user to a class; an existing membership is kept as is.

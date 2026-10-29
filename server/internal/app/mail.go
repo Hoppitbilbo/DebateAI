@@ -160,6 +160,7 @@ func (m smtpMailer) SendMail(to, subject, body string) error {
 		if err != nil {
 			return err
 		}
+		_ = conn.SetDeadline(time.Now().Add(smtpExchangeTimeout))
 		c, err = smtp.NewClient(conn, cfg.Host)
 		if err != nil {
 			return err
@@ -169,6 +170,7 @@ func (m smtpMailer) SendMail(to, subject, body string) error {
 		if err != nil {
 			return err
 		}
+		_ = conn.SetDeadline(time.Now().Add(smtpExchangeTimeout)) // a stalled server cannot hold the worker
 		c, err = smtp.NewClient(conn, cfg.Host)
 		if err != nil {
 			return err
@@ -203,15 +205,6 @@ func (m smtpMailer) SendMail(to, subject, body string) error {
 		return err
 	}
 	return c.Quit()
-}
-
-// SendMailAsync is used for bulk notifications so HTTP handlers stay fast.
-func (m smtpMailer) SendMailAsync(to, subject, body string) {
-	go func() {
-		if err := m.SendMail(to, subject, body); err != nil && !errors.Is(err, errSMTPNotConfigured) {
-			log.Printf("mail to %s failed: %v", to, err)
-		}
-	}()
 }
 
 func linkify(s string) string {

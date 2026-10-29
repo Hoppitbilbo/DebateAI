@@ -25,10 +25,13 @@ type Services struct {
 	Prices        priceStore
 	Usage         usageStore
 	Rooms         roomStore
+	LiveGrants    liveGrantStore
+	Inflight      inflightStore
 
 	Crypto        *Crypto
 	Settings      *settingsService
 	Mailer        mailer
+	Outbox        *mailOutbox
 	Gateway       *aiGateway
 	Accounts      *authService
 	ClassSvc      *classService
@@ -61,19 +64,25 @@ func NewServices(cfg Config, db *sql.DB, opts ...Option) *Services {
 		Prices:        store.NewPrices(db),
 		Usage:         store.NewUsage(db),
 		Rooms:         store.NewRooms(db),
+		LiveGrants:    store.NewLiveGrants(db),
+		Inflight:      store.NewInflight(db),
 		Crypto:        NewCrypto(cfg.Secret),
 	}
-	sv.Settings = &settingsService{store: sv.SettingsStore, crypto: sv.Crypto, smtpDefaults: cfg.SMTP}
-	sv.Mailer = smtpMailer{settings: sv.Settings}
+	sv.Settings = &settingsService{store: newCachedSettings(sv.SettingsStore, settingsCacheTTL), crypto: sv.Crypto, smtpDefaults: cfg.SMTP}
+	direct := smtpMailer{settings: sv.Settings}
+	sv.Outbox = newMailOutbox(store.NewOutbox(db), direct.SendMail)
+	sv.Mailer = outboxMailer{smtpMailer: direct, outbox: sv.Outbox}
 	siteName := func() string { return sv.Settings.General().SiteName }
 	sv.Gateway = newAIGateway(sv.Providers, sv.Prices, sv.Usage, sv.Sessions, sv.Settings, sv.Crypto)
+	sv.Gateway.grants = sv.LiveGrants
+	sv.Gateway.inflight = sv.Inflight
 	sv.Accounts = &authService{users: sv.Users, logins: sv.Logins, invites: sv.Invites, classes: sv.Classes, mail: sv.Mailer, siteName: siteName}
 	sv.ClassSvc = &classService{classes: sv.Classes, rooms: sv.Rooms, users: sv.Users, accounts: sv.Accounts, mail: sv.Mailer,
 		siteName: siteName, mailOn: sv.Settings.MailConfigured}
 	sv.AssignmentSvc = &assignmentService{assignments: sv.Assignments, classes: sv.Classes, sessions: sv.Sessions, classSvc: sv.ClassSvc,
 		listeners: []assignmentListener{mailNotifier{classes: sv.Classes, mail: sv.Mailer, siteName: siteName}}}
 	sv.SessionSvc = &sessionService{sessions: sv.Sessions, assignments: sv.Assignments, classes: sv.Classes, classSvc: sv.ClassSvc,
-		judge: sv.Gateway, jevSettings: sv.Settings.Jev,
+		judge: sv.Gateway, generator: sv.Gateway, replies: store.NewReplies(db), voice: sv.LiveGrants, jevSettings: sv.Settings.Jev,
 		listeners: []feedbackListener{feedbackMailer{users: sv.Users, mail: sv.Mailer, siteName: siteName}}}
 	sv.RoomSvc = &roomService{rooms: sv.Rooms, sessions: sv.Sessions, assignments: sv.Assignments, classSvc: sv.ClassSvc,
 		accounts: sv.Accounts, usage: sv.Usage, settings: sv.Settings.Rooms, aiReady: sv.Gateway.RoomChatReady, now: time.Now}

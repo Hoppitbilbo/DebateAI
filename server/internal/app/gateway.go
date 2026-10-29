@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -23,6 +24,8 @@ type aiGateway struct {
 	prices    priceStore
 	usage     usageStore
 	sessions  sessionStore // to add the cost of a call to its session
+	grants    liveGrantStore
+	inflight  inflightStore
 	settings  *settingsService
 	crypto    *Crypto
 
@@ -32,11 +35,13 @@ type aiGateway struct {
 
 	provMu sync.Mutex
 	provs  map[int64]cachedProvider
+
+	health *targetHealth
 }
 
 func newAIGateway(providers providerStore, prices priceStore, usage usageStore, sessions sessionStore, settings *settingsService, crypto *Crypto) *aiGateway {
 	return &aiGateway{providers: providers, prices: prices, usage: usage, sessions: sessions, settings: settings, crypto: crypto,
-		newProvider: ai.New, provs: map[int64]cachedProvider{}}
+		newProvider: ai.New, provs: map[int64]cachedProvider{}, health: newTargetHealth()}
 }
 
 type cachedProvider struct {
@@ -105,13 +110,31 @@ func MonthStart() string {
 	return time.Date(n.Year(), n.Month(), 1, 0, 0, 0, 0, time.UTC).Format(time.RFC3339)
 }
 
+// MonthSpend is this month's spending, for display (0 if it cannot be read).
 func (g *aiGateway) MonthSpend() float64 {
-	return g.usage.SpendSince(MonthStart())
+	v, _ := g.usage.SpendSince(MonthStart())
+	return v
 }
 
+// BudgetExceeded reports whether paid models are blocked: the month's
+// spending plus the reservations of the paid calls in flight reach the
+// budget. When either cannot be read it fails closed: only free models are used.
 func (g *aiGateway) BudgetExceeded() bool {
-	b := g.settings.Budget()
-	return b.MonthlyUSD > 0 && b.BlockPaidWhenExceeded && g.MonthSpend() >= b.MonthlyUSD
+	budget, on := g.budgetEnforced()
+	if !on {
+		return false
+	}
+	spent, err := g.usage.SpendSince(MonthStart())
+	if err != nil {
+		log.Printf("budget: cannot read the month's spending, blocking paid models: %v", err)
+		return true
+	}
+	reserved, err := g.inflight.Reserved()
+	if err != nil {
+		log.Printf("budget: cannot read the reservations, blocking paid models: %v", err)
+		return true
+	}
+	return spent+reserved >= budget
 }
 
 // ---------- usage log ----------
@@ -127,20 +150,28 @@ type usageEntry struct {
 	OK         bool
 	Latency    time.Duration
 	Err        string
+	Estimated  bool // Usage is estimated from the text, not reported
+	// Stream timings from the start of the call (0 when not streamed or no text).
+	FirstDelta, FirstText time.Duration
 }
 
+// logUsage writes a call to the usage log and returns its cost. A model
+// without a known price is logged as unpriced rather than as free.
 func (g *aiGateway) logUsage(e usageEntry) float64 {
 	var cost float64
+	unpriced := false
 	if e.Usage.CostUSD != nil && *e.Usage.CostUSD >= 0 {
 		cost = *e.Usage.CostUSD
 	} else {
 		p := g.priceFor(e.ProviderID, e.Model)
 		cost = (float64(e.Usage.InputTokens)*p.In + float64(e.Usage.OutputTokens)*p.Out) / 1e6
+		unpriced = !p.Known && e.Usage.InputTokens+e.Usage.OutputTokens > 0
 	}
 	logIfErr("usage log", g.usage.Insert(domain.UsageRecord{
 		UserID: e.UserID, SessionID: e.SessionID, ProviderID: e.ProviderID, Provider: e.Provider, Model: e.Model, Task: e.Task,
 		InputTokens: e.Usage.InputTokens, OutputTokens: e.Usage.OutputTokens, CostUSD: cost, OK: e.OK,
-		LatencyMs: e.Latency.Milliseconds(), Error: e.Err,
+		LatencyMs: e.Latency.Milliseconds(), Error: e.Err, Estimated: e.Estimated, Unpriced: unpriced,
+		FirstDeltaMs: e.FirstDelta.Milliseconds(), FirstTextMs: e.FirstText.Milliseconds(),
 	}))
 	if e.SessionID != nil && cost > 0 {
 		logIfErr("add session cost", g.sessions.AddCost(*e.SessionID, cost))
@@ -191,8 +222,13 @@ func (g *aiGateway) Generate(ctx context.Context, task string, req ai.Request, u
 		}
 		return nil, ErrNoTargets
 	}
-	call := genCall{task: task, req: req, userID: userID, sessionID: sessionID}
+	call := genCall{task: task, req: req, userID: userID, sessionID: sessionID, firstTextBy: time.Now().Add(firstTextBudget)}
 	call.req.Messages = userFirst(req.Messages)
+	if onDelta == nil {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(ctx, generateDeadline)
+		defer cancel()
+	}
 	var started atomic.Bool
 	if onDelta != nil {
 		call.onDelta = func(d string) error {
@@ -215,7 +251,7 @@ func (g *aiGateway) Generate(ctx context.Context, task string, req ai.Request, u
 	}, func(err error) bool {
 		// Fall back only before the student saw any text, and only for
 		// errors another model may not have (a silent model is one).
-		return started.Load() || !retryable(err) || ctx.Err() != nil
+		return started.Load() || !retryable(err) || ctx.Err() != nil || errors.Is(err, errNoTimeForFallback)
 	})
 	if err != nil && refused != nil && !started.Load() && errors.Is(err, errRefusal) {
 		return deliver(refused, onDelta)
@@ -232,6 +268,7 @@ type genCall struct {
 	req               ai.Request
 	userID, sessionID *int64
 	onDelta           func(string) error
+	firstTextBy       time.Time // deadline for the first text, across targets
 }
 
 // tryTarget sends the request to one route target, with the first-token
@@ -247,10 +284,19 @@ func (g *aiGateway) tryTarget(ctx context.Context, c genCall, t RouteTarget, cp 
 	if r.ReasoningEffort == "" && (c.task == TaskChat || c.task == TaskUtility) {
 		r.ReasoningEffort = ai.EffortLow // characters must answer quickly
 	}
-	model := g.meterText(screenAnswers(ai.WithFirstTokenTimeout(tm, firstTokenTimeout), c.task),
-		usageEntry{UserID: c.userID, SessionID: c.sessionID, ProviderID: t.ProviderID, Provider: cp.name, Model: t.Model, Task: c.task})
+	release, err := g.reserve(t, requestChars(r), r.MaxTokens)
+	if err != nil {
+		return nil, err
+	}
+	defer release()
+	wait, err := firstTextTimeout(c.firstTextBy)
+	if err != nil {
+		return nil, err
+	}
+	clock := &firstDeltaClock{TextModel: tm}
+	model := g.meterTimed(screenAnswers(ai.WithFirstTokenTimeout(clock, wait), c.task),
+		usageEntry{UserID: c.userID, SessionID: c.sessionID, ProviderID: t.ProviderID, Provider: cp.name, Model: t.Model, Task: c.task}, clock)
 	var res *ai.Response
-	var err error
 	if c.onDelta != nil {
 		res, err = model.Stream(ctx, r, c.onDelta)
 	} else {

@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"log"
 	"strings"
 
 	"github.com/Hoppitbilbo/DebateAI/server/internal/ai"
@@ -19,6 +20,9 @@ type sessionService struct {
 	classes     classStore
 	classSvc    *classService
 	judge       goalEvaluator
+	generator   textGenerator
+	replies     replyStore
+	voice       voiceStore
 	jevSettings func() JevSettings
 	listeners   []feedbackListener
 }
@@ -78,6 +82,9 @@ func (svc *sessionService) Load(u *domain.User, id int64) (*domain.SessionDetail
 	if err != nil {
 		return nil, false, ErrSessionNotFound
 	}
+	if d.Voice, err = svc.voice.UsedBySession(id); err != nil {
+		log.Printf("session %d: %v", id, err)
+	}
 	owner := d.UserID != nil && *d.UserID == u.ID
 	if owner || u.Role == domain.RoleAdmin {
 		return d, owner, nil
@@ -104,7 +111,7 @@ func (svc *sessionService) GiveFeedback(u *domain.User, id int64, f domain.Teach
 	if owner || (u.Role != domain.RoleTeacher && u.Role != domain.RoleAdmin) {
 		return nil, ErrFeedbackForbidden
 	}
-	if f.Score != nil && (*f.Score < 0 || *f.Score > 10) {
+	if !validScore(f.Score) {
 		return nil, invalid(errors.New("score must be between 0 and 10"))
 	}
 	f.Text = truncate(strings.TrimSpace(f.Text), maxTeacherFeedbackChars)
@@ -121,20 +128,19 @@ func (svc *sessionService) GiveFeedback(u *domain.User, id int64, f domain.Teach
 	return d, nil
 }
 
-// Completion is what the student hands in after the activity.
+// Completion is what the student hands in without an AI evaluation (e.g.
+// when it failed). Evaluations and scores come only from Evaluate: fields
+// a browser still sends for them are ignored.
 type Completion struct {
-	Reflection        string `json:"reflection"`
-	Evaluation        string `json:"evaluation"`
-	ScoreConversation *int   `json:"scoreConversation"`
-	ScoreReflection   *int   `json:"scoreReflection"`
+	Reflection string `json:"reflection"`
 }
 
-// Complete closes the attempt with the student's reflection and evaluation.
+// validScore accepts a missing score or one on the 0-10 scale.
+func validScore(s *int) bool { return s == nil || (*s >= 0 && *s <= 10) }
+
+// Complete hands in the attempt with the student's reflection only.
 func (svc *sessionService) Complete(d *domain.SessionDetail, c Completion) error {
-	return svc.sessions.Complete(d.ID, domain.SessionCompletion{
-		Reflection: truncate(c.Reflection, maxReflectionChars), Evaluation: truncate(c.Evaluation, maxEvaluationChars),
-		ScoreConversation: c.ScoreConversation, ScoreReflection: c.ScoreReflection,
-	})
+	return svc.sessions.Complete(d.ID, domain.SessionCompletion{Reflection: truncate(c.Reflection, maxReflectionChars)})
 }
 
 // goalEvaluator scores a conversation against the assignment goals
@@ -148,6 +154,9 @@ type TranscriptUpdate struct {
 	Messages []TranscriptMessage `json:"messages"`
 	Context  json.RawMessage     `json:"context"`
 	Judge    *bool               `json:"judge"` // force (true) or skip (false) judging
+	// BaseRevision is the revision the client last saw (optional, see
+	// domain.TranscriptSave).
+	BaseRevision *int64 `json:"baseRevision"`
 }
 
 // SaveTranscript stores the conversation of session d, owned by u, and for
@@ -155,25 +164,33 @@ type TranscriptUpdate struct {
 func (svc *sessionService) SaveTranscript(ctx context.Context, u *domain.User, d *domain.SessionDetail, in TranscriptUpdate) (TranscriptSync, error) {
 	msgs := lastMessages(in.Messages, maxTranscriptMessages)
 	turns := countStudentTurns(msgs)
+	// The same conversation again (a retried save, a save without a new
+	// line) is not judged again unless the client asks for it.
+	unchanged := mustJSON(msgs) == string(d.Transcript)
 	var newContext *string
 	if len(in.Context) > 0 {
 		newContext = ptr(string(in.Context))
 	}
-	if err := svc.sessions.SaveTranscript(d.ID, mustJSON(msgs), turns, newContext); err != nil {
-		return TranscriptSync{}, err
+	var a *domain.Assignment
+	if d.AssignmentID != nil {
+		a, _ = svc.assignments.Get(*d.AssignmentID)
+	}
+	// The transcript is stored as the student saw it; the judge reads only
+	// the AI lines the server produced (see verification.go).
+	checked := svc.check(d, a, msgs)
+	revision, err := svc.sessions.SaveTranscript(d.ID, domain.TranscriptSave{JSON: mustJSON(msgs), Turns: turns, Context: newContext,
+		BaseRevision: in.BaseRevision, Unverified: checked.unverified})
+	if err != nil {
+		return TranscriptSync{Revision: revision}, err
 	}
 
 	state := domain.StateOf(d.Status)
-	resp := TranscriptSync{Status: state.Status(), Turns: turns, Progress: d.Progress, Ended: state.Ended()}
-	if d.AssignmentID == nil {
-		return resp, nil
-	}
-	a, err := svc.assignments.Get(*d.AssignmentID)
-	if err != nil {
+	resp := TranscriptSync{Status: state.Status(), Turns: turns, Progress: d.Progress, Ended: state.Ended(), Revision: revision}
+	if a == nil {
 		return resp, nil
 	}
 	judge := func() (*JudgeResult, error) {
-		return svc.judgeAndSave(ctx, u, d, a, msgs, firstNonEmpty(in.Context, d.Context), turns, &resp)
+		return svc.judgeAndSave(ctx, u, d, a, checked.evidence, firstNonEmpty(in.Context, d.Context), turns, revision, &resp)
 	}
 
 	// An ended attempt is judged again only on request: the last lines may
@@ -188,35 +205,59 @@ func (svc *sessionService) SaveTranscript(ctx context.Context, u *domain.User, d
 
 	resp.MaxTurns = &a.MaxTurns
 	outcome := domain.TurnOutcome{Turns: turns, MaxTurns: a.MaxTurns, AutoEnd: a.AutoEnd}
-	if svc.shouldJudge(turns, a.MaxTurns, in.Judge) {
+	if svc.shouldJudge(turns, a.MaxTurns, in.Judge) && !(unchanged && in.Judge == nil) {
 		jr, err := judge()
 		if err != nil {
 			return resp, err
 		}
 		outcome.GoalsCompleted = jr.Completed
+		outcome.Identified = jr.Identified
 	}
 
 	next, reason := state.Next(outcome)
 	if next.Status() != state.Status() {
-		if err := svc.sessions.SetStatus(d.ID, next.Status()); err != nil {
+		moved, err := svc.sessions.SetStatus(d.ID, state.Status(), next.Status())
+		if err != nil {
 			return resp, err
+		}
+		if !moved {
+			// Another request (a newer save, the hand-in) changed the status
+			// first: report it as it is.
+			return svc.currentStatus(d.ID, resp)
 		}
 	}
 	resp.Status, resp.Ended, resp.Reason = next.Status(), next.Ended(), &reason
 	return resp, nil
 }
 
-// judgeAndSave asks the judge about the assignment goals, stores its
-// verdict and puts it in resp.
-func (svc *sessionService) judgeAndSave(ctx context.Context, u *domain.User, d *domain.SessionDetail, a *domain.Assignment, msgs []TranscriptMessage, activity json.RawMessage, turns int, resp *TranscriptSync) (*JudgeResult, error) {
+// currentStatus puts the stored status of session id in resp.
+func (svc *sessionService) currentStatus(id int64, resp TranscriptSync) (TranscriptSync, error) {
+	ss, err := svc.sessions.Summary(id)
+	if err != nil {
+		return resp, err
+	}
+	state := domain.StateOf(ss.Status)
+	resp.Status, resp.Ended, resp.Progress = state.Status(), state.Ended(), ss.Progress
+	return resp, nil
+}
+
+// judgeAndSave asks the judge about the assignment goals on transcript
+// revision, stores its verdict and puts it in resp. A verdict that arrives
+// after one on a newer revision is dropped, so progress never goes back.
+func (svc *sessionService) judgeAndSave(ctx context.Context, u *domain.User, d *domain.SessionDetail, a *domain.Assignment, msgs []TranscriptMessage, activity json.RawMessage, turns int, revision int64, resp *TranscriptSync) (*JudgeResult, error) {
 	jr := svc.evaluate(ctx, u, d, a, msgs, activity, turns)
-	resp.Jev = &jr
 	if jr.Engine == "none" {
+		resp.Jev = &jr
 		return &jr, nil
 	}
-	if err := svc.sessions.SaveJudgement(d.ID, mustJSON(jr), jr.Progress); err != nil {
+	stored, err := svc.sessions.SaveJudgement(d.ID, mustJSON(jr), jr.Progress, revision)
+	if err != nil {
 		return &jr, err
 	}
+	if !stored {
+		return &JudgeResult{}, nil
+	}
+	resp.Jev = &jr
 	resp.Progress = jr.Progress
 	return &jr, nil
 }
@@ -275,4 +316,21 @@ func firstNonEmpty(a, b json.RawMessage) json.RawMessage {
 		return a
 	}
 	return b
+}
+
+// AssignmentOf is the assignment of an attempt: nil without an attempt or
+// for free practice. A read error is returned, so locked settings are not
+// skipped when the database fails.
+func (svc *sessionService) AssignmentOf(sessionID *int64) (*domain.Assignment, error) {
+	if sessionID == nil {
+		return nil, nil
+	}
+	ss, err := svc.sessions.Summary(*sessionID)
+	if err != nil {
+		return nil, err
+	}
+	if ss.AssignmentID == nil {
+		return nil, nil
+	}
+	return svc.assignments.Get(*ss.AssignmentID)
 }

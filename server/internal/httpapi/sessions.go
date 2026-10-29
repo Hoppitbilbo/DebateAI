@@ -1,6 +1,7 @@
 package httpapi
 
 import (
+	"context"
 	"errors"
 	"net/http"
 
@@ -73,11 +74,56 @@ func (s *Server) handleSaveTranscript(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	resp, err := s.SessionSvc.SaveTranscript(r.Context(), u, d, in)
-	if err != nil {
+	switch {
+	case errors.Is(err, domain.ErrStaleRevision):
+		writeErr(w, 409, "stale_revision", err.Error())
+		return
+	case errors.Is(err, domain.ErrSessionCompleted):
+		writeErr(w, 409, "session_completed", err.Error())
+		return
+	case err != nil:
 		writeErr(w, 500, "internal", err.Error())
 		return
 	}
 	writeJSON(w, 200, resp)
+}
+
+// handleEvaluateSession grades the attempt on the server, streaming the
+// evaluation as server-sent events, and hands it in with the result.
+func (s *Server) handleEvaluateSession(w http.ResponseWriter, r *http.Request) {
+	_, d, ok := s.ownSession(w, r)
+	if !ok {
+		return
+	}
+	if d.Status == domain.SessionCompleted {
+		writeErr(w, 409, "session_completed", domain.ErrSessionCompleted.Error())
+		return
+	}
+	var in app.EvaluationRequest
+	if err := readJSON(r, &in); err != nil {
+		writeErr(w, 400, "bad_request", err.Error())
+		return
+	}
+	u, release, ok := s.admit(w, r)
+	if !ok {
+		return
+	}
+	defer release()
+	send := startEventStream(w)
+	// The hand-in is not lost when the browser goes away (a closed tab, a
+	// dropped connection): the evaluation runs to the end, within its own
+	// deadline, and is stored; the stream just stops being written.
+	ctx, cancel := context.WithTimeout(context.WithoutCancel(aiContext(r, u)), evaluationDeadline)
+	defer cancel()
+	ev, err := s.SessionSvc.Evaluate(ctx, u, d, in, func(delta string) error {
+		_ = send(streamDelta{Delta: delta})
+		return nil
+	})
+	if err != nil {
+		_ = send(streamError{Error: err.Error()})
+		return
+	}
+	_ = send(evaluationDone{Done: true, Evaluation: *ev})
 }
 
 // handleSessionFeedback stores the teacher's written feedback and score.
@@ -112,8 +158,11 @@ func (s *Server) handleCompleteSession(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 400, "bad_request", err.Error())
 		return
 	}
-	if err := s.SessionSvc.Complete(d, in); err != nil {
-		writeErr(w, 500, "internal", err.Error())
+	if err := s.SessionSvc.Complete(d, in); errors.Is(err, domain.ErrSessionCompleted) {
+		writeErr(w, 409, "session_completed", err.Error())
+		return
+	} else if err != nil {
+		writeServiceErr(w, err)
 		return
 	}
 	writeOK(w)

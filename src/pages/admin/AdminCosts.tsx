@@ -4,7 +4,7 @@ import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxi
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
 import { Agg, useUsageLog, useUsageSummary } from "@/features/admin/adminApi";
-import { EmptyState, Panel, Spinner, StatTile } from "../dashboard/common";
+import { EmptyState, LoadError, Panel, Spinner, StatTile } from "../dashboard/common";
 import { formatDate, usd } from "@/lib/format";
 
 const num = (n: number) => n.toLocaleString();
@@ -36,7 +36,7 @@ const AggTable = ({ rows, keyLabel, labelFor }: { rows: Agg[]; keyLabel: string;
             <tr key={r.key} className="border-t border-border">
               <td className="py-1.5 pr-3">{labelFor ? labelFor(r) : r.key}</td>
               <td className="py-1.5 pr-3 text-right tabular-nums">{num(r.requests)}</td>
-              <td className="py-1.5 pr-3 text-right tabular-nums">{r.errors > 0 ? <span className="text-amber-400">{num(r.errors)}</span> : 0}</td>
+              <td className="py-1.5 pr-3 text-right tabular-nums">{r.errors > 0 ? <span className="text-warning">{num(r.errors)}</span> : 0}</td>
               <td className="py-1.5 pr-3 text-right tabular-nums">{num(r.inputTokens)}</td>
               <td className="py-1.5 pr-3 text-right tabular-nums">{num(r.outputTokens)}</td>
               <td className="py-1.5 text-right font-medium tabular-nums">{usd(r.costUsd)}</td>
@@ -55,6 +55,7 @@ const AdminCosts = () => {
   const summary = useUsageSummary(days);
   const log = useUsageLog();
 
+  if (summary.isError && !summary.data) return <LoadError onRetry={() => void summary.refetch()} />;
   if (summary.isLoading || !summary.data) return <Spinner />;
   const s = summary.data;
   const total = s.byDay.reduce((p, d) => p + d.costUsd, 0);
@@ -124,7 +125,7 @@ const AdminCosts = () => {
       </div>
 
       <Panel title={t("platform.admin.costs.log")}>
-        {log.isLoading ? <Spinner /> : (
+        {log.isLoading ? <Spinner /> : log.isError && !log.data ? <LoadError onRetry={() => void log.refetch()} /> : (
           <div className="max-h-[480px] overflow-auto">
             <table className="w-full text-xs">
               <thead className="sticky top-0 bg-card text-left text-muted-foreground">
@@ -142,13 +143,23 @@ const AdminCosts = () => {
                     <td className="py-1 pr-2">{r.user || t("platform.admin.costs.guest")}</td>
                     <td className="py-1 pr-2">{r.task}</td>
                     <td className="py-1 pr-2">
-                      {!r.ok && <span className="mr-1 text-amber-400" aria-label={t("platform.admin.costs.errors")}>⚠</span>}
+                      {!r.ok && <span className="mr-1 text-warning" aria-label={t("platform.admin.costs.errors")}>⚠</span>}
                       {r.provider} / {r.model}
                     </td>
                     <td className="py-1 pr-2 text-right tabular-nums">{num(r.inputTokens)}</td>
-                    <td className="py-1 pr-2 text-right tabular-nums">{num(r.outputTokens)}</td>
-                    <td className="py-1 pr-2 text-right tabular-nums">{r.latencyMs}</td>
-                    <td className="py-1 text-right tabular-nums">{usd(r.costUsd)}</td>
+                    <td className="py-1 pr-2 text-right tabular-nums">
+                      {num(r.outputTokens)}
+                      {r.estimated && <span className="ml-1 text-muted-foreground" title={t("platform.admin.costs.estimatedHint")}>({t("platform.admin.costs.estimated")})</span>}
+                    </td>
+                    <td
+                      className="py-1 pr-2 text-right tabular-nums"
+                      title={r.firstTextMs ? t("platform.admin.costs.firstText", { text: r.firstTextMs, delta: r.firstDeltaMs ?? 0 }) : undefined}
+                    >
+                      {r.latencyMs}
+                    </td>
+                    <td className="py-1 text-right tabular-nums">
+                      {r.unpriced ? <span className="text-muted-foreground" title={t("platform.admin.costs.unpricedHint")}>{t("platform.admin.costs.unpriced")}</span> : usd(r.costUsd)}
+                    </td>
                   </tr>
                 ))}
               </tbody>

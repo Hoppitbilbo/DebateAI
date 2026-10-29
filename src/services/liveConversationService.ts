@@ -1,8 +1,10 @@
 // Real-time voice conversation through the Gemini Live API (Google Gen AI SDK).
 // The server mints a single-use ephemeral token (model, voice and system
 // instruction are locked in it), so the real API key never reaches the browser.
-import { GoogleGenAI, LiveServerMessage, Modality, Session } from "@google/genai";
+// The SDK is downloaded when a voice conversation starts, not with every chat.
+import type { LiveServerMessage, Session } from "@google/genai";
 import { api } from "@/lib/api";
+import type { PromptRecipe } from "./aiService";
 
 export interface LiveAudioChunk {
   data: string;
@@ -10,7 +12,8 @@ export interface LiveAudioChunk {
 }
 
 export interface StartLiveConversationOptions {
-  systemInstruction?: string;
+  /** The server writes the instructions from it and locks them in the token. */
+  recipe?: PromptRecipe;
   voiceName?: string;
   sessionId?: number | null;
   onText?: (text: string) => void;
@@ -29,6 +32,8 @@ export interface LiveConversationController {
 }
 
 interface LiveTokenResponse {
+  /** Identifies this conversation when its usage is reported (once). */
+  grantId: string;
   token: string;
   model: string;
   providerId: number;
@@ -53,18 +58,20 @@ const floatTo16BitBase64 = (input: Float32Array): string => {
 };
 
 export const startLiveConversation = async (options: StartLiveConversationOptions): Promise<LiveConversationController> => {
-  const tokenInfo = await api.post<LiveTokenResponse>("/api/ai/live/token", {
-    sessionId: options.sessionId ?? 0,
-    systemInstruction: options.systemInstruction ?? "",
-    voiceName: options.voiceName ?? "",
-  });
+  const [tokenInfo, { GoogleGenAI, Modality }] = await Promise.all([
+    api.post<LiveTokenResponse>("/api/ai/live/token", {
+      sessionId: options.sessionId ?? 0,
+      ...(options.recipe ? { recipe: { ...options.recipe, kind: "reply" } } : {}),
+      voiceName: options.voiceName ?? "",
+    }),
+    import("@google/genai"),
+  ]);
 
   const ai = new GoogleGenAI({ apiKey: tokenInfo.token, httpOptions: { apiVersion: "v1alpha" } });
   let session: Session | null = null;
   let manuallyClosed = false;
   let micMuted = false;
   const usage = { input: 0, output: 0 };
-  const startedAt = Date.now();
 
   let stream: MediaStream | null = null;
   let audioContext: AudioContext | null = null;
@@ -73,13 +80,11 @@ export const startLiveConversation = async (options: StartLiveConversationOption
   let source: MediaStreamAudioSourceNode | null = null;
 
   const reportUsage = () => {
+    // The server takes provider, model, attempt and duration from the grant.
     void api.post("/api/ai/live/usage", {
-      sessionId: options.sessionId ?? 0,
-      providerId: tokenInfo.providerId,
-      model: tokenInfo.model,
+      grantId: tokenInfo.grantId,
       inputTokens: usage.input,
       outputTokens: usage.output,
-      seconds: Math.round((Date.now() - startedAt) / 1000),
     }).catch(() => undefined);
   };
 
@@ -90,7 +95,6 @@ export const startLiveConversation = async (options: StartLiveConversationOption
       inputAudioTranscription: {},
       outputAudioTranscription: {},
       speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: tokenInfo.voiceName || "Aoede" } } },
-      ...(options.systemInstruction ? { systemInstruction: { parts: [{ text: options.systemInstruction }] } } : {}),
     },
     callbacks: {
       onmessage: (message: LiveServerMessage) => {

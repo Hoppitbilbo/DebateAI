@@ -13,8 +13,34 @@ const (
 	maxUsageGroups          = 400 // rows per grouping in the cost report
 )
 
-// maxChatHistoryMessages is how many messages are forwarded to the model per request.
-const maxChatHistoryMessages = 200
+// What is forwarded to the model per request: at most maxChatHistoryMessages
+// messages and maxChatInputChars characters (system prompt included, about
+// 50k tokens); the oldest messages are dropped first. A request whose system
+// prompt and last message alone exceed it is refused.
+const (
+	maxChatHistoryMessages = 200
+	maxChatInputChars      = 200_000
+)
+
+// evaluationDeadline bounds a final evaluation, which goes on after the
+// browser disconnects so that the hand-in is stored.
+const evaluationDeadline = 3 * time.Minute
+
+// Answers generated at the same time: per account (a guest too), per room
+// and, without an account, per network (a school lab shares one IP).
+const (
+	maxGenerationsPerUser    = 3
+	maxGenerationsPerRoom    = 40
+	maxGenerationsPerNetwork = 30
+)
+
+// Bounds of what the browser may ask of /api/ai/generate. The output ceiling
+// only clamps an explicit request (the evaluation asks for 2500): no default
+// is imposed, since reasoning models count their thinking in max_tokens.
+const (
+	maxGenerateBodyBytes    = 1 << 20
+	maxGenerateOutputTokens = 8192
+)
 
 // Rate limits.
 const (

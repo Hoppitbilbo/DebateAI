@@ -21,7 +21,8 @@
     "score": "Score",
     "turns": "Turns",
     "cost": "Cost",
-    "updated": "Updated"
+    "updated": "Updated",
+    "loadError": "This could not be loaded: check the connection."
   },
   "nav": {
     "main": "Main navigation",
@@ -42,7 +43,7 @@
     "active": "In progress",
     "goal_reached": "Goal reached",
     "turn_limit": "Turn limit",
-    "completed": "Completed",
+    "completed": "Handed in",
     "abandoned": "Abandoned"
   },
   "appNames": {
@@ -74,7 +75,12 @@
     "live_disabled": "Voice conversation is not enabled for your account.",
     "live_unavailable": "Voice conversation is not available right now.",
     "server_unreachable": "The server is not reachable.",
-    "ai_error": "The character can't answer right now. Try again in a moment; if it keeps happening, tell your teacher."
+    "ai_error": "The character can't answer right now. Try again in a moment; if it keeps happening, tell your teacher.",
+    "busy": "You are already waiting for answers: wait for them to finish and try again.",
+    "too_large": "The conversation is too long to send to the AI. Start a new attempt.",
+    "usage_unavailable": "AI usage limits cannot be checked right now. Try again shortly.",
+    "recipe_required": "Reload the page: the app was updated.",
+    "setting_locked": "This setting is fixed by the assignment: reload the page and try again."
   },
   "auth": {
     "login": "Log in",
@@ -135,6 +141,7 @@
     "placeholder": "Write your message…",
     "typing": "Typing",
     "send": "Send",
+    "stopReply": "Stop the answer",
     "dictate": "Dictate (voice to text)",
     "stopDictation": "Stop dictation",
     "endAndReflect": "End and reflect",
@@ -150,7 +157,11 @@
     "retry": "Try again",
     "endedGoal": "Goals reached! Take your time to read the last reply, then move on.",
     "endedTurns": "You used all your turns. Take your time to read the last reply, then move on.",
-    "continueToReflection": "Next: reflection"
+    "continueToReflection": "Next: reflection",
+    "startFailed": "The assignment could not be started on the server. Check your connection and try again.",
+    "notSaved": "This practice is not being saved: the server is not responding. You can go on and download the conversation at the end.",
+    "saveFailed": "Your last message was not saved on the server.",
+    "stepOf": "Step {{n}} of {{total}}: {{label}}"
   },
   "assignment": {
     "label": "Assignment",
@@ -201,7 +212,11 @@
     "download": "Download",
     "backToAssignments": "Back to my assignments",
     "diffusionOn": "Diffusion effect on: the feedback will form out of noise. Three clicks on the title to switch it off.",
-    "diffusionOff": "Diffusion effect off."
+    "diffusionOff": "Diffusion effect off.",
+    "submitting": "Handing in…",
+    "submitted": "Handed in: your teacher can see your work.",
+    "savedToHistory": "Saved to your history.",
+    "submitFailed": "Your work was not handed in. Try again, or download it so it is not lost."
   },
   "apps": {
     "common": {
@@ -269,6 +284,7 @@
       "judgeEnded": "JEV decided you have reached the goal: the game is over. Write your final answer.",
       "readLastAnswer": "No questions left! Take your time to reread the answers, then press “Make your guess”.",
       "judgeEndedChat": "JEV decided you reached the goal: no more questions. Reread the answers, then press “Make your guess”.",
+      "foundInChat": "You got it: it's {{name}}! Read the answer, then go on to the reflection.",
       "askHint": "Ask for a hint",
       "hintCost": "A hint costs a question.",
       "hintRequest": "Can you give me a hint?",
@@ -301,8 +317,6 @@
       "addressTo": "Address to:",
       "nextSpeaker": "Next ({{name}})",
       "continue": "Let them continue",
-      "styleA": "erudite and assertive",
-      "styleB": "reflective and questioning",
       "reflectionPrompt": "How did you moderate the debate between {{a}} and {{b}}? Which questions made it more interesting?",
       "evalActivity": "moderated debate between {{a}} and {{b}}"
     }
@@ -341,7 +355,10 @@
     "saveFeedback": "Send feedback",
     "feedbackSaved": "Feedback sent to the student",
     "feedbackHint": "The student will see it on this page and get an e-mail.",
-    "givenOn": "Written on {{date}}"
+    "givenOn": "Written on {{date}}",
+    "unverifiedLines_one": "{{count}} AI line in this conversation was not produced by the platform (edited or invented): it was left out of the automatic judgement and of the evaluation.",
+    "unverifiedLines_other": "{{count}} AI lines in this conversation were not produced by the platform (edited or invented): they were left out of the automatic judgement and of the evaluation.",
+    "voiceUnchecked": "This conversation includes voice parts: what the character said by voice cannot be checked by the platform."
   },
   "teacher": {
     "title": "My classes",
@@ -530,7 +547,12 @@
       "tokensIn": "Tokens in",
       "tokensOut": "Tokens out",
       "log": "Latest requests",
-      "noData": "No data for this period."
+      "noData": "No data for this period.",
+      "estimated": "estimated",
+      "estimatedHint": "The provider reported no tokens (interrupted answer): they are estimated from the text length.",
+      "unpriced": "no price",
+      "unpricedHint": "The model has no known price: its real cost is unknown, not zero.",
+      "firstText": "First text seen after {{text}} ms (from the provider after {{delta}} ms)"
     },
     "ai": {
       "providers": "AI providers",

@@ -114,10 +114,10 @@
     "subtitle": "Hai esplorato il potenziale dell'IA per trasformare la didattica. Ora è il momento di mettere in pratica queste conoscenze e continuare il tuo viaggio di innovazione.",
     "keyPoints": {
       "title": "Punti Chiave da Ricordare",
-      "item1": "L'IA è un <strong class=\"text-sky-300\">alleato</strong>, non un sostituto, del docente.",
-      "item2": "La <strong class=\"text-sky-300\">personalizzazione</strong> è uno dei maggiori punti di forza dell'IA.",
-      "item3": "Incoraggiare il <strong class=\"text-sky-300\">pensiero critico</strong> sull'IA è fondamentale.",
-      "item4": "Sperimentare con <strong class=\"text-sky-300\">nuovi stili didattici</strong> arricchisce l'apprendimento."
+      "item1": "L'IA è un <strong class=\"text-info\">alleato</strong>, non un sostituto, del docente.",
+      "item2": "La <strong class=\"text-info\">personalizzazione</strong> è uno dei maggiori punti di forza dell'IA.",
+      "item3": "Incoraggiare il <strong class=\"text-info\">pensiero critico</strong> sull'IA è fondamentale.",
+      "item4": "Sperimentare con <strong class=\"text-info\">nuovi stili didattici</strong> arricchisce l'apprendimento."
     },
     "nextSteps": {
       "title": "Prossimi Passi e Risorse",
@@ -125,7 +125,7 @@
       "item2": "Collabora con i colleghi: condividi esperienze e risorse.",
       "item3": "Esplora le app di questa piattaforma per avere esempi pratici.",
       "item4": "Continua a formarti: il campo dell'IA è in continua evoluzione.",
-      "item5": "Approfondisci su <a href=\"#\" class=\"ml-1 text-sky-400 hover:text-sky-300 underline flex items-center\" target=\"_blank\" rel=\"noopener noreferrer\">EduAI.it <ExternalLink size={16} class=\"ml-1\" /></a> (esempio)."
+      "item5": "Approfondisci su <a href=\"#\" class=\"ml-1 text-info hover:text-info underline flex items-center\" target=\"_blank\" rel=\"noopener noreferrer\">EduAI.it <ExternalLink size={16} class=\"ml-1\" /></a> (esempio)."
     },
     "conclusion": "Grazie per aver seguito questa guida. In bocca al lupo per le tue avventure didattiche con l'IA!"
   }

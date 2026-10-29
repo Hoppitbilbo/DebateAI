@@ -21,11 +21,10 @@ const upcoming: ListedApp = { ...UPCOMING_APP, upcoming: true };
 /** Home page cards; the hero also picks one of these at random. */
 export const HOME_APPS = (["you-moderate", "personaggio-misterioso", "doppia-intervista", "convinci-tu", "impersona-tu"] as const).map(listed);
 
-/** Apps page cards. */
+/** Apps page cards; the upcoming app comes after the ones that can be opened. */
 export const APPS_PAGE_APPS: ListedApp[] = [
-  ...(["you-moderate", "doppia-intervista", "wiki-chatbot", "personaggio-misterioso"] as const).map(listed),
+  ...(["you-moderate", "doppia-intervista", "wiki-chatbot", "personaggio-misterioso", "convinci-tu", "impersona-tu"] as const).map(listed),
   upcoming,
-  ...(["convinci-tu", "impersona-tu"] as const).map(listed),
 ];
 
 /** Tutorials page cards. */

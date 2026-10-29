@@ -116,7 +116,7 @@ func TestRoomsDeleteLeavesNothingBehind(t *testing.T) {
 	kept := addGuestWithData(live.ID, "Bruno")
 	kicked := addGuestWithData(live.ID, "Carla")
 
-	if n := usage.CountRoomRequestsSince(live.ID, "", "judge"); n != 2 {
+	if n := mustCount(t)(usage.CountRoomRequestsSince(live.ID, "", "judge")); n != 2 {
 		t.Fatalf("room requests: %d", n)
 	}
 
@@ -135,7 +135,7 @@ func TestRoomsDeleteLeavesNothingBehind(t *testing.T) {
 	if _, _, err := logins.Lookup("tok-Anna"); err == nil {
 		t.Fatal("guest login must be deleted")
 	}
-	if n := usage.CountUserRequestsSince(gone, "", ""); n != 0 {
+	if n := mustCount(t)(usage.CountUserRequestsSince(gone, "", "")); n != 0 {
 		t.Fatal("usage rows must not point at the deleted guest")
 	}
 	if usage.CountSince("", false) != 3 {

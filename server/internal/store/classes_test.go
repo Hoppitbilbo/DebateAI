@@ -32,7 +32,7 @@ func TestClassesLifecycle(t *testing.T) {
 	if !r.Teaches(id, co) || r.IsOwner(id, co) || !r.TeachesStudent(co, stud) || r.TeachesStudent(stud, co) {
 		t.Fatal("co-teacher rights")
 	}
-	if r.CountStudents(id) != 1 || r.CountMemberships(stud) != 1 {
+	if m, _ := r.CountMemberships(); r.CountStudents(id) != 1 || m[stud] != 1 {
 		t.Fatal("counts")
 	}
 	if m := r.Members(id); len(m) != 3 || m[0].Role != domain.RoleTeacher || m[2].Name != "Sara" {

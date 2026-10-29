@@ -37,6 +37,7 @@
   },
   "buttons": {
     "launchApp": "Start",
-    "comingSoon": "Coming soon"
+    "comingSoon": "Coming soon",
+    "launchNamed": "Start {{name}}"
   }
 }

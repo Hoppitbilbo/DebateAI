@@ -85,7 +85,7 @@ func TestEndToEndRoomInSchoolLab(t *testing.T) {
 	anna.do("POST", "/api/sessions", map[string]any{"appType": "wiki-chatbot", "title": "Napoleone"}, &sess)
 	for _, c := range students[:10] {
 		var gen struct{ Model string }
-		if code := c.do("POST", "/api/ai/generate", map[string]any{"messages": []map[string]string{{"role": "user", "content": "ciao"}}}, &gen); code != 200 || gen.Model != "free-model" {
+		if code := c.do("POST", "/api/ai/generate", map[string]any{"recipe": wikiRecipe, "messages": []map[string]string{{"role": "user", "content": "ciao"}}}, &gen); code != 200 || gen.Model != "free-model" {
 			t.Fatalf("guest chat: %d %+v", code, gen)
 		}
 	}

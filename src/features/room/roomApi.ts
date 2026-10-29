@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { api, ApiError, AppType, SessionDetail, SessionSummary, User } from "@/lib/api";
 import { APPS } from "@/features/activity/types";
@@ -79,6 +80,27 @@ export const ROOM_LIMITS = { nickname: 20 } as const;
 
 /** How often the screens refresh (ms): the teacher's lobby, the dashboard list, the guest's room. */
 export const REFRESH_MS = { lobby: 4000, openRooms: 30000, guestRoom: 60000 } as const;
+
+/** Slowest lobby refresh while nothing changes, and after failed requests. */
+const LOBBY_MAX_IDLE_MS = 15000;
+const LOBBY_MAX_RETRY_MS = 30000;
+/** Unchanged answers before the lobby refresh slows down. */
+const LOBBY_STEADY_POLLS = 3;
+
+/** A room error that retrying will not fix: the room is gone or not ours to manage. */
+export const roomIsGone = (e: unknown) => e instanceof ApiError && [401, 403, 404].includes(e.status);
+
+/**
+ * Next lobby refresh: every REFRESH_MS.lobby while guests come and go,
+ * doubling while the answer stays the same (up to 15 s) and after failures
+ * (up to 30 s).
+ */
+export const lobbyDelay = (unchanged: number, failures: number) =>
+  failures > 0
+    ? Math.min(LOBBY_MAX_RETRY_MS, REFRESH_MS.lobby * 2 ** failures)
+    : unchanged < LOBBY_STEADY_POLLS
+      ? REFRESH_MS.lobby
+      : Math.min(LOBBY_MAX_IDLE_MS, REFRESH_MS.lobby * 2 ** (unchanged - LOBBY_STEADY_POLLS + 1));
 
 // ---------- host key ----------
 
@@ -180,16 +202,37 @@ export const roomApi = {
     api.post<ImportResult>(`/api/classes/${classId}/room-import`, { ...source, matches }),
 };
 
-/** The teacher's live view of a room, refreshed every few seconds. */
+/**
+ * The teacher's live view of a room, refreshed every few seconds (see
+ * lobbyDelay). A failed refresh keeps the last data and is tried again; it
+ * stops only when the room is gone.
+ */
 export const useRoomView = (roomId: number) => {
   const qc = useQueryClient();
+  // Counted once per answer (refetchInterval may be asked more often).
+  const polls = useRef({ seenAt: 0, failedAt: 0, key: "", unchanged: 0, failures: 0 });
   return {
     view: useQuery({
       queryKey: ["room", roomId],
       queryFn: () => roomApi.view(roomId),
-      refetchInterval: (q) => (q.state.error ? false : REFRESH_MS.lobby),
+      refetchInterval: (q) => {
+        const { data, dataUpdatedAt, error, errorUpdatedAt } = q.state;
+        if (roomIsGone(error)) return false;
+        const p = polls.current;
+        if (error && errorUpdatedAt > dataUpdatedAt) {
+          if (errorUpdatedAt !== p.failedAt) [p.failedAt, p.failures] = [errorUpdatedAt, p.failures + 1];
+        } else if (data && dataUpdatedAt !== p.seenAt) {
+          const key = JSON.stringify({ ...data, now: undefined }); // the server clock always changes
+          [p.seenAt, p.failures, p.unchanged, p.key] = [dataUpdatedAt, 0, key === p.key ? p.unchanged + 1 : 0, key];
+        }
+        return lobbyDelay(p.unchanged, p.failures);
+      },
       retry: false,
     }),
-    refresh: () => void qc.invalidateQueries({ queryKey: ["room", roomId] }),
+    /** Refreshes now, after a local action: the lobby is about to change. */
+    refresh: () => {
+      polls.current.unchanged = 0;
+      void qc.invalidateQueries({ queryKey: ["room", roomId] });
+    },
   };
 };

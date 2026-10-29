@@ -158,9 +158,35 @@ func boolInt(b bool) int {
 
 // count runs a COUNT query; errors count as 0.
 func count(db *sql.DB, query string, args ...any) int {
-	var n int
-	_ = db.QueryRow(query, args...).Scan(&n)
+	n, _ := countErr(db, query, args...)
 	return n
+}
+
+// countErr is count for the checks that enforce a limit: there a failed
+// read must not look like zero.
+func countErr(db *sql.DB, query string, args ...any) (int, error) {
+	var n int
+	err := db.QueryRow(query, args...).Scan(&n)
+	return n, err
+}
+
+// groupedInts runs a query of (id, count) rows into a map.
+func groupedInts(db *sql.DB, query string, args ...any) (map[int64]int, error) {
+	rows, err := db.Query(query, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	out := map[int64]int{}
+	for rows.Next() {
+		var id int64
+		var n int
+		if err := rows.Scan(&id, &n); err != nil {
+			return nil, err
+		}
+		out[id] = n
+	}
+	return out, rows.Err()
 }
 
 // prefixed qualifies a comma-separated column list with a table alias.

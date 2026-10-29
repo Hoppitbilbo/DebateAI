@@ -1,77 +1,71 @@
-import i18n from 'i18next';
+import i18n, { type BackendModule, type ReadCallback, type ResourceKey } from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
-// Import translation files
-import en from './locales/en';
-import es from './locales/es';
-import fr from './locales/fr';
-import de from './locales/de';
+// Italian, the fallback, is in the main bundle. The other languages and the
+// tutorial texts (namespaces used only on their routes) are downloaded when
+// needed: a page in one language should not carry all five.
 import it from './locales/it';
 
-// Import tutorial translation files
-import enTutorials from './tutorials/en.json';
-import esTutorials from './tutorials/es.json';
-import frTutorials from './tutorials/fr.json';
-import deTutorials from './tutorials/de.json';
-import itTutorials from './tutorials/it.json';
+type Loader = () => Promise<{ default: ResourceKey }>;
 
-// Import tutorialsPage translation files
-import enTutorialsPage from './locales/en/tutorialsPage.json';
-import esTutorialsPage from './locales/es/tutorialsPage.json';
-import frTutorialsPage from './locales/fr/tutorialsPage.json';
-import deTutorialsPage from './locales/de/tutorialsPage.json';
-import itTutorialsPage from './locales/it/tutorialsPage.json';
-
-// Student tutorials (8-bit videos), one file per language
-import itStudentTutorials from './studentTutorials/it.json';
-import enStudentTutorials from './studentTutorials/en.json';
-import esStudentTutorials from './studentTutorials/es.json';
-import frStudentTutorials from './studentTutorials/fr.json';
-import deStudentTutorials from './studentTutorials/de.json';
-
-const resources = {
-  en: { 
-    translation: en,
-    tutorial: enTutorials,
-    tutorialsPage: enTutorialsPage,
-    studentTutorial: enStudentTutorials
+const bundles: Record<string, Record<string, Loader>> = {
+  translation: {
+    en: () => import('./locales/en'),
+    es: () => import('./locales/es'),
+    fr: () => import('./locales/fr'),
+    de: () => import('./locales/de'),
   },
-  es: { 
-    translation: es,
-    tutorial: esTutorials,
-    tutorialsPage: esTutorialsPage,
-    studentTutorial: esStudentTutorials
+  tutorial: {
+    it: () => import('./tutorials/it.json'),
+    en: () => import('./tutorials/en.json'),
+    es: () => import('./tutorials/es.json'),
+    fr: () => import('./tutorials/fr.json'),
+    de: () => import('./tutorials/de.json'),
   },
-  fr: { 
-    translation: fr,
-    tutorial: frTutorials,
-    tutorialsPage: frTutorialsPage,
-    studentTutorial: frStudentTutorials
+  tutorialsPage: {
+    it: () => Promise.resolve({ default: it.tutorialsPage }), // already in the Italian bundle
+    en: () => import('./locales/en/tutorialsPage.json'),
+    es: () => import('./locales/es/tutorialsPage.json'),
+    fr: () => import('./locales/fr/tutorialsPage.json'),
+    de: () => import('./locales/de/tutorialsPage.json'),
   },
-  de: { 
-    translation: de,
-    tutorial: deTutorials,
-    tutorialsPage: deTutorialsPage,
-    studentTutorial: deStudentTutorials
-  },
-  it: { 
-    translation: it,
-    tutorial: itTutorials,
-    tutorialsPage: itTutorialsPage,
-    studentTutorial: itStudentTutorials
+  studentTutorial: {
+    it: () => import('./studentTutorials/it.json'),
+    en: () => import('./studentTutorials/en.json'),
+    es: () => import('./studentTutorials/es.json'),
+    fr: () => import('./studentTutorials/fr.json'),
+    de: () => import('./studentTutorials/de.json'),
   },
 };
 
-i18n
+/** Loads a namespace of a language from its own chunk (a missing one is empty). */
+const lazyBundles: BackendModule = {
+  type: 'backend',
+  init() {},
+  read(lng: string, ns: string, callback: ReadCallback) {
+    const load = bundles[ns]?.[lng];
+    if (!load) {
+      callback(null, {});
+      return;
+    }
+    load().then((m) => callback(null, m.default), (e: Error) => callback(e, null));
+  },
+};
+
+/** Resolves once the detected language is ready to render (also when its download failed). */
+export const i18nReady = i18n
+  .use(lazyBundles)
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
-    resources,
+    resources: { it: { translation: it } },
+    partialBundledLanguages: true,
+    load: 'languageOnly',
     lng: undefined, // Let the language detector determine the language
     fallbackLng: 'it',
     defaultNS: 'translation',
-    ns: ['translation', 'tutorial', 'tutorialsPage', 'studentTutorial'],
+    ns: ['translation'],
     debug: false,
     saveMissing: true, // This is useful for development to discover missing keys
     interpolation: {
@@ -86,7 +80,16 @@ i18n
     react: {
       useSuspense: false,
     },
-  });
+  })
+  .then(() => undefined, () => undefined);
+
+// The page language follows the interface (screen readers, hyphenation,
+// spell checking); index.html says "it" until the detected language is known.
+const syncDocumentLang = (lng?: string) => {
+  if (lng && typeof document !== 'undefined') document.documentElement.lang = lng.slice(0, 2);
+};
+i18n.on('languageChanged', syncDocumentLang);
+syncDocumentLang(i18n.language);
 
 // Gestione avanzata delle chiavi mancanti
 i18n.on('missingKey', (lng, ns, key, res) => {

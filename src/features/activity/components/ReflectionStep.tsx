@@ -30,7 +30,7 @@ const ReflectionStep = ({ prompt, placeholder, onSubmit, optional, endReason, su
         </div>
         <h2 className="font-heading text-2xl font-bold">{t("platform.reflection.title")}</h2>
         {endReason === "goal_reached" && <p className="font-medium text-primary">🎯 {t("platform.reflection.goalReached")}</p>}
-        {endReason === "turn_limit" && <p className="font-medium text-amber-400">{t("platform.reflection.turnLimit")}</p>}
+        {endReason === "turn_limit" && <p className="font-medium text-warning">{t("platform.reflection.turnLimit")}</p>}
         <p className="text-muted-foreground">{t("platform.reflection.description")}</p>
       </div>
 

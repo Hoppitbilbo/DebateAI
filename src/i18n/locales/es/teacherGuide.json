@@ -114,10 +114,10 @@
     "subtitle": "Ha explorado el potencial de la IA para transformar la enseñanza. Ahora es el momento de poner en práctica este conocimiento y continuar su viaje de innovación.",
     "keyPoints": {
       "title": "Puntos Clave para Recordar",
-      "item1": "La IA es un <strong class=\"text-sky-300\">aliado</strong>, no un sustituto, del profesor.",
-      "item2": "La <strong class=\"text-sky-300\">personalización</strong> es una de las mayores fortalezas de la IA.",
-      "item3": "Fomentar el <strong class=\"text-sky-300\">pensamiento crítico</strong> sobre la IA es fundamental.",
-      "item4": "Experimentar con <strong class=\"text-sky-300\">nuevos estilos de enseñanza</strong> enriquece el aprendizaje."
+      "item1": "La IA es un <strong class=\"text-info\">aliado</strong>, no un sustituto, del profesor.",
+      "item2": "La <strong class=\"text-info\">personalización</strong> es una de las mayores fortalezas de la IA.",
+      "item3": "Fomentar el <strong class=\"text-info\">pensamiento crítico</strong> sobre la IA es fundamental.",
+      "item4": "Experimentar con <strong class=\"text-info\">nuevos estilos de enseñanza</strong> enriquece el aprendizaje."
     },
     "nextSteps": {
       "title": "Próximos Pasos y Recursos",
@@ -125,7 +125,7 @@
       "item2": "Colabore con colegas: comparta experiencias y recursos.",
       "item3": "Explore las aplicaciones de esta plataforma para ver ejemplos prácticos.",
       "item4": "Continúe aprendiendo: el campo de la IA está en constante evolución.",
-      "item5": "Obtenga más información en <a href=\"#\" class=\"ml-1 text-sky-400 hover:text-sky-300 underline flex items-center\" target=\"_blank\" rel=\"noopener noreferrer\">EduAI.it <ExternalLink size={16} class=\"ml-1\" /></a> (ejemplo)."
+      "item5": "Obtenga más información en <a href=\"#\" class=\"ml-1 text-info hover:text-info underline flex items-center\" target=\"_blank\" rel=\"noopener noreferrer\">EduAI.it <ExternalLink size={16} class=\"ml-1\" /></a> (ejemplo)."
     },
     "conclusion": "Gracias por seguir esta guía. ¡Buena suerte con sus aventuras de enseñanza con IA!"
   }

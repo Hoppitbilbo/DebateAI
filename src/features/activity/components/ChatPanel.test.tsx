@@ -78,9 +78,27 @@ describe("ChatPanel", () => {
     expect(onRetry).toHaveBeenCalledWith("failed");
     rerender(<ChatPanel {...props} busy />);
     expect((screen.getByRole("button", { name: "platform.activity.retry" }) as HTMLButtonElement).disabled).toBe(true);
-    expect((screen.getByRole("textbox") as HTMLTextAreaElement).disabled).toBe(true);
+    expect((screen.getByRole("textbox") as HTMLTextAreaElement).disabled).toBe(false); // drafting stays possible
     rerender(<ChatPanel {...props} canRetry={() => false} />);
     expect(screen.queryByRole("button", { name: "platform.activity.retry" })).toBeNull();
+  });
+
+  it("lets the student draft while a reply is written, sends only afterwards, and offers Stop", () => {
+    const onSend = vi.fn();
+    const onStop = vi.fn();
+    const { rerender } = render(<ChatPanel messages={history} onSend={onSend} onStop={onStop} busy />);
+    const box = screen.getByRole("textbox");
+    fireEvent.change(box, { target: { value: "next question" } });
+    fireEvent.keyDown(box, { key: "Enter" });
+    expect(onSend).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole("button", { name: "platform.activity.stopReply" }));
+    expect(onStop).toHaveBeenCalled();
+
+    rerender(<ChatPanel messages={history} onSend={onSend} onStop={onStop} />);
+    fireEvent.keyDown(box, { key: "Enter", isComposing: true }); // confirms an IME composition
+    expect(onSend).not.toHaveBeenCalled();
+    fireEvent.keyDown(box, { key: "Enter" });
+    expect(onSend).toHaveBeenCalledWith("next question");
   });
 
   it("scrolls to the latest message when the transcript changes", () => {
@@ -117,5 +135,21 @@ describe("ChatPanel", () => {
     expect(viewport.scrollTop).toBe(200);
     unmount();
     expect(disconnect).toHaveBeenCalledOnce();
+  });
+});
+
+describe("ChatPanel draft", () => {
+  it("restores the unsent text after a reload and clears it once sent", () => {
+    localStorage.clear();
+    const onSend = vi.fn();
+    const first = render(<ChatPanel messages={history} onSend={onSend} draftKey="debateai:draft:1:x" />);
+    fireEvent.change(screen.getByRole("textbox"), { target: { value: "half a question" } });
+    first.unmount(); // the tab is reloaded
+    render(<ChatPanel messages={history} onSend={onSend} draftKey="debateai:draft:1:x" />);
+    const box = screen.getByRole("textbox") as HTMLTextAreaElement;
+    expect(box.value).toBe("half a question");
+    fireEvent.keyDown(box, { key: "Enter" });
+    expect(onSend).toHaveBeenCalledWith("half a question");
+    expect(localStorage.getItem("debateai:draft:1:x")).toBeNull();
   });
 });

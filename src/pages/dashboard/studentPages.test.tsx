@@ -63,6 +63,19 @@ describe("StudentDashboard", () => {
     });
     expect(mocks.post).toHaveBeenCalledWith("/api/classes/join", { code: "ABC234" });
   });
+
+  it("tells a failed load from an empty list and retries", async () => {
+    const saved = routes["/api/me/assignments"];
+    delete routes["/api/me/assignments"]; // the request fails
+    renderAt("/student");
+    expect(await screen.findByText("This could not be loaded: check the connection.")).toBeTruthy();
+    expect(screen.queryByText(/nothing to do|No assignments/i)).toBeNull();
+    routes["/api/me/assignments"] = saved;
+    await act(async () => {
+      fireEvent.click(screen.getAllByRole("button", { name: "Try again" })[0]);
+    });
+    expect(await screen.findByText("Intervista a Napoleone")).toBeTruthy();
+  });
 });
 
 describe("SessionDetailPage", () => {
@@ -70,6 +83,15 @@ describe("SessionDetailPage", () => {
     renderAt("/sessions/11");
     expect(await screen.findByText("Perché la Russia?")).toBeTruthy();
     expect(screen.getByText("Ho capito il blocco continentale")).toBeTruthy();
+    expect(screen.queryByText(/not produced by the platform/)).toBeNull();
+  });
+
+  it("warns when AI lines were not produced by the platform", async () => {
+    const saved = routes["/api/sessions/11"] as Record<string, unknown>;
+    routes["/api/sessions/11"] = { ...saved, unverifiedLines: 2 };
+    renderAt("/sessions/11");
+    expect(await screen.findByText(/2 AI lines in this conversation were not produced by the platform/)).toBeTruthy();
+    routes["/api/sessions/11"] = saved;
   });
 });
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ArrowRight, Flag, Loader2, Mic, MicOff, Radio, Send } from "lucide-react";
+import { ArrowRight, Flag, Mic, MicOff, Radio, Send, Square } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
@@ -9,13 +9,17 @@ import type { AvatarFallback } from "../speakerAvatar";
 import { useSpeechDictation } from "@/hooks/useSpeechDictation";
 import type { LiveControls } from "@/hooks/useLiveAi";
 import type { ActivityMessage } from "../types";
+import { loadDraft, pruneDrafts, saveDraft } from "../draft";
 
 interface ChatPanelProps {
   messages: ActivityMessage[];
   /** Language of the dictation (BCP 47) when the teacher fixed one; the interface language otherwise. */
   speechLang?: string;
   onSend: (text: string) => void;
+  /** A reply is being written: the student can draft the next message but not send it. */
   busy?: boolean;
+  /** Stops the reply being written (shown in place of Send while busy). */
+  onStop?: () => void;
   disabled?: boolean;
   disabledReason?: string;
   placeholder?: string;
@@ -41,6 +45,8 @@ interface ChatPanelProps {
    * with its continue button, replaces the input.
    */
   ended?: ChatEnd | null;
+  /** Where the unsent text is kept in this browser (see draft.ts); none: not kept. */
+  draftKey?: string;
 }
 
 export interface ChatEnd {
@@ -71,6 +77,7 @@ const ChatPanel = ({
   messages,
   onSend,
   busy,
+  onStop,
   disabled,
   disabledReason,
   placeholder,
@@ -88,9 +95,20 @@ const ChatPanel = ({
   avatarFallback,
   ended,
   speechLang,
+  draftKey,
 }: ChatPanelProps) => {
   const { t, i18n } = useTranslation();
-  const [input, setInput] = useState("");
+  const [input, setInput] = useState(() => (draftKey ? loadDraft(draftKey) : ""));
+  // A new attempt (another key) starts from its own draft.
+  const [shownKey, setShownKey] = useState(draftKey);
+  if (shownKey !== draftKey) {
+    setShownKey(draftKey);
+    setInput(draftKey ? loadDraft(draftKey) : "");
+  }
+  useEffect(() => {
+    if (draftKey) saveDraft(draftKey, input);
+  }, [draftKey, input]);
+  useEffect(() => pruneDrafts(), []);
   const dictation = useSpeechDictation(speechLang ?? i18n.language, setInput);
 
   const submit = () => {
@@ -144,13 +162,14 @@ const ChatPanel = ({
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
+                // Enter that confirms an IME composition (e.g. Japanese) is not a send.
+                if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
                   e.preventDefault();
                   submit();
                 }
               }}
               placeholder={liveOn ? t("platform.live.typeWhileLive") : placeholder || t("platform.activity.placeholder")}
-              disabled={busy || disabled}
+              disabled={disabled}
               rows={2}
               className="min-h-[44px] resize-none"
               aria-label={placeholder || t("platform.activity.placeholder")}
@@ -161,16 +180,22 @@ const ChatPanel = ({
                 variant="outline"
                 size="icon"
                 onClick={() => (dictation.listening ? dictation.stop() : dictation.start(input))}
-                disabled={busy || disabled}
+                disabled={disabled}
                 title={dictation.listening ? t("platform.activity.stopDictation") : t("platform.activity.dictate")}
                 aria-pressed={dictation.listening}
               >
                 {dictation.listening ? <MicOff className="h-4 w-4 text-red-500" /> : <Mic className="h-4 w-4" />}
               </Button>
             )}
-            <Button type="button" size="icon" onClick={submit} disabled={busy || disabled || !input.trim()} aria-label={t("platform.activity.send")}>
-              {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-            </Button>
+            {busy && onStop ? (
+              <Button type="button" size="icon" variant="outline" onClick={onStop} aria-label={t("platform.activity.stopReply")} title={t("platform.activity.stopReply")}>
+                <Square className="h-4 w-4 fill-current" />
+              </Button>
+            ) : (
+              <Button type="button" size="icon" onClick={submit} disabled={busy || disabled || !input.trim()} aria-label={t("platform.activity.send")}>
+                <Send className="h-4 w-4" />
+              </Button>
+            )}
           </div>
         )}
         {!ended && (onEnd || footerNote) && (

@@ -7,7 +7,8 @@
   },
   "buttons": {
     "launchApp": "Commencer",
-    "comingSoon": "Bientôt"
+    "comingSoon": "Bientôt",
+    "launchNamed": "Commencer {{name}}"
   },
   "appCards": {
     "youModerate": {

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import type { ChatMessage } from "@/services/aiService";
+import type { ChatMessage, PromptRecipe } from "@/services/aiService";
 import { useAiClient } from "@/services/aiClient";
 import { useLiveAi } from "@/hooks/useLiveAi";
 import type { ActivitySession, EndReason } from "./useActivitySession";
@@ -8,7 +8,8 @@ import { ActivityMessage, newId } from "./types";
 import { useMessageState } from "./useMessageState";
 
 interface LiveConfig {
-  systemInstruction?: string;
+  /** The server writes the voice instructions from it. */
+  recipe?: PromptRecipe;
   characterName?: string;
   characterBio?: string;
 }
@@ -24,7 +25,8 @@ interface Options {
 }
 
 interface RespondArgs {
-  system: string;
+  /** What the character is; the server writes its instructions from it. */
+  recipe: PromptRecipe;
   history?: ChatMessage[];
   name?: string;
   speakerKey?: string;
@@ -55,9 +57,12 @@ export const useChatEngine = ({ session, live, context, onEnded }: Options) => {
   const onEndedRef = useRef(onEnded);
   onEndedRef.current = onEnded;
 
-  const ended = session.endReason === "goal_reached" || session.endReason === "turn_limit";
+  const ended = session.endReason === "goal_reached" || session.endReason === "turn_limit" || session.endReason === "identified";
 
-  /** Saves the transcript after a turn; `judge` asks for a judgement even when the attempt already ended. */
+  /**
+   * Saves the transcript after a turn. `judge: true` asks for a judgement even
+   * when the attempt already ended; `judge: false` saves without one.
+   */
   const afterTurn = useCallback(async (opts: { judge?: boolean } = {}) => {
     const reason = await session.sync(messagesRef.current, contextRef.current, opts);
     if (reason) onEndedRef.current?.(reason);
@@ -73,15 +78,26 @@ export const useChatEngine = ({ session, live, context, onEnded }: Options) => {
     setMessages((prev) => prev.map((m) => (m.id === id ? { ...m, ...patch } : m)));
   }, [setMessages]);
 
-  /** Keeps the chat busy (input disabled) while `work` runs. */
+  // The replies being generated can be stopped (Stop, restart, leaving the
+  // page): one controller per busy period, shared by its replies.
+  const abortRef = useRef<AbortController | null>(null);
+
+  /** Keeps the chat busy (sending gated) while `work` runs. */
   const withBusy = useCallback(async <T,>(work: () => Promise<T>) => {
+    const controller = new AbortController();
+    abortRef.current = controller;
     setBusy(true);
     try {
       return await work();
     } finally {
+      if (abortRef.current === controller) abortRef.current = null;
       setBusy(false);
     }
   }, []);
+
+  /** Stops the replies being generated; what was written so far stays. */
+  const stop = useCallback(() => abortRef.current?.abort(), []);
+  useEffect(() => () => abortRef.current?.abort(), []);
 
   /** Failed replies the student can ask again, by message id. */
   const retries = useRef(new Map<string, () => Promise<unknown>>());
@@ -92,15 +108,27 @@ export const useChatEngine = ({ session, live, context, onEnded }: Options) => {
    * null on error; with `fallback` a failure shows that text instead.
    */
   const respond = useCallback(async (args: RespondArgs) => {
+    const signal = abortRef.current?.signal;
+    if (signal?.aborted) return null; // stopped: the next speakers do not start
     const msg = addMessage({ role: "assistant", content: "", name: args.name, speakerKey: args.speakerKey, streaming: true });
+    let partial = "";
     try {
       const text = await ai.generateStream(
-        { task: "chat", system: args.system, messages: args.history ?? toHistory(messagesRef.current.filter((m) => m.id !== msg.id), args.speakerKey), sessionId: session.getSessionId(), maxTokens: args.maxTokens },
-        (_d, full) => streamMessages((prev) => prev.map((m) => m.id === msg.id ? { ...m, content: full } : m)),
+        { task: "chat", recipe: args.recipe, messages: args.history ?? toHistory(messagesRef.current.filter((m) => m.id !== msg.id), args.speakerKey), sessionId: session.getSessionId(), maxTokens: args.maxTokens, signal },
+        (_d, full) => {
+          partial = full;
+          streamMessages((prev) => prev.map((m) => m.id === msg.id ? { ...m, content: full } : m));
+        },
       );
       patchMessage(msg.id, { content: text || "…", streaming: false });
       return text;
     } catch (e) {
+      if (signal?.aborted) {
+        // Stopped by the student: keep what was written, drop an empty bubble.
+        if (partial.trim()) patchMessage(msg.id, { content: partial.trim(), streaming: false });
+        else setMessages((prev) => prev.filter((m) => m.id !== msg.id));
+        return null;
+      }
       if (args.fallback) {
         patchMessage(msg.id, { ...args.fallback, streaming: false });
         return null;
@@ -110,16 +138,17 @@ export const useChatEngine = ({ session, live, context, onEnded }: Options) => {
       toast.error(ai.formatError(e));
       return null;
     }
-  }, [addMessage, patchMessage, streamMessages, messagesRef, session, ai]);
+  }, [addMessage, patchMessage, setMessages, streamMessages, messagesRef, session, ai]);
   respondRef.current = respond;
 
   /**
    * The character speaks first, in its own voice, prompted by a hidden stage
-   * direction; `fallback` is shown if no model answers.
+   * direction the server writes from the recipe; `fallback` is shown if no
+   * model answers.
    */
   const open = useCallback(
-    (args: Omit<RespondArgs, "history"> & { cue: string; fallback: RespondArgs["fallback"] }) =>
-      withBusy(() => respond({ ...args, history: [{ role: "user", content: args.cue }] })),
+    (args: Omit<RespondArgs, "history"> & { fallback: RespondArgs["fallback"] }) =>
+      withBusy(() => respond({ ...args, recipe: { ...args.recipe, kind: "opening" }, history: [] })),
     [withBusy, respond],
   );
 
@@ -129,7 +158,7 @@ export const useChatEngine = ({ session, live, context, onEnded }: Options) => {
 
   const liveCtl = useLiveAi({
     disabled: !live || !session.allowLive || ended,
-    systemInstruction: live?.systemInstruction,
+    recipe: live?.recipe,
     characterName: live?.characterName,
     characterBio: live?.characterBio,
     sessionId: session.sessionId,
@@ -160,15 +189,15 @@ export const useChatEngine = ({ session, live, context, onEnded }: Options) => {
 
   /**
    * Runs a full turn: adds the student's message, lets `reply` produce the AI
-   * answer(s), then syncs with the server (JEV). In live mode the text is
-   * forwarded to the voice session instead.
+   * answer(s), then syncs with the server (JEV; `save.judge` forces or skips
+   * the judgement). In live mode the text is forwarded to the voice session instead.
    */
-  const runTurn = useCallback(async (text: string, reply: () => Promise<unknown>, userName?: string, target?: string) => {
+  const runTurn = useCallback(async (text: string, reply: () => Promise<unknown>, userName?: string, target?: string, save: { judge?: boolean } = {}) => {
     if (!text.trim() || busy || ended) return;
     addMessage({ role: "user", content: text.trim(), name: userName, speakerKey: target });
     if (liveCtl.liveMode && liveCtl.sendLiveText(text.trim())) return;
     await withBusy(reply);
-    await afterTurn();
+    await afterTurn(save);
   }, [busy, ended, addMessage, afterTurn, liveCtl, withBusy]);
 
   useEffect(() => {
@@ -186,6 +215,7 @@ export const useChatEngine = ({ session, live, context, onEnded }: Options) => {
   }, [busy, setMessages, afterTurn, withBusy]);
 
   const reset = useCallback((initial: ActivityMessage[] = []) => {
+    abortRef.current?.abort();
     liveCtl.stopLive();
     retries.current.clear();
     setMessages(initial);
@@ -207,6 +237,7 @@ export const useChatEngine = ({ session, live, context, onEnded }: Options) => {
     afterTurn,
     busy,
     withBusy,
+    stop,
     ended,
     live: liveCtl,
     reset,

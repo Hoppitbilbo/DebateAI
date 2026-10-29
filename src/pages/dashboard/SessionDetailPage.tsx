@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { CheckCircle2, Circle, Printer } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Circle, Printer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import MarkdownViewer from "@/components/shared/MarkdownViewer";
@@ -59,6 +59,15 @@ const SessionDetailPage = () => {
             ))}
           </ul>
         </Panel>
+      )}
+
+      {(s.voice || !!s.unverifiedLines) && (
+        <p role="status" className="flex items-start gap-2 rounded-md border border-warning/40 bg-warning/5 p-3 text-sm">
+          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-warning" />
+          {s.voice
+            ? t("platform.session.voiceUnchecked")
+            : t("platform.session.unverifiedLines", { count: s.unverifiedLines })}
+        </p>
       )}
 
       <div className="grid gap-6 lg:grid-cols-2">

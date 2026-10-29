@@ -60,7 +60,9 @@ export default defineConfig(({ mode, command }) => {
       },
     },
     build: {
-      chunkSizeWarningLimit: 1600,
+      // A budget, not a silencer: the main chunk is ~720 kB and the optional
+      // code highlighter ~640 kB. Growing past this should be a decision.
+      chunkSizeWarningLimit: 750,
       // Maps contain source code: emit them only for a private Sentry upload.
       sourcemap: uploadSourceMaps ? "hidden" : false,
     },

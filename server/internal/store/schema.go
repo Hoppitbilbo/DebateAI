@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS auth_sessions (
   created_at TEXT NOT NULL,
   expires_at TEXT NOT NULL
 );
+CREATE INDEX IF NOT EXISTS idx_auth_sessions_expires ON auth_sessions(expires_at);
 
 CREATE TABLE IF NOT EXISTS invites (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -61,6 +62,7 @@ CREATE TABLE IF NOT EXISTS class_members (
   joined_at TEXT NOT NULL,
   PRIMARY KEY (class_id, user_id)
 );
+CREATE INDEX IF NOT EXISTS idx_class_members_user ON class_members(user_id, class_id);
 
 CREATE TABLE IF NOT EXISTS assignments (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -81,6 +83,7 @@ CREATE TABLE IF NOT EXISTS assignments (
   created_at TEXT NOT NULL,
   updated_at TEXT NOT NULL
 );
+CREATE INDEX IF NOT EXISTS idx_assignments_class ON assignments(class_id);
 
 CREATE TABLE IF NOT EXISTS activity_sessions (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -104,10 +107,33 @@ CREATE TABLE IF NOT EXISTS activity_sessions (
   cost_usd REAL NOT NULL DEFAULT 0,
   started_at TEXT NOT NULL,
   updated_at TEXT NOT NULL,
-  completed_at TEXT
+  completed_at TEXT,
+  revision INTEGER NOT NULL DEFAULT 0,
+  judged_revision INTEGER NOT NULL DEFAULT 0,
+  unverified_lines INTEGER NOT NULL DEFAULT 0
 );
-CREATE INDEX IF NOT EXISTS idx_sessions_user ON activity_sessions(user_id);
+DROP INDEX IF EXISTS idx_sessions_user; -- covered by idx_sessions_user_assignment
 CREATE INDEX IF NOT EXISTS idx_sessions_assignment ON activity_sessions(assignment_id);
+CREATE INDEX IF NOT EXISTS idx_sessions_user_assignment ON activity_sessions(user_id, assignment_id, started_at DESC);
+
+CREATE TABLE IF NOT EXISTS ai_replies (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  session_id INTEGER NOT NULL REFERENCES activity_sessions(id) ON DELETE CASCADE,
+  text TEXT NOT NULL,
+  created_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_ai_replies_session ON ai_replies(session_id);
+
+CREATE TABLE IF NOT EXISTS live_grants (
+  id TEXT PRIMARY KEY,
+  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  session_id INTEGER REFERENCES activity_sessions(id) ON DELETE SET NULL,
+  provider_id INTEGER NOT NULL,
+  model TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  expires_at TEXT NOT NULL,
+  used_at TEXT
+);
 
 CREATE TABLE IF NOT EXISTS providers (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -142,10 +168,36 @@ CREATE TABLE IF NOT EXISTS usage_log (
   cost_usd REAL NOT NULL DEFAULT 0,
   ok INTEGER NOT NULL DEFAULT 1,
   latency_ms INTEGER NOT NULL DEFAULT 0,
-  error TEXT NOT NULL DEFAULT ''
+  error TEXT NOT NULL DEFAULT '',
+  estimated INTEGER NOT NULL DEFAULT 0,
+  unpriced INTEGER NOT NULL DEFAULT 0,
+  first_delta_ms INTEGER NOT NULL DEFAULT 0,
+  first_text_ms INTEGER NOT NULL DEFAULT 0
 );
 CREATE INDEX IF NOT EXISTS idx_usage_created ON usage_log(created_at);
-CREATE INDEX IF NOT EXISTS idx_usage_user ON usage_log(user_id);
+DROP INDEX IF EXISTS idx_usage_user; -- covered by idx_usage_user_created
+CREATE INDEX IF NOT EXISTS idx_usage_user_created ON usage_log(user_id, created_at);
+
+CREATE TABLE IF NOT EXISTS mail_outbox (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  to_addr TEXT NOT NULL,
+  subject TEXT NOT NULL,
+  body TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  next_at TEXT,
+  attempts INTEGER NOT NULL DEFAULT 0,
+  last_error TEXT NOT NULL DEFAULT '',
+  sent_at TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_outbox_due ON mail_outbox(next_at);
+
+CREATE TABLE IF NOT EXISTS ai_inflight (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  scope TEXT NOT NULL,
+  cost_usd REAL NOT NULL DEFAULT 0,
+  expires_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_inflight_scope ON ai_inflight(scope, expires_at);
 
 CREATE TABLE IF NOT EXISTS settings (
   key TEXT PRIMARY KEY,
@@ -228,6 +280,13 @@ var migrations = []string{
 	`ALTER TABLE activity_sessions ADD COLUMN teacher_score INTEGER`,
 	`ALTER TABLE activity_sessions ADD COLUMN teacher_feedback_at TEXT`,
 	`ALTER TABLE rooms ADD COLUMN own_class_id INTEGER REFERENCES classes(id) ON DELETE SET NULL`,
+	`ALTER TABLE activity_sessions ADD COLUMN revision INTEGER NOT NULL DEFAULT 0`,
+	`ALTER TABLE activity_sessions ADD COLUMN judged_revision INTEGER NOT NULL DEFAULT 0`,
+	`ALTER TABLE activity_sessions ADD COLUMN unverified_lines INTEGER NOT NULL DEFAULT 0`,
+	`ALTER TABLE usage_log ADD COLUMN estimated INTEGER NOT NULL DEFAULT 0`,
+	`ALTER TABLE usage_log ADD COLUMN unpriced INTEGER NOT NULL DEFAULT 0`,
+	`ALTER TABLE usage_log ADD COLUMN first_delta_ms INTEGER NOT NULL DEFAULT 0`,
+	`ALTER TABLE usage_log ADD COLUMN first_text_ms INTEGER NOT NULL DEFAULT 0`,
 }
 
 func applyMigrations(db *sql.DB) error {

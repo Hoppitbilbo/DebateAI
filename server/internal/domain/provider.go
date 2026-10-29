@@ -46,6 +46,14 @@ type UsageRecord struct {
 	OK           bool
 	LatencyMs    int64
 	Error        string
+	// Estimated: the provider reported no usage (e.g. an interrupted
+	// stream), the tokens are estimated from the text length.
+	Estimated bool
+	// Unpriced: the model has no known price, so CostUSD is 0 but unknown.
+	Unpriced bool
+	// For a stream (0 otherwise): when the provider sent its first text,
+	// and when the student saw the first text (after the answer screening).
+	FirstDeltaMs, FirstTextMs int64
 }
 
 // UsageLogRow is one line of the usage log as the admin sees it.
@@ -63,6 +71,10 @@ type UsageLogRow struct {
 	OK           bool    `json:"ok"`
 	LatencyMs    int     `json:"latencyMs"`
 	Error        string  `json:"error,omitempty"`
+	Estimated    bool    `json:"estimated,omitempty"`
+	Unpriced     bool    `json:"unpriced,omitempty"`
+	FirstDeltaMs int     `json:"firstDeltaMs,omitempty"`
+	FirstTextMs  int     `json:"firstTextMs,omitempty"`
 }
 
 // UsageAggregate sums the usage log over one group (a day, a model, ...).

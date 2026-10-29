@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { CheckCircle2, Dices, HelpCircle, Lightbulb, XCircle } from "lucide-react";
@@ -13,7 +13,7 @@ import { CharacterPicker, SetupCard } from "@/features/activity/components/Setup
 import { useActivityFlow } from "@/features/activity/useActivityFlow";
 import type { EndReason } from "@/features/activity/useActivitySession";
 import { bioOf, useWikiSummaries } from "@/features/activity/wiki";
-import { openings, prompts } from "@/features/activity/prompts";
+import { recipeFor } from "@/features/activity/recipe";
 import { APPS } from "@/features/activity/types";
 import { availableQuestions, isCorrectGuess, nextTeacherHint, QUESTIONS, RANDOM_CHARACTERS } from "@/features/activity/mystery";
 import { characterOrder, mysteryCharacters, mysteryRounds } from "@/features/activity/characterOrder";
@@ -40,16 +40,32 @@ const PersonaggioMisteriosoPage = () => {
   const [reasoning, setReasoning] = useState("");
   const [result, setResult] = useState<boolean | null>(null);
   const [endedByJudge, setEndedByJudge] = useState(false);
+  // The student named the character in the chat and the character confirmed
+  // it: the game is won, there is no separate guess.
+  const [foundInChat, setFoundInChat] = useState(false);
   const [chosenLevel, setChosenLevel] = useState<Difficulty>();
 
   const { summaries, loading } = useWikiSummaries([character]);
   const bio = bioOf(character, summaries);
   const levelFor = (assignment: Assignment | null) => difficultyOf(assignment?.config.difficulty, chosenLevel);
-  const systemFor = (assignment: Assignment | null) => (character ? prompts.mystery(character.title, bio, assignment, levelFor(assignment)) : "");
+  // The server writes the character's instructions from this recipe.
+  const recipeOf = (assignment: Assignment | null) =>
+    character
+      ? recipeFor(app.type, {
+          character: character.title,
+          bio,
+          difficulty: levelFor(assignment),
+          questions: availableQuestions(chosenQuestions, assignment?.maxTurns),
+        })
+      : undefined;
 
   // When the server ends the questions (turn limit, or JEV judging the goal
   // reached) no more questions can be asked; the student then makes the guess.
   const onEnded = useCallback((reason: EndReason) => {
+    if (reason === "identified") {
+      foundRef.current?.();
+      return;
+    }
     if (reason === "goal_reached") {
       setEndedByJudge(true);
       toast.success(t("platform.apps.personaggioMisterioso.judgeEnded"));
@@ -57,9 +73,14 @@ const PersonaggioMisteriosoPage = () => {
     if (reason === "turn_limit" || reason === "goal_reached") setQuestionsOver(true);
   }, [t]);
 
+  // Set below, once the round is known; called when the judge says the
+  // character was found.
+  const foundRef = useRef<(() => void) | null>(null);
+  const lastQuestion = useRef("");
+
   const flow = useActivityFlow(app.type, {
     live: (phase, assignment) =>
-      phase === "chat" && character && !guessing ? { systemInstruction: systemFor(assignment), characterName: character.title, characterBio: bio } : null,
+      phase === "chat" && character && !guessing ? { recipe: recipeOf(assignment), characterName: character.title, characterBio: bio } : null,
     context: (assignment) => ({ questions: availableQuestions(chosenQuestions, assignment?.maxTurns), difficulty: levelFor(assignment) }),
     onEnded,
   });
@@ -76,7 +97,7 @@ const PersonaggioMisteriosoPage = () => {
   const [round, setRound] = useState(0);
   const roundCharacter = order.length ? order[round % order.length] : null;
   const moreRounds = order.length > 1 && round + 1 < order.length;
-  const system = systemFor(session.assignment);
+  const recipe = recipeOf(session.assignment);
   // Never more questions than the assignment's turn limit, so the game ends when it says it does.
   const turnCap = session.assignment?.maxTurns ?? 0;
   const maxQuestions = availableQuestions(chosenQuestions, turnCap);
@@ -118,14 +139,14 @@ const PersonaggioMisteriosoPage = () => {
     setGuessing(false);
     setQuestionsOver(false);
     setEndedByJudge(false);
+    setFoundInChat(false);
     setResult(null);
     setGuess("");
     setReasoning("");
     setHintsUsed(0);
-    await flow.begin(t("apps.personaggioMisterioso.title"), { character: character.title, questions: maxQuestions }, []);
+    if (!(await flow.begin(t("apps.personaggioMisterioso.title"), { character: character.title, questions: maxQuestions }, []))) return;
     await engine.open({
-      system,
-      cue: openings.mystery(maxQuestions),
+      recipe,
       name: "???",
       fallback: { role: "assistant", content: t("platform.apps.personaggioMisterioso.intro", { count: maxQuestions }) },
     });
@@ -142,8 +163,35 @@ const PersonaggioMisteriosoPage = () => {
     setHintsUsed((n) => n + 1);
     void engine.runTurn(t("platform.apps.personaggioMisterioso.hintRequest"), async () => {
       if (teacherHint) engine.addMessage({ role: "assistant", name: "???", content: t("platform.apps.personaggioMisterioso.teacherHint", { hint: teacherHint }) });
-      else await engine.respond({ system, name: "???" });
+      else await engine.respond({ recipe, name: "???" });
     });
+  };
+
+  /** The game is won in the chat: the character confirmed the name the student said. */
+  const found = () => {
+    if (!character || foundInChat) return;
+    setGuess(lastQuestion.current || character.title); // by voice there is no typed question
+    setResult(true);
+    setFoundInChat(true);
+    setQuestionsOver(true);
+    engine.live.finishLive(); // the voice still says the congratulations
+    session.markManualEnd();
+    if (assignmentId && user && order.length > 1) mysteryRounds.set(assignmentId, user.id, round + 1);
+    toast.success(t("platform.apps.personaggioMisterioso.correct", { name: character.title }));
+  };
+  foundRef.current = found;
+
+  /**
+   * A question. One that names the character is judged at once: the judge
+   * (for an assignment) decides whether the game is won; without a judge the
+   * strict name match does.
+   */
+  const ask = async (text: string) => {
+    if (!character) return;
+    const named = isCorrectGuess(text, character.title);
+    lastQuestion.current = text;
+    await engine.runTurn(text, () => engine.respond({ recipe, name: "???" }), undefined, undefined, named ? { judge: true } : {});
+    if (named && !session.judgedLastTurn()) found();
   };
 
   const submitGuess = () => {
@@ -169,6 +217,7 @@ const PersonaggioMisteriosoPage = () => {
       setGuessing(false);
       setQuestionsOver(false);
       setEndedByJudge(false);
+      setFoundInChat(false);
     });
 
   const guessForm = (
@@ -198,9 +247,15 @@ const PersonaggioMisteriosoPage = () => {
     engine.live.stopLive();
     setGuessing(true);
   };
-  const chatEndMessage = endedByJudge
-    ? t("platform.apps.personaggioMisterioso.judgeEndedChat")
-    : t("platform.apps.personaggioMisterioso.readLastAnswer");
+  const chatEndMessage = foundInChat
+    ? t("platform.apps.personaggioMisterioso.foundInChat", { name: character?.title })
+    : endedByJudge
+      ? t("platform.apps.personaggioMisterioso.judgeEndedChat")
+      : t("platform.apps.personaggioMisterioso.readLastAnswer");
+  // Found in the chat: straight to the reflection; otherwise the guess comes first.
+  const afterChat = foundInChat
+    ? { label: t("platform.activity.continueToReflection"), go: () => flow.setPhase("reflection") }
+    : { label: t("platform.apps.personaggioMisterioso.guessNow"), go: startGuess };
 
   return (
     <ActivityRunner
@@ -258,7 +313,7 @@ const PersonaggioMisteriosoPage = () => {
       chat={{
         ready: !!character,
         replacement: guessing ? guessForm : undefined,
-        onSend: (text) => engine.runTurn(text, () => engine.respond({ system, name: "???" })),
+        onSend: (text) => void ask(text),
         placeholder: t("platform.apps.personaggioMisterioso.placeholder"),
         live: engine.live,
         disabled: questionsOver || questionsLeft === 0 || engine.ended,
@@ -267,7 +322,7 @@ const PersonaggioMisteriosoPage = () => {
         endLabel: t("platform.apps.personaggioMisterioso.guessNow"),
         // Out of questions: read the last answer, then guess (never straight to the reflection).
         ended: questionsOver || engine.ended
-          ? { message: chatEndMessage, continueLabel: t("platform.apps.personaggioMisterioso.guessNow"), onContinue: startGuess }
+          ? { message: chatEndMessage, continueLabel: afterChat.label, onContinue: afterChat.go }
           : null,
         canEnd: session.turns >= 1 || questionsOver,
         toolbar: !questionsOver && questionsLeft > 0 && !engine.ended ? (
@@ -300,8 +355,10 @@ const PersonaggioMisteriosoPage = () => {
           activity: `${t("apps.personaggioMisterioso.title")}: ${t("platform.apps.personaggioMisterioso.evalActivity")}`,
           characters: character?.title ?? "",
           extraFacts: [
-            `FINAL GUESS: ${guess} — ${result ? "CORRECT" : "WRONG"} (answer: ${character?.title})`,
-            `STUDENT REASONING: ${reasoning}`,
+            foundInChat
+              ? `IDENTIFIED IN THE CONVERSATION: the student named the character ("${guess}") and the character confirmed it (answer: ${character?.title})`
+              : `FINAL GUESS: ${guess} — ${result ? "CORRECT" : "WRONG"} (answer: ${character?.title})`,
+            ...(foundInChat ? [] : [`STUDENT REASONING: ${reasoning}`]),
             `QUESTIONS USED: ${session.turns}/${maxQuestions} (of which hints asked: ${hintsUsed})`,
           ],
         }),

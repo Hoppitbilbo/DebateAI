@@ -37,13 +37,13 @@ describe("FeedbackStep diffusion easter egg", () => {
     expect(screen.queryByText(/diffusing/)).toBeNull();
   });
 
-  it("three quick clicks on the title switch it on, play it once, and keep the choice", () => {
+  it("three quick clicks on the title switch it on, play it once, and keep the choice", async () => {
     renderFeedback();
     fireEvent.click(title());
     fireEvent.click(title());
     fireEvent.click(title());
     expect(mocks.toast).toHaveBeenCalledWith("platform.feedback.diffusionOn");
-    fireEvent.click(screen.getByText(/diffusing: Ottimo/));
+    fireEvent.click(await screen.findByText(/diffusing: Ottimo/)); // the effect is loaded on demand
     expect(screen.getByTestId("markdown")).toBeTruthy();
     expect(localStorage.getItem("debateai:feedback-diffusion")).toBe("on");
 

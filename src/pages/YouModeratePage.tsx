@@ -11,7 +11,7 @@ import ActivityRunner from "@/features/activity/components/ActivityRunner";
 import { CharacterPicker } from "@/features/activity/components/SetupCard";
 import { useActivityFlow } from "@/features/activity/useActivityFlow";
 import { bioOf, useWikiSummaries } from "@/features/activity/wiki";
-import { openings, prompts } from "@/features/activity/prompts";
+import { MAX_TOPIC_CHARS, recipeFor } from "@/features/activity/recipe";
 import { APPS, ActivityMessage } from "@/features/activity/types";
 
 const app = APPS["you-moderate"];
@@ -40,25 +40,23 @@ const YouModeratePage = () => {
   const moderator = t("platform.apps.youModerate.moderator");
 
   const flow = useActivityFlow(app.type, { context: { characters: [a?.title, b?.title], theme } });
-  const { preset, engine, session } = flow;
+  const { preset, engine } = flow;
 
   useEffect(() => {
     if (preset.characters?.length === 2) setChars([preset.characters[0], preset.characters[1]]);
     if (preset.topic) setTheme(preset.topic);
   }, [preset.characters, preset.topic]);
 
-  /** The system prompt of one debater. */
-  const systemOf = (key: Key, me: WikiRef, other: WikiRef) => {
-    const style = key === "a" ? t("platform.apps.youModerate.styleA") : t("platform.apps.youModerate.styleB");
-    return prompts.moderated(me.title, bioOf(me, summaries), other.title, theme, style, session.assignment);
-  };
+  /** The recipe of one debater (its key is its speaking style); the server writes the instructions. */
+  const recipeOf = (key: Key, me: WikiRef, other: WikiRef) =>
+    recipeFor(app.type, { character: me.title, bio: bioOf(me, summaries), other: other.title, topic: theme, style: key });
 
   /** One debater speaks, then the floor passes to the other. */
   const speak = async (key: Key) => {
     if (!a || !b) return;
     const [me, other] = key === "a" ? [a, b] : [b, a];
     await engine.respond({
-      system: systemOf(key, me, other),
+      recipe: recipeOf(key, me, other),
       history: debateHistory(engine.messagesRef.current, key, moderator),
       name: me.title,
       speakerKey: key,
@@ -66,17 +64,22 @@ const YouModeratePage = () => {
     setNextSpeaker(key === "a" ? "b" : "a");
   };
 
-  /** Lets a debater speak without a moderator message (the chat stays busy meanwhile). */
-  const speakAlone = (key: Key) => engine.withBusy(() => speak(key));
+  /**
+   * Lets a debater speak without a moderator message (the chat stays busy
+   * meanwhile). The line is saved; no student turn, so no new judgement.
+   */
+  const speakAlone = async (key: Key) => {
+    await engine.withBusy(() => speak(key));
+    await engine.afterTurn({ judge: false });
+  };
 
   /** The first debater opens, then the floor passes to the second. */
   const start = async () => {
     if (!a || !b) return;
     setNextSpeaker("a");
-    await flow.begin(`${a.title} vs ${b.title}: ${theme}`, { characters: [a, b], theme }, []);
+    if (!(await flow.begin(`${a.title} vs ${b.title}: ${theme}`, { characters: [a, b], theme }, []))) return;
     await engine.open({
-      system: systemOf("a", a, b),
-      cue: openings.moderated(theme, b.title),
+      recipe: recipeOf("a", a, b),
       name: a.title,
       speakerKey: "a",
       fallback: { role: "system", content: t("platform.apps.youModerate.intro", { a: a.title, b: b.title, theme }) },
@@ -119,7 +122,7 @@ const YouModeratePage = () => {
             {sameCharacter && <p className="text-sm text-destructive">{t("platform.apps.common.differentCharacters")}</p>}
             <div className="space-y-2">
               <Label htmlFor="theme">{t("platform.apps.youModerate.themeLabel")}</Label>
-              <Input id="theme" value={theme} onChange={(e) => setTheme(e.target.value)} placeholder={t("platform.apps.youModerate.themePlaceholder")} disabled={!!preset.topic} />
+              <Input id="theme" value={theme} onChange={(e) => setTheme(e.target.value)} maxLength={MAX_TOPIC_CHARS} placeholder={t("platform.apps.youModerate.themePlaceholder")} disabled={!!preset.topic} />
             </div>
           </>
         ),
@@ -136,8 +139,8 @@ const YouModeratePage = () => {
               <span className="text-muted-foreground">{t("platform.apps.youModerate.addressTo")}</span>
               <ToggleGroup type="single" size="sm" value={target} onValueChange={(v) => v && setTarget(v as "next" | Key)}>
                 <ToggleGroupItem value="next">{t("platform.apps.youModerate.nextSpeaker", { name: nextSpeaker === "a" ? a.title : b.title })}</ToggleGroupItem>
-                <ToggleGroupItem value="a" className="data-[state=on]:text-sky-300">{a.title}</ToggleGroupItem>
-                <ToggleGroupItem value="b" className="data-[state=on]:text-amber-300">{b.title}</ToggleGroupItem>
+                <ToggleGroupItem value="a" className="data-[state=on]:text-info">{a.title}</ToggleGroupItem>
+                <ToggleGroupItem value="b" className="data-[state=on]:text-warning">{b.title}</ToggleGroupItem>
               </ToggleGroup>
             </div>
             <Button size="sm" variant="outline" onClick={continueDebate} disabled={engine.busy || engine.ended}>

@@ -18,7 +18,9 @@ describe("MarkdownViewer", () => {
     const { container } = render(<MarkdownViewer content={'```javascript\nconst answer = 42;\n```\n\n```unlisted-language\nplain code\n```'} />);
     expect(container.textContent).toContain("const answer = 42;");
     expect(container.textContent).toContain("plain code");
-    expect(await screen.findByText("42")).toBeTruthy();
+    // The highlighter is loaded on demand: under a full parallel run it can
+    // take longer than findByText's default second.
+    expect(await screen.findByText("42", {}, { timeout: 5000 })).toBeTruthy();
   });
 
   it("does not turn raw HTML or dangerous URLs into executable content", () => {

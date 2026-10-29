@@ -12,24 +12,36 @@ type Usage struct{ db *sql.DB }
 func NewUsage(db *sql.DB) *Usage { return &Usage{db: db} }
 
 func (r *Usage) Insert(u domain.UsageRecord) error {
-	_, err := r.db.Exec(`INSERT INTO usage_log(created_at, user_id, session_id, provider_id, provider_name, model, task, input_tokens, output_tokens, cost_usd, ok, latency_ms, error)
-		VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)`, domain.Now(), u.UserID, u.SessionID, u.ProviderID, u.Provider, u.Model, u.Task,
-		u.InputTokens, u.OutputTokens, u.CostUSD, boolInt(u.OK), u.LatencyMs, u.Error)
+	_, err := r.db.Exec(`INSERT INTO usage_log(created_at, user_id, session_id, provider_id, provider_name, model, task, input_tokens, output_tokens, cost_usd, ok, latency_ms, error, estimated, unpriced, first_delta_ms, first_text_ms)
+		VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`, domain.Now(), u.UserID, u.SessionID, u.ProviderID, u.Provider, u.Model, u.Task,
+		u.InputTokens, u.OutputTokens, u.CostUSD, boolInt(u.OK), u.LatencyMs, u.Error, boolInt(u.Estimated), boolInt(u.Unpriced), u.FirstDeltaMs, u.FirstTextMs)
 	return err
 }
 
 // SpendSince sums the cost of all calls since a timestamp.
-func (r *Usage) SpendSince(since string) float64 {
+func (r *Usage) SpendSince(since string) (float64, error) {
 	var v sql.NullFloat64
-	_ = r.db.QueryRow(`SELECT SUM(cost_usd) FROM usage_log WHERE created_at >= ?`, since).Scan(&v)
-	return v.Float64
+	err := r.db.QueryRow(`SELECT SUM(cost_usd) FROM usage_log WHERE created_at >= ?`, since).Scan(&v)
+	return v.Float64, err
 }
 
-// UserSpendSince sums the cost of a user's calls since a timestamp.
-func (r *Usage) UserSpendSince(userID int64, since string) float64 {
-	var v sql.NullFloat64
-	_ = r.db.QueryRow(`SELECT SUM(cost_usd) FROM usage_log WHERE user_id = ? AND created_at >= ?`, userID, since).Scan(&v)
-	return v.Float64
+// SpendPerUserSince sums the cost of each user's calls since a timestamp, by user id.
+func (r *Usage) SpendPerUserSince(since string) (map[int64]float64, error) {
+	rows, err := r.db.Query(`SELECT user_id, SUM(cost_usd) FROM usage_log WHERE created_at >= ? AND user_id IS NOT NULL GROUP BY user_id`, since)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	out := map[int64]float64{}
+	for rows.Next() {
+		var id int64
+		var v float64
+		if err := rows.Scan(&id, &v); err != nil {
+			return nil, err
+		}
+		out[id] = v
+	}
+	return out, rows.Err()
 }
 
 // CountSince counts the calls since a timestamp, only failed ones when onlyErrors.
@@ -42,8 +54,8 @@ func (r *Usage) CountSince(since string, onlyErrors bool) int {
 
 // CountUserRequestsSince counts a user's calls since a timestamp, except
 // those of excludedTask (e.g. the judge, which the student does not trigger).
-func (r *Usage) CountUserRequestsSince(userID int64, since, excludedTask string) int {
-	return count(r.db, `SELECT COUNT(*) FROM usage_log WHERE user_id = ? AND created_at >= ? AND task != ?`, userID, since, excludedTask)
+func (r *Usage) CountUserRequestsSince(userID int64, since, excludedTask string) (int, error) {
+	return countErr(r.db, `SELECT COUNT(*) FROM usage_log WHERE user_id = ? AND created_at >= ? AND task != ?`, userID, since, excludedTask)
 }
 
 // usageGroups maps each grouping to its key and label expressions.
@@ -85,7 +97,7 @@ func (r *Usage) Aggregate(since string, by domain.UsageGrouping, limit int) []do
 
 // Recent returns the latest calls, newest first.
 func (r *Usage) Recent(limit int) ([]domain.UsageLogRow, error) {
-	rows, err := r.db.Query(`SELECT l.id, l.created_at, COALESCE(u.name,''), l.session_id, l.provider_name, l.model, l.task, l.input_tokens, l.output_tokens, l.cost_usd, l.ok, l.latency_ms, l.error
+	rows, err := r.db.Query(`SELECT l.id, l.created_at, COALESCE(u.name,''), l.session_id, l.provider_name, l.model, l.task, l.input_tokens, l.output_tokens, l.cost_usd, l.ok, l.latency_ms, l.error, l.estimated, l.unpriced, l.first_delta_ms, l.first_text_ms
 		FROM usage_log l LEFT JOIN users u ON u.id = l.user_id ORDER BY l.id DESC LIMIT ?`, limit)
 	if err != nil {
 		return nil, err
@@ -95,12 +107,13 @@ func (r *Usage) Recent(limit int) ([]domain.UsageLogRow, error) {
 	for rows.Next() {
 		var x domain.UsageLogRow
 		var sid sql.NullInt64
-		var ok int
-		if rows.Scan(&x.ID, &x.CreatedAt, &x.User, &sid, &x.Provider, &x.Model, &x.Task, &x.InputTokens, &x.OutputTokens, &x.CostUSD, &ok, &x.LatencyMs, &x.Error) == nil {
+		var ok, estimated, unpriced int
+		if rows.Scan(&x.ID, &x.CreatedAt, &x.User, &sid, &x.Provider, &x.Model, &x.Task, &x.InputTokens, &x.OutputTokens, &x.CostUSD, &ok, &x.LatencyMs, &x.Error, &estimated, &unpriced, &x.FirstDeltaMs, &x.FirstTextMs) == nil {
 			if sid.Valid {
 				x.SessionID = &sid.Int64
 			}
 			x.OK = ok == 1
+			x.Estimated, x.Unpriced = estimated == 1, unpriced == 1
 			out = append(out, x)
 		}
 	}
@@ -109,6 +122,6 @@ func (r *Usage) Recent(limit int) ([]domain.UsageLogRow, error) {
 
 // CountRoomRequestsSince counts the calls of a room's guests since a
 // timestamp, except those of excludedTask.
-func (r *Usage) CountRoomRequestsSince(roomID int64, since, excludedTask string) int {
-	return count(r.db, `SELECT COUNT(*) FROM usage_log WHERE user_id IN (SELECT user_id FROM room_guests WHERE room_id = ?) AND created_at >= ? AND task != ?`, roomID, since, excludedTask)
+func (r *Usage) CountRoomRequestsSince(roomID int64, since, excludedTask string) (int, error) {
+	return countErr(r.db, `SELECT COUNT(*) FROM usage_log WHERE user_id IN (SELECT user_id FROM room_guests WHERE room_id = ?) AND created_at >= ? AND task != ?`, roomID, since, excludedTask)
 }

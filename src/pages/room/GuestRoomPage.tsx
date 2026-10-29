@@ -8,13 +8,14 @@ import { useAuth } from "@/context/auth";
 import { activityPath, REFRESH_MS, RoomActivity, roomApi } from "@/features/room/roomApi";
 import { appIconSrc } from "@/lib/appArt";
 import { cn } from "@/lib/utils";
+import { conversationOver } from "@/features/activity/attemptStatus";
 import { avatarUrl } from "@/features/room/avatars";
 import { formatCountdown, useCountdown } from "@/features/room/useCountdown";
 import { Spinner } from "../dashboard/common";
 import ConfirmButton from "../dashboard/ConfirmButton";
 
-const FINISHED = new Set(["goal_reached", "turn_limit", "completed"]);
-const isDone = (a: RoomActivity) => !!a.status && FINISHED.has(a.status);
+// The path moves on once a conversation is over, also when its turns ran out.
+const isDone = (a: RoomActivity) => conversationOver(a.status);
 
 /**
  * The room's path as a trail of stops: done ones ticked, the next one

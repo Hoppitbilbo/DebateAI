@@ -2,7 +2,7 @@ import i18n from "@/i18n";
 import type { AppType, AssignmentConfig, WikiRef } from "@/lib/api";
 import type { AiClient } from "@/services/aiClient";
 import { fetchWikiSummary } from "@/features/activity/wiki";
-import { uiLanguage } from "@/features/activity/prompts";
+import { uiLanguage } from "@/features/activity/language";
 import { APP_TYPES } from "@/features/activity/appCatalog";
 
 // Related activities for a room's path. From the theme a teacher chose

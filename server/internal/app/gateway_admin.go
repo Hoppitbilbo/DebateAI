@@ -206,6 +206,8 @@ func (g *aiGateway) TestProvider(ctx context.Context, id int64, model string, us
 
 // LiveToken is a short-lived Gemini Live token the browser uses directly.
 type LiveToken struct {
+	// GrantID identifies the conversation when its usage is reported.
+	GrantID    string `json:"grantId"`
 	Token      string `json:"token"`
 	Model      string `json:"model"`
 	ProviderID int64  `json:"providerId"`
@@ -213,8 +215,9 @@ type LiveToken struct {
 	VoiceName  string `json:"voiceName"`
 }
 
-// LiveToken returns a token from the first Gemini target of the live task.
-func (g *aiGateway) LiveToken(ctx context.Context, systemInstruction, voice string) (*LiveToken, error) {
+// LiveToken returns a token from the first Gemini target of the live task,
+// and records the grant its usage will be reported against.
+func (g *aiGateway) LiveToken(ctx context.Context, systemInstruction, voice string, userID, sessionID *int64) (*LiveToken, error) {
 	if voice == "" {
 		voice = g.settings.Routing().DefaultVoice
 	}
@@ -232,26 +235,45 @@ func (g *aiGateway) LiveToken(ctx context.Context, systemInstruction, voice stri
 			log.Printf("live token via %s/%s: %v", cp.name, t.Model, err)
 			continue
 		}
-		return &LiveToken{Token: tok, Model: t.Model, ProviderID: t.ProviderID, ExpiresAt: exp.UTC().Format(time.RFC3339), VoiceName: voice}, nil
+		now := time.Now().UTC()
+		grant := domain.LiveGrant{ID: randomToken(18), UserID: userID, SessionID: sessionID, ProviderID: t.ProviderID, Model: t.Model,
+			CreatedAt: now.Format(time.RFC3339), ExpiresAt: now.Add(liveGrantTTL).Format(time.RFC3339)}
+		if err := g.grants.Create(grant); err != nil {
+			return nil, err
+		}
+		return &LiveToken{GrantID: grant.ID, Token: tok, Model: t.Model, ProviderID: t.ProviderID, ExpiresAt: exp.UTC().Format(time.RFC3339), VoiceName: voice}, nil
 	}
 	return nil, lastErr
 }
 
 // LiveUsage is what the browser reports at the end of a Live conversation
-// (the audio goes straight to Google, so only the client knows the usage).
+// (the audio goes straight to Google, so only the client knows the tokens).
 type LiveUsage struct {
-	UserID, SessionID         *int64
-	ProviderID                int64
-	Model                     string
+	GrantID                   string
+	UserID                    *int64 // who reports it
 	InputTokens, OutputTokens int
-	Seconds                   int
 }
 
-// RecordLiveUsage logs a Live conversation and returns its cost.
-func (g *aiGateway) RecordLiveUsage(u LiveUsage) float64 {
-	return g.logUsage(usageEntry{UserID: u.UserID, SessionID: u.SessionID, ProviderID: u.ProviderID, Provider: g.providers.Name(u.ProviderID),
-		Model: u.Model, Task: TaskLive, Usage: ai.Usage{InputTokens: u.InputTokens, OutputTokens: u.OutputTokens}, OK: true,
-		Latency: time.Duration(u.Seconds) * time.Second})
+// ErrLiveGrant: the report does not match a voice conversation the server
+// allowed to this user, or it was already reported.
+var ErrLiveGrant = errors.New("unknown or already reported live session")
+
+// RecordLiveUsage logs a Live conversation once, against its grant, and
+// returns its cost. Provider, model, attempt and duration come from the
+// grant, not from the browser; the token counts still do (estimated).
+func (g *aiGateway) RecordLiveUsage(u LiveUsage) (float64, error) {
+	grant, err := g.grants.Consume(u.GrantID)
+	if err != nil {
+		return 0, ErrLiveGrant
+	}
+	if (grant.UserID == nil) != (u.UserID == nil) || (grant.UserID != nil && *grant.UserID != *u.UserID) {
+		return 0, ErrLiveGrant
+	}
+	started, _ := time.Parse(time.RFC3339, grant.CreatedAt)
+	took := min(time.Since(started), liveGrantTTL)
+	return g.logUsage(usageEntry{UserID: grant.UserID, SessionID: grant.SessionID, ProviderID: grant.ProviderID, Provider: g.providers.Name(grant.ProviderID),
+		Model: grant.Model, Task: TaskLive, Usage: ai.Usage{InputTokens: u.InputTokens, OutputTokens: u.OutputTokens}, OK: true,
+		Latency: took}), nil
 }
 
 // storeModels saves the model list of a provider and imports the prices it

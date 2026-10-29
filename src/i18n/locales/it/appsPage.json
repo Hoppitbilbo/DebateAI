@@ -37,6 +37,7 @@
   },
   "buttons": {
     "launchApp": "Inizia",
-    "comingSoon": "In arrivo"
+    "comingSoon": "In arrivo",
+    "launchNamed": "Inizia {{name}}"
   }
 }

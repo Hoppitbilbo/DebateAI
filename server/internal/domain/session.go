@@ -1,6 +1,9 @@
 package domain
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"errors"
+)
 
 // Session statuses.
 const (
@@ -29,6 +32,10 @@ type SessionSummary struct {
 	StartedAt         string  `json:"startedAt"`
 	UpdatedAt         string  `json:"updatedAt"`
 	CompletedAt       *string `json:"completedAt,omitempty"`
+	// UnverifiedLines counts the AI lines of the saved conversation that the
+	// server did not produce (after the student's first message): edited or
+	// invented lines, or voice lines, which the server never sees.
+	UnverifiedLines int `json:"unverifiedLines,omitempty"`
 }
 
 type SessionDetail struct {
@@ -38,9 +45,33 @@ type SessionDetail struct {
 	Jev        json.RawMessage `json:"jev"`
 	Reflection string          `json:"reflection"`
 	Evaluation string          `json:"evaluation"`
+	// Revision grows by one at every transcript save.
+	Revision int64 `json:"revision"`
+	// Voice: part of the conversation was spoken (its AI lines cannot be checked).
+	Voice bool `json:"voice,omitempty"`
 	// Written by the teacher after reading the conversation.
 	TeacherFeedback   string  `json:"teacherFeedback"`
 	TeacherFeedbackAt *string `json:"teacherFeedbackAt,omitempty"`
+}
+
+// Errors of the conditional session writes.
+var (
+	// ErrStaleRevision: the transcript was saved on top of an older revision.
+	ErrStaleRevision = errors.New("the conversation was saved meanwhile from another request; reload it")
+	// ErrSessionCompleted: a handed-in attempt is not rewritten.
+	ErrSessionCompleted = errors.New("this attempt has already been handed in")
+)
+
+// TranscriptSave is a new revision of an attempt's conversation.
+type TranscriptSave struct {
+	JSON    string
+	Turns   int
+	Context *string // replaces the activity setup when not nil
+	// BaseRevision, when set, is the revision the client saw: the save is
+	// refused with ErrStaleRevision if another one came in meanwhile.
+	BaseRevision *int64
+	// Unverified is the UnverifiedLines of this revision.
+	Unverified int
 }
 
 // NewSession holds the values of an activity attempt to start.
@@ -58,6 +89,13 @@ type SessionCompletion struct {
 	Evaluation        string
 	ScoreConversation *int
 	ScoreReflection   *int
+}
+
+// BestAttempt is a student's best attempt on an assignment and how many
+// attempts they made.
+type BestAttempt struct {
+	Session  *SessionSummary
+	Attempts int
 }
 
 // ProgressCell is the best attempt of one student on one assignment.

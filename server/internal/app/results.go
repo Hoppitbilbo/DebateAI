@@ -31,4 +31,5 @@ type TranscriptSync struct {
 	MaxTurns *int         `json:"maxTurns,omitempty"`
 	Reason   *string      `json:"reason,omitempty"`
 	Jev      *JudgeResult `json:"jev,omitempty"`
+	Revision int64        `json:"revision"` // of the saved transcript
 }

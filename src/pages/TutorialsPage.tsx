@@ -8,7 +8,6 @@ import { useTranslation } from 'react-i18next';
 import RedditButton from '@/components/shared/RedditButton';
 import AppArt from '@/components/AppArt';
 import { TUTORIAL_PAGE_APPS, UPCOMING_APP, type OpenApp } from '@/features/apps/catalog';
-import { TUTORIALS } from '@/features/tutorials/tutorials';
 
 const HOW_TO_START_STEPS = [1, 2, 3, 4] as const;
 
@@ -37,10 +36,12 @@ const Section = ({ icon: Icon, title, children }: { icon: LucideIcon; title: str
   </section>
 );
 
-/** An app with its link and, when it has teacher slides, its tutorial. */
+/**
+ * An app with its link and its tutorial: every app has the students' video,
+ * and the teachers' slides when there are some (see TutorialPage).
+ */
 const TutorialCard = ({ app }: { app: OpenApp }) => {
   const { t } = useTranslation('tutorialsPage');
-  const tutorialLink = TUTORIALS[app.slug] ? app.tutorialPath : null;
   const text = `sections.availableTutorials.tutorials.${app.i18nKey}`;
   return (
     <div className="group flex flex-col bg-card rounded-xl overflow-hidden border border-border">
@@ -59,19 +60,12 @@ const TutorialCard = ({ app }: { app: OpenApp }) => {
               {t('sections.availableTutorials.goToAppButton')}
             </Link>
           </Button>
-          {tutorialLink ? (
-            <Button asChild variant="outline" className="w-full bg-transparent text-foreground hover:bg-sun-light">
-              <Link to={tutorialLink}>
-                <Book />
-                {t('sections.availableTutorials.startTutorialButton')}
-              </Link>
-            </Button>
-          ) : (
-            <Button variant="outline" disabled className="w-full">
+          <Button asChild variant="outline" className="w-full bg-transparent text-foreground hover:bg-sun-light">
+            <Link to={app.tutorialPath}>
               <Book />
-              {t('sections.availableTutorials.tutorialComingSoonButton')}
-            </Button>
-          )}
+              {t('sections.availableTutorials.startTutorialButton')}
+            </Link>
+          </Button>
         </div>
       </div>
     </div>

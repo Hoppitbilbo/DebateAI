@@ -1,12 +1,14 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, beforeAll, describe, expect, it } from "vitest";
 import i18n from "@/i18n";
 import { APP_TYPES } from "@/features/activity/appCatalog";
 import { StudentTutorialPlayer } from "./StudentTutorialPlayer";
 import { resolveSlides, revealCount, SLIDE_KINDS, STUDENT_TUTORIALS } from "./studentTutorials";
 
 afterEach(cleanup);
+// The tutorial texts are loaded on demand (see i18n), as their routes do.
+beforeAll(() => i18n.loadNamespaces("studentTutorial"));
 
 const t = i18n.getFixedT("it", "studentTutorial");
 

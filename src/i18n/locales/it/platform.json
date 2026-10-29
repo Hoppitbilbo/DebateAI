@@ -21,7 +21,8 @@
     "score": "Punteggio",
     "turns": "Turni",
     "cost": "Costo",
-    "updated": "Aggiornato"
+    "updated": "Aggiornato",
+    "loadError": "Impossibile caricare questi dati: controlla la connessione."
   },
   "nav": {
     "main": "Navigazione principale",
@@ -42,7 +43,7 @@
     "active": "In corso",
     "goal_reached": "Obiettivo raggiunto",
     "turn_limit": "Turni esauriti",
-    "completed": "Completato",
+    "completed": "Consegnato",
     "abandoned": "Abbandonato"
   },
   "appNames": {
@@ -74,7 +75,12 @@
     "live_disabled": "La conversazione vocale non è abilitata per il tuo account.",
     "live_unavailable": "La conversazione vocale non è disponibile al momento.",
     "server_unreachable": "Il server non è raggiungibile.",
-    "ai_error": "Il personaggio non riesce a rispondere in questo momento. Riprova tra poco: se il problema continua, avvisa il docente."
+    "ai_error": "Il personaggio non riesce a rispondere in questo momento. Riprova tra poco: se il problema continua, avvisa il docente.",
+    "busy": "Stai già aspettando delle risposte: attendi che finiscano e riprova.",
+    "too_large": "La conversazione è troppo lunga per essere inviata all'IA. Inizia un nuovo tentativo.",
+    "usage_unavailable": "Non è possibile verificare i limiti di uso dell'IA in questo momento. Riprova tra poco.",
+    "recipe_required": "Ricarica la pagina: l'app è stata aggiornata.",
+    "setting_locked": "Questa impostazione è fissata dal compito: ricarica la pagina e riprova."
   },
   "auth": {
     "login": "Accedi",
@@ -135,6 +141,7 @@
     "placeholder": "Scrivi il tuo messaggio…",
     "typing": "Sta scrivendo",
     "send": "Invia",
+    "stopReply": "Ferma la risposta",
     "dictate": "Detta (voce in testo)",
     "stopDictation": "Ferma dettatura",
     "endAndReflect": "Termina e rifletti",
@@ -150,7 +157,11 @@
     "retry": "Riprova",
     "endedGoal": "Obiettivi raggiunti! Leggi con calma l'ultima risposta, poi vai avanti.",
     "endedTurns": "Hai usato tutti i turni. Leggi con calma l'ultima risposta, poi vai avanti.",
-    "continueToReflection": "Avanti: riflessione"
+    "continueToReflection": "Avanti: riflessione",
+    "startFailed": "Non è stato possibile avviare il compito sul server. Controlla la connessione e riprova.",
+    "notSaved": "Questa esercitazione non viene salvata: il server non risponde. Puoi continuare e scaricare la conversazione alla fine.",
+    "saveFailed": "Ultimo messaggio non salvato sul server.",
+    "stepOf": "Passo {{n}} di {{total}}: {{label}}"
   },
   "assignment": {
     "label": "Compito",
@@ -201,7 +212,11 @@
     "download": "Scarica",
     "backToAssignments": "Torna ai miei compiti",
     "diffusionOn": "Effetto diffusione attivato: il feedback si formerà dal rumore. Tre clic sul titolo per spegnerlo.",
-    "diffusionOff": "Effetto diffusione spento."
+    "diffusionOff": "Effetto diffusione spento.",
+    "submitting": "Consegna in corso…",
+    "submitted": "Consegnato: il docente può vedere il tuo lavoro.",
+    "savedToHistory": "Salvato nella tua cronologia.",
+    "submitFailed": "Il lavoro non è stato consegnato. Riprova, oppure scaricalo per non perderlo."
   },
   "apps": {
     "common": {
@@ -269,6 +284,7 @@
       "judgeEnded": "JEV ha stabilito che hai raggiunto l'obiettivo: la partita è finita. Scrivi la tua risposta finale.",
       "readLastAnswer": "Domande finite! Rileggi le risposte con calma, poi premi «Prova a indovinare».",
       "judgeEndedChat": "JEV ha stabilito che hai raggiunto l'obiettivo: niente più domande. Rileggi le risposte, poi premi «Prova a indovinare».",
+      "foundInChat": "Hai indovinato: è {{name}}! Leggi la sua risposta, poi passa alla riflessione.",
       "askHint": "Chiedi un indizio",
       "hintCost": "Un indizio costa una domanda.",
       "hintRequest": "Mi dai un indizio?",
@@ -301,8 +317,6 @@
       "addressTo": "Rivolgiti a:",
       "nextSpeaker": "Prossimo ({{name}})",
       "continue": "Lasciali continuare",
-      "styleA": "erudito e assertivo",
-      "styleB": "riflessivo e interrogativo",
       "reflectionPrompt": "Come hai moderato il dibattito tra {{a}} e {{b}}? Quali domande lo hanno reso più interessante?",
       "evalActivity": "dibattito moderato tra {{a}} e {{b}}"
     }
@@ -341,7 +355,10 @@
     "saveFeedback": "Invia feedback",
     "feedbackSaved": "Feedback inviato allo studente",
     "feedbackHint": "Lo studente lo vedrà in questa pagina e riceverà un'email.",
-    "givenOn": "Scritto il {{date}}"
+    "givenOn": "Scritto il {{date}}",
+    "unverifiedLines_one": "{{count}} risposta dell'IA in questa conversazione non risulta prodotta dalla piattaforma (modificata o inventata): non è stata usata dal giudizio automatico né dalla valutazione.",
+    "unverifiedLines_other": "{{count}} risposte dell'IA in questa conversazione non risultano prodotte dalla piattaforma (modificate o inventate): non sono state usate dal giudizio automatico né dalla valutazione.",
+    "voiceUnchecked": "La conversazione comprende parti a voce: quello che il personaggio ha detto a voce non può essere verificato dalla piattaforma."
   },
   "teacher": {
     "title": "Le mie classi",
@@ -530,7 +547,12 @@
       "tokensIn": "Token in",
       "tokensOut": "Token out",
       "log": "Ultime richieste",
-      "noData": "Nessun dato nel periodo."
+      "noData": "Nessun dato nel periodo.",
+      "estimated": "stimato",
+      "estimatedHint": "Il fornitore non ha comunicato i token (risposta interrotta): sono stimati dalla lunghezza del testo.",
+      "unpriced": "senza prezzo",
+      "unpricedHint": "Il modello non ha un prezzo noto: il costo reale è sconosciuto, non zero.",
+      "firstText": "Primo testo visto dopo {{text}} ms (dal fornitore dopo {{delta}} ms)"
     },
     "ai": {
       "providers": "Provider di IA",

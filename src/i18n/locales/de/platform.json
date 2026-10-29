@@ -21,7 +21,8 @@
     "score": "Punkte",
     "turns": "Züge",
     "cost": "Kosten",
-    "updated": "Aktualisiert"
+    "updated": "Aktualisiert",
+    "loadError": "Diese Daten konnten nicht geladen werden: prüfe die Verbindung."
   },
   "nav": {
     "main": "Hauptnavigation",
@@ -42,7 +43,7 @@
     "active": "In Bearbeitung",
     "goal_reached": "Ziel erreicht",
     "turn_limit": "Züge aufgebraucht",
-    "completed": "Abgeschlossen",
+    "completed": "Abgegeben",
     "abandoned": "Abgebrochen"
   },
   "appNames": {
@@ -74,7 +75,12 @@
     "live_disabled": "Die Sprachunterhaltung ist für dein Konto nicht aktiviert.",
     "live_unavailable": "Die Sprachunterhaltung ist gerade nicht verfügbar.",
     "server_unreachable": "Der Server ist nicht erreichbar.",
-    "ai_error": "Die Figur kann gerade nicht antworten. Versuche es gleich noch einmal; wenn es weiter passiert, sag deiner Lehrkraft Bescheid."
+    "ai_error": "Die Figur kann gerade nicht antworten. Versuche es gleich noch einmal; wenn es weiter passiert, sag deiner Lehrkraft Bescheid.",
+    "busy": "Du wartest bereits auf Antworten: warte, bis sie fertig sind, und versuche es erneut.",
+    "too_large": "Das Gespräch ist zu lang, um es an die KI zu senden. Starte einen neuen Versuch.",
+    "usage_unavailable": "Die KI-Nutzungslimits können gerade nicht geprüft werden. Versuche es gleich noch einmal.",
+    "recipe_required": "Lade die Seite neu: Die App wurde aktualisiert.",
+    "setting_locked": "Diese Einstellung ist durch die Aufgabe festgelegt: Lade die Seite neu und versuche es noch einmal."
   },
   "auth": {
     "login": "Anmelden",
@@ -135,6 +141,7 @@
     "placeholder": "Schreibe deine Nachricht…",
     "typing": "Schreibt",
     "send": "Senden",
+    "stopReply": "Antwort stoppen",
     "dictate": "Diktieren (Sprache zu Text)",
     "stopDictation": "Diktat beenden",
     "endAndReflect": "Beenden und reflektieren",
@@ -150,7 +157,11 @@
     "retry": "Erneut versuchen",
     "endedGoal": "Ziele erreicht! Lies in Ruhe die letzte Antwort, dann geht es weiter.",
     "endedTurns": "Du hast alle Runden genutzt. Lies in Ruhe die letzte Antwort, dann geht es weiter.",
-    "continueToReflection": "Weiter: Reflexion"
+    "continueToReflection": "Weiter: Reflexion",
+    "startFailed": "Die Aufgabe konnte auf dem Server nicht gestartet werden. Prüfe deine Verbindung und versuche es erneut.",
+    "notSaved": "Diese Übung wird nicht gespeichert: Der Server antwortet nicht. Du kannst weitermachen und das Gespräch am Ende herunterladen.",
+    "saveFailed": "Deine letzte Nachricht wurde nicht auf dem Server gespeichert.",
+    "stepOf": "Schritt {{n}} von {{total}}: {{label}}"
   },
   "assignment": {
     "label": "Aufgabe",
@@ -201,7 +212,11 @@
     "download": "Herunterladen",
     "backToAssignments": "Zurück zu meinen Aufgaben",
     "diffusionOn": "Diffusionseffekt an: Das Feedback entsteht aus Rauschen. Drei Klicks auf den Titel schalten ihn aus.",
-    "diffusionOff": "Diffusionseffekt aus."
+    "diffusionOff": "Diffusionseffekt aus.",
+    "submitting": "Wird abgegeben…",
+    "submitted": "Abgegeben: Deine Lehrkraft kann deine Arbeit sehen.",
+    "savedToHistory": "In deinem Verlauf gespeichert.",
+    "submitFailed": "Deine Arbeit wurde nicht abgegeben. Versuche es erneut oder lade sie herunter, damit sie nicht verloren geht."
   },
   "apps": {
     "common": {
@@ -269,6 +284,7 @@
       "judgeEnded": "JEV hat entschieden, dass du das Ziel erreicht hast: Das Spiel ist vorbei. Schreib deine endgültige Antwort.",
       "readLastAnswer": "Keine Fragen mehr! Lies die Antworten in Ruhe nach und drücke dann „Jetzt raten“.",
       "judgeEndedChat": "JEV hat entschieden, dass du das Ziel erreicht hast: keine Fragen mehr. Lies die Antworten nach und drücke dann „Jetzt raten“.",
+      "foundInChat": "Richtig geraten: Es ist {{name}}! Lies die Antwort und geh dann zur Reflexion.",
       "askHint": "Um einen Hinweis bitten",
       "hintCost": "Ein Hinweis kostet eine Frage.",
       "hintRequest": "Kannst du mir einen Hinweis geben?",
@@ -301,8 +317,6 @@
       "addressTo": "Ansprechen:",
       "nextSpeaker": "Als Nächstes ({{name}})",
       "continue": "Weiterdiskutieren lassen",
-      "styleA": "gelehrt und bestimmt",
-      "styleB": "nachdenklich und fragend",
       "reflectionPrompt": "Wie hast du die Debatte zwischen {{a}} und {{b}} moderiert? Welche Fragen haben sie interessanter gemacht?",
       "evalActivity": "moderierte Debatte zwischen {{a}} und {{b}}"
     }
@@ -341,7 +355,10 @@
     "saveFeedback": "Feedback senden",
     "feedbackSaved": "Feedback an die Schülerin / den Schüler gesendet",
     "feedbackHint": "Die Lernenden sehen es auf dieser Seite und erhalten eine E-Mail.",
-    "givenOn": "Geschrieben am {{date}}"
+    "givenOn": "Geschrieben am {{date}}",
+    "unverifiedLines_one": "{{count}} KI-Antwort in diesem Gespräch wurde nicht von der Plattform erzeugt (geändert oder erfunden): Sie wurde bei der automatischen Beurteilung und der Bewertung nicht berücksichtigt.",
+    "unverifiedLines_other": "{{count}} KI-Antworten in diesem Gespräch wurden nicht von der Plattform erzeugt (geändert oder erfunden): Sie wurden bei der automatischen Beurteilung und der Bewertung nicht berücksichtigt.",
+    "voiceUnchecked": "Das Gespräch enthält gesprochene Teile: Was die Figur gesprochen hat, kann die Plattform nicht prüfen."
   },
   "teacher": {
     "title": "Meine Klassen",
@@ -530,7 +547,12 @@
       "tokensIn": "Tokens ein",
       "tokensOut": "Tokens aus",
       "log": "Letzte Anfragen",
-      "noData": "Keine Daten in diesem Zeitraum."
+      "noData": "Keine Daten in diesem Zeitraum.",
+      "estimated": "geschätzt",
+      "estimatedHint": "Der Anbieter hat keine Tokens gemeldet (abgebrochene Antwort): sie sind aus der Textlänge geschätzt.",
+      "unpriced": "ohne Preis",
+      "unpricedHint": "Für das Modell ist kein Preis bekannt: die echten Kosten sind unbekannt, nicht null.",
+      "firstText": "Erster Text sichtbar nach {{text}} ms (vom Anbieter nach {{delta}} ms)"
     },
     "ai": {
       "providers": "KI-Anbieter",
