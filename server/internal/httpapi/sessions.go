@@ -1,6 +1,7 @@
 package httpapi
 
 import (
+	"context"
 	"errors"
 	"net/http"
 
@@ -109,7 +110,15 @@ func (s *Server) handleEvaluateSession(w http.ResponseWriter, r *http.Request) {
 	}
 	defer release()
 	send := startEventStream(w)
-	ev, err := s.SessionSvc.Evaluate(aiContext(r, u), u, d, in, func(delta string) error { return send(streamDelta{Delta: delta}) })
+	// The hand-in is not lost when the browser goes away (a closed tab, a
+	// dropped connection): the evaluation runs to the end, within its own
+	// deadline, and is stored; the stream just stops being written.
+	ctx, cancel := context.WithTimeout(context.WithoutCancel(aiContext(r, u)), evaluationDeadline)
+	defer cancel()
+	ev, err := s.SessionSvc.Evaluate(ctx, u, d, in, func(delta string) error {
+		_ = send(streamDelta{Delta: delta})
+		return nil
+	})
 	if err != nil {
 		_ = send(streamError{Error: err.Error()})
 		return

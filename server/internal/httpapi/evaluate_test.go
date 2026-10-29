@@ -9,6 +9,7 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/Hoppitbilbo/DebateAI/server/internal/ai"
 	"github.com/Hoppitbilbo/DebateAI/server/internal/app"
@@ -73,4 +74,50 @@ func TestEvaluateGradesTheStoredTranscriptOnTheServer(t *testing.T) {
 	if code := c.do("POST", fmtPath("/api/sessions/%d/evaluate", sess.ID), map[string]any{"reflection": "x"}, &out); code != 409 || out.Error != "session_completed" {
 		t.Fatalf("a handed-in attempt is not evaluated again: %d %+v", code, out)
 	}
+}
+
+// slowGrader answers after a pause, as a real model writing an evaluation.
+type slowGrader struct{ fakeProvider }
+
+func (slowGrader) Stream(ctx context.Context, req ai.Request, onDelta func(string) error) (*ai.Response, error) {
+	select {
+	case <-ctx.Done():
+		return nil, ctx.Err()
+	case <-time.After(300 * time.Millisecond):
+	}
+	return &ai.Response{Text: gradedAnswer}, onDelta(gradedAnswer)
+}
+
+// A closed tab does not lose the hand-in: the evaluation goes on and is stored.
+func TestEvaluateHandsInEvenWhenTheBrowserGoesAway(t *testing.T) {
+	s := newTestAPI(t)
+	srv := httptest.NewServer(s.Handler())
+	t.Cleanup(srv.Close)
+	c := newClient(t, srv.URL)
+	c.do("POST", "/api/setup", map[string]string{"name": "Admin", "email": "admin@test.it", "password": "password123"}, nil)
+	id := s.addFake(t, "slow", ai.KindOpenAI, slowGrader{})
+	if err := s.Settings.SaveRouting(app.RoutingSettings{Strategy: "ordered", Tasks: map[string][]app.RouteTarget{app.TaskEvaluation: {{ProviderID: id, Model: "m"}}}}); err != nil {
+		t.Fatal(err)
+	}
+	var sess domain.SessionSummary
+	c.do("POST", "/api/sessions", map[string]any{"appType": "wiki-chatbot"}, &sess)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 50*time.Millisecond)
+	defer cancel()
+	req, _ := http.NewRequestWithContext(ctx, "POST", srv.URL+fmtPath("/api/sessions/%d/evaluate", sess.ID), strings.NewReader(`{"reflection":"r"}`))
+	if resp, err := c.http.Do(req); err == nil {
+		_, _ = io.ReadAll(resp.Body) // the client gives up while the model is still writing
+		resp.Body.Close()
+	}
+	deadline := time.Now().Add(3 * time.Second)
+	for time.Now().Before(deadline) {
+		if d, _ := s.Sessions.Detail(sess.ID); d.Status == domain.SessionCompleted {
+			if *d.ScoreConversation != 8 {
+				t.Fatalf("stored: %+v", d)
+			}
+			return
+		}
+		time.Sleep(50 * time.Millisecond)
+	}
+	t.Fatal("the attempt was not handed in after the browser went away")
 }

@@ -22,6 +22,10 @@ const (
 	maxChatInputChars      = 200_000
 )
 
+// evaluationDeadline bounds a final evaluation, which goes on after the
+// browser disconnects so that the hand-in is stored.
+const evaluationDeadline = 3 * time.Minute
+
 // Answers generated at the same time: per account (a guest too), per room
 // and, without an account, per network (a school lab shares one IP).
 const (
