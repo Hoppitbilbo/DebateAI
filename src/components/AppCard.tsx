@@ -5,7 +5,8 @@ import { Link } from "react-router-dom";
 import { appMorph, useMorphClick } from "@/features/navigation/morph";
 import { useTranslation } from "react-i18next";
 import AppArt from "@/components/AppArt";
-import type { ListedApp } from "@/features/apps/catalog";
+import { AI_CHARACTERS, type ListedApp } from "@/features/apps/catalog";
+import type { AppType } from "@/lib/api";
 
 /** A card on the apps page; the upcoming app is shown but cannot be opened. */
 const AppCard = ({ app }: { app: ListedApp }) => {
@@ -29,6 +30,17 @@ const AppCard = ({ app }: { app: ListedApp }) => {
       </CardHeader>
       <CardContent className="flex-1">
         <CardDescription className="text-base text-muted-foreground">{t(`appsPage.appCards.${app.i18nKey}.description`)}</CardDescription>
+        {!upcoming && (
+          // What the activity is like, to choose before opening it.
+          <dl className="mt-4 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm">
+            <dt className="font-medium text-foreground">{t("appsPage.facts.skill")}</dt>
+            <dd className="text-muted-foreground">{t(`appsPage.appCards.${app.i18nKey}.skill`)}</dd>
+            <dt className="font-medium text-foreground">{t("appsPage.facts.duration")}</dt>
+            <dd className="text-muted-foreground">{t(`appsPage.appCards.${app.i18nKey}.duration`)}</dd>
+            <dt className="font-medium text-foreground">{t("appsPage.facts.characters")}</dt>
+            <dd className="text-muted-foreground">{AI_CHARACTERS[app.slug as AppType]}</dd>
+          </dl>
+        )}
       </CardContent>
       <CardFooter>
         {upcoming ? (

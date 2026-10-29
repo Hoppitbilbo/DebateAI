@@ -4,19 +4,27 @@
   "appCards": {
     "youModerate": {
       "title": "Moderas tú",
-      "description": "Dos personajes debaten sobre un tema que eliges tú. Tú moderas: das la palabra, haces preguntas y los devuelves al tema."
+      "description": "Dos personajes debaten sobre un tema que eliges tú. Tú moderas: das la palabra, haces preguntas y los devuelves al tema.",
+      "skill": "Moderar un debate y hacer preguntas",
+      "duration": "15–20 min"
     },
     "doppiaIntervista": {
       "title": "Doble entrevista",
-      "description": "Haz las mismas preguntas a dos personajes y compara sus respuestas, como en las dobles entrevistas de la tele."
+      "description": "Haz las mismas preguntas a dos personajes y compara sus respuestas, como en las dobles entrevistas de la tele.",
+      "skill": "Comparar dos puntos de vista",
+      "duration": "15 min"
     },
     "wikiChatbot": {
       "title": "WikiChat",
-      "description": "Habla con una página de Wikipedia: una persona, un lugar, un hecho o una idea te responde en primera persona."
+      "description": "Habla con una página de Wikipedia: una persona, un lugar, un hecho o una idea te responde en primera persona.",
+      "skill": "Investigar con preguntas precisas",
+      "duration": "10–15 min"
     },
     "personaggioMisterioso": {
       "title": "Personaje misterioso",
-      "description": "Un personaje oculta quién es. Tienes pocas preguntas para descubrirlo y luego intentas adivinar."
+      "description": "Un personaje oculta quién es. Tienes pocas preguntas para descubrirlo y luego intentas adivinar.",
+      "skill": "Razonar con pistas e hipótesis",
+      "duration": "10 min"
     },
     "promptEngineer": {
       "title": "Prompts para la clase",
@@ -24,11 +32,15 @@
     },
     "convinciTu": {
       "title": "Convence tú",
-      "description": "Elige una idea e intenta convencer a un personaje histórico. Solo cambia de opinión si tus argumentos se sostienen."
+      "description": "Elige una idea e intenta convencer a un personaje histórico. Solo cambia de opinión si tus argumentos se sostienen.",
+      "skill": "Argumentar y persuadir",
+      "duration": "15–20 min"
     },
     "impersonaTu": {
       "title": "Interprétalo tú",
-      "description": "Interpreta a un personaje histórico mientras la IA interpreta a otro. Te hace preguntas para ver cuánto lo conoces."
+      "description": "Interpreta a un personaje histórico mientras la IA interpreta a otro. Te hace preguntas para ver cuánto lo conoces.",
+      "skill": "Ponerse en la piel de un personaje histórico",
+      "duration": "15–20 min"
     }
   },
   "badges": {
@@ -39,5 +51,10 @@
     "launchApp": "Empezar",
     "comingSoon": "Próximamente",
     "launchNamed": "Empezar {{name}}"
+  },
+  "facts": {
+    "skill": "Practica",
+    "duration": "Duración",
+    "characters": "Personajes IA"
   }
 }

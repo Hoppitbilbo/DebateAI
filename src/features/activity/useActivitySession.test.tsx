@@ -306,3 +306,51 @@ describe("server session", () => {
   });
 });
 
+
+describe("resume after a reload", () => {
+  const saved = { id: 9, userId: 1, appType: "convinci-tu", status: "active", turns: 2, revision: 4, context: {}, transcript: [], jev: {} };
+
+  it("takes up the attempt of ?session=ID and saves on top of its revision", async () => {
+    mocks.user = { id: 1 };
+    mocks.api.get.mockResolvedValue(saved);
+    mocks.api.put.mockResolvedValue({ status: "active", turns: 3, progress: 0, ended: false, revision: 5 });
+    const { result } = render("/apps/convinci-tu?session=9");
+    expect(result.current.resumeId).toBe(9);
+    let detail: unknown;
+    await act(async () => {
+      detail = await result.current.resume();
+    });
+    expect(mocks.api.get).toHaveBeenCalledWith("/api/sessions/9");
+    expect(detail).toEqual(saved);
+    expect(result.current.sessionId).toBe(9);
+    expect(result.current.turns).toBe(2);
+    await act(async () => {
+      await result.current.sync([msg("user", "a"), msg("user", "b"), msg("user", "c")]);
+    });
+    expect(mocks.api.put.mock.calls[0][1]).toMatchObject({ baseRevision: 4 });
+  });
+
+  it("does not take up an attempt handed in, of another user or another app", async () => {
+    mocks.user = { id: 1 };
+    for (const other of [{ status: "completed" }, { userId: 2 }, { appType: "wiki-chatbot" }]) {
+      mocks.api.get.mockResolvedValueOnce({ ...saved, ...other });
+      const { result } = render("/apps/convinci-tu?session=9");
+      let detail: unknown = "x";
+      await act(async () => {
+        detail = await result.current.resume();
+      });
+      expect(detail).toBeNull();
+      expect(result.current.sessionId).toBeNull();
+    }
+  });
+
+  it("keeps an ended attempt's reason", async () => {
+    mocks.user = { id: 1 };
+    mocks.api.get.mockResolvedValue({ ...saved, status: "turn_limit" });
+    const { result } = render("/apps/convinci-tu?session=9");
+    await act(async () => {
+      await result.current.resume();
+    });
+    expect(result.current.endReason).toBe("turn_limit");
+  });
+});

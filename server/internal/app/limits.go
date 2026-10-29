@@ -46,6 +46,10 @@ const (
 	// liveGrantTTL is how long after the token the browser may report a
 	// voice conversation's usage; it also bounds the reported duration.
 	liveGrantTTL = time.Hour
+	// liveReservedTokens is the input and the output reserved for a voice
+	// conversation on a paid model until its usage is reported: about a
+	// quarter of an hour of audio each way (25 tokens per second).
+	liveReservedTokens = 25 * 15 * 60
 )
 
 // Fallback chain (gateway.go, target_health.go).
@@ -62,8 +66,13 @@ const (
 )
 
 // settingsCacheTTL bounds how long a settings change made by another
-// instance takes to be seen (settings_cache.go).
-const settingsCacheTTL = 5 * time.Second
+// instance takes to be seen (settings_cache.go); providerCacheTTL does the
+// same for a provider's adapter (key, address, enabled), rebuilt from the
+// database when it expires.
+const (
+	settingsCacheTTL = 5 * time.Second
+	providerCacheTTL = 30 * time.Second
+)
 
 // Admission and budget reservations (admission.go).
 const (

@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/Hoppitbilbo/DebateAI/server/internal/ai"
+	"github.com/Hoppitbilbo/DebateAI/server/internal/domain"
 )
 
 // blockingProvider holds every call until release is closed, so that
@@ -157,5 +158,66 @@ func TestUnpricedPaidModelIsReservedAtTheHighEnd(t *testing.T) {
 	setChatRoute(t, s, "ordered", RouteTarget{1, "mystery"})
 	if _, err := s.Gateway.Generate(context.Background(), TaskChat, chatRequest(), nil, nil, nil); err == nil || !strings.Contains(err.Error(), "budget") {
 		t.Fatalf("expected the reservation to refuse: %v", err)
+	}
+}
+
+// A voice conversation on a paid model holds part of the budget from the
+// token until its usage is reported; then the real cost replaces it.
+func TestLiveReservationLastsUntilTheUsageIsReported(t *testing.T) {
+	s := newTestServer(t)
+	if err := s.Settings.SaveBudget(BudgetSettings{MonthlyUSD: 1, BlockPaidWhenExceeded: true}); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := s.Gateway.insertProvider("live", ai.KindGemini, "", "key"); err != nil {
+		t.Fatal(err)
+	}
+	if err := s.Prices.Put(1, "voice", 10, 10); err != nil {
+		t.Fatal(err)
+	}
+	target := RouteTarget{1, "voice"}
+	id, err := s.Gateway.reserveTokens(target, liveReservedTokens, liveReservedTokens, liveGrantTTL)
+	if err != nil || id == 0 {
+		t.Fatalf("reserve: %d %v", id, err)
+	}
+	want := 2 * liveReservedTokens * 10 / 1e6
+	if got, _ := s.Inflight.Reserved(); got < want*0.99 || got > want*1.01 {
+		t.Fatalf("reserved %.4f, want %.4f", got, want)
+	}
+	// Another one does not fit in what is left of $1.
+	for range 3 {
+		if _, err = s.Gateway.reserveTokens(target, liveReservedTokens, liveReservedTokens, liveGrantTTL); err != nil {
+			break
+		}
+	}
+	if !errors.Is(err, errBudgetReserved) {
+		t.Fatalf("the budget should run out: %v", err)
+	}
+
+	grant := domain.LiveGrant{ID: "g1", ProviderID: 1, Model: "voice", CreatedAt: domain.Now(), ExpiresAt: "9999-01-01T00:00:00Z", ReservationID: id}
+	if err := s.LiveGrants.Create(grant); err != nil {
+		t.Fatal(err)
+	}
+	before, _ := s.Inflight.Reserved()
+	if _, err := s.Gateway.RecordLiveUsage(LiveUsage{GrantID: "g1", InputTokens: 100, OutputTokens: 100}); err != nil {
+		t.Fatal(err)
+	}
+	if after, _ := s.Inflight.Reserved(); after > before-want*0.99 {
+		t.Fatalf("the grant's reservation is released: %.4f → %.4f", before, after)
+	}
+}
+
+func TestFreeLiveModelReservesNothing(t *testing.T) {
+	s := newTestServer(t)
+	if err := s.Settings.SaveBudget(BudgetSettings{MonthlyUSD: 1, BlockPaidWhenExceeded: true}); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := s.Gateway.insertProvider("live", ai.KindGemini, "", "key"); err != nil {
+		t.Fatal(err)
+	}
+	if err := s.Prices.Put(1, "free-voice", 0, 0); err != nil {
+		t.Fatal(err)
+	}
+	if id, err := s.Gateway.reserveTokens(RouteTarget{1, "free-voice"}, liveReservedTokens, liveReservedTokens, liveGrantTTL); id != 0 || err != nil {
+		t.Fatalf("free: %d %v", id, err)
 	}
 }

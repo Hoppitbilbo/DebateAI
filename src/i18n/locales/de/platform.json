@@ -159,6 +159,7 @@
     "endedTurns": "Du hast alle Runden genutzt. Lies in Ruhe die letzte Antwort, dann geht es weiter.",
     "continueToReflection": "Weiter: Reflexion",
     "startFailed": "Die Aufgabe konnte auf dem Server nicht gestartet werden. Prüfe deine Verbindung und versuche es erneut.",
+    "resumed": "Du setzt das Gespräch dort fort, wo du aufgehört hast.",
     "notSaved": "Diese Übung wird nicht gespeichert: Der Server antwortet nicht. Du kannst weitermachen und das Gespräch am Ende herunterladen.",
     "saveFailed": "Deine letzte Nachricht wurde nicht auf dem Server gespeichert.",
     "stepOf": "Schritt {{n}} von {{total}}: {{label}}"

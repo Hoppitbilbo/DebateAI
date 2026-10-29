@@ -23,6 +23,7 @@ const lookup = (dict: unknown, path: string) =>
 const builtKeys = [
   ...HOME_APPS.flatMap((a) => [`features.items.${a.i18nKey}.name`, `features.items.${a.i18nKey}.description`]),
   ...APPS_PAGE_APPS.flatMap((a) => [`appsPage.appCards.${a.i18nKey}.title`, `appsPage.appCards.${a.i18nKey}.description`]),
+  ...APPS_PAGE_APPS.filter((a) => !a.upcoming).flatMap((a) => [`appsPage.appCards.${a.i18nKey}.skill`, `appsPage.appCards.${a.i18nKey}.duration`]),
   ...TUTORIAL_PAGE_APPS.flatMap((a) => [
     `tutorialsPage.sections.availableTutorials.tutorials.${a.i18nKey}.title`,
     `tutorialsPage.sections.availableTutorials.tutorials.${a.i18nKey}.description`,

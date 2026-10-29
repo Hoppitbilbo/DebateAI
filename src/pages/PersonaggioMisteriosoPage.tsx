@@ -10,14 +10,14 @@ import { Textarea } from "@/components/ui/textarea";
 import type { Assignment, WikiRef } from "@/lib/api";
 import ActivityRunner from "@/features/activity/components/ActivityRunner";
 import { CharacterPicker, SetupCard } from "@/features/activity/components/SetupCard";
-import { useActivityFlow } from "@/features/activity/useActivityFlow";
+import { titleOf, useActivityFlow } from "@/features/activity/useActivityFlow";
 import type { EndReason } from "@/features/activity/useActivitySession";
 import { bioOf, useWikiSummaries } from "@/features/activity/wiki";
 import { recipeFor } from "@/features/activity/recipe";
 import { APPS } from "@/features/activity/types";
 import { availableQuestions, isCorrectGuess, nextTeacherHint, QUESTIONS, RANDOM_CHARACTERS } from "@/features/activity/mystery";
 import { characterOrder, mysteryCharacters, mysteryRounds } from "@/features/activity/characterOrder";
-import { Difficulty, difficultyOf } from "@/features/activity/difficulty";
+import { Difficulty, difficultyOf, isDifficulty } from "@/features/activity/difficulty";
 import DifficultyPicker from "@/features/activity/components/DifficultyPicker";
 import RoundDots from "@/features/activity/components/RoundDots";
 
@@ -81,8 +81,18 @@ const PersonaggioMisteriosoPage = () => {
   const flow = useActivityFlow(app.type, {
     live: (phase, assignment) =>
       phase === "chat" && character && !guessing ? { recipe: recipeOf(assignment), characterName: character.title, characterBio: bio } : null,
-    context: (assignment) => ({ questions: availableQuestions(chosenQuestions, assignment?.maxTurns), difficulty: levelFor(assignment) }),
+    // The character is saved too, so that a reload can take the game up again.
+    context: (assignment) => ({ character: character?.title, questions: availableQuestions(chosenQuestions, assignment?.maxTurns), difficulty: levelFor(assignment) }),
     onEnded,
+    restore: (saved) => {
+      const title = titleOf(saved.character);
+      if (title) {
+        setCharacter({ title });
+        setConcealed(true);
+      }
+      if (typeof saved.questions === "number") setChosenQuestions(saved.questions);
+      if (isDifficulty(saved.difficulty)) setChosenLevel(saved.difficulty);
+    },
   });
   const { preset, engine, session, phase } = flow;
   const { user } = session;

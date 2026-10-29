@@ -69,32 +69,49 @@ func (g *aiGateway) budgetEnforced() (float64, bool) {
 // when the budget is enforced and the model is not free. A model without a
 // price is reserved at unpricedReserve, as its real cost is unknown.
 func (g *aiGateway) reserve(t RouteTarget, inputChars, maxOutputTokens int) (release func(), err error) {
-	noop := func() {}
+	if maxOutputTokens <= 0 {
+		maxOutputTokens = reservedOutputTokens
+	}
+	id, err := g.reserveTokens(t, float64(inputChars)/reserveCharsPerToken, float64(maxOutputTokens), inflightTTL)
+	if err != nil {
+		return nil, err
+	}
+	return func() { g.releaseReservation(id) }, nil
+}
+
+// reserveTokens sets aside, for ttl, the cost of about inputTokens and
+// outputTokens on target t. It returns 0 when nothing needs reserving (budget
+// not enforced, free model) and errBudgetReserved when the budget has no room.
+func (g *aiGateway) reserveTokens(t RouteTarget, inputTokens, outputTokens float64, ttl time.Duration) (id int64, err error) {
 	budget, on := g.budgetEnforced()
 	if !on {
-		return noop, nil
+		return 0, nil
 	}
 	p := g.priceFor(t.ProviderID, t.Model)
 	if p.Known && p.In == 0 && p.Out == 0 {
-		return noop, nil
+		return 0, nil
 	}
 	if !p.Known {
 		p = unpricedReserve
 	}
-	if maxOutputTokens <= 0 {
-		maxOutputTokens = reservedOutputTokens
-	}
-	cost := (float64(inputChars)/reserveCharsPerToken*p.In + float64(maxOutputTokens)*p.Out) / 1e6
-	expires := time.Now().Add(inflightTTL).UTC().Format(time.RFC3339)
+	cost := (inputTokens*p.In + outputTokens*p.Out) / 1e6
+	expires := time.Now().Add(ttl).UTC().Format(time.RFC3339)
 	id, ok, err := g.inflight.ReserveBudget(cost, budget, MonthStart(), expires)
 	if err != nil {
 		log.Printf("budget: cannot reserve, passing over the paid model: %v", err)
-		return nil, errBudgetReserved
+		return 0, errBudgetReserved
 	}
 	if !ok {
-		return nil, errBudgetReserved
+		return 0, errBudgetReserved
 	}
-	return func() { logIfErr("release budget reservation", g.inflight.Release(id)) }, nil
+	return id, nil
+}
+
+// releaseReservation frees a reservation of reserveTokens (0: none).
+func (g *aiGateway) releaseReservation(id int64) {
+	if id != 0 {
+		logIfErr("release budget reservation", g.inflight.Release(id))
+	}
 }
 
 // requestChars is the size of a request's input, to estimate its tokens.

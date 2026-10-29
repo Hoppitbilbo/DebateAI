@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { api, AppType, Assignment, JudgeResult, SessionSummary, TranscriptMessage } from "@/lib/api";
+import { api, AppType, Assignment, JudgeResult, SessionDetail, SessionSummary, TranscriptMessage } from "@/lib/api";
 import { useAuth } from "@/context/auth";
 import { evaluateSession, EvaluationRequest, SessionEvaluation } from "@/services/aiService";
 import type { ActivityMessage } from "./types";
@@ -30,16 +30,22 @@ interface SyncResponse {
   revision: number;
 }
 
+/** Attempts that can be taken up again after a reload: not handed in, not abandoned. */
+const RESUMABLE: ReadonlySet<SessionSummary["status"]> = new Set(["active", "goal_reached", "turn_limit"]);
+
 /**
  * Connects an app to the platform: loads the assignment from ?assignment=ID,
  * creates the server-side session (for logged-in users), saves the transcript
  * after each turn and receives the JEV judgement that may end the activity.
- * Works in "guest mode" too: everything is simply kept local.
+ * The attempt in progress is kept in the address (?session=ID), so a reload
+ * takes it up again (resume). Works in "guest mode" too: everything is simply
+ * kept local.
  */
 export const useActivitySession = (appType: AppType) => {
   const { user } = useAuth();
-  const [params] = useSearchParams();
+  const [params, setParams] = useSearchParams();
   const assignmentId = Number(params.get("assignment") || 0);
+  const resumeId = Number(params.get("session") || 0);
 
   const [assignment, setAssignment] = useState<Assignment | null>(null);
   const [assignmentError, setAssignmentError] = useState<string | null>(null);
@@ -121,6 +127,10 @@ export const useActivitySession = (appType: AppType) => {
       sessionRef.current = s.id;
       revisionRef.current = 0;
       setSessionId(s.id);
+      setParams((p) => {
+        p.set("session", String(s.id));
+        return p;
+      }, { replace: true });
       return s.id;
     } catch (e) {
       console.warn("Could not create activity session", e);
@@ -129,7 +139,44 @@ export const useActivitySession = (appType: AppType) => {
     } finally {
       setStarting(false);
     }
-  }, [appType, assignment, user]);
+  }, [appType, assignment, user, setParams]);
+
+  /** Drops the attempt from the address: the next start is a new attempt. */
+  const forget = useCallback(() => {
+    setParams((p) => {
+      p.delete("session");
+      return p;
+    }, { replace: true });
+  }, [setParams]);
+
+  /**
+   * Takes up the attempt of ?session=ID after a reload: its saved
+   * conversation, revision and end state. Null (and the address cleared)
+   * when there is none to resume: another app or assignment, handed in,
+   * abandoned, or not this user's.
+   */
+  const resume = useCallback(async (): Promise<SessionDetail | null> => {
+    if (!user || !resumeId) return null;
+    try {
+      const d = await api.get<SessionDetail>(`/api/sessions/${resumeId}`);
+      if (d.appType !== appType || (d.assignmentId ?? 0) !== (assignment?.id ?? 0) || d.userId !== user.id || !RESUMABLE.has(d.status)) {
+        forget();
+        return null;
+      }
+      sessionRef.current = d.id;
+      revisionRef.current = d.revision;
+      setSessionId(d.id);
+      setTurns(d.turns);
+      setJev(d.jev?.engine && d.jev.engine !== "none" ? (d.jev as JudgeResult) : null);
+      setEndReason(d.status === "goal_reached" || d.status === "turn_limit" ? d.status : null);
+      setSaveState("saved");
+      return d;
+    } catch (e) {
+      console.warn("Could not resume the attempt", e);
+      forget();
+      return null;
+    }
+  }, [user, resumeId, appType, assignment, forget]);
 
   /**
    * Saves the transcript and, for assignments, runs the JEV judge.
@@ -247,6 +294,7 @@ export const useActivitySession = (appType: AppType) => {
   return {
     user,
     assignmentId,
+    resumeId,
     assignment,
     assignmentError,
     loadingAssignment,
@@ -263,6 +311,8 @@ export const useActivitySession = (appType: AppType) => {
     saveState,
     submitState,
     begin,
+    resume,
+    forget,
     sync,
     retrySave,
     complete,

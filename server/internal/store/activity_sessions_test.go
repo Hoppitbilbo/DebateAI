@@ -64,6 +64,11 @@ func TestActivitySessionsLifecycle(t *testing.T) {
 	if owner, status, err := r.Owner(id); err != nil || *owner != stud || status != domain.SessionCompleted {
 		t.Fatalf("owner: %v %v %s", err, owner, status)
 	}
+	other, _ := NewAssignments(db).Create(domain.NewAssignment{ClassID: classID, Title: "U", AppType: "convinci-tu", Config: "{}", CreatedBy: &teacher})
+	otherID, _ := r.Create(domain.NewSession{UserID: stud, AssignmentID: &other, AppType: "convinci-tu", Title: "3", Context: "{}"})
+	if all, _ := r.BestPerUserIn([]int64{aid, other}); all[aid][stud].Session.ID != id || all[aid][stud].Attempts != 2 || all[other][stud].Session.ID != otherID || all[other][stud].Attempts != 1 {
+		t.Fatalf("best per user in several assignments: %+v", all)
+	}
 }
 
 func TestActivitySessionsConditionalWrites(t *testing.T) {

@@ -4,19 +4,27 @@
   "appCards": {
     "youModerate": {
       "title": "You moderate",
-      "description": "Two characters debate a topic you choose. You run the debate: give the floor, ask questions, keep them on topic."
+      "description": "Two characters debate a topic you choose. You run the debate: give the floor, ask questions, keep them on topic.",
+      "skill": "Moderating a debate and asking questions",
+      "duration": "15–20 min"
     },
     "doppiaIntervista": {
       "title": "Double interview",
-      "description": "Ask two characters the same questions and compare their answers, like a TV double interview."
+      "description": "Ask two characters the same questions and compare their answers, like a TV double interview.",
+      "skill": "Comparing two points of view",
+      "duration": "15 min"
     },
     "wikiChatbot": {
       "title": "WikiChat",
-      "description": "Talk to a Wikipedia page: a person, place, event or idea answers you in the first person."
+      "description": "Talk to a Wikipedia page: a person, place, event or idea answers you in the first person.",
+      "skill": "Researching with focused questions",
+      "duration": "10–15 min"
     },
     "personaggioMisterioso": {
       "title": "Mystery character",
-      "description": "A character hides who they are. You get a few questions to find out, then you make your guess."
+      "description": "A character hides who they are. You get a few questions to find out, then you make your guess.",
+      "skill": "Reasoning from clues and hypotheses",
+      "duration": "10 min"
     },
     "promptEngineer": {
       "title": "Prompts for teaching",
@@ -24,11 +32,15 @@
     },
     "convinciTu": {
       "title": "Convince them",
-      "description": "Pick an idea and try to win over a historical character. They only change their mind if your arguments hold up."
+      "description": "Pick an idea and try to win over a historical character. They only change their mind if your arguments hold up.",
+      "skill": "Arguing and persuading",
+      "duration": "15–20 min"
     },
     "impersonaTu": {
       "title": "Play the part",
-      "description": "Play a historical character while the AI plays another. It asks you questions to see how well you know your role."
+      "description": "Play a historical character while the AI plays another. It asks you questions to see how well you know your role.",
+      "skill": "Getting inside a historical figure",
+      "duration": "15–20 min"
     }
   },
   "badges": {
@@ -39,5 +51,10 @@
     "launchApp": "Start",
     "comingSoon": "Coming soon",
     "launchNamed": "Start {{name}}"
+  },
+  "facts": {
+    "skill": "Practises",
+    "duration": "Duration",
+    "characters": "AI characters"
   }
 }

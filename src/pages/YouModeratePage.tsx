@@ -9,7 +9,7 @@ import type { WikiRef } from "@/lib/api";
 import type { ChatMessage } from "@/services/aiService";
 import ActivityRunner from "@/features/activity/components/ActivityRunner";
 import { CharacterPicker } from "@/features/activity/components/SetupCard";
-import { useActivityFlow } from "@/features/activity/useActivityFlow";
+import { titleOf, useActivityFlow } from "@/features/activity/useActivityFlow";
 import { bioOf, useWikiSummaries } from "@/features/activity/wiki";
 import { MAX_TOPIC_CHARS, recipeFor } from "@/features/activity/recipe";
 import { APPS, ActivityMessage } from "@/features/activity/types";
@@ -39,7 +39,17 @@ const YouModeratePage = () => {
   const { summaries, loading } = useWikiSummaries(chars);
   const moderator = t("platform.apps.youModerate.moderator");
 
-  const flow = useActivityFlow(app.type, { context: { characters: [a?.title, b?.title], theme } });
+  const flow = useActivityFlow(app.type, {
+    context: { characters: [a?.title, b?.title], theme },
+    restore: (saved, messages) => {
+      const [x, y] = Array.isArray(saved.characters) ? saved.characters.map(titleOf) : [];
+      if (x && y) setChars([{ title: x }, { title: y }]);
+      if (typeof saved.theme === "string") setTheme(saved.theme);
+      // The floor passes to the debater who did not speak last.
+      const last = [...messages].reverse().find((m) => m.speakerKey === "a" || m.speakerKey === "b");
+      setNextSpeaker(last?.speakerKey === "a" ? "b" : "a");
+    },
+  });
   const { preset, engine } = flow;
 
   useEffect(() => {

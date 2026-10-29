@@ -102,6 +102,7 @@ type sessionStore interface {
 	AddCost(id int64, usd float64) error
 	CountWithTurns() int
 	BestPerUser(assignmentID int64) (map[int64]domain.BestAttempt, error)
+	BestPerUserIn(assignmentIDs []int64) (map[int64]map[int64]domain.BestAttempt, error)
 	LatestPerAssignment(userID int64) (map[int64]*domain.SessionSummary, error)
 	StatsForClass(classID int64) (map[int64]domain.AssignStats, error)
 	Import(userID int64, assignmentID *int64, d domain.SessionDetail) (int64, error)

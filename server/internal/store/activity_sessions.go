@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/Hoppitbilbo/DebateAI/server/internal/domain"
 )
@@ -103,16 +104,40 @@ func (r *ActivitySessions) rankedSessions(partition, order, where string, args .
 // BestPerUser returns, for an assignment, each student's best attempt and
 // number of attempts, by user id.
 func (r *ActivitySessions) BestPerUser(assignmentID int64) (map[int64]domain.BestAttempt, error) {
-	rows, err := r.rankedSessions(`s.user_id`, bestFirst, `s.assignment_id = ? AND s.user_id IS NOT NULL`, assignmentID)
+	all, err := r.BestPerUserIn([]int64{assignmentID})
+	if err != nil {
+		return nil, err
+	}
+	if best := all[assignmentID]; best != nil {
+		return best, nil
+	}
+	return map[int64]domain.BestAttempt{}, nil
+}
+
+// BestPerUserIn is BestPerUser for several assignments in one query, by
+// assignment id, then user id.
+func (r *ActivitySessions) BestPerUserIn(assignmentIDs []int64) (map[int64]map[int64]domain.BestAttempt, error) {
+	out := map[int64]map[int64]domain.BestAttempt{}
+	if len(assignmentIDs) == 0 {
+		return out, nil
+	}
+	args := make([]any, len(assignmentIDs))
+	for i, id := range assignmentIDs {
+		args[i] = id
+	}
+	in := strings.TrimSuffix(strings.Repeat("?,", len(args)), ",")
+	rows, err := r.rankedSessions(`s.assignment_id, s.user_id`, bestFirst, `s.assignment_id IN (`+in+`) AND s.user_id IS NOT NULL`, args...)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	out := map[int64]domain.BestAttempt{}
 	for rows.Next() {
 		var n int
-		if ss, err := scanSummary(rows, &n); err == nil && ss.UserID != nil {
-			out[*ss.UserID] = domain.BestAttempt{Session: ss, Attempts: n}
+		if ss, err := scanSummary(rows, &n); err == nil && ss.UserID != nil && ss.AssignmentID != nil {
+			if out[*ss.AssignmentID] == nil {
+				out[*ss.AssignmentID] = map[int64]domain.BestAttempt{}
+			}
+			out[*ss.AssignmentID][*ss.UserID] = domain.BestAttempt{Session: ss, Attempts: n}
 		}
 	}
 	return out, rows.Err()

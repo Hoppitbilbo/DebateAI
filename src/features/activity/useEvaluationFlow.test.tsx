@@ -45,4 +45,31 @@ describe("useEvaluationFlow", () => {
     expect(result.current.error).toBe("no model");
     expect(session.complete).toHaveBeenCalledWith({ reflection: "r" });
   });
+
+  it("shows the streamed evaluation at most once per frame", async () => {
+    let finish: (v: unknown) => void = () => {};
+    const evaluate = vi.fn((_req: unknown, onDelta: (d: string, full: string) => void) => {
+      onDelta("a", "## A");
+      onDelta("b", "## AB");
+      onDelta("c", "## ABC");
+      return new Promise((resolve) => (finish = resolve));
+    });
+    const frames: FrameRequestCallback[] = [];
+    vi.spyOn(window, "requestAnimationFrame").mockImplementation((cb) => frames.push(cb));
+    const { result } = renderHook(() => useEvaluationFlow(fakeSession(evaluate as unknown as ActivitySession["evaluate"])));
+    let running: Promise<void> = Promise.resolve();
+    act(() => {
+      running = result.current.run(input);
+    });
+    expect(frames).toHaveLength(1); // three chunks, one frame
+    expect(result.current.partial).toBe("");
+    act(() => frames[0](0));
+    expect(result.current.partial).toBe("## ABC");
+    await act(async () => {
+      finish({ evaluation: "## Fine" });
+      await running;
+    });
+    expect(result.current.evaluation?.markdown).toBe("## Fine");
+    vi.restoreAllMocks();
+  });
 });

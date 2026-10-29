@@ -159,6 +159,7 @@
     "endedTurns": "You used all your turns. Take your time to read the last reply, then move on.",
     "continueToReflection": "Next: reflection",
     "startFailed": "The assignment could not be started on the server. Check your connection and try again.",
+    "resumed": "You picked up the conversation where you left it.",
     "notSaved": "This practice is not being saved: the server is not responding. You can go on and download the conversation at the end.",
     "saveFailed": "Your last message was not saved on the server.",
     "stepOf": "Step {{n}} of {{total}}: {{label}}"

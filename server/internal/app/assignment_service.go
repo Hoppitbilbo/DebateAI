@@ -222,16 +222,30 @@ type GradeRow struct {
 	Attempts                   int
 }
 
-// Grades returns a row per student for each assignment, in class order.
+// Grades returns a row per student for each assignment, in class order:
+// one query for the attempts and one per class for the students.
 func (svc *assignmentService) Grades(assignments []*domain.Assignment) ([]GradeRow, error) {
+	ids := make([]int64, len(assignments))
+	for i, a := range assignments {
+		ids[i] = a.ID
+	}
+	best, err := svc.sessions.BestPerUserIn(ids)
+	if err != nil {
+		return nil, err
+	}
+	students := map[int64][]domain.User{}
 	rows := []GradeRow{}
 	for _, a := range assignments {
-		students, err := svc.Progress(a)
-		if err != nil {
-			return nil, err
+		class, ok := students[a.ClassID]
+		if !ok {
+			if class, err = svc.classes.Students(a.ClassID); err != nil {
+				return nil, err
+			}
+			students[a.ClassID] = class
 		}
-		for _, st := range students {
-			rows = append(rows, GradeRow{Student: st.Name, Email: st.Email, Assignment: a.Title, Session: st.Session, Attempts: st.AttemptCount})
+		for _, st := range class {
+			b := best[a.ID][st.ID]
+			rows = append(rows, GradeRow{Student: st.Name, Email: st.Email, Assignment: a.Title, Session: b.Session, Attempts: b.Attempts})
 		}
 	}
 	return rows, nil
