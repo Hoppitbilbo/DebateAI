@@ -43,9 +43,12 @@ func (g *aiGateway) meterTimed(m ai.TextModel, entry usageEntry, clock *firstDel
 
 // firstDeltaClock notes when the provider sent its first text, before the
 // answer screening may hold it back.
+// It also counts the provider's text, which estimates the usage of a stream
+// stopped while its opening was still held back.
 type firstDeltaClock struct {
 	ai.TextModel
-	at time.Time
+	at    time.Time
+	chars int
 }
 
 func (c *firstDeltaClock) Stream(ctx context.Context, req ai.Request, onDelta func(string) error) (*ai.Response, error) {
@@ -53,6 +56,7 @@ func (c *firstDeltaClock) Stream(ctx context.Context, req ai.Request, onDelta fu
 		if c.at.IsZero() {
 			c.at = time.Now()
 		}
+		c.chars += len(d)
 		return onDelta(d)
 	})
 }
@@ -76,6 +80,7 @@ func (m meteredTextModel) Stream(ctx context.Context, req ai.Request, onDelta fu
 	})
 	if m.provider != nil && !m.provider.at.IsZero() {
 		m.entry.FirstDelta = m.provider.at.Sub(start)
+		streamed = max(streamed, m.provider.chars) // generated, even if not shown
 	}
 	m.record(start, req, res, streamed, err)
 	return res, err

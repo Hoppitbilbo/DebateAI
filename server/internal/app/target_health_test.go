@@ -70,3 +70,24 @@ func TestStreamLogsProviderAndVisibleFirstText(t *testing.T) {
 		t.Fatalf("timings: provider %d ms, visible %d ms", rows[0].FirstDeltaMs, rows[0].FirstTextMs)
 	}
 }
+
+// A chat answer stopped while its opening was still held back for the
+// refusal check is logged with the usage estimated from what the provider wrote.
+func TestStoppedHeldBackStreamIsEstimatedFromTheProviderText(t *testing.T) {
+	s := newTestServer(t)
+	useProvider(s, 1, ai.KindOpenAI, stoppedEarly{&fakeProvider{}})
+	setChatRoute(t, s, "ordered", RouteTarget{1, "a"})
+	_, _ = s.Gateway.Generate(context.Background(), TaskChat, chatRequest(), nil, nil, func(string) error { return nil })
+	rows, _ := s.Usage.Recent(1)
+	if !rows[0].Estimated || rows[0].OutputTokens == 0 {
+		t.Fatalf("expected an estimate from the provider's text: %+v", rows[0])
+	}
+}
+
+// stoppedEarly writes a few words, then the request is cancelled (Stop).
+type stoppedEarly struct{ *fakeProvider }
+
+func (stoppedEarly) Stream(ctx context.Context, req ai.Request, onDelta func(string) error) (*ai.Response, error) {
+	_ = onDelta("I was born in a small town ")
+	return nil, context.Canceled
+}
