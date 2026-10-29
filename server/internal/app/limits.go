@@ -13,6 +13,16 @@ const (
 	maxEvaluationChars    = 40000
 )
 
+// Recipes of the characters' prompts (prompts.go). Longer bios are cut
+// like the browser cuts them; the other limits refuse the recipe.
+const (
+	maxRecipeTitleChars   = 200
+	maxRecipeTopicChars   = 500
+	maxRecipeBioChars     = 4000 // UTF-16 code units, as in the browser
+	maxRecipeQuestions    = 20
+	impersonaUserBioChars = 600 // part of the student's character bio in impersona-tu
+)
+
 // JEV judge.
 const (
 	judgeRequestTimeout  = 90 * time.Second // whole judgement, all targets
