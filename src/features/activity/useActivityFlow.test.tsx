@@ -29,7 +29,7 @@ vi.mock("./useChatEngine", () => ({
   },
 }));
 vi.mock("./useEvaluationFlow", () => ({ useEvaluationFlow: () => mocks.evaluation }));
-vi.mock("sonner", () => ({ toast: { success: mocks.toast } }));
+vi.mock("sonner", () => ({ toast: { success: mocks.toast, error: mocks.toast } }));
 
 type EngineOptions = { live: unknown; onEnded: (reason: string) => void; context: unknown };
 const lastEngineOptions = () => mocks.engineOptions[mocks.engineOptions.length - 1] as EngineOptions;
@@ -102,4 +102,20 @@ describe("useActivityFlow", () => {
     expect(onEnded).toHaveBeenCalledWith("turn_limit");
     expect(result.current.phase).toBe("setup");
   });
+
+  it("stays on the setup when an assignment's attempt could not be created", async () => {
+    mocks.session.begin.mockResolvedValueOnce(null);
+    Object.assign(mocks.session, { user: { id: 1 } });
+    const { result } = renderHook(() => useActivityFlow("convinci-tu"));
+    let started: unknown;
+    await act(async () => {
+      started = await result.current.begin("t", {}, []);
+    });
+    expect(started).toBe(false);
+    expect(result.current.phase).toBe("setup");
+    expect(mocks.engine.reset).not.toHaveBeenCalled();
+    expect(mocks.toast).toHaveBeenCalled();
+    Object.assign(mocks.session, { user: undefined });
+  });
 });
+

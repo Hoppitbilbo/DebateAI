@@ -42,7 +42,7 @@ const ConvinciTuPage = () => {
 
   const start = async () => {
     if (!character || !topic.trim()) return;
-    await flow.begin(`${character.title}: ${topic}`, { character, topic, difficulty: level }, []);
+    if (!(await flow.begin(`${character.title}: ${topic}`, { character, topic, difficulty: level }, []))) return;
     await engine.open({
       system,
       cue: openings.convinciTu(topic),

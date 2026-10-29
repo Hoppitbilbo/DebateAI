@@ -37,7 +37,7 @@ const DoppiaIntervistaPage = () => {
 
   const start = async () => {
     if (!a || !b) return;
-    await flow.begin(`${a.title} & ${b.title}`, { characters: [a, b] }, []);
+    if (!(await flow.begin(`${a.title} & ${b.title}`, { characters: [a, b] }, []))) return;
     // each character introduces itself in its own voice
     for (const [key, me, other] of [["a", a, b], ["b", b, a]] as const) {
       await engine.open({

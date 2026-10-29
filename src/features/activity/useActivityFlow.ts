@@ -52,11 +52,22 @@ export const useActivityFlow = (appType: AppType, { live, context, onEnded }: Fl
   });
   const evaluation = useEvaluationFlow(session);
 
-  /** Starts a server session and opens the chat with the given first messages. */
+  /**
+   * Starts a server session and opens the chat with the given first messages.
+   * Returns false, staying on the setup, when an assignment's attempt could
+   * not be created: work the teacher expects must not silently go unsaved.
+   * Free practice goes on locally (session.startFailed tells the student).
+   */
   const begin = async (title: string, sessionContext: Record<string, unknown>, intro: ActivityMessage[]) => {
-    await session.begin(title, sessionContext);
+    if (session.starting) return false;
+    const id = await session.begin(title, sessionContext);
+    if (id === null && session.user && session.assignment) {
+      toast.error(t("platform.activity.startFailed"));
+      return false;
+    }
     engine.reset(intro);
     setPhase("chat");
+    return true;
   };
 
   /** The student ends the conversation, or moves on after the server ended it (its reason is kept). */

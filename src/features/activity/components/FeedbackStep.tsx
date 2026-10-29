@@ -39,6 +39,8 @@ interface FeedbackStepProps {
   restartLabel?: string;
   isAssignment?: boolean;
   title: string;
+  /** Whether the work reached the teacher (see SubmitNotice). */
+  submission?: React.ReactNode;
 }
 
 const ScoreCard = ({ label, value }: { label: string; value?: number }) => (
@@ -48,7 +50,7 @@ const ScoreCard = ({ label, value }: { label: string; value?: number }) => (
   </div>
 );
 
-const FeedbackStep = ({ evaluation, partial, loading, error, reflection, messages, facts, onRestart, restartLabel, isAssignment, title }: FeedbackStepProps) => {
+const FeedbackStep = ({ evaluation, partial, loading, error, reflection, messages, facts, onRestart, restartLabel, isAssignment, title, submission }: FeedbackStepProps) => {
   const { t } = useTranslation();
   const { user } = useAuth();
   const diffusion = useDiffusionPreference();
@@ -91,6 +93,7 @@ const FeedbackStep = ({ evaluation, partial, loading, error, reflection, message
 
   return (
     <div className="space-y-6">
+      {submission}
       <section className="rounded-lg border border-border bg-card p-6 text-card-foreground shadow-sm">
         <div className="mb-4 flex items-center gap-3">
           <Award className="h-7 w-7 text-primary" />

@@ -6,6 +6,13 @@ import type { ActivityMessage } from "./types";
 
 export type EndReason = "goal_reached" | "turn_limit" | "manual" | null;
 
+/** Whether the last transcript save reached the server. */
+export type SaveState = "idle" | "saving" | "saved" | "failed";
+/** Whether the work was handed in (separate from getting the AI feedback). */
+export type SubmitState = "idle" | "submitting" | "submitted" | "failed";
+
+type Completion = { reflection: string; evaluation: string; scoreConversation?: number; scoreReflection?: number };
+
 interface SyncResponse {
   status: SessionSummary["status"];
   turns: number;
@@ -36,6 +43,13 @@ export const useActivitySession = (appType: AppType) => {
   const [judging, setJudging] = useState(false);
   const [turns, setTurns] = useState(0);
   const [endReason, setEndReason] = useState<EndReason>(null);
+  const [starting, setStarting] = useState(false);
+  /** A logged-in user's attempt could not be created: nothing is saved. */
+  const [startFailed, setStartFailed] = useState(false);
+  const [saveState, setSaveState] = useState<SaveState>("idle");
+  const [submitState, setSubmitState] = useState<SubmitState>("idle");
+  const lastSave = useRef<Parameters<typeof sync> | null>(null);
+  const lastCompletion = useRef<Completion | null>(null);
   const sessionRef = useRef<number | null>(null);
   const syncSeq = useRef(0);
   // Saves go out one at a time, each on top of the revision the previous one
@@ -77,10 +91,16 @@ export const useActivitySession = (appType: AppType) => {
     setJev(null);
     setTurns(0);
     setEndReason(null);
+    setStartFailed(false);
+    setSaveState("idle");
+    setSubmitState("idle");
+    lastSave.current = null;
+    lastCompletion.current = null;
     sessionRef.current = null;
     revisionRef.current = null;
     setSessionId(null);
     if (!user) return null;
+    setStarting(true);
     try {
       const s = await api.post<SessionSummary>("/api/sessions", {
         appType,
@@ -94,7 +114,10 @@ export const useActivitySession = (appType: AppType) => {
       return s.id;
     } catch (e) {
       console.warn("Could not create activity session", e);
+      setStartFailed(true);
       return null;
+    } finally {
+      setStarting(false);
     }
   }, [appType, assignment, user]);
 
@@ -117,6 +140,8 @@ export const useActivitySession = (appType: AppType) => {
       .filter((m) => !m.streaming && m.content.trim())
       .map((m) => ({ role: m.role, content: m.content, name: m.name }));
     const seq = ++syncSeq.current;
+    lastSave.current = [messages, context, opts];
+    setSaveState("saving");
     if (assignment) setJudging(true);
     const save = async () => {
       const base = sessionRef.current === id ? revisionRef.current : null;
@@ -131,6 +156,7 @@ export const useActivitySession = (appType: AppType) => {
     try {
       const res = await queued;
       if (seq !== syncSeq.current) return null; // a newer sync superseded this one
+      setSaveState("saved");
       if (res.jev && res.jev.engine !== "none") setJev(res.jev);
       if (res.ended && res.reason) {
         const reason = res.reason as EndReason;
@@ -142,21 +168,41 @@ export const useActivitySession = (appType: AppType) => {
       // through): the next save goes out without a base revision.
       if ((e as { code?: string }).code === "stale_revision" && sessionRef.current === id) revisionRef.current = null;
       console.warn("Transcript sync failed", e);
+      if (seq === syncSeq.current) setSaveState("failed");
     } finally {
       if (seq === syncSeq.current) setJudging(false);
     }
     return null;
   }, [assignment]);
 
-  const complete = useCallback(async (data: { reflection: string; evaluation: string; scoreConversation?: number; scoreReflection?: number }) => {
+  /** Sends the latest transcript again after a failed save. */
+  const retrySave = useCallback(async () => {
+    if (lastSave.current) await sync(...lastSave.current);
+  }, [sync]);
+
+  /** Hands the work in; true once the server acknowledged it (or there is no server session). */
+  const complete = useCallback(async (data: Completion) => {
     const id = sessionRef.current;
-    if (!id) return;
+    if (!id) return true;
+    lastCompletion.current = data;
+    setSubmitState("submitting");
     try {
+      await saveQueue.current; // the last transcript save goes first
       await api.post(`/api/sessions/${id}/complete`, data);
+      setSubmitState("submitted");
+      return true;
     } catch (e) {
       console.warn("Could not complete session", e);
+      setSubmitState("failed");
+      return false;
     }
   }, []);
+
+  /** Hands in again what a failed submission carried. */
+  const retrySubmit = useCallback(async () => {
+    if (lastCompletion.current) return complete(lastCompletion.current);
+    return false;
+  }, [complete]);
 
   const getSessionId = useCallback(() => sessionRef.current, []);
 
@@ -177,9 +223,15 @@ export const useActivitySession = (appType: AppType) => {
     turns,
     turnsLeft,
     endReason,
+    starting,
+    startFailed,
+    saveState,
+    submitState,
     begin,
     sync,
+    retrySave,
     complete,
+    retrySubmit,
     markManualEnd,
     allowLive: assignment ? assignment.allowLive : true,
     requireReflection: assignment ? assignment.requireReflection : true,

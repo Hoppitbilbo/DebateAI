@@ -150,7 +150,10 @@
     "retry": "Erneut versuchen",
     "endedGoal": "Ziele erreicht! Lies in Ruhe die letzte Antwort, dann geht es weiter.",
     "endedTurns": "Du hast alle Runden genutzt. Lies in Ruhe die letzte Antwort, dann geht es weiter.",
-    "continueToReflection": "Weiter: Reflexion"
+    "continueToReflection": "Weiter: Reflexion",
+    "startFailed": "Die Aufgabe konnte auf dem Server nicht gestartet werden. Prüfe deine Verbindung und versuche es erneut.",
+    "notSaved": "Diese Übung wird nicht gespeichert: Der Server antwortet nicht. Du kannst weitermachen und das Gespräch am Ende herunterladen.",
+    "saveFailed": "Deine letzte Nachricht wurde nicht auf dem Server gespeichert."
   },
   "assignment": {
     "label": "Aufgabe",
@@ -201,7 +204,11 @@
     "download": "Herunterladen",
     "backToAssignments": "Zurück zu meinen Aufgaben",
     "diffusionOn": "Diffusionseffekt an: Das Feedback entsteht aus Rauschen. Drei Klicks auf den Titel schalten ihn aus.",
-    "diffusionOff": "Diffusionseffekt aus."
+    "diffusionOff": "Diffusionseffekt aus.",
+    "submitting": "Wird abgegeben…",
+    "submitted": "Abgegeben: Deine Lehrkraft kann deine Arbeit sehen.",
+    "savedToHistory": "In deinem Verlauf gespeichert.",
+    "submitFailed": "Deine Arbeit wurde nicht abgegeben. Versuche es erneut oder lade sie herunter, damit sie nicht verloren geht."
   },
   "apps": {
     "common": {

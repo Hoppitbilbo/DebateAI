@@ -150,7 +150,10 @@
     "retry": "Try again",
     "endedGoal": "Goals reached! Take your time to read the last reply, then move on.",
     "endedTurns": "You used all your turns. Take your time to read the last reply, then move on.",
-    "continueToReflection": "Next: reflection"
+    "continueToReflection": "Next: reflection",
+    "startFailed": "The assignment could not be started on the server. Check your connection and try again.",
+    "notSaved": "This practice is not being saved: the server is not responding. You can go on and download the conversation at the end.",
+    "saveFailed": "Your last message was not saved on the server."
   },
   "assignment": {
     "label": "Assignment",
@@ -201,7 +204,11 @@
     "download": "Download",
     "backToAssignments": "Back to my assignments",
     "diffusionOn": "Diffusion effect on: the feedback will form out of noise. Three clicks on the title to switch it off.",
-    "diffusionOff": "Diffusion effect off."
+    "diffusionOff": "Diffusion effect off.",
+    "submitting": "Handing in…",
+    "submitted": "Handed in: your teacher can see your work.",
+    "savedToHistory": "Saved to your history.",
+    "submitFailed": "Your work was not handed in. Try again, or download it so it is not lost."
   },
   "apps": {
     "common": {

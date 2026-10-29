@@ -150,7 +150,10 @@
     "retry": "Reintentar",
     "endedGoal": "¡Objetivos alcanzados! Lee con calma la última respuesta y luego sigue.",
     "endedTurns": "Has usado todos los turnos. Lee con calma la última respuesta y luego sigue.",
-    "continueToReflection": "Siguiente: reflexión"
+    "continueToReflection": "Siguiente: reflexión",
+    "startFailed": "No se pudo iniciar la tarea en el servidor. Comprueba la conexión y vuelve a intentarlo.",
+    "notSaved": "Esta práctica no se está guardando: el servidor no responde. Puedes continuar y descargar la conversación al final.",
+    "saveFailed": "Tu último mensaje no se guardó en el servidor."
   },
   "assignment": {
     "label": "Tarea",
@@ -201,7 +204,11 @@
     "download": "Descargar",
     "backToAssignments": "Volver a mis tareas",
     "diffusionOn": "Efecto difusión activado: la valoración se formará a partir del ruido. Tres clics en el título para apagarlo.",
-    "diffusionOff": "Efecto difusión desactivado."
+    "diffusionOff": "Efecto difusión desactivado.",
+    "submitting": "Entregando…",
+    "submitted": "Entregado: tu profesor puede ver tu trabajo.",
+    "savedToHistory": "Guardado en tu historial.",
+    "submitFailed": "Tu trabajo no se entregó. Vuelve a intentarlo o descárgalo para no perderlo."
   },
   "apps": {
     "common": {

@@ -122,7 +122,7 @@ const PersonaggioMisteriosoPage = () => {
     setGuess("");
     setReasoning("");
     setHintsUsed(0);
-    await flow.begin(t("apps.personaggioMisterioso.title"), { character: character.title, questions: maxQuestions }, []);
+    if (!(await flow.begin(t("apps.personaggioMisterioso.title"), { character: character.title, questions: maxQuestions }, []))) return;
     await engine.open({
       system,
       cue: openings.mystery(maxQuestions),

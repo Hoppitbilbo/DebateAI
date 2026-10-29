@@ -79,7 +79,7 @@ const YouModeratePage = () => {
   const start = async () => {
     if (!a || !b) return;
     setNextSpeaker("a");
-    await flow.begin(`${a.title} vs ${b.title}: ${theme}`, { characters: [a, b], theme }, []);
+    if (!(await flow.begin(`${a.title} vs ${b.title}: ${theme}`, { characters: [a, b], theme }, []))) return;
     await engine.open({
       system: systemOf("a", a, b),
       cue: openings.moderated(theme, b.title),

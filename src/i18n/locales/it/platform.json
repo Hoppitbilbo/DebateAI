@@ -150,7 +150,10 @@
     "retry": "Riprova",
     "endedGoal": "Obiettivi raggiunti! Leggi con calma l'ultima risposta, poi vai avanti.",
     "endedTurns": "Hai usato tutti i turni. Leggi con calma l'ultima risposta, poi vai avanti.",
-    "continueToReflection": "Avanti: riflessione"
+    "continueToReflection": "Avanti: riflessione",
+    "startFailed": "Non è stato possibile avviare il compito sul server. Controlla la connessione e riprova.",
+    "notSaved": "Questa esercitazione non viene salvata: il server non risponde. Puoi continuare e scaricare la conversazione alla fine.",
+    "saveFailed": "Ultimo messaggio non salvato sul server."
   },
   "assignment": {
     "label": "Compito",
@@ -201,7 +204,11 @@
     "download": "Scarica",
     "backToAssignments": "Torna ai miei compiti",
     "diffusionOn": "Effetto diffusione attivato: il feedback si formerà dal rumore. Tre clic sul titolo per spegnerlo.",
-    "diffusionOff": "Effetto diffusione spento."
+    "diffusionOff": "Effetto diffusione spento.",
+    "submitting": "Consegna in corso…",
+    "submitted": "Consegnato: il docente può vedere il tuo lavoro.",
+    "savedToHistory": "Salvato nella tua cronologia.",
+    "submitFailed": "Il lavoro non è stato consegnato. Riprova, oppure scaricalo per non perderlo."
   },
   "apps": {
     "common": {

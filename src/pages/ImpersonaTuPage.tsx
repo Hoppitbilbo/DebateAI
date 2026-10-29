@@ -47,7 +47,7 @@ const ImpersonaTuPage = () => {
 
   const start = async () => {
     if (!aiChar || !userChar) return;
-    await flow.begin(`${userChar.title} ↔ ${aiChar.title}`, { aiCharacter: aiChar, userCharacter: userChar, topic, difficulty: level }, []);
+    if (!(await flow.begin(`${userChar.title} ↔ ${aiChar.title}`, { aiCharacter: aiChar, userCharacter: userChar, topic, difficulty: level }, []))) return;
     await engine.open({
       system,
       cue: openings.impersona(userChar.title, topic),

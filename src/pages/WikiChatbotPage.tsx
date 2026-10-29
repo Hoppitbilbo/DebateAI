@@ -33,7 +33,7 @@ const WikiChatbotPage = () => {
 
   const start = async () => {
     if (!page) return;
-    await flow.begin(page.title, { page }, []);
+    if (!(await flow.begin(page.title, { page }, []))) return;
     await engine.open({
       system,
       cue: openings.wikiChat(),

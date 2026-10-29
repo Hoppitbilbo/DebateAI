@@ -223,4 +223,52 @@ describe("server session", () => {
     });
     expect(mocks.api.post).toHaveBeenLastCalledWith("/api/sessions/42/complete", { reflection: "r", evaluation: "e" });
   });
+
+  it("reports a failed save and sends it again on retry", async () => {
+    const { result } = await loggedIn();
+    mocks.api.put.mockRejectedValueOnce(new Error("offline")).mockResolvedValueOnce({ status: "active", turns: 1, progress: 0, ended: false, revision: 1 });
+    await act(async () => {
+      await result.current.sync([msg("user", "ciao")]);
+    });
+    expect(result.current.saveState).toBe("failed");
+    await act(async () => {
+      await result.current.retrySave();
+    });
+    expect(mocks.api.put).toHaveBeenCalledTimes(2);
+    expect(mocks.api.put.mock.calls[1][1].messages).toEqual([{ role: "user", content: "ciao", name: undefined }]);
+    expect(result.current.saveState).toBe("saved");
+  });
+
+  it("tells a failed hand-in from a successful one", async () => {
+    const { result } = await loggedIn();
+    mocks.api.post.mockRejectedValueOnce(new Error("offline"));
+    let ok: unknown;
+    await act(async () => {
+      ok = await result.current.complete({ reflection: "r", evaluation: "e" });
+    });
+    expect(ok).toBe(false);
+    expect(result.current.submitState).toBe("failed");
+
+    mocks.api.post.mockResolvedValueOnce({ ok: true });
+    await act(async () => {
+      ok = await result.current.retrySubmit();
+    });
+    expect(ok).toBe(true);
+    expect(result.current.submitState).toBe("submitted");
+    expect(mocks.api.post).toHaveBeenLastCalledWith("/api/sessions/42/complete", { reflection: "r", evaluation: "e" });
+  });
+
+  it("marks the attempt as not saved when it could not be created", async () => {
+    mocks.user = { id: 1 };
+    mocks.api.post.mockRejectedValue(new Error("down"));
+    const { result } = render();
+    let id: unknown = 1;
+    await act(async () => {
+      id = await result.current.begin("t");
+    });
+    expect(id).toBeNull();
+    expect(result.current.startFailed).toBe(true);
+    expect(result.current.starting).toBe(false);
+  });
 });
+
