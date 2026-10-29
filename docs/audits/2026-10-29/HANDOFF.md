@@ -7,7 +7,7 @@ Read this instead of re-deriving the work. The source audit is `REVIEW.md` in th
 - Repo: `DebateAI/` (Go server in `server/`, React/Vite frontend in `src/`).
 - `AGENTS.md` → read `docs/REFACTORING.md` first. Audit fixes are **behaviour changes, not refactoring**: do not tick refactoring tasks. Add one row per commit to the *Registro* table and keep the "Correzioni dell'audit" line in *Stato attuale* current. Copy commit hashes from `git log`, never from memory. The document is written in Italian; keep it that way.
 - One fix = one commit, e.g. `fix(<area>): <what> (audit #N)`.
-- Branch: `fix/audit-pass1`, based on `master@f1d7178`. Pushed; **PR #21** is open, not merged. Merging to `master` deploys to production on Vercel, so ask the user before merging. Push new commits to the same branch (the PR follows).
+- Branches: `server-prompts` (PR #23) → `safe-the-grade` (PR #22) → `fix/audit-pass1` (PR #21) → `master`, all merged on 2026-10-29 (`master@ac05a15`) and deployed to production. Later work: `fix/audit-pass4` from `master`. Merging to `master` deploys to production on Vercel, so ask the user before merging.
 - Verification (all were green at hand-off):
   - `cd server && go vet ./... && go test ./...`; for concurrent code also `go test -race ./internal/...`. Sockets work in this environment, so the `httptest` suites run.
   - `npm run lint && npx tsc --noEmit -p tsconfig.app.json && npm test && npm run build` (240 Vitest tests on `server-prompts`).
