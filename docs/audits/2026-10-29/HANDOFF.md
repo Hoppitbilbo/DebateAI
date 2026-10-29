@@ -70,7 +70,7 @@ Read this instead of re-deriving the work. The source audit is `REVIEW.md` in th
 
 - **#1 resume after reload.** A resumable session route: hydrate from `GET /api/sessions/{id}` (it includes `revision`; set `revisionRef` from it) and rebuild each page's setup (characters, topic) from the saved `context`. Per-app work on six pages; restart must clearly mean a new attempt. The unsent draft is already kept (`draft.ts`).
 - **#3 system lines.** Verified transcripts (`safe-the-grade`) check only AI lines; the app's own `system` lines (e.g. the mystery final-guess log) are still taken as sent.
-- **#3 prompts built by the browser.** Each page builds the character's system prompt (`features/activity/prompts.ts`) and sends it to `/api/ai/generate`; checking the saved `context` against the assignment would only make the record match, not the prompt. Real protection means building prompts on the server for the six apps. Decide with the user before starting.
+- **#3 prompts built by the browser.** Step-by-step plan for this: `docs/audits/2026-10-29/PLAN_SERVER_PROMPTS.md` (branch `server-prompts`). Each page builds the character's system prompt (`features/activity/prompts.ts`) and sends it to `/api/ai/generate`; checking the saved `context` against the assignment would only make the record match, not the prompt. Real protection means building prompts on the server for the six apps. Decide with the user before starting.
 - **#4** Reservations use a fixed estimate, released after the call rather than reconciled; live voice is granted but not reserved.
 
 ### Smaller leftovers
