@@ -41,6 +41,7 @@ Read this instead of re-deriving the work. The source audit is `REVIEW.md` in th
 | #1 (draft) | `0b6ddb8` | `features/activity/draft.ts`; `ChatPanel` `draftKey` (user + app + assignment, 24 h). |
 | UI | `61d660c`, `1fd0280`, `b689a11`, `fc23b65`, `184cd6d`, `5c2d728`, `f8108eb`, `2776929` | `<html lang>` sync; `--warning`/`--info` tokens (`text-warning`, `text-info`); `LoadError` in `dashboard/common.tsx`; `WikiSearchSelect` states and aborts, `wikiLanguage()`; icon-only account button below `sm`, compact stepper; WikiChat tutorial linked; `features/activity/attemptStatus.ts`; compact Apps page with named launch links. |
 | tests | `b26b65a` | `src/test/setup.ts` starts every file in Italian (lazy languages race otherwise). |
+| #3 (verified transcripts) | `124f734` | Branch `safe-the-grade`. `ai_replies` (`store/replies.go`), recorded in `handleGenerate` for chat with a session; `checkTranscript`/`sessionService.check` in `app/verification.go`; `SaveTranscript` judges `checked.evidence`, `Evaluate` too; `unverifiedLines` in `SessionSummary`, `voice` in `SessionDetail` (from `live_grants.session_id`). |
 
 ## Invariants: do not break
 
@@ -55,6 +56,7 @@ Read this instead of re-deriving the work. The source audit is `REVIEW.md` in th
    - After a `stale_revision` error, the next save goes out without a base.
    - `complete()` awaits `saveQueue` before POSTing.
    - `seq`/`syncSeq` still drops superseded answers for UI state only.
+6a. **Graded evidence is verified.** The judge and the evaluation read `checked.evidence`, never the raw saved transcript; every chat reply sent for a session must go through `RecordReply` (an AI endpoint that skips it makes real lines look invented).
 6. **Hand-in happens once, graded by the server.** `store.Complete` only updates a non-completed attempt (`domain.ErrSessionCompleted`). Scores and evaluation are written only by `sessionService.Evaluate`; `Completion` carries the reflection alone. `session.evaluate` awaits `saveQueue` like `complete()`.
 7. **Admission before AI calls.** `/api/ai/generate` and `/evaluate` go through `Server.admit` (quotas, then slots); every paid target reserves its estimate before dispatch and releases it after. Do not add an AI endpoint that skips them.
 8. **Mystery character final guess still works.** `PersonaggioMisteriosoPage.submitGuess` calls `afterTurn({ judge: true })` while the session is ended but not completed. The server re-judges ended attempts only on request. Because `complete()` waits for the queue, the guess is saved and judged before the hand-in; with a slow judge, the hand-in can wait up to `judgeRequestTimeout` (90 s). Covered by `TestSaveTranscriptJudgesAnEndedAttemptOnlyOnRequest`. Don't change the order to "complete first": the transcript save would then be refused.
@@ -67,6 +69,7 @@ Read this instead of re-deriving the work. The source audit is `REVIEW.md` in th
 ### Correctness leftovers
 
 - **#1 resume after reload.** A resumable session route: hydrate from `GET /api/sessions/{id}` (it includes `revision`; set `revisionRef` from it) and rebuild each page's setup (characters, topic) from the saved `context`. Per-app work on six pages; restart must clearly mean a new attempt. The unsent draft is already kept (`draft.ts`).
+- **#3 system lines.** Verified transcripts (`safe-the-grade`) check only AI lines; the app's own `system` lines (e.g. the mystery final-guess log) are still taken as sent.
 - **#3 prompts built by the browser.** Each page builds the character's system prompt (`features/activity/prompts.ts`) and sends it to `/api/ai/generate`; checking the saved `context` against the assignment would only make the record match, not the prompt. Real protection means building prompts on the server for the six apps. Decide with the user before starting.
 - **#4** Reservations use a fixed estimate, released after the call rather than reconciled; live voice is granted but not reserved.
 
