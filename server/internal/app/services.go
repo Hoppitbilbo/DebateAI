@@ -67,7 +67,7 @@ func NewServices(cfg Config, db *sql.DB, opts ...Option) *Services {
 		Inflight:      store.NewInflight(db),
 		Crypto:        NewCrypto(cfg.Secret),
 	}
-	sv.Settings = &settingsService{store: sv.SettingsStore, crypto: sv.Crypto, smtpDefaults: cfg.SMTP}
+	sv.Settings = &settingsService{store: newCachedSettings(sv.SettingsStore, settingsCacheTTL), crypto: sv.Crypto, smtpDefaults: cfg.SMTP}
 	sv.Mailer = smtpMailer{settings: sv.Settings}
 	siteName := func() string { return sv.Settings.General().SiteName }
 	sv.Gateway = newAIGateway(sv.Providers, sv.Prices, sv.Usage, sv.Sessions, sv.Settings, sv.Crypto)

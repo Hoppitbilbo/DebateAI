@@ -38,6 +38,10 @@ const (
 	liveGrantTTL = time.Hour
 )
 
+// settingsCacheTTL bounds how long a settings change made by another
+// instance takes to be seen (settings_cache.go).
+const settingsCacheTTL = 5 * time.Second
+
 // Admission and budget reservations (admission.go).
 const (
 	// inflightTTL bounds how long a generation slot or a budget reservation
