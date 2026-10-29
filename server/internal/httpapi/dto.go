@@ -148,8 +148,10 @@ type settingsResponse struct {
 	Routing         app.RoutingSettings `json:"routing"`
 	Jev             app.JevSettings     `json:"jev"`
 	Rooms           app.RoomSettings    `json:"rooms"`
-	Tasks           []string            `json:"tasks"`
-	RoomTasks       []string            `json:"roomTasks"`
+	// RoomTargets are the models room guests really get, per task.
+	RoomTargets map[string][]app.RouteTarget `json:"roomTargets"`
+	Tasks       []string                     `json:"tasks"`
+	RoomTasks   []string                     `json:"roomTasks"`
 }
 
 type usageSummaryResponse struct {

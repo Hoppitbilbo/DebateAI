@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { AiSettings, Provider, RoomSettings, saveRooms } from "@/features/admin/aiAdminApi";
+import { AlertTriangle } from "lucide-react";
+import { AiSettings, Provider, RoomSettings, RouteTarget, saveRooms } from "@/features/admin/aiAdminApi";
 import { Panel } from "../../dashboard/common";
 import TaskTargets from "./TaskTargets";
 
@@ -17,6 +18,12 @@ const RoomsEditor = ({ providers, settings, onSaved }: { providers: Provider[]; 
   const { t } = useTranslation();
   const [rooms, setRooms] = useState<RoomSettings>(settings.rooms);
   useEffect(() => setRooms(settings.rooms), [settings]);
+  // What the server will really use, as last saved: shown only while the form is unchanged.
+  const saved = JSON.stringify(rooms) === JSON.stringify(settings.rooms);
+  const used = settings.roomTargets ?? {};
+  const isUsed = (task: string, target: RouteTarget) =>
+    (used[task] ?? []).some((u) => u.providerId === target.providerId && u.model === target.model);
+  const noChat = saved && (used.chat ?? []).length === 0;
 
   const save = async () => {
     try {
@@ -52,6 +59,12 @@ const RoomsEditor = ({ providers, settings, onSaved }: { providers: Provider[]; 
       </div>
       <p className="mt-2 text-xs text-muted-foreground">{t("room.admin.limitsHint")}</p>
 
+      {rooms.enabled && noChat && (
+        <p role="status" className="mt-4 flex items-start gap-2 rounded-md border border-amber-400 bg-amber-50 p-3 text-sm text-amber-900">
+          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />{t("room.admin.noChatModel")}
+        </p>
+      )}
+
       <h3 className="mb-2 mt-6 font-semibold">{t("room.admin.modelsTitle")}</h3>
       <p className="mb-3 text-sm text-muted-foreground">{t("room.admin.modelsHint")}</p>
       <div className="space-y-4">
@@ -62,6 +75,7 @@ const RoomsEditor = ({ providers, settings, onSaved }: { providers: Provider[]; 
             list={rooms.tasks[task] ?? []}
             providers={providers}
             emptyHint={t("room.admin.useMain")}
+            unusedReason={(target) => (saved && !isUsed(task, target) ? t("room.admin.ignoredNotFree") : null)}
             onChange={(list) => setRooms({ ...rooms, tasks: { ...rooms.tasks, [task]: list } })}
           />
         ))}

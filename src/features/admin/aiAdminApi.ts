@@ -23,7 +23,15 @@ export interface RoomSettings {
   tasks: Record<string, RouteTarget[]>;
   freeOnly: boolean;
 }
-export interface AiSettings { routing: Routing; jev: JevSettings; rooms: RoomSettings; tasks: string[]; roomTasks: string[] }
+export interface AiSettings {
+  routing: Routing;
+  jev: JevSettings;
+  rooms: RoomSettings;
+  tasks: string[];
+  roomTasks: string[];
+  /** The models room guests really get, per task (after FreeOnly), as last saved. */
+  roomTargets: Record<string, RouteTarget[]>;
+}
 export interface PriceRow { providerId: number; providerName: string; model: string; inputPerM: number; outputPerM: number }
 
 export interface NewProvider {

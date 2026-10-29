@@ -35,7 +35,8 @@ export interface RoomGuest {
   lastActivity?: string;
 }
 
-export interface RoomView { room: Room; guests: RoomGuest[]; now: string }
+/** aiReady is false when no AI model is usable for rooms: the guests could not chat. */
+export interface RoomView { room: Room; guests: RoomGuest[]; now: string; aiReady: boolean }
 
 export interface RoomInfo { title: string; appType: AppType; locked: boolean; full: boolean; expiresAt: string }
 

@@ -245,6 +245,7 @@ func (s *Server) handleGetSettings(w http.ResponseWriter, r *http.Request) {
 		Routing:         s.Settings.Routing(),
 		Jev:             s.Settings.Jev(),
 		Rooms:           s.Settings.Rooms(),
+		RoomTargets:     s.Gateway.RoomTargets(),
 		Tasks:           app.AllTasks,
 		RoomTasks:       app.RoomTasks,
 	})

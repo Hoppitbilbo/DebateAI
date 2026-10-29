@@ -27,8 +27,11 @@ type roomService struct {
 	accounts    *authService
 	usage       usageStore
 	settings    func() RoomSettings
-	now         func() time.Time
-	lastPurge   atomic.Int64 // unix seconds of the last purge
+	// aiReady tells whether a room guest can chat (some model is usable
+	// with the room settings, e.g. not dropped by FreeOnly).
+	aiReady   func() bool
+	now       func() time.Time
+	lastPurge atomic.Int64 // unix seconds of the last purge
 }
 
 var (
@@ -222,6 +225,9 @@ type RoomView struct {
 	Room   *domain.Room       `json:"room"`
 	Guests []domain.RoomGuest `json:"guests"`
 	Now    string             `json:"now"` // server time, for the countdown
+	// AIReady is false when no AI model is usable for rooms: the guests
+	// could not chat, and the teacher must hear it before the lesson.
+	AIReady bool `json:"aiReady"`
 }
 
 func (svc *roomService) View(room *domain.Room) (*RoomView, error) {
@@ -229,7 +235,7 @@ func (svc *roomService) View(room *domain.Room) (*RoomView, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &RoomView{Room: room, Guests: guests, Now: svc.nowString()}, nil
+	return &RoomView{Room: room, Guests: guests, Now: svc.nowString(), AIReady: svc.aiReady()}, nil
 }
 
 func (svc *roomService) SetLocked(room *domain.Room, locked bool) error {

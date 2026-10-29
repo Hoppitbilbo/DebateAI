@@ -8,13 +8,15 @@ import { TASK_KINDS } from "@/features/admin/aiPresets";
 import ModelInput from "./ModelInput";
 
 /** The ordered provider/model fallback list of one task. */
-const TaskTargets = ({ task, list, providers, onChange, emptyHint }: {
+const TaskTargets = ({ task, list, providers, onChange, emptyHint, unusedReason }: {
   task: string;
   list: RouteTarget[];
   providers: Provider[];
   onChange: (list: RouteTarget[]) => void;
   /** Shown when the list is empty; defaults to the "no targets" warning. */
   emptyHint?: string;
+  /** Why a target will not be used, or null when it will (e.g. not free while only free models are allowed). */
+  unusedReason?: (t: RouteTarget) => string | null;
 }) => {
   const { t } = useTranslation();
   const byId = useMemo(() => Object.fromEntries(providers.map((p) => [p.id, p])), [providers]);
@@ -38,6 +40,7 @@ const TaskTargets = ({ task, list, providers, onChange, emptyHint }: {
             <Button size="icon" variant="ghost" disabled={i === 0} onClick={() => { const c = [...list]; [c[i - 1], c[i]] = [c[i], c[i - 1]]; onChange(c); }} aria-label="up"><ArrowUp className="h-4 w-4" /></Button>
             <Button size="icon" variant="ghost" disabled={i === list.length - 1} onClick={() => { const c = [...list]; [c[i + 1], c[i]] = [c[i], c[i + 1]]; onChange(c); }} aria-label="down"><ArrowDown className="h-4 w-4" /></Button>
             <Button size="icon" variant="ghost" onClick={() => onChange(list.filter((_, j) => j !== i))} aria-label={t("platform.common.delete")}><Trash2 className="h-4 w-4" /></Button>
+            {unusedReason?.(target) && <span className="w-full pl-7 text-xs text-amber-700">{unusedReason(target)}</span>}
           </li>
         ))}
       </ol>

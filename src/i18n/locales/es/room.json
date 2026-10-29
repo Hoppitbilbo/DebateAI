@@ -46,7 +46,8 @@
     "leaveText": "Para volver necesitarás un PIN del docente. Tu trabajo queda guardado.",
     "closedTitle": "El aula está cerrada",
     "closedText": "Se acabó el tiempo o el docente cerró el aula. Tus datos se han borrado.",
-    "joinAnother": "Entrar en otra aula"
+    "joinAnother": "Entrar en otra aula",
+    "aiMissing": "La IA de esta aula todavía no está lista: avisa al docente."
   },
   "open": {
     "title": "Aula rápida",
@@ -110,7 +111,8 @@
     "copied": "Enlace copiado",
     "closedTitle": "Aula cerrada",
     "closedText": "El aula ha terminado o el enlace no es válido: sus datos se han borrado.",
-    "openAnother": "Abrir una nueva aula"
+    "openAnother": "Abrir una nueva aula",
+    "aiMissing": "El chat no funcionará: no hay ningún modelo de IA disponible para las aulas rápidas. Avisa al administrador (Admin → IA → Aula rápida)."
   },
   "import": {
     "title": "Importar el trabajo en una clase",
@@ -150,7 +152,9 @@
     "limitsHint": "Los límites se aplican por estudiante y por aula, nunca por dirección IP: en el aula de informática todos los ordenadores salen por el mismo router. 0 = sin límite.",
     "modelsTitle": "Modelos para las aulas",
     "modelsHint": "Elige proveedor y clave dedicados a este uso (p. ej. DeepSeek o Gemini Flash gratuitos). Añade antes el proveedor con su clave arriba.",
-    "useMain": "Ningún modelo: las aulas usan el enrutamiento principal (solo gratuitos si la opción está activa)."
+    "useMain": "Ningún modelo: las aulas usan el enrutamiento principal (solo gratuitos si la opción está activa).",
+    "noChatModel": "Atención: con estos ajustes los estudiantes de las aulas no tienen ningún modelo para el chat. Elige un modelo gratuito abajo, ponle precio 0 en «Precios» o desactiva «Solo modelos gratuitos».",
+    "ignoredNotFree": "No se usa: no consta como gratuito y «Solo modelos gratuitos» está activo. Ponle precio 0 en «Precios» si es gratuito."
   },
   "avatars": {
     "fox": "Zorro",

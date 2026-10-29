@@ -109,6 +109,8 @@ const ActivityShell = ({ app, phase, session, onReset, children, phaseLabels }: 
                     {t("platform.activity.aiNotConfiguredAdmin")}{" "}
                     <Link to="/admin?tab=ai" className="font-semibold text-primary underline">{t("platform.admin.tabs.ai")}</Link>
                   </>
+                ) : user?.roomId ? (
+                  t("room.guest.aiMissing")
                 ) : (
                   t("platform.activity.aiNotConfigured")
                 )}
