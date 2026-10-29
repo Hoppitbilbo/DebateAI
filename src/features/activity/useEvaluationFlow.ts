@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import i18n from "@/i18n";
 import { evaluateActivity, EvaluationInput, EvaluationResult, parseEvaluation } from "@/utils/evaluationUtils";
 import { useAiClient } from "@/services/aiClient";
@@ -18,6 +18,25 @@ export const useEvaluationFlow = (session: ActivitySession) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // The streamed evaluation can be several thousand characters, and the
+  // whole Markdown is rendered again at each update: at most one per frame.
+  const pending = useRef<string | null>(null);
+  const frame = useRef<number | null>(null);
+  const cancelFrame = useCallback(() => {
+    if (frame.current !== null) cancelAnimationFrame(frame.current);
+    frame.current = null;
+    pending.current = null;
+  }, []);
+  const showPartial = useCallback((markdown: string) => {
+    pending.current = markdown;
+    frame.current ??= requestAnimationFrame(() => {
+      frame.current = null;
+      if (pending.current !== null) setPartial(pending.current);
+      pending.current = null;
+    });
+  }, []);
+  useEffect(() => cancelFrame, [cancelFrame]);
+
   const run = useCallback(async (input: Omit<EvaluationInput, "assignment" | "jev" | "sessionId">) => {
     setReflection(input.reflection);
     setEvaluation(null);
@@ -25,29 +44,31 @@ export const useEvaluationFlow = (session: ActivitySession) => {
     setError(null);
     setLoading(true);
     try {
-      const preview = (_d: string, full: string) => setPartial(parseEvaluation(full).markdown);
+      const preview = (_d: string, full: string) => showPartial(parseEvaluation(full).markdown);
       const { messages: _messages, reflection, ...about } = input;
       const graded = await session.evaluate({ ...about, reflection, locale: i18n.language || "it" }, preview);
       if (graded) {
         setEvaluation({ markdown: graded.evaluation, scoreConversation: graded.scoreConversation, scoreReflection: graded.scoreReflection });
         return;
       }
-      setEvaluation(await evaluateActivity({ ...input, assignment: session.assignment, jev: session.jev, sessionId: null }, setPartial, ai));
+      setEvaluation(await evaluateActivity({ ...input, assignment: session.assignment, jev: session.jev, sessionId: null }, showPartial, ai));
     } catch (e) {
       setError(ai.formatError(e));
       await session.complete({ reflection: input.reflection });
     } finally {
+      cancelFrame(); // the final text replaces the preview
       setLoading(false);
     }
-  }, [session, ai]);
+  }, [session, ai, showPartial, cancelFrame]);
 
   const reset = useCallback(() => {
+    cancelFrame();
     setReflection("");
     setEvaluation(null);
     setPartial("");
     setError(null);
     setLoading(false);
-  }, []);
+  }, [cancelFrame]);
 
   return { reflection, evaluation, partial, loading, error, run, reset };
 };
