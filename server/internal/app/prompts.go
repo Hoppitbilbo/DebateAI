@@ -157,6 +157,19 @@ func configOf(a *domain.Assignment) (assignmentConfig, error) {
 	return c, nil
 }
 
+// ComposePrompt is what the AI endpoints use: it refuses an invalid recipe
+// (IsInvalid) or one that contradicts the assignment (ErrSettingLocked),
+// then builds the prompt.
+func ComposePrompt(r PromptRecipe, a *domain.Assignment) (system, opening string, err error) {
+	if err := r.validate(); err != nil {
+		return "", "", err
+	}
+	if err := checkLocked(r, a); err != nil {
+		return "", "", err
+	}
+	return buildPrompt(r, a)
+}
+
 // buildPrompt writes the system prompt of a recipe and, for an opening, the
 // hidden cue sent as the first user message.
 func buildPrompt(r PromptRecipe, a *domain.Assignment) (system, opening string, err error) {

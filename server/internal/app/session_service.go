@@ -317,3 +317,20 @@ func firstNonEmpty(a, b json.RawMessage) json.RawMessage {
 	}
 	return b
 }
+
+// AssignmentOf is the assignment of an attempt: nil without an attempt or
+// for free practice. A read error is returned, so locked settings are not
+// skipped when the database fails.
+func (svc *sessionService) AssignmentOf(sessionID *int64) (*domain.Assignment, error) {
+	if sessionID == nil {
+		return nil, nil
+	}
+	ss, err := svc.sessions.Summary(*sessionID)
+	if err != nil {
+		return nil, err
+	}
+	if ss.AssignmentID == nil {
+		return nil, nil
+	}
+	return svc.assignments.Get(*ss.AssignmentID)
+}
