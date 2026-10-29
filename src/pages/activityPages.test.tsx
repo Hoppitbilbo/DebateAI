@@ -2,7 +2,8 @@ import type { ReactNode } from "react";
 import { act, cleanup, fireEvent, render as renderPage, screen } from "@testing-library/react";
 import type { AiClient } from "@/services/aiClient";
 import AiClientProvider from "@/services/AiClientProvider";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import i18n from "@/i18n";
 import ConvinciTuPage from "./ConvinciTuPage";
 import ImpersonaTuPage from "./ImpersonaTuPage";
 import WikiChatbotPage from "./WikiChatbotPage";
@@ -64,6 +65,9 @@ const fakeAi = {
   formatError: String,
 } as unknown as AiClient;
 const render = (page: ReactNode) => renderPage(<AiClientProvider client={fakeAi}>{page}</AiClientProvider>);
+
+// The labels below are the English ones.
+beforeAll(() => i18n.changeLanguage("en"));
 
 beforeEach(() => {
   vi.clearAllMocks();
