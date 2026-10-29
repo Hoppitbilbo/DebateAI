@@ -164,8 +164,10 @@ describe("PersonaggioMisteriosoPage", () => {
     await start();
     expect(mocks.begin).toHaveBeenCalledWith(expect.any(String), { character: expect.stringMatching(/^Person /), questions: 7 });
     // the hidden character opens the game in its own voice, prompted by a stage direction
+    // the server writes the stage direction, announcing the questions of the recipe
     const [opening] = mocks.generateStream.mock.calls[0];
-    expect(opening.messages[0].content).toMatch(/7 questions/);
+    expect(opening.system).toBeUndefined();
+    expect(opening.recipe).toMatchObject({ app: "personaggio-misterioso", kind: "opening", questions: 7, character: expect.stringMatching(/^Person /) });
     expect(screen.getByText("risposta")).toBeTruthy();
     expect(screen.getByText("???")).toBeTruthy();
   });

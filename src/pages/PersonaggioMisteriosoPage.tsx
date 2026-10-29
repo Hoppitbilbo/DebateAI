@@ -13,7 +13,7 @@ import { CharacterPicker, SetupCard } from "@/features/activity/components/Setup
 import { useActivityFlow } from "@/features/activity/useActivityFlow";
 import type { EndReason } from "@/features/activity/useActivitySession";
 import { bioOf, useWikiSummaries } from "@/features/activity/wiki";
-import { openings, prompts } from "@/features/activity/prompts";
+import { recipeFor } from "@/features/activity/recipe";
 import { APPS } from "@/features/activity/types";
 import { availableQuestions, isCorrectGuess, nextTeacherHint, QUESTIONS, RANDOM_CHARACTERS } from "@/features/activity/mystery";
 import { characterOrder, mysteryCharacters, mysteryRounds } from "@/features/activity/characterOrder";
@@ -48,7 +48,16 @@ const PersonaggioMisteriosoPage = () => {
   const { summaries, loading } = useWikiSummaries([character]);
   const bio = bioOf(character, summaries);
   const levelFor = (assignment: Assignment | null) => difficultyOf(assignment?.config.difficulty, chosenLevel);
-  const systemFor = (assignment: Assignment | null) => (character ? prompts.mystery(character.title, bio, assignment, levelFor(assignment)) : "");
+  // The server writes the character's instructions from this recipe.
+  const recipeOf = (assignment: Assignment | null) =>
+    character
+      ? recipeFor(app.type, {
+          character: character.title,
+          bio,
+          difficulty: levelFor(assignment),
+          questions: availableQuestions(chosenQuestions, assignment?.maxTurns),
+        })
+      : undefined;
 
   // When the server ends the questions (turn limit, or JEV judging the goal
   // reached) no more questions can be asked; the student then makes the guess.
@@ -71,7 +80,7 @@ const PersonaggioMisteriosoPage = () => {
 
   const flow = useActivityFlow(app.type, {
     live: (phase, assignment) =>
-      phase === "chat" && character && !guessing ? { systemInstruction: systemFor(assignment), characterName: character.title, characterBio: bio } : null,
+      phase === "chat" && character && !guessing ? { recipe: recipeOf(assignment), characterName: character.title, characterBio: bio } : null,
     context: (assignment) => ({ questions: availableQuestions(chosenQuestions, assignment?.maxTurns), difficulty: levelFor(assignment) }),
     onEnded,
   });
@@ -88,7 +97,7 @@ const PersonaggioMisteriosoPage = () => {
   const [round, setRound] = useState(0);
   const roundCharacter = order.length ? order[round % order.length] : null;
   const moreRounds = order.length > 1 && round + 1 < order.length;
-  const system = systemFor(session.assignment);
+  const recipe = recipeOf(session.assignment);
   // Never more questions than the assignment's turn limit, so the game ends when it says it does.
   const turnCap = session.assignment?.maxTurns ?? 0;
   const maxQuestions = availableQuestions(chosenQuestions, turnCap);
@@ -137,8 +146,7 @@ const PersonaggioMisteriosoPage = () => {
     setHintsUsed(0);
     if (!(await flow.begin(t("apps.personaggioMisterioso.title"), { character: character.title, questions: maxQuestions }, []))) return;
     await engine.open({
-      system,
-      cue: openings.mystery(maxQuestions),
+      recipe,
       name: "???",
       fallback: { role: "assistant", content: t("platform.apps.personaggioMisterioso.intro", { count: maxQuestions }) },
     });
@@ -155,7 +163,7 @@ const PersonaggioMisteriosoPage = () => {
     setHintsUsed((n) => n + 1);
     void engine.runTurn(t("platform.apps.personaggioMisterioso.hintRequest"), async () => {
       if (teacherHint) engine.addMessage({ role: "assistant", name: "???", content: t("platform.apps.personaggioMisterioso.teacherHint", { hint: teacherHint }) });
-      else await engine.respond({ system, name: "???" });
+      else await engine.respond({ recipe, name: "???" });
     });
   };
 
@@ -182,7 +190,7 @@ const PersonaggioMisteriosoPage = () => {
     if (!character) return;
     const named = isCorrectGuess(text, character.title);
     lastQuestion.current = text;
-    await engine.runTurn(text, () => engine.respond({ system, name: "???" }), undefined, undefined, named ? { judge: true } : {});
+    await engine.runTurn(text, () => engine.respond({ recipe, name: "???" }), undefined, undefined, named ? { judge: true } : {});
     if (named && !session.judgedLastTurn()) found();
   };
 
