@@ -7,7 +7,7 @@ import ActivityRunner from "@/features/activity/components/ActivityRunner";
 import { CharacterPicker } from "@/features/activity/components/SetupCard";
 import { useActivityFlow } from "@/features/activity/useActivityFlow";
 import { bioOf, useWikiSummaries } from "@/features/activity/wiki";
-import { openings, prompts } from "@/features/activity/prompts";
+import { MAX_TOPIC_CHARS, recipeFor } from "@/features/activity/recipe";
 import { APPS } from "@/features/activity/types";
 import { Difficulty, difficultyOf } from "@/features/activity/difficulty";
 import DifficultyPicker from "@/features/activity/components/DifficultyPicker";
@@ -24,15 +24,17 @@ const ConvinciTuPage = () => {
   const { summaries, loading } = useWikiSummaries([character]);
   const bio = bioOf(character, summaries);
   const levelFor = (assignment: Assignment | null) => difficultyOf(assignment?.config.difficulty, chosenLevel);
-  const systemFor = (assignment: Assignment | null) => (character ? prompts.convinciTu(character.title, bio, topic, assignment, levelFor(assignment)) : "");
+  // The server writes the character's instructions from this recipe.
+  const recipeOf = (assignment: Assignment | null) =>
+    character ? recipeFor(app.type, { character: character.title, bio, topic, difficulty: levelFor(assignment) }) : undefined;
 
   const flow = useActivityFlow(app.type, {
     live: (phase, assignment) =>
-      phase === "chat" && character ? { systemInstruction: systemFor(assignment), characterName: character.title, characterBio: bio } : null,
+      phase === "chat" && character ? { recipe: recipeOf(assignment), characterName: character.title, characterBio: bio } : null,
     context: (assignment) => ({ character: character?.title, topic, difficulty: levelFor(assignment) }),
   });
   const { preset, engine } = flow;
-  const system = systemFor(flow.session.assignment);
+  const recipe = recipeOf(flow.session.assignment);
   const level = levelFor(flow.session.assignment);
 
   useEffect(() => {
@@ -44,8 +46,7 @@ const ConvinciTuPage = () => {
     if (!character || !topic.trim()) return;
     if (!(await flow.begin(`${character.title}: ${topic}`, { character, topic, difficulty: level }, []))) return;
     await engine.open({
-      system,
-      cue: openings.convinciTu(topic),
+      recipe,
       name: character.title,
       fallback: { role: "system", content: t("platform.apps.convinciTu.intro", { name: character.title, topic }) },
     });
@@ -77,6 +78,7 @@ const ConvinciTuPage = () => {
                 id="topic"
                 value={topic}
                 onChange={(e) => setTopic(e.target.value)}
+                maxLength={MAX_TOPIC_CHARS}
                 placeholder={t("platform.apps.convinciTu.topicPlaceholder")}
                 disabled={!!preset.topic}
               />
@@ -87,7 +89,7 @@ const ConvinciTuPage = () => {
       }}
       chat={{
         ready: !!character,
-        onSend: (text) => engine.runTurn(text, () => engine.respond({ system, name: character?.title })),
+        onSend: (text) => engine.runTurn(text, () => engine.respond({ recipe, name: character?.title })),
         placeholder: t("platform.apps.convinciTu.placeholder", { name: character?.title }),
         live: engine.live,
       }}

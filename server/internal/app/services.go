@@ -82,7 +82,7 @@ func NewServices(cfg Config, db *sql.DB, opts ...Option) *Services {
 	sv.AssignmentSvc = &assignmentService{assignments: sv.Assignments, classes: sv.Classes, sessions: sv.Sessions, classSvc: sv.ClassSvc,
 		listeners: []assignmentListener{mailNotifier{classes: sv.Classes, mail: sv.Mailer, siteName: siteName}}}
 	sv.SessionSvc = &sessionService{sessions: sv.Sessions, assignments: sv.Assignments, classes: sv.Classes, classSvc: sv.ClassSvc,
-		judge: sv.Gateway, generator: sv.Gateway, jevSettings: sv.Settings.Jev,
+		judge: sv.Gateway, generator: sv.Gateway, replies: store.NewReplies(db), voice: sv.LiveGrants, jevSettings: sv.Settings.Jev,
 		listeners: []feedbackListener{feedbackMailer{users: sv.Users, mail: sv.Mailer, siteName: siteName}}}
 	sv.RoomSvc = &roomService{rooms: sv.Rooms, sessions: sv.Sessions, assignments: sv.Assignments, classSvc: sv.ClassSvc,
 		accounts: sv.Accounts, usage: sv.Usage, settings: sv.Settings.Rooms, aiReady: sv.Gateway.RoomChatReady, now: time.Now}

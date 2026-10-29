@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/Hoppitbilbo/DebateAI/server/internal/ai"
@@ -94,14 +95,15 @@ func (s *Server) handleAIStatus(w http.ResponseWriter, r *http.Request) {
 }
 
 type generateIn struct {
-	Task        string       `json:"task"`
-	System      string       `json:"system"`
-	Messages    []ai.Message `json:"messages"`
-	SessionID   int64        `json:"sessionId"`
-	Stream      bool         `json:"stream"`
-	JSON        bool         `json:"json"`
-	Temperature *float64     `json:"temperature"`
-	MaxTokens   int          `json:"maxTokens"`
+	Task        string            `json:"task"`
+	System      string            `json:"system"`
+	Recipe      *app.PromptRecipe `json:"recipe"` // chat: required, the server writes the system prompt
+	Messages    []ai.Message      `json:"messages"`
+	SessionID   int64             `json:"sessionId"`
+	Stream      bool              `json:"stream"`
+	JSON        bool              `json:"json"`
+	Temperature *float64          `json:"temperature"`
+	MaxTokens   int               `json:"maxTokens"`
 }
 
 func (s *Server) handleGenerate(w http.ResponseWriter, r *http.Request) {
@@ -123,6 +125,34 @@ func (s *Server) handleGenerate(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 400, "bad_task", "unknown task")
 		return
 	}
+	sessionID, status, err := s.sessionFor(u, in.SessionID)
+	if err != nil {
+		writeErr(w, 403, "bad_session", err.Error())
+		return
+	}
+	if sessionID != nil && in.Task == app.TaskChat && status != domain.SessionActive {
+		writeErr(w, 409, "session_ended", "this activity has ended")
+		return
+	}
+	// Before the messages check: an opening arrives without messages.
+	switch {
+	case in.Task == app.TaskChat && in.Recipe == nil:
+		// A character's instructions are written only by the server.
+		writeErr(w, 400, "recipe_required", "reload the page: the app was updated")
+		return
+	case in.Recipe != nil && in.Task != app.TaskChat:
+		writeErr(w, 400, "bad_recipe", "recipes are for chat")
+		return
+	case in.Recipe != nil:
+		system, opening, ok := s.promptFor(w, *in.Recipe, sessionID)
+		if !ok {
+			return
+		}
+		in.System = system
+		if opening != "" {
+			in.Messages = []ai.Message{{Role: "user", Content: opening}}
+		}
+	}
 	if len(in.Messages) == 0 {
 		writeErr(w, 400, "bad_request", "messages required")
 		return
@@ -136,16 +166,15 @@ func (s *Server) handleGenerate(w http.ResponseWriter, r *http.Request) {
 	if u != nil {
 		userID = &u.ID
 	}
-	sessionID, status, err := s.sessionFor(u, in.SessionID)
-	if err != nil {
-		writeErr(w, 403, "bad_session", err.Error())
-		return
-	}
-	if sessionID != nil && in.Task == app.TaskChat && status != domain.SessionActive {
-		writeErr(w, 409, "session_ended", "this activity has ended")
-		return
-	}
 	req := ai.Request{System: in.System, Messages: in.Messages, JSON: in.JSON, Temperature: in.Temperature, MaxTokens: in.MaxTokens}
+
+	// A character's lines are kept for the attempt, so that the saved
+	// conversation can be checked against them (see app/verification.go).
+	record := func(text string) {
+		if sessionID != nil && in.Task == app.TaskChat {
+			s.SessionSvc.RecordReply(*sessionID, text)
+		}
+	}
 
 	if !in.Stream {
 		res, err := s.Gateway.Generate(aiContext(r, u), in.Task, req, userID, sessionID, nil)
@@ -153,17 +182,46 @@ func (s *Server) handleGenerate(w http.ResponseWriter, r *http.Request) {
 			writeErr(w, 502, "ai_error", err.Error())
 			return
 		}
+		record(res.Text)
 		writeJSON(w, 200, generateResponse{Text: res.Text, Provider: res.Provider, Model: res.Model})
 		return
 	}
 
 	send := startEventStream(w)
-	res, err := s.Gateway.Generate(aiContext(r, u), in.Task, req, userID, sessionID, func(d string) error { return send(streamDelta{Delta: d}) })
+	var sent strings.Builder // also what the student saw of an answer they stopped
+	res, err := s.Gateway.Generate(aiContext(r, u), in.Task, req, userID, sessionID, func(d string) error {
+		sent.WriteString(d)
+		return send(streamDelta{Delta: d})
+	})
+	record(sent.String())
 	if err != nil {
 		_ = send(streamError{Error: err.Error()})
 		return
 	}
 	_ = send(streamDone{Done: true, Provider: res.Provider, Model: res.Model})
+}
+
+// promptFor builds the instructions of a recipe for an attempt (nil for
+// free practice), checked against its assignment. It answers the refusal
+// itself.
+func (s *Server) promptFor(w http.ResponseWriter, rec app.PromptRecipe, sessionID *int64) (system, opening string, ok bool) {
+	a, err := s.SessionSvc.AssignmentOf(sessionID)
+	if err != nil {
+		writeErr(w, 500, "internal", err.Error())
+		return "", "", false
+	}
+	system, opening, err = app.ComposePrompt(rec, a)
+	switch {
+	case errors.Is(err, app.ErrSettingLocked):
+		writeErr(w, 409, "setting_locked", err.Error())
+	case app.IsInvalid(err):
+		writeErr(w, 400, "bad_recipe", err.Error())
+	case err != nil:
+		writeErr(w, 500, "internal", err.Error())
+	default:
+		return system, opening, true
+	}
+	return "", "", false
 }
 
 // startEventStream answers with server-sent events; send writes one.
@@ -251,9 +309,9 @@ func (s *Server) handleLiveToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var in struct {
-		SessionID         int64  `json:"sessionId"`
-		SystemInstruction string `json:"systemInstruction"`
-		VoiceName         string `json:"voiceName"`
+		SessionID int64             `json:"sessionId"`
+		Recipe    *app.PromptRecipe `json:"recipe"`
+		VoiceName string            `json:"voiceName"`
 	}
 	if err := readJSON(r, &in); err != nil {
 		writeErr(w, 400, "bad_request", err.Error())
@@ -267,11 +325,21 @@ func (s *Server) handleLiveToken(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 409, "session_ended", "this activity has ended")
 		return
 	}
+	if in.Recipe == nil {
+		writeErr(w, 400, "recipe_required", "reload the page: the app was updated")
+		return
+	}
+	rec := *in.Recipe
+	rec.Kind = "reply" // a voice conversation is opened by the student
+	system, _, ok := s.promptFor(w, rec, sessionID)
+	if !ok {
+		return
+	}
 	var userID *int64
 	if u != nil {
 		userID = &u.ID
 	}
-	tok, err := s.Gateway.LiveToken(r.Context(), in.SystemInstruction, in.VoiceName, userID, sessionID)
+	tok, err := s.Gateway.LiveToken(r.Context(), system, in.VoiceName, userID, sessionID)
 	if err != nil {
 		writeErr(w, 502, "live_unavailable", err.Error())
 		return

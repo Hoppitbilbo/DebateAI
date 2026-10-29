@@ -83,6 +83,15 @@ describe("SessionDetailPage", () => {
     renderAt("/sessions/11");
     expect(await screen.findByText("Perché la Russia?")).toBeTruthy();
     expect(screen.getByText("Ho capito il blocco continentale")).toBeTruthy();
+    expect(screen.queryByText(/not produced by the platform/)).toBeNull();
+  });
+
+  it("warns when AI lines were not produced by the platform", async () => {
+    const saved = routes["/api/sessions/11"] as Record<string, unknown>;
+    routes["/api/sessions/11"] = { ...saved, unverifiedLines: 2 };
+    renderAt("/sessions/11");
+    expect(await screen.findByText(/2 AI lines in this conversation were not produced by the platform/)).toBeTruthy();
+    routes["/api/sessions/11"] = saved;
   });
 });
 

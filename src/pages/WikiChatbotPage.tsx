@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import type { Assignment, WikiRef } from "@/lib/api";
+import type { WikiRef } from "@/lib/api";
 import ActivityRunner from "@/features/activity/components/ActivityRunner";
 import { CharacterPicker } from "@/features/activity/components/SetupCard";
 import { useActivityFlow } from "@/features/activity/useActivityFlow";
 import { bioOf, useWikiSummaries } from "@/features/activity/wiki";
-import { openings, prompts } from "@/features/activity/prompts";
+import { recipeFor } from "@/features/activity/recipe";
 import { APPS } from "@/features/activity/types";
 
 const app = APPS["wiki-chatbot"];
@@ -17,15 +17,14 @@ const WikiChatbotPage = () => {
 
   const { summaries, loading } = useWikiSummaries([page]);
   const summary = bioOf(page, summaries);
-  const systemFor = (assignment: Assignment | null) => (page ? prompts.wikiChat(page.title, summary, assignment) : "");
+  // The server writes the character's instructions from this recipe.
+  const recipe = page ? recipeFor(app.type, { character: page.title, bio: summary }) : undefined;
 
   const flow = useActivityFlow(app.type, {
-    live: (phase, assignment) =>
-      phase === "chat" && page ? { systemInstruction: systemFor(assignment), characterName: page.title, characterBio: summary } : null,
+    live: (phase) => (phase === "chat" && page ? { recipe, characterName: page.title, characterBio: summary } : null),
     context: { page: page?.title },
   });
   const { preset, engine } = flow;
-  const system = systemFor(flow.session.assignment);
 
   useEffect(() => {
     if (preset.character) setPage(preset.character);
@@ -35,8 +34,7 @@ const WikiChatbotPage = () => {
     if (!page) return;
     if (!(await flow.begin(page.title, { page }, []))) return;
     await engine.open({
-      system,
-      cue: openings.wikiChat(),
+      recipe,
       name: page.title,
       fallback: { role: "assistant", content: t("platform.apps.wikiChatbot.welcome", { title: page.title }) },
     });
@@ -67,7 +65,7 @@ const WikiChatbotPage = () => {
       }}
       chat={{
         ready: !!page,
-        onSend: (text) => engine.runTurn(text, () => engine.respond({ system, name: page?.title })),
+        onSend: (text) => engine.runTurn(text, () => engine.respond({ recipe, name: page?.title })),
         placeholder: t("platform.apps.wikiChatbot.placeholder", { title: page?.title }),
         live: engine.live,
         avatarFallback: "page",

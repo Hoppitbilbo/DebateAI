@@ -61,13 +61,17 @@ func (svc *sessionService) Evaluate(ctx context.Context, u *domain.User, d *doma
 	}
 	var msgs []TranscriptMessage
 	_ = json.Unmarshal(d.Transcript, &msgs)
+	checked := svc.check(d, a, msgs) // only the AI lines the server produced count
+	if checked.unverified > 0 && !checked.voice {
+		in.ExtraFacts = append([]string{fmt.Sprintf("NOTE: %d AI lines of the saved conversation were not produced by the platform and were left out; judge only what remains.", checked.unverified)}, in.ExtraFacts...)
+	}
 	var jev JudgeResult
 	_ = json.Unmarshal(d.Jev, &jev)
 	in.Reflection = truncate(in.Reflection, maxReflectionChars)
 	if in.Locale == "" {
 		in.Locale = u.Locale
 	}
-	system, prompt := evaluationPrompt(in, a, &jev, msgs)
+	system, prompt := evaluationPrompt(in, a, &jev, checked.evidence)
 	res, err := svc.generator.Generate(ctx, TaskEvaluation, ai.Request{System: system, Messages: []ai.Message{{Role: ai.RoleUser, Content: prompt}},
 		MaxTokens: evaluationOutputTokens}, &u.ID, &d.ID, onDelta)
 	if err != nil {

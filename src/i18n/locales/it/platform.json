@@ -78,7 +78,9 @@
     "ai_error": "Il personaggio non riesce a rispondere in questo momento. Riprova tra poco: se il problema continua, avvisa il docente.",
     "busy": "Stai già aspettando delle risposte: attendi che finiscano e riprova.",
     "too_large": "La conversazione è troppo lunga per essere inviata all'IA. Inizia un nuovo tentativo.",
-    "usage_unavailable": "Non è possibile verificare i limiti di uso dell'IA in questo momento. Riprova tra poco."
+    "usage_unavailable": "Non è possibile verificare i limiti di uso dell'IA in questo momento. Riprova tra poco.",
+    "recipe_required": "Ricarica la pagina: l'app è stata aggiornata.",
+    "setting_locked": "Questa impostazione è fissata dal compito: ricarica la pagina e riprova."
   },
   "auth": {
     "login": "Accedi",
@@ -315,8 +317,6 @@
       "addressTo": "Rivolgiti a:",
       "nextSpeaker": "Prossimo ({{name}})",
       "continue": "Lasciali continuare",
-      "styleA": "erudito e assertivo",
-      "styleB": "riflessivo e interrogativo",
       "reflectionPrompt": "Come hai moderato il dibattito tra {{a}} e {{b}}? Quali domande lo hanno reso più interessante?",
       "evalActivity": "dibattito moderato tra {{a}} e {{b}}"
     }
@@ -355,7 +355,10 @@
     "saveFeedback": "Invia feedback",
     "feedbackSaved": "Feedback inviato allo studente",
     "feedbackHint": "Lo studente lo vedrà in questa pagina e riceverà un'email.",
-    "givenOn": "Scritto il {{date}}"
+    "givenOn": "Scritto il {{date}}",
+    "unverifiedLines_one": "{{count}} risposta dell'IA in questa conversazione non risulta prodotta dalla piattaforma (modificata o inventata): non è stata usata dal giudizio automatico né dalla valutazione.",
+    "unverifiedLines_other": "{{count}} risposte dell'IA in questa conversazione non risultano prodotte dalla piattaforma (modificate o inventate): non sono state usate dal giudizio automatico né dalla valutazione.",
+    "voiceUnchecked": "La conversazione comprende parti a voce: quello che il personaggio ha detto a voce non può essere verificato dalla piattaforma."
   },
   "teacher": {
     "title": "Le mie classi",

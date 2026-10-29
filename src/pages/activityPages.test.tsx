@@ -95,6 +95,9 @@ describe("ConvinciTuPage", () => {
     expect(startButton().disabled).toBe(false);
     await start();
     expect(mocks.begin).toHaveBeenCalledWith("Person Character: la guerra", { character: { title: "Person Character" }, topic: "la guerra", difficulty: "medium" });
+    const [opening] = mocks.generateStream.mock.calls[0];
+    expect(opening.system).toBeUndefined();
+    expect(opening.recipe).toMatchObject({ app: "convinci-tu", kind: "opening", character: "Person Character", topic: "la guerra", difficulty: "medium" });
     expect(screen.getByText(/Person Character/)).toBeTruthy(); // the intro names the character
     expect(screen.getByRole("textbox")).toBeTruthy(); // the chat input
   });
@@ -113,6 +116,15 @@ describe("ImpersonaTuPage", () => {
       topic: "la pace",
       difficulty: "medium",
     });
+    const [opening] = mocks.generateStream.mock.calls[0];
+    expect(opening.system).toBeUndefined();
+    expect(opening.recipe).toMatchObject({
+      app: "impersona-tu",
+      kind: "opening",
+      character: "Person AI character",
+      userCharacter: "Person Your character (you play them)",
+      topic: "la pace",
+    });
     expect(screen.getAllByText(/Person AI character/).length).toBeGreaterThan(0);
   });
 });
@@ -123,6 +135,10 @@ describe("WikiChatbotPage", () => {
     pickAll();
     await start();
     expect(mocks.begin).toHaveBeenCalledWith(expect.stringMatching(/^Person /), expect.objectContaining({ page: expect.anything() }));
+    // the server writes the prompt and the opening cue from the recipe
+    const [opening] = mocks.generateStream.mock.calls[0];
+    expect(opening.system).toBeUndefined();
+    expect(opening.recipe).toMatchObject({ app: "wiki-chatbot", kind: "opening", character: expect.stringMatching(/^Person /), uiLang: "en" });
   });
 });
 
@@ -134,6 +150,12 @@ describe("DoppiaIntervistaPage", () => {
     expect(mocks.begin).toHaveBeenCalledWith("Person Character 1 & Person Character 2", {
       characters: [{ title: "Person Character 1" }, { title: "Person Character 2" }],
     });
+    // each character opens with its own recipe, the other one swapped in
+    const recipes = mocks.generateStream.mock.calls.map(([o]) => o.recipe);
+    expect(recipes).toMatchObject([
+      { app: "doppia-intervista", kind: "opening", character: "Person Character 1", other: "Person Character 2" },
+      { app: "doppia-intervista", kind: "opening", character: "Person Character 2", other: "Person Character 1" },
+    ]);
     expect(screen.getAllByText(/Person Character 2/).length).toBeGreaterThan(0);
   });
 });
@@ -146,6 +168,14 @@ describe("YouModeratePage", () => {
     await start();
     expect(mocks.begin).toHaveBeenCalledWith("Person Character 1 vs Person Character 2: il potere", expect.anything());
     expect(mocks.generateStream).toHaveBeenCalledTimes(1); // the opening statement
+    expect(mocks.generateStream.mock.calls[0][0].recipe).toMatchObject({
+      app: "you-moderate",
+      kind: "opening",
+      character: "Person Character 1",
+      other: "Person Character 2",
+      topic: "il potere",
+      style: "a",
+    });
     expect(screen.getByText("risposta")).toBeTruthy();
   });
 });
@@ -157,8 +187,10 @@ describe("PersonaggioMisteriosoPage", () => {
     await start();
     expect(mocks.begin).toHaveBeenCalledWith(expect.any(String), { character: expect.stringMatching(/^Person /), questions: 7 });
     // the hidden character opens the game in its own voice, prompted by a stage direction
+    // the server writes the stage direction, announcing the questions of the recipe
     const [opening] = mocks.generateStream.mock.calls[0];
-    expect(opening.messages[0].content).toMatch(/7 questions/);
+    expect(opening.system).toBeUndefined();
+    expect(opening.recipe).toMatchObject({ app: "personaggio-misterioso", kind: "opening", questions: 7, character: expect.stringMatching(/^Person /) });
     expect(screen.getByText("risposta")).toBeTruthy();
     expect(screen.getByText("???")).toBeTruthy();
   });

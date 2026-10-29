@@ -78,7 +78,9 @@
     "ai_error": "The character can't answer right now. Try again in a moment; if it keeps happening, tell your teacher.",
     "busy": "You are already waiting for answers: wait for them to finish and try again.",
     "too_large": "The conversation is too long to send to the AI. Start a new attempt.",
-    "usage_unavailable": "AI usage limits cannot be checked right now. Try again shortly."
+    "usage_unavailable": "AI usage limits cannot be checked right now. Try again shortly.",
+    "recipe_required": "Reload the page: the app was updated.",
+    "setting_locked": "This setting is fixed by the assignment: reload the page and try again."
   },
   "auth": {
     "login": "Log in",
@@ -315,8 +317,6 @@
       "addressTo": "Address to:",
       "nextSpeaker": "Next ({{name}})",
       "continue": "Let them continue",
-      "styleA": "erudite and assertive",
-      "styleB": "reflective and questioning",
       "reflectionPrompt": "How did you moderate the debate between {{a}} and {{b}}? Which questions made it more interesting?",
       "evalActivity": "moderated debate between {{a}} and {{b}}"
     }
@@ -355,7 +355,10 @@
     "saveFeedback": "Send feedback",
     "feedbackSaved": "Feedback sent to the student",
     "feedbackHint": "The student will see it on this page and get an e-mail.",
-    "givenOn": "Written on {{date}}"
+    "givenOn": "Written on {{date}}",
+    "unverifiedLines_one": "{{count}} AI line in this conversation was not produced by the platform (edited or invented): it was left out of the automatic judgement and of the evaluation.",
+    "unverifiedLines_other": "{{count}} AI lines in this conversation were not produced by the platform (edited or invented): they were left out of the automatic judgement and of the evaluation.",
+    "voiceUnchecked": "This conversation includes voice parts: what the character said by voice cannot be checked by the platform."
   },
   "teacher": {
     "title": "My classes",

@@ -81,3 +81,6 @@ func (d *fakeDecider) Decide(ctx context.Context, model string, state any, qs ma
 }
 
 func (d *fakeDecider) ListModels(ctx context.Context) ([]ai.ModelInfo, error) { return nil, nil }
+
+// wikiRecipe is the recipe of a WikiChat reply, required by chat requests.
+var wikiRecipe = map[string]any{"app": "wiki-chatbot", "character": "Napoleone Bonaparte"}

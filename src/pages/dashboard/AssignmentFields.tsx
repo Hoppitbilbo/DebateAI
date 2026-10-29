@@ -10,7 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { AppType } from "@/lib/api";
 import { useAiClient } from "@/services/aiClient";
-import { uiLanguage } from "@/features/activity/prompts";
+import { uiLanguage } from "@/features/activity/language";
 import { APP_TYPES } from "@/features/activity/appCatalog";
 import LanguagePicker from "@/features/activity/components/LanguagePicker";
 import { TURN_BOUNDS } from "@/features/teacher/assignmentLimits";

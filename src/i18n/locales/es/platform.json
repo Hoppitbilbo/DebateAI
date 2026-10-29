@@ -78,7 +78,9 @@
     "ai_error": "El personaje no puede responder en este momento. Vuelve a intentarlo en un momento; si sigue pasando, avisa a tu docente.",
     "busy": "Ya estás esperando respuestas: espera a que terminen y vuelve a intentarlo.",
     "too_large": "La conversación es demasiado larga para enviarla a la IA. Empieza un nuevo intento.",
-    "usage_unavailable": "Ahora no se pueden comprobar los límites de uso de la IA. Inténtalo de nuevo en breve."
+    "usage_unavailable": "Ahora no se pueden comprobar los límites de uso de la IA. Inténtalo de nuevo en breve.",
+    "recipe_required": "Recarga la página: la aplicación se ha actualizado.",
+    "setting_locked": "Este ajuste lo fija la tarea: recarga la página e inténtalo de nuevo."
   },
   "auth": {
     "login": "Iniciar sesión",
@@ -315,8 +317,6 @@
       "addressTo": "Dirigirse a:",
       "nextSpeaker": "Siguiente ({{name}})",
       "continue": "Dejar que continúen",
-      "styleA": "erudito y firme",
-      "styleB": "reflexivo e inquisitivo",
       "reflectionPrompt": "¿Cómo moderaste el debate entre {{a}} y {{b}}? ¿Qué preguntas lo hicieron más interesante?",
       "evalActivity": "debate moderado entre {{a}} y {{b}}"
     }
@@ -355,7 +355,10 @@
     "saveFeedback": "Enviar comentario",
     "feedbackSaved": "Comentario enviado al estudiante",
     "feedbackHint": "El estudiante lo verá en esta página y recibirá un correo.",
-    "givenOn": "Escrito el {{date}}"
+    "givenOn": "Escrito el {{date}}",
+    "unverifiedLines_one": "{{count}} respuesta de la IA en esta conversación no fue producida por la plataforma (modificada o inventada): no se usó en el juicio automático ni en la evaluación.",
+    "unverifiedLines_other": "{{count}} respuestas de la IA en esta conversación no fueron producidas por la plataforma (modificadas o inventadas): no se usaron en el juicio automático ni en la evaluación.",
+    "voiceUnchecked": "La conversación incluye partes por voz: lo que el personaje dijo por voz no puede ser verificado por la plataforma."
   },
   "teacher": {
     "title": "Mis clases",

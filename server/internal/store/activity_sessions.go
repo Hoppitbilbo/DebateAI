@@ -14,7 +14,7 @@ type ActivitySessions struct{ db *sql.DB }
 func NewActivitySessions(db *sql.DB) *ActivitySessions { return &ActivitySessions{db: db} }
 
 const sessionSummaryCols = `s.id, s.user_id, COALESCE(u.name,''), s.assignment_id, COALESCE(a.title,''), s.app_type, s.title, s.status, s.turns, s.progress,
-	s.score_conversation, s.score_reflection, s.teacher_score, s.cost_usd, s.started_at, s.updated_at, s.completed_at`
+	s.score_conversation, s.score_reflection, s.teacher_score, s.cost_usd, s.started_at, s.updated_at, s.completed_at, s.unverified_lines`
 const sessionJoins = ` LEFT JOIN users u ON u.id = s.user_id LEFT JOIN assignments a ON a.id = s.assignment_id`
 const sessionFrom = ` FROM activity_sessions s` + sessionJoins
 
@@ -29,7 +29,7 @@ func scanSummary(row interface{ Scan(...any) error }, extra ...any) (*domain.Ses
 	var ss domain.SessionSummary
 	var uid, aid, sc, sr, ts sql.NullInt64
 	var comp sql.NullString
-	dest := []any{&ss.ID, &uid, &ss.UserName, &aid, &ss.AssignmentTitle, &ss.AppType, &ss.Title, &ss.Status, &ss.Turns, &ss.Progress, &sc, &sr, &ts, &ss.CostUSD, &ss.StartedAt, &ss.UpdatedAt, &comp}
+	dest := []any{&ss.ID, &uid, &ss.UserName, &aid, &ss.AssignmentTitle, &ss.AppType, &ss.Title, &ss.Status, &ss.Turns, &ss.Progress, &sc, &sr, &ts, &ss.CostUSD, &ss.StartedAt, &ss.UpdatedAt, &comp, &ss.UnverifiedLines}
 	if err := row.Scan(append(dest, extra...)...); err != nil {
 		return nil, err
 	}
@@ -255,8 +255,8 @@ func (r *ActivitySessions) SaveTranscript(id int64, s domain.TranscriptSave) (in
 	}
 	// The revision in WHERE keeps the write conditional on remote databases,
 	// where the read above does not lock the row.
-	res, err := tx.Exec(`UPDATE activity_sessions SET transcript_json = ?, turns = ?, updated_at = ?, revision = revision + 1, context_json = COALESCE(?, context_json)
-		WHERE id = ? AND revision = ? AND status != ?`, s.JSON, s.Turns, domain.Now(), s.Context, id, revision, domain.SessionCompleted)
+	res, err := tx.Exec(`UPDATE activity_sessions SET transcript_json = ?, turns = ?, unverified_lines = ?, updated_at = ?, revision = revision + 1, context_json = COALESCE(?, context_json)
+		WHERE id = ? AND revision = ? AND status != ?`, s.JSON, s.Turns, s.Unverified, domain.Now(), s.Context, id, revision, domain.SessionCompleted)
 	if err != nil {
 		return 0, err
 	}

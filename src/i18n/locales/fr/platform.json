@@ -78,7 +78,9 @@
     "ai_error": "Le personnage ne peut pas répondre pour le moment. Réessaie dans un instant ; si le problème continue, préviens ton enseignant.",
     "busy": "Vous attendez déjà des réponses : patientez jusqu'à la fin puis réessayez.",
     "too_large": "La conversation est trop longue pour être envoyée à l'IA. Commencez une nouvelle tentative.",
-    "usage_unavailable": "Impossible de vérifier les limites d'utilisation de l'IA pour le moment. Réessayez bientôt."
+    "usage_unavailable": "Impossible de vérifier les limites d'utilisation de l'IA pour le moment. Réessayez bientôt.",
+    "recipe_required": "Rechargez la page : l'application a été mise à jour.",
+    "setting_locked": "Ce réglage est fixé par le devoir : rechargez la page et réessayez."
   },
   "auth": {
     "login": "Se connecter",
@@ -315,8 +317,6 @@
       "addressTo": "S'adresser à :",
       "nextSpeaker": "Suivant ({{name}})",
       "continue": "Les laisser continuer",
-      "styleA": "érudit et affirmé",
-      "styleB": "réfléchi et interrogatif",
       "reflectionPrompt": "Comment avez-vous modéré le débat entre {{a}} et {{b}} ? Quelles questions l'ont rendu plus intéressant ?",
       "evalActivity": "débat modéré entre {{a}} et {{b}}"
     }
@@ -355,7 +355,10 @@
     "saveFeedback": "Envoyer le retour",
     "feedbackSaved": "Retour envoyé à l'élève",
     "feedbackHint": "L'élève le verra sur cette page et recevra un e-mail.",
-    "givenOn": "Écrit le {{date}}"
+    "givenOn": "Écrit le {{date}}",
+    "unverifiedLines_one": "{{count}} réponse de l'IA dans cette conversation n'a pas été produite par la plateforme (modifiée ou inventée) : elle a été écartée du jugement automatique et de l'évaluation.",
+    "unverifiedLines_other": "{{count}} réponses de l'IA dans cette conversation n'ont pas été produites par la plateforme (modifiées ou inventées) : elles ont été écartées du jugement automatique et de l'évaluation.",
+    "voiceUnchecked": "La conversation comprend des parties vocales : ce que le personnage a dit à voix haute ne peut pas être vérifié par la plateforme."
   },
   "teacher": {
     "title": "Mes classes",

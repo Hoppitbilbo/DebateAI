@@ -7,7 +7,7 @@ import ActivityRunner from "@/features/activity/components/ActivityRunner";
 import { CharacterPicker } from "@/features/activity/components/SetupCard";
 import { useActivityFlow } from "@/features/activity/useActivityFlow";
 import { bioOf, useWikiSummaries } from "@/features/activity/wiki";
-import { openings, prompts } from "@/features/activity/prompts";
+import { MAX_TOPIC_CHARS, recipeFor } from "@/features/activity/recipe";
 import { APPS } from "@/features/activity/types";
 import { Difficulty, difficultyOf } from "@/features/activity/difficulty";
 import DifficultyPicker from "@/features/activity/components/DifficultyPicker";
@@ -25,16 +25,26 @@ const ImpersonaTuPage = () => {
   const { summaries, loading } = useWikiSummaries([aiChar, userChar]);
   const aiBio = bioOf(aiChar, summaries);
   const levelFor = (assignment: Assignment | null) => difficultyOf(assignment?.config.difficulty, chosenLevel);
-  const systemFor = (assignment: Assignment | null) =>
-    aiChar && userChar ? prompts.impersona(aiChar.title, aiBio, userChar.title, bioOf(userChar, summaries), topic, assignment, levelFor(assignment)) : "";
+  // The server writes the character's instructions from this recipe.
+  const recipeOf = (assignment: Assignment | null) =>
+    aiChar && userChar
+      ? recipeFor(app.type, {
+          character: aiChar.title,
+          bio: aiBio,
+          userCharacter: userChar.title,
+          userBio: bioOf(userChar, summaries),
+          topic,
+          difficulty: levelFor(assignment),
+        })
+      : undefined;
 
   const flow = useActivityFlow(app.type, {
     live: (phase, assignment) =>
-      phase === "chat" && aiChar ? { systemInstruction: systemFor(assignment), characterName: aiChar.title, characterBio: aiBio } : null,
+      phase === "chat" && aiChar ? { recipe: recipeOf(assignment), characterName: aiChar.title, characterBio: aiBio } : null,
     context: (assignment) => ({ aiCharacter: aiChar?.title, userCharacter: userChar?.title, topic, difficulty: levelFor(assignment) }),
   });
   const { preset, engine } = flow;
-  const system = systemFor(flow.session.assignment);
+  const recipe = recipeOf(flow.session.assignment);
   const level = levelFor(flow.session.assignment);
 
   useEffect(() => {
@@ -49,8 +59,7 @@ const ImpersonaTuPage = () => {
     if (!aiChar || !userChar) return;
     if (!(await flow.begin(`${userChar.title} ↔ ${aiChar.title}`, { aiCharacter: aiChar, userCharacter: userChar, topic, difficulty: level }, []))) return;
     await engine.open({
-      system,
-      cue: openings.impersona(userChar.title, topic),
+      recipe,
       name: aiChar.title,
       fallback: { role: "assistant", content: t("platform.apps.impersonaTu.greeting", { ai: aiChar.title, user: userChar.title, topic }) },
     });
@@ -83,7 +92,7 @@ const ImpersonaTuPage = () => {
             {sameCharacter && <p className="text-sm text-destructive">{t("platform.apps.common.differentCharacters")}</p>}
             <div className="space-y-2">
               <Label htmlFor="topic">{t("platform.apps.impersonaTu.topicLabel")}</Label>
-              <Input id="topic" value={topic} onChange={(e) => setTopic(e.target.value)} placeholder={t("platform.apps.impersonaTu.topicPlaceholder")} disabled={!!preset.topic} />
+              <Input id="topic" value={topic} onChange={(e) => setTopic(e.target.value)} maxLength={MAX_TOPIC_CHARS} placeholder={t("platform.apps.impersonaTu.topicPlaceholder")} disabled={!!preset.topic} />
             </div>
             <DifficultyPicker app="impersonaTu" value={level} onChange={(v) => setChosenLevel(v)} locked={!!preset.difficulty} />
           </>
@@ -91,7 +100,7 @@ const ImpersonaTuPage = () => {
       }}
       chat={{
         ready: !!aiChar && !!userChar,
-        onSend: (text) => engine.runTurn(text, () => engine.respond({ system, name: aiChar?.title }), userChar?.title),
+        onSend: (text) => engine.runTurn(text, () => engine.respond({ recipe, name: aiChar?.title }), userChar?.title),
         placeholder: t("platform.apps.impersonaTu.placeholder", { name: userChar?.title }),
         userLabel: userChar?.title,
         live: engine.live,

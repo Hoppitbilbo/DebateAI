@@ -2,7 +2,7 @@
 // keys: every request goes through /api/ai/*, where the JEV router picks the
 // provider/model configured by the administrator (Gemini, OpenCode, OpenRouter,
 // Groq, Ollama, ...), applies budgets and records costs.
-import { api, ApiError } from "@/lib/api";
+import { api, ApiError, type AppType } from "@/lib/api";
 import i18n from "@/i18n";
 
 export type AiTask = "chat" | "evaluation" | "utility";
@@ -12,9 +12,38 @@ export interface ChatMessage {
   content: string;
 }
 
+/**
+ * What a character's reply needs, sent instead of a system prompt: the
+ * server writes the instructions from it (server/internal/app/prompts.go)
+ * and checks it against the assignment. Built with recipeFor().
+ */
+export interface PromptRecipe {
+  app: AppType;
+  kind: "reply" | "opening";
+  /** The AI character (title of its Wikipedia page). */
+  character: string;
+  bio?: string;
+  /** The second character: doppia-intervista, you-moderate. */
+  other?: string;
+  /** impersona-tu: who the student plays. */
+  userCharacter?: string;
+  userBio?: string;
+  /** convinci-tu, impersona-tu, you-moderate (the theme). */
+  topic?: string;
+  difficulty: "easy" | "medium" | "hard";
+  /** you-moderate: the debater's speaking style. */
+  style?: "a" | "b";
+  /** personaggio-misterioso: questions announced in the opening. */
+  questions?: number;
+  /** The student's interface language (2 letters). */
+  uiLang: string;
+}
+
 export interface GenerateOptions {
   task?: AiTask;
   system?: string;
+  /** Chat: the server writes the system prompt from it. */
+  recipe?: PromptRecipe;
   messages: ChatMessage[];
   sessionId?: number | null;
   json?: boolean;
@@ -62,6 +91,7 @@ export const formatAiError = (error: unknown): string => {
 const body = (o: GenerateOptions, stream: boolean) => ({
   task: o.task ?? "chat",
   system: o.system ?? "",
+  ...(o.recipe ? { recipe: o.recipe } : {}),
   messages: mergeConsecutive(o.messages.filter((m) => m.content.trim() !== "")),
   sessionId: o.sessionId ?? 0,
   json: o.json ?? false,
