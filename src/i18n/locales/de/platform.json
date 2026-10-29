@@ -427,7 +427,8 @@
       },
       "hints": "Hinweise (optional)",
       "hintsHint": "Vom vagsten zum deutlichsten. Die Schüler/innen erhalten sie der Reihe nach mit «Um einen Hinweis bitten»; danach denkt sich die Figur einen aus. Jeder Hinweis kostet eine Frage.",
-      "hintN": "Hinweis {{n}}"
+      "hintN": "Hinweis {{n}}",
+      "hintsNeedCharacter": "Hinweise beschreiben die Figur, die du wählst: Wähle sie zuerst, dann schreibe die Hinweise. Ohne festgelegte Figur gibt die Figur die Hinweise selbst."
     },
     "exportExcel": "Noten exportieren (Excel)",
     "teacherScore": "Note Lehrkraft"

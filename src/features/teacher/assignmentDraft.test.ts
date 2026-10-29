@@ -23,9 +23,12 @@ describe("assignment drafts", () => {
   });
 
   it("keeps the mystery game's hints without the empty ones, and none for other apps", () => {
-    const mystery = { ...draftOf(), appType: "personaggio-misterioso" as const, config: { hints: [" Visse in Europa ", "", "Fu imperatore"] } };
+    const napoleon = ref("Napoleone Bonaparte");
+    const mystery = { ...draftOf(), appType: "personaggio-misterioso" as const, config: { character: napoleon, hints: [" Visse in Europa ", "", "Fu imperatore"] } };
     expect(draftBody(mystery).config.hints).toEqual(["Visse in Europa", "Fu imperatore"]);
-    expect(draftBody({ ...mystery, config: { hints: ["", " "] } }).config.hints).toBeUndefined();
+    expect(draftBody({ ...mystery, config: { character: napoleon, hints: ["", " "] } }).config.hints).toBeUndefined();
+    // the hints describe the teacher's character: without one they would mislead
+    expect(draftBody({ ...mystery, config: { hints: ["Fu imperatore"] } }).config.hints).toBeUndefined();
     expect(draftBody({ ...mystery, appType: "convinci-tu" }).config.hints).toBeUndefined();
   });
 });
