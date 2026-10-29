@@ -87,7 +87,7 @@ describe("ConvinciTuPage", () => {
     typeTopic("la guerra");
     expect(startButton().disabled).toBe(false);
     await start();
-    expect(mocks.begin).toHaveBeenCalledWith("Person Character: la guerra", { character: { title: "Person Character" }, topic: "la guerra" });
+    expect(mocks.begin).toHaveBeenCalledWith("Person Character: la guerra", { character: { title: "Person Character" }, topic: "la guerra", difficulty: "medium" });
     expect(screen.getByText(/Person Character/)).toBeTruthy(); // the intro names the character
     expect(screen.getByRole("textbox")).toBeTruthy(); // the chat input
   });
@@ -104,6 +104,7 @@ describe("ImpersonaTuPage", () => {
       aiCharacter: { title: "Person AI character" },
       userCharacter: { title: "Person Your character (you play them)" },
       topic: "la pace",
+      difficulty: "medium",
     });
     expect(screen.getAllByText(/Person AI character/).length).toBeGreaterThan(0);
   });

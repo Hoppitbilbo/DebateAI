@@ -47,7 +47,17 @@
     "closedTitle": "Der Raum ist geschlossen",
     "closedText": "Die Zeit ist um oder die Lehrkraft hat den Raum geschlossen. Deine Daten wurden gelöscht.",
     "joinAnother": "Einen anderen Raum betreten",
-    "aiMissing": "Die KI dieses Raums ist noch nicht bereit: Sag deiner Lehrkraft Bescheid."
+    "aiMissing": "Die KI dieses Raums ist noch nicht bereit: Sag deiner Lehrkraft Bescheid.",
+    "backToPath": "Zurück zum Parcours",
+    "pathTitle": "Dein Parcours",
+    "pathDone": "{{done}} von {{total}} erledigt",
+    "stepDone": "Erledigt",
+    "stepActive": "Läuft",
+    "stepTodo": "Offen",
+    "again": "Nochmal",
+    "go": "Los!",
+    "open": "Öffnen",
+    "allDone": "Parcours geschafft! Du kannst eine Station wiederholen oder auf die Lehrkraft warten."
   },
   "open": {
     "title": "Blitzraum",
@@ -114,7 +124,9 @@
     "openAnother": "Neuen Raum öffnen",
     "aiMissing": "Der Chat wird nicht funktionieren: Für Blitzräume ist kein KI-Modell verfügbar. Sag der Administration Bescheid (Admin → KI → Blitzraum).",
     "copyInvite": "Einladungslink kopieren",
-    "inviteCopied": "Einladungslink kopiert: Wer ihn öffnet, tritt ohne Code bei."
+    "inviteCopied": "Einladungslink kopiert: Wer ihn öffnet, tritt ohne Code bei.",
+    "pathTitle_one": "Parcours: {{count}} Aktivität",
+    "pathTitle_other": "Parcours: {{count}} Aktivitäten"
   },
   "import": {
     "title": "Arbeit in eine Klasse importieren",
@@ -183,5 +195,60 @@
     "squirrel": "Eichhörnchen",
     "flamingo": "Flamingo",
     "frog": "Frosch"
+  },
+  "wizard": {
+    "progress": "Schritte zum Öffnen des Raums",
+    "steps": {
+      "theme": "Thema",
+      "path": "Parcours",
+      "launch": "Los!"
+    },
+    "titles": {
+      "theme": "Womit fangen wir an?",
+      "path": "Baue den Parcours",
+      "launch": "Alles bereit?"
+    },
+    "subtitles": {
+      "theme": "Wähle die erste Aktivität und ihre Figuren: Sie wird das Thema der Stunde.",
+      "path": "Füge weitere Stationen hinzu oder nimm eine Idee zum Thema. Die Schüler machen sie der Reihe nach.",
+      "launch": "Wähle die Sprache der Figuren und die Dauer. Nach höchstens {{hours}} Stunden wird alles gelöscht."
+    },
+    "apps": {
+      "convinci-tu": "Überzeuge eine historische Figur von einer Idee.",
+      "doppia-intervista": "Interviewe zwei Figuren gleichzeitig und vergleiche ihre Antworten.",
+      "wiki-chatbot": "Unterhalte dich mit einer Wikipedia-Seite.",
+      "personaggio-misterioso": "Rate, wer sich hinter den Antworten versteckt.",
+      "impersona-tu": "Spiele eine Figur und verteidige ihre Ideen.",
+      "you-moderate": "Moderiere eine Debatte zwischen zwei Figuren."
+    },
+    "mysterySummary_one": "{{count}} versteckte Figur",
+    "mysterySummary_other": "{{count}} versteckte Figuren",
+    "studentsChoose": "Figuren nach Wahl der Schüler",
+    "removeStep": "Station entfernen",
+    "closeStep": "Schließen",
+    "editStep": "Bearbeiten",
+    "moreOptions": "Weitere Optionen: Titel, Aufgabe, Ziele, Runden",
+    "suggestionsNeedTheme": "Wähle in der ersten Station eine Figur, dann schlagen wir passende Aktivitäten vor.",
+    "suggestionsTitle": "Ideen zu {{theme}}",
+    "suggestionsMore": "Weitere Ideen",
+    "suggestionsLoading": "Suche passende Ideen…",
+    "suggestionsEmpty": "Keine neuen Ideen: Versuche «Weitere Ideen».",
+    "suggestionsError": "Ich kann gerade keine Ideen vorschlagen.",
+    "addSuggestion": "Hinzufügen",
+    "added": "«{{title}}» zum Parcours hinzugefügt",
+    "languageLabel": "In welcher Sprache die Figuren sprechen",
+    "languageHint": "Gilt für alle Stationen und ist für die Schüler gesperrt: Wähle eine Fremdsprache zum Üben. Die Seite bleibt in ihrer Sprache.",
+    "pathSummary_one": "Der Parcours hat {{count}} Aktivität",
+    "pathSummary_other": "Der Parcours hat {{count}} Aktivitäten",
+    "mysteryTitle": "Wer versteckt sich?",
+    "pickTheme": "Wähle mindestens eine Aktivität.",
+    "useExisting": "Oder öffne den Raum mit einer Aufgabe aus deinen Klassen",
+    "backToNew": "Lieber einen neuen Parcours vorbereiten",
+    "addWhich": "Welche Aktivität fügst du hinzu?",
+    "addStep_one": "Aktivität hinzufügen (noch {{count}})",
+    "addStep_other": "Aktivität hinzufügen (noch {{count}})",
+    "back": "Zurück",
+    "next": "Weiter",
+    "suggestionsTitleMystery": "Ideen zu deiner geheimnisvollen Figur"
   }
 }

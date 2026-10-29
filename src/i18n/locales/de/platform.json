@@ -273,7 +273,9 @@
       "hintCost": "Ein Hinweis kostet eine Frage.",
       "hintRequest": "Kannst du mir einen Hinweis geben?",
       "teacherHint": "Hinweis: {{hint}}",
-      "hintsUsed": "Benutzte Hinweise"
+      "hintsUsed": "Benutzte Hinweise",
+      "roundOf": "Figur {{n}} von {{total}}",
+      "nextCharacter": "Nächste Figur ({{n}} von {{total}})"
     },
     "impersonaTu": {
       "setupTitle": "Rollen wählen",
@@ -428,7 +430,11 @@
       "hints": "Hinweise (optional)",
       "hintsHint": "Vom vagsten zum deutlichsten. Die Schüler/innen erhalten sie der Reihe nach mit «Um einen Hinweis bitten»; danach denkt sich die Figur einen aus. Jeder Hinweis kostet eine Frage.",
       "hintN": "Hinweis {{n}}",
-      "hintsNeedCharacter": "Hinweise beschreiben die Figur, die du wählst: Wähle sie zuerst, dann schreibe die Hinweise. Ohne festgelegte Figur gibt die Figur die Hinweise selbst."
+      "hintsNeedCharacter": "Hinweise gelten, wenn du genau eine Figur festlegst. Bei mehreren oder keiner gibt die Figur die Hinweise selbst.",
+      "mysteryCharacters": "Geheimnisvolle Figuren",
+      "mysteryCharactersHint": "Füge eine oder mehrere hinzu: Alle raten sie nacheinander. Wählst du keine, wählen die Schüler selbst.",
+      "shuffle": "Reihenfolge mischen",
+      "shuffleHint": "Alle treffen sie in einer anderen Reihenfolge: Im Computerraum haben Sitznachbarn nicht dieselbe Figur."
     },
     "exportExcel": "Noten exportieren (Excel)",
     "teacherScore": "Note Lehrkraft"
@@ -791,5 +797,42 @@
         "body": "Das Tutorial erklärt die Aktivität Schritt für Schritt."
       }
     }
+  },
+  "difficulty": {
+    "label": "Schwierigkeit",
+    "locked": "Von der Lehrkraft festgelegt",
+    "levels": {
+      "easy": "Leicht",
+      "medium": "Mittel",
+      "hard": "Schwer",
+      "free": "Schüler wählen"
+    },
+    "notes": {
+      "personaggioMisterioso": {
+        "easy": "Großzügige Hinweise: Epoche, Land und Fachgebiet sind schnell klar.",
+        "medium": "Faire Hinweise: Du musst ein wenig nachdenken.",
+        "hard": "Die Figur antwortet nur mit „Ja“ oder „Nein“: keine Hinweise, du brauchst kluge Fragen.",
+        "free": "Jede Schülerin und jeder Schüler wählt vor dem Start."
+      },
+      "convinciTu": {
+        "easy": "Die Figur ist offen: Ein paar gute Argumente reichen.",
+        "medium": "Ändert die Meinung nur nach mehreren soliden Argumenten.",
+        "hard": "Stur und scharfsinnig: zerlegt jedes schwache Argument.",
+        "free": "Jede Schülerin und jeder Schüler wählt vor dem Start."
+      },
+      "impersonaTu": {
+        "easy": "Die Figur ist entgegenkommend: Sie akzeptiert deine Argumente schnell und hilft dir.",
+        "medium": "Sie verteidigt ihre Position: Sie ändert ihre Meinung nur bei guten Argumenten.",
+        "hard": "Sehr stur: Sie widerspricht allem und gibt nur bei hervorragenden Argumenten nach.",
+        "free": "Jede Schülerin und jeder Schüler wählt vor dem Start."
+      }
+    }
+  },
+  "language": {
+    "label": "Sprache der Figuren",
+    "studentsOwn": "Die der Schüler",
+    "practiceBadge": "Gesprochen wird {{language}}",
+    "assignmentLabel": "In welcher Sprache die Figuren sprechen",
+    "assignmentHint": "Wähle eine Fremdsprache zum Üben: Die Figuren antworten nur in dieser Sprache, der Rest der Seite bleibt in der Sprache der Schüler."
   }
 }

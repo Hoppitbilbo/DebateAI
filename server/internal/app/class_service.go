@@ -32,11 +32,11 @@ func (c *classService) CanManage(u *domain.User, classID int64) bool {
 
 // MayAttempt tells whether u may work on assignment a: its teachers, the
 // students of its class once it is published, and the guests of a room
-// opened on it.
+// that holds it.
 func (c *classService) MayAttempt(u *domain.User, a *domain.Assignment) bool {
 	if u.IsGuest() {
 		room, err := c.rooms.Get(*u.RoomID)
-		return err == nil && room.AssignmentID != nil && *room.AssignmentID == a.ID
+		return err == nil && room.Holds(a)
 	}
 	return c.CanManage(u, a.ClassID) || (c.classes.IsMember(a.ClassID, u.ID) && a.Published)
 }

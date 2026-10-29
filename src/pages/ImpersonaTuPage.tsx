@@ -9,6 +9,8 @@ import { useActivityFlow } from "@/features/activity/useActivityFlow";
 import { bioOf, useWikiSummaries } from "@/features/activity/wiki";
 import { openings, prompts } from "@/features/activity/prompts";
 import { APPS } from "@/features/activity/types";
+import { Difficulty, difficultyOf } from "@/features/activity/difficulty";
+import DifficultyPicker from "@/features/activity/components/DifficultyPicker";
 
 const app = APPS["impersona-tu"];
 
@@ -18,19 +20,22 @@ const ImpersonaTuPage = () => {
   const [aiChar, setAiChar] = useState<WikiRef | null>(null);
   const [userChar, setUserChar] = useState<WikiRef | null>(null);
   const [topic, setTopic] = useState("");
+  const [chosenLevel, setChosenLevel] = useState<Difficulty>();
 
   const { summaries, loading } = useWikiSummaries([aiChar, userChar]);
   const aiBio = bioOf(aiChar, summaries);
+  const levelFor = (assignment: Assignment | null) => difficultyOf(assignment?.config.difficulty, chosenLevel);
   const systemFor = (assignment: Assignment | null) =>
-    aiChar && userChar ? prompts.impersona(aiChar.title, aiBio, userChar.title, bioOf(userChar, summaries), topic, assignment) : "";
+    aiChar && userChar ? prompts.impersona(aiChar.title, aiBio, userChar.title, bioOf(userChar, summaries), topic, assignment, levelFor(assignment)) : "";
 
   const flow = useActivityFlow(app.type, {
     live: (phase, assignment) =>
       phase === "chat" && aiChar ? { systemInstruction: systemFor(assignment), characterName: aiChar.title, characterBio: aiBio } : null,
-    context: { aiCharacter: aiChar?.title, userCharacter: userChar?.title, topic },
+    context: (assignment) => ({ aiCharacter: aiChar?.title, userCharacter: userChar?.title, topic, difficulty: levelFor(assignment) }),
   });
   const { preset, engine } = flow;
   const system = systemFor(flow.session.assignment);
+  const level = levelFor(flow.session.assignment);
 
   useEffect(() => {
     if (preset.aiCharacter) setAiChar(preset.aiCharacter);
@@ -42,7 +47,7 @@ const ImpersonaTuPage = () => {
 
   const start = async () => {
     if (!aiChar || !userChar) return;
-    await flow.begin(`${userChar.title} ↔ ${aiChar.title}`, { aiCharacter: aiChar, userCharacter: userChar, topic }, []);
+    await flow.begin(`${userChar.title} ↔ ${aiChar.title}`, { aiCharacter: aiChar, userCharacter: userChar, topic, difficulty: level }, []);
     await engine.open({
       system,
       cue: openings.impersona(userChar.title, topic),
@@ -80,6 +85,7 @@ const ImpersonaTuPage = () => {
               <Label htmlFor="topic">{t("platform.apps.impersonaTu.topicLabel")}</Label>
               <Input id="topic" value={topic} onChange={(e) => setTopic(e.target.value)} placeholder={t("platform.apps.impersonaTu.topicPlaceholder")} disabled={!!preset.topic} />
             </div>
+            <DifficultyPicker app="impersonaTu" value={level} onChange={(v) => setChosenLevel(v)} locked={!!preset.difficulty} />
           </>
         ),
       }}
@@ -105,6 +111,7 @@ const ImpersonaTuPage = () => {
           { label: t("platform.apps.impersonaTu.yourCharacter"), value: userChar?.title },
           { label: t("platform.apps.impersonaTu.aiCharacter"), value: aiChar?.title },
           { label: t("platform.apps.impersonaTu.topicLabel"), value: topic },
+          { label: t("platform.difficulty.label"), value: t(`platform.difficulty.levels.${level}`) },
         ],
       }}
     />

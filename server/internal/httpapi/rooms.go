@@ -38,7 +38,7 @@ func writeRoomErr(w http.ResponseWriter, err error) {
 		writeErr(w, 409, "room_full", err.Error())
 	case errors.Is(err, app.ErrNicknameTaken):
 		writeErr(w, 409, "nickname_taken", err.Error())
-	case errors.Is(err, app.ErrBadNickname), errors.Is(err, app.ErrBadAvatar), errors.Is(err, app.ErrInvalidApp), errors.Is(err, app.ErrAssignmentInvalid),
+	case errors.Is(err, app.ErrBadNickname), errors.Is(err, app.ErrBadAvatar), errors.Is(err, app.ErrInvalidApp), errors.Is(err, app.ErrAssignmentInvalid), errors.Is(err, app.ErrTooManyActivities),
 		errors.Is(err, app.ErrBadImportMapping), errors.Is(err, app.ErrBadExportFile):
 		writeErr(w, 400, "bad_request", err.Error())
 	case errors.Is(err, app.ErrBadRejoinPIN):

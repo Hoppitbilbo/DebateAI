@@ -90,12 +90,15 @@ export interface WikiRef {
 /** App-specific presets a teacher can lock in an assignment. All optional. */
 export interface AssignmentConfig {
   character?: WikiRef; // convinci-tu, personaggio-misterioso, wiki-chatbot
-  characters?: WikiRef[]; // doppia-intervista, you-moderate
+  characters?: WikiRef[]; // doppia-intervista, you-moderate (a pair); personaggio-misterioso (played in turn)
   aiCharacter?: WikiRef; // impersona-tu
   userCharacter?: WikiRef; // impersona-tu
   topic?: string;
   questions?: number; // personaggio-misterioso
   hints?: string[]; // personaggio-misterioso: the teacher's hints, vaguest first
+  shuffle?: boolean; // personaggio-misterioso: each student plays the characters in their own order
+  difficulty?: "easy" | "medium" | "hard"; // personaggio-misterioso, convinci-tu, impersona-tu
+  language?: string; // the language the characters speak (see features/activity/language.ts)
 }
 
 export interface SessionSummary {

@@ -273,7 +273,9 @@
       "hintCost": "Una pista cuesta una pregunta.",
       "hintRequest": "¿Me das una pista?",
       "teacherHint": "Pista: {{hint}}",
-      "hintsUsed": "Pistas usadas"
+      "hintsUsed": "Pistas usadas",
+      "roundOf": "Personaje {{n}} de {{total}}",
+      "nextCharacter": "Siguiente personaje ({{n}} de {{total}})"
     },
     "impersonaTu": {
       "setupTitle": "Elige los papeles",
@@ -428,7 +430,11 @@
       "hints": "Pistas (opcionales)",
       "hintsHint": "De la más vaga a la más clara. El estudiante las recibe en orden al pulsar «Pedir una pista»; agotadas estas, la pista la inventa el personaje. Cada pista cuesta una pregunta.",
       "hintN": "Pista {{n}}",
-      "hintsNeedCharacter": "Las pistas describen el personaje que eliges: elígelo primero y luego escribe las pistas. Sin personaje fijado, las pistas las da el propio personaje."
+      "hintsNeedCharacter": "Las pistas valen cuando fijas un solo personaje. Con varios, o con ninguno, las pistas las da el propio personaje.",
+      "mysteryCharacters": "Personajes misteriosos",
+      "mysteryCharactersHint": "Añade uno o más: cada estudiante los adivina uno tras otro. Si no eliges ninguno, lo elige el estudiante.",
+      "shuffle": "Mezclar el orden",
+      "shuffleHint": "Cada estudiante los encuentra en un orden distinto: en el aula de informática los compañeros de al lado no tienen el mismo personaje."
     },
     "exportExcel": "Exportar notas (Excel)",
     "teacherScore": "Nota docente"
@@ -791,5 +797,42 @@
         "body": "El tutorial explica la actividad paso a paso."
       }
     }
+  },
+  "difficulty": {
+    "label": "Dificultad",
+    "locked": "Elegida por el docente",
+    "levels": {
+      "easy": "Fácil",
+      "medium": "Media",
+      "hard": "Difícil",
+      "free": "Eligen ellos"
+    },
+    "notes": {
+      "personaggioMisterioso": {
+        "easy": "Pistas generosas: época, país y campo se adivinan pronto.",
+        "medium": "Pistas justas: tendrás que pensar un poco.",
+        "hard": "El personaje responde solo «sí» o «no»: sin pistas, hacen falta preguntas astutas.",
+        "free": "Cada estudiante elige la dificultad antes de empezar."
+      },
+      "convinciTu": {
+        "easy": "El personaje es abierto: bastan un par de buenos argumentos.",
+        "medium": "Cambia de idea solo ante varios argumentos sólidos.",
+        "hard": "Testarudo y mordaz: desmonta cada razonamiento débil.",
+        "free": "Cada estudiante elige la dificultad antes de empezar."
+      },
+      "impersonaTu": {
+        "easy": "El personaje es complaciente: acepta pronto tus argumentos y te ayuda.",
+        "medium": "Defiende su postura: cambia de idea solo con buenos argumentos.",
+        "hard": "Testarudísimo: lo rebate todo y cede solo ante argumentos excelentes.",
+        "free": "Cada estudiante elige la dificultad antes de empezar."
+      }
+    }
+  },
+  "language": {
+    "label": "Idioma de los personajes",
+    "studentsOwn": "El del estudiante",
+    "practiceBadge": "Se habla en {{language}}",
+    "assignmentLabel": "En qué idioma hablan los personajes",
+    "assignmentHint": "Elige un idioma extranjero para que los estudiantes practiquen: los personajes responderán solo en ese idioma, el resto del sitio sigue en el idioma de cada uno."
   }
 }

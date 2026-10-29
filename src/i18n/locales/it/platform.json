@@ -273,7 +273,9 @@
       "hintCost": "Un indizio costa una domanda.",
       "hintRequest": "Mi dai un indizio?",
       "teacherHint": "Indizio: {{hint}}",
-      "hintsUsed": "Indizi usati"
+      "hintsUsed": "Indizi usati",
+      "roundOf": "Personaggio {{n}} di {{total}}",
+      "nextCharacter": "Prossimo personaggio ({{n}} di {{total}})"
     },
     "impersonaTu": {
       "setupTitle": "Scegli i ruoli",
@@ -428,7 +430,11 @@
       "hints": "Indizi (facoltativi)",
       "hintsHint": "Dal più vago al più chiaro. Lo studente li riceve in ordine quando preme «Chiedi un indizio»; finiti questi, l'indizio lo inventa il personaggio. Ogni indizio costa una domanda.",
       "hintN": "Indizio {{n}}",
-      "hintsNeedCharacter": "Gli indizi valgono per il personaggio che scegli: sceglilo prima, poi scrivi gli indizi. Senza personaggio fissato, gli indizi li dà il personaggio stesso."
+      "hintsNeedCharacter": "Gli indizi valgono quando fissi un solo personaggio. Con più personaggi, o senza, gli indizi li dà il personaggio stesso.",
+      "mysteryCharacters": "Personaggi misteriosi",
+      "mysteryCharactersHint": "Aggiungine uno o più: ogni studente li indovina uno dopo l'altro. Se non ne scegli nessuno, lo sceglie lo studente.",
+      "shuffle": "Mischia l'ordine",
+      "shuffleHint": "Ogni studente li incontra in un ordine diverso: in laboratorio i vicini di banco non hanno lo stesso personaggio."
     },
     "exportExcel": "Esporta voti (Excel)",
     "teacherScore": "Voto docente"
@@ -791,5 +797,42 @@
         "body": "Il tutorial spiega l'attività passo passo."
       }
     }
+  },
+  "difficulty": {
+    "label": "Difficoltà",
+    "locked": "Scelta dal docente",
+    "levels": {
+      "easy": "Facile",
+      "medium": "Media",
+      "hard": "Difficile",
+      "free": "Scelgono loro"
+    },
+    "notes": {
+      "personaggioMisterioso": {
+        "easy": "Indizi generosi: epoca, paese e campo si capiscono presto.",
+        "medium": "Indizi giusti: dovrai ragionare un po'.",
+        "hard": "Il personaggio risponde solo «sì» o «no»: niente indizi, servono domande furbe.",
+        "free": "Ogni studente sceglie la difficoltà prima di iniziare."
+      },
+      "convinciTu": {
+        "easy": "Il personaggio è aperto: bastano un paio di buoni argomenti.",
+        "medium": "Cambia idea solo davanti a diversi argomenti solidi.",
+        "hard": "Testardo e pungente: smonta ogni ragionamento debole.",
+        "free": "Ogni studente sceglie la difficoltà prima di iniziare."
+      },
+      "impersonaTu": {
+        "easy": "Il personaggio è accomodante: accetta presto i tuoi argomenti e ti aiuta.",
+        "medium": "Difende la sua posizione: cambia idea solo con buoni argomenti.",
+        "hard": "Testardissimo: ribatte a tutto e cede solo ad argomenti eccellenti.",
+        "free": "Ogni studente sceglie la difficoltà prima di iniziare."
+      }
+    }
+  },
+  "language": {
+    "label": "Lingua dei personaggi",
+    "studentsOwn": "Quella dello studente",
+    "practiceBadge": "Si parla in {{language}}",
+    "assignmentLabel": "In che lingua parlano i personaggi",
+    "assignmentHint": "Scegli una lingua straniera per far esercitare gli studenti: i personaggi risponderanno solo in quella lingua, il resto del sito resta nella lingua di ciascuno."
   }
 }

@@ -74,9 +74,11 @@ const JoinRoomPage = () => {
         ? await roomApi.rejoin({ code, nickname, pin })
         : await roomApi.join({ code, nickname, avatar, locale: i18n.language });
       setUser(u);
-      // Straight into the activity: everything the teacher fixed is already set.
+      // Straight into the activity: everything the teacher fixed is already
+      // set. A path of several activities starts from its map in /aula.
       const room = await roomApi.myRoom().catch(() => null);
-      navigate(room ? activityPath(room) : "/aula", { replace: true });
+      const single = room && (room.activities?.length ?? 1) <= 1;
+      navigate(single ? activityPath(room) : "/aula", { replace: true });
     } catch (err) {
       fail(err);
     } finally {

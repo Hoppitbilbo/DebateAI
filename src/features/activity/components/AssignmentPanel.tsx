@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { AlertTriangle, CalendarClock, CheckCircle2, ChevronDown, Circle, ClipboardList, Loader2, Sparkles } from "lucide-react";
+import { AlertTriangle, CalendarClock, CheckCircle2, ChevronDown, Circle, ClipboardList, Gauge, Languages, Loader2, Sparkles } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import MarkdownViewer from "@/components/shared/MarkdownViewer";
 import type { ActivitySession } from "../useActivitySession";
+import { isForeignPractice, practiceLanguage } from "../language";
+import { isDifficulty } from "../difficulty";
 
 /** Shows the teacher's assignment, the goals and the live JEV progress. */
 const AssignmentPanel = ({ session }: { session: ActivitySession }) => {
@@ -47,6 +49,16 @@ const AssignmentPanel = ({ session }: { session: ActivitySession }) => {
           {a.instructions && <MarkdownViewer content={a.instructions} className="prose-sm" />}
 
           <div className="flex flex-wrap gap-2 text-xs">
+            {isForeignPractice(a) && (
+              <Badge className="gap-1 border-2 border-foreground bg-sun text-foreground hover:bg-sun">
+                <Languages className="h-3 w-3" /> {t("platform.language.practiceBadge", { language: practiceLanguage(a).label })}
+              </Badge>
+            )}
+            {isDifficulty(a.config.difficulty) && (
+              <Badge variant="outline" className="gap-1">
+                <Gauge className="h-3 w-3" /> {t("platform.difficulty.label")}: {t(`platform.difficulty.levels.${a.config.difficulty}`)}
+              </Badge>
+            )}
             {a.dueAt && (
               <Badge variant="outline" className="gap-1">
                 <CalendarClock className="h-3 w-3" />

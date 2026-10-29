@@ -47,7 +47,17 @@
     "closedTitle": "El aula está cerrada",
     "closedText": "Se acabó el tiempo o el docente cerró el aula. Tus datos se han borrado.",
     "joinAnother": "Entrar en otra aula",
-    "aiMissing": "La IA de esta aula todavía no está lista: avisa al docente."
+    "aiMissing": "La IA de esta aula todavía no está lista: avisa al docente.",
+    "backToPath": "Volver al recorrido",
+    "pathTitle": "Tu recorrido",
+    "pathDone": "{{done}} de {{total}} hechas",
+    "stepDone": "Hecha",
+    "stepActive": "En curso",
+    "stepTodo": "Pendiente",
+    "again": "Repetir",
+    "go": "¡Vamos!",
+    "open": "Abrir",
+    "allDone": "¡Recorrido completado! Puedes repetir una etapa o esperar al docente."
   },
   "open": {
     "title": "Aula rápida",
@@ -114,7 +124,9 @@
     "openAnother": "Abrir una nueva aula",
     "aiMissing": "El chat no funcionará: no hay ningún modelo de IA disponible para las aulas rápidas. Avisa al administrador (Admin → IA → Aula rápida).",
     "copyInvite": "Copiar enlace de invitación",
-    "inviteCopied": "Enlace copiado: quien lo abra entra sin escribir el código."
+    "inviteCopied": "Enlace copiado: quien lo abra entra sin escribir el código.",
+    "pathTitle_one": "Recorrido: {{count}} actividad",
+    "pathTitle_other": "Recorrido: {{count}} actividades"
   },
   "import": {
     "title": "Importar el trabajo en una clase",
@@ -183,5 +195,60 @@
     "squirrel": "Ardilla",
     "flamingo": "Flamenco",
     "frog": "Rana"
+  },
+  "wizard": {
+    "progress": "Pasos para abrir el aula",
+    "steps": {
+      "theme": "Tema",
+      "path": "Recorrido",
+      "launch": "¡Ya!"
+    },
+    "titles": {
+      "theme": "¿Con qué empezamos?",
+      "path": "Construye el recorrido",
+      "launch": "¿Todo listo?"
+    },
+    "subtitles": {
+      "theme": "Elige la primera actividad y sus personajes: será el tema de la clase.",
+      "path": "Añade más etapas o toma una idea relacionada con el tema. Los estudiantes las hacen en orden.",
+      "launch": "Elige el idioma de los personajes y la duración. Después de {{hours}} horas como máximo se borra todo."
+    },
+    "apps": {
+      "convinci-tu": "Convence a un personaje histórico de una idea.",
+      "doppia-intervista": "Entrevista a dos personajes a la vez y compara sus respuestas.",
+      "wiki-chatbot": "Charla con una página de Wikipedia.",
+      "personaggio-misterioso": "Adivina quién se esconde detrás de las respuestas.",
+      "impersona-tu": "Interpreta a un personaje y defiende sus ideas.",
+      "you-moderate": "Modera un debate entre dos personajes."
+    },
+    "mysterySummary_one": "{{count}} personaje oculto",
+    "mysterySummary_other": "{{count}} personajes ocultos",
+    "studentsChoose": "Personajes a elección de los estudiantes",
+    "removeStep": "Quitar esta etapa",
+    "closeStep": "Cerrar",
+    "editStep": "Editar",
+    "moreOptions": "Más opciones: título, consigna, objetivos, turnos",
+    "suggestionsNeedTheme": "Elige un personaje en la primera etapa y te propondremos actividades relacionadas.",
+    "suggestionsTitle": "Ideas relacionadas con {{theme}}",
+    "suggestionsMore": "Más ideas",
+    "suggestionsLoading": "Buscando ideas relacionadas…",
+    "suggestionsEmpty": "No hay ideas nuevas: prueba «Más ideas».",
+    "suggestionsError": "Ahora no puedo proponer ideas.",
+    "addSuggestion": "Añadir",
+    "added": "«{{title}}» añadida al recorrido",
+    "languageLabel": "En qué idioma hablan los personajes",
+    "languageHint": "Vale para todas las etapas y está bloqueado para los estudiantes: elige un idioma extranjero para que practiquen. El sitio sigue en su idioma.",
+    "pathSummary_one": "El recorrido tiene {{count}} actividad",
+    "pathSummary_other": "El recorrido tiene {{count}} actividades",
+    "mysteryTitle": "¿Quién se esconde?",
+    "pickTheme": "Elige al menos una actividad.",
+    "useExisting": "O abre el aula con una tarea de una de tus clases",
+    "backToNew": "Preparar un recorrido nuevo",
+    "addWhich": "¿Qué actividad añades?",
+    "addStep_one": "Añadir una actividad (queda {{count}})",
+    "addStep_other": "Añadir una actividad (quedan {{count}})",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "suggestionsTitleMystery": "Ideas relacionadas con tu personaje misterioso"
   }
 }

@@ -7,6 +7,7 @@ import ChatPanel from "./ChatPanel";
 import FeedbackStep from "./FeedbackStep";
 import ReflectionStep from "./ReflectionStep";
 import { SetupCard } from "./SetupCard";
+import { isForeignPractice, practiceLanguage } from "../language";
 
 type ChatPanelProps = ComponentProps<typeof ChatPanel>;
 
@@ -42,6 +43,8 @@ interface ActivityRunnerProps {
   feedback: {
     title: string;
     facts: { label: string; value: ReactNode }[];
+    /** Label of the button that starts again (e.g. "Next character"). */
+    restartLabel?: string;
   };
 }
 
@@ -74,6 +77,7 @@ const ActivityRunner = ({ app, flow, onRestart, phaseLabels, setup, chat, reflec
             onEnd={flow.finishChat}
             canEnd={session.turns >= minTurns}
             footerNote={session.turns < minTurns ? t("platform.activity.minTurnsNote", { count: minTurns - session.turns }) : null}
+            speechLang={isForeignPractice(session.assignment) ? practiceLanguage(session.assignment).speech : undefined}
             onRetry={(id) => void engine.retry(id)}
             canRetry={engine.canRetry}
             ended={engine.ended && !engine.busy ? {
@@ -106,6 +110,7 @@ const ActivityRunner = ({ app, flow, onRestart, phaseLabels, setup, chat, reflec
             messages={engine.messages}
             facts={feedback.facts}
             onRestart={onRestart}
+            restartLabel={feedback.restartLabel}
             isAssignment={!!session.assignment}
           />
         )}

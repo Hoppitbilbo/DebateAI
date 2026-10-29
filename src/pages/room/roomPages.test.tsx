@@ -59,6 +59,17 @@ describe("JoinRoomPage", () => {
     expect(mocks.setUser).toHaveBeenCalled();
   });
 
+  it("starts a path of several activities from its map", async () => {
+    const path = [{ assignmentId: 7, appType: "wiki-chatbot", title: "A" }, { assignmentId: 8, appType: "convinci-tu", title: "B" }];
+    mocks.get.mockImplementation((p: string) => Promise.resolve(p === "/api/guest/room" ? { ...room, assignmentId: 7, activities: path } : room));
+    mocks.post.mockResolvedValue({ id: 9, name: "Marco R", roomId: 3, role: "student" });
+    renderAt("/entra?c=K7MPQ2");
+    await screen.findByText("Napoleon");
+    fireEvent.change(screen.getByLabelText("Your name in the room"), { target: { value: "Marco R" } });
+    fireEvent.click(screen.getByRole("button", { name: "Join" }));
+    expect(await screen.findByText("inside the room")).toBeTruthy();
+  });
+
   it("explains a taken nickname and offers to come back with a PIN", async () => {
     mocks.get.mockResolvedValue(room);
     mocks.post.mockRejectedValueOnce(new ApiError(409, "nickname_taken", "taken"));
