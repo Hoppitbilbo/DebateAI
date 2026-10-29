@@ -158,9 +158,16 @@ func boolInt(b bool) int {
 
 // count runs a COUNT query; errors count as 0.
 func count(db *sql.DB, query string, args ...any) int {
-	var n int
-	_ = db.QueryRow(query, args...).Scan(&n)
+	n, _ := countErr(db, query, args...)
 	return n
+}
+
+// countErr is count for the checks that enforce a limit: there a failed
+// read must not look like zero.
+func countErr(db *sql.DB, query string, args ...any) (int, error) {
+	var n int
+	err := db.QueryRow(query, args...).Scan(&n)
+	return n, err
 }
 
 // prefixed qualifies a comma-separated column list with a table alias.

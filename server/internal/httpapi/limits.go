@@ -16,6 +16,14 @@ const (
 // maxChatHistoryMessages is how many messages are forwarded to the model per request.
 const maxChatHistoryMessages = 200
 
+// Bounds of what the browser may ask of /api/ai/generate. The output ceiling
+// only clamps an explicit request (the evaluation asks for 2500): no default
+// is imposed, since reasoning models count their thinking in max_tokens.
+const (
+	maxGenerateBodyBytes    = 1 << 20
+	maxGenerateOutputTokens = 8192
+)
+
 // Rate limits.
 const (
 	loginAttemptsLimit  = 20

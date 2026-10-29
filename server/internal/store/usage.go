@@ -19,10 +19,10 @@ func (r *Usage) Insert(u domain.UsageRecord) error {
 }
 
 // SpendSince sums the cost of all calls since a timestamp.
-func (r *Usage) SpendSince(since string) float64 {
+func (r *Usage) SpendSince(since string) (float64, error) {
 	var v sql.NullFloat64
-	_ = r.db.QueryRow(`SELECT SUM(cost_usd) FROM usage_log WHERE created_at >= ?`, since).Scan(&v)
-	return v.Float64
+	err := r.db.QueryRow(`SELECT SUM(cost_usd) FROM usage_log WHERE created_at >= ?`, since).Scan(&v)
+	return v.Float64, err
 }
 
 // UserSpendSince sums the cost of a user's calls since a timestamp.
@@ -42,8 +42,8 @@ func (r *Usage) CountSince(since string, onlyErrors bool) int {
 
 // CountUserRequestsSince counts a user's calls since a timestamp, except
 // those of excludedTask (e.g. the judge, which the student does not trigger).
-func (r *Usage) CountUserRequestsSince(userID int64, since, excludedTask string) int {
-	return count(r.db, `SELECT COUNT(*) FROM usage_log WHERE user_id = ? AND created_at >= ? AND task != ?`, userID, since, excludedTask)
+func (r *Usage) CountUserRequestsSince(userID int64, since, excludedTask string) (int, error) {
+	return countErr(r.db, `SELECT COUNT(*) FROM usage_log WHERE user_id = ? AND created_at >= ? AND task != ?`, userID, since, excludedTask)
 }
 
 // usageGroups maps each grouping to its key and label expressions.
@@ -109,6 +109,6 @@ func (r *Usage) Recent(limit int) ([]domain.UsageLogRow, error) {
 
 // CountRoomRequestsSince counts the calls of a room's guests since a
 // timestamp, except those of excludedTask.
-func (r *Usage) CountRoomRequestsSince(roomID int64, since, excludedTask string) int {
-	return count(r.db, `SELECT COUNT(*) FROM usage_log WHERE user_id IN (SELECT user_id FROM room_guests WHERE room_id = ?) AND created_at >= ? AND task != ?`, roomID, since, excludedTask)
+func (r *Usage) CountRoomRequestsSince(roomID int64, since, excludedTask string) (int, error) {
+	return countErr(r.db, `SELECT COUNT(*) FROM usage_log WHERE user_id IN (SELECT user_id FROM room_guests WHERE room_id = ?) AND created_at >= ? AND task != ?`, roomID, since, excludedTask)
 }

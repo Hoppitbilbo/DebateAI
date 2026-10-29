@@ -51,6 +51,8 @@ var (
 	ErrGuestLimit        = errors.New("you sent too many requests, wait a few minutes")
 	ErrRoomLimit         = errors.New("this room used all its AI requests")
 	ErrRoomNotYours      = errors.New("not your room")
+	// ErrUsageUnavailable: a request limit could not be checked, so it is refused.
+	ErrUsageUnavailable = errors.New("cannot check the AI request limits right now, retry later")
 )
 
 // avatarSlug is the shape of an avatar name (the files live in the frontend).
@@ -474,11 +476,23 @@ func (svc *roomService) AllowAI(u *domain.User) error {
 	}
 	cfg := svc.settings()
 	hourAgo := svc.now().Add(-time.Hour).UTC().Format(time.RFC3339)
-	if cfg.RequestsPerGuestPerHour > 0 && svc.usage.CountUserRequestsSince(u.ID, hourAgo, TaskJudge) >= cfg.RequestsPerGuestPerHour {
-		return ErrGuestLimit
+	if cfg.RequestsPerGuestPerHour > 0 {
+		n, err := svc.usage.CountUserRequestsSince(u.ID, hourAgo, TaskJudge)
+		if err != nil {
+			return ErrUsageUnavailable
+		}
+		if n >= cfg.RequestsPerGuestPerHour {
+			return ErrGuestLimit
+		}
 	}
-	if cfg.MaxRequestsPerRoom > 0 && svc.usage.CountRoomRequestsSince(room.ID, room.CreatedAt, TaskJudge) >= cfg.MaxRequestsPerRoom {
-		return ErrRoomLimit
+	if cfg.MaxRequestsPerRoom > 0 {
+		n, err := svc.usage.CountRoomRequestsSince(room.ID, room.CreatedAt, TaskJudge)
+		if err != nil {
+			return ErrUsageUnavailable
+		}
+		if n >= cfg.MaxRequestsPerRoom {
+			return ErrRoomLimit
+		}
 	}
 	return nil
 }

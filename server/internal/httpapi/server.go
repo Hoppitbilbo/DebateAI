@@ -281,10 +281,14 @@ func writeErr(w http.ResponseWriter, status int, code, msg string) {
 }
 
 func readJSON(r *http.Request, v any) error {
+	return readJSONLimit(r, v, 8<<20)
+}
+
+func readJSONLimit(r *http.Request, v any, maxBytes int64) error {
 	if r.Body == nil {
 		return errors.New("empty body")
 	}
-	dec := json.NewDecoder(http.MaxBytesReader(nil, r.Body, 8<<20))
+	dec := json.NewDecoder(http.MaxBytesReader(nil, r.Body, maxBytes))
 	return dec.Decode(v)
 }
 

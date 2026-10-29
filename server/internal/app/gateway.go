@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -105,13 +106,25 @@ func MonthStart() string {
 	return time.Date(n.Year(), n.Month(), 1, 0, 0, 0, 0, time.UTC).Format(time.RFC3339)
 }
 
+// MonthSpend is this month's spending, for display (0 if it cannot be read).
 func (g *aiGateway) MonthSpend() float64 {
-	return g.usage.SpendSince(MonthStart())
+	v, _ := g.usage.SpendSince(MonthStart())
+	return v
 }
 
+// BudgetExceeded reports whether paid models are blocked. When the spending
+// cannot be read it fails closed: only free models are used.
 func (g *aiGateway) BudgetExceeded() bool {
 	b := g.settings.Budget()
-	return b.MonthlyUSD > 0 && b.BlockPaidWhenExceeded && g.MonthSpend() >= b.MonthlyUSD
+	if b.MonthlyUSD <= 0 || !b.BlockPaidWhenExceeded {
+		return false
+	}
+	spent, err := g.usage.SpendSince(MonthStart())
+	if err != nil {
+		log.Printf("budget: cannot read the month's spending, blocking paid models: %v", err)
+		return true
+	}
+	return spent >= b.MonthlyUSD
 }
 
 // ---------- usage log ----------

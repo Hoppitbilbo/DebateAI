@@ -30,14 +30,22 @@ func (s *Server) aiAllowed(w http.ResponseWriter, r *http.Request) (*domain.User
 		return nil, true
 	}
 	if u.IsGuest() {
-		if err := s.RoomSvc.AllowAI(u); err != nil {
+		if err := s.RoomSvc.AllowAI(u); errors.Is(err, app.ErrUsageUnavailable) {
+			writeErr(w, 503, "usage_unavailable", err.Error())
+			return nil, false
+		} else if err != nil {
 			writeErr(w, 429, "rate_limited", err.Error())
 			return nil, false
 		}
 	}
 	if u.Role == "student" && g.StudentRequestsPerDay > 0 {
 		since := time.Now().UTC().Add(-24 * time.Hour).Format(time.RFC3339)
-		if s.Usage.CountUserRequestsSince(u.ID, since, app.TaskJudge) >= g.StudentRequestsPerDay {
+		n, err := s.Usage.CountUserRequestsSince(u.ID, since, app.TaskJudge)
+		if err != nil {
+			writeErr(w, 503, "usage_unavailable", app.ErrUsageUnavailable.Error())
+			return nil, false
+		}
+		if n >= g.StudentRequestsPerDay {
 			writeErr(w, 429, "daily_limit", "daily AI request limit reached")
 			return nil, false
 		}
@@ -102,7 +110,7 @@ func (s *Server) handleGenerate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var in generateIn
-	if err := readJSON(r, &in); err != nil {
+	if err := readJSONLimit(r, &in, maxGenerateBodyBytes); err != nil {
 		writeErr(w, 400, "bad_request", err.Error())
 		return
 	}
@@ -121,6 +129,7 @@ func (s *Server) handleGenerate(w http.ResponseWriter, r *http.Request) {
 	if len(in.Messages) > maxChatHistoryMessages {
 		in.Messages = in.Messages[len(in.Messages)-maxChatHistoryMessages:]
 	}
+	in.MaxTokens = min(max(in.MaxTokens, 0), maxGenerateOutputTokens)
 	var userID *int64
 	if u != nil {
 		userID = &u.ID

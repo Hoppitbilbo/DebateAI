@@ -440,3 +440,25 @@ func (f firstMessageProvider) Generate(ctx context.Context, req ai.Request) (*ai
 	*f.first = req.Messages[0]
 	return f.fakeProvider.Generate(ctx, req)
 }
+
+// failingSpend is a usage store whose spending cannot be read.
+type failingSpend struct{ usageStore }
+
+func (failingSpend) SpendSince(string) (float64, error) { return 0, errors.New("db down") }
+
+func TestBudgetFailsClosedWhenSpendingIsUnreadable(t *testing.T) {
+	s := newTestServer(t)
+	if err := s.Settings.SaveBudget(BudgetSettings{MonthlyUSD: 1, BlockPaidWhenExceeded: true}); err != nil {
+		t.Fatal(err)
+	}
+	s.Gateway.usage = failingSpend{s.Gateway.usage}
+	if !s.Gateway.BudgetExceeded() {
+		t.Fatal("an unreadable spending must block paid models")
+	}
+	if err := s.Settings.SaveBudget(BudgetSettings{MonthlyUSD: 1}); err != nil {
+		t.Fatal(err)
+	}
+	if s.Gateway.BudgetExceeded() {
+		t.Fatal("without blocking, the budget never blocks")
+	}
+}

@@ -149,11 +149,11 @@ type priceStore interface {
 
 type usageStore interface {
 	Insert(u domain.UsageRecord) error
-	SpendSince(since string) float64
+	SpendSince(since string) (float64, error)
 	UserSpendSince(userID int64, since string) float64
 	CountSince(since string, onlyErrors bool) int
-	CountUserRequestsSince(userID int64, since, excludedTask string) int
-	CountRoomRequestsSince(roomID int64, since, excludedTask string) int
+	CountUserRequestsSince(userID int64, since, excludedTask string) (int, error)
+	CountRoomRequestsSince(roomID int64, since, excludedTask string) (int, error)
 	Aggregate(since string, by domain.UsageGrouping, limit int) []domain.UsageAggregate
 	Recent(limit int) ([]domain.UsageLogRow, error)
 }

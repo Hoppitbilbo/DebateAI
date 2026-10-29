@@ -17,6 +17,7 @@ func (s *Server) handleAdminOverview(w http.ResponseWriter, r *http.Request) {
 	b := s.Settings.Budget()
 	spend := s.Gateway.MonthSpend()
 	today := time.Now().UTC().Truncate(24 * time.Hour).Format(time.RFC3339)
+	todaySpend, _ := s.Usage.SpendSince(today)
 	writeJSON(w, 200, adminOverviewResponse{
 		Users: userCounts{
 			Admin:   s.Users.Count(domain.RoleAdmin),
@@ -29,7 +30,7 @@ func (s *Server) handleAdminOverview(w http.ResponseWriter, r *http.Request) {
 		PendingInvites:  s.Invites.CountPending(),
 		Providers:       s.Providers.Count(true),
 		MonthSpendUSD:   spend,
-		TodaySpendUSD:   s.Usage.SpendSince(today),
+		TodaySpendUSD:   todaySpend,
 		MonthBudgetUSD:  b.MonthlyUSD,
 		BudgetExceeded:  s.Gateway.BudgetExceeded(),
 		RequestsToday:   s.Usage.CountSince(today, false),

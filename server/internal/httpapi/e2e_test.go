@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"sync/atomic"
 	"testing"
 
 	"github.com/Hoppitbilbo/DebateAI/server/internal/app"
@@ -17,6 +18,9 @@ import (
 )
 
 // ---------- end-to-end ----------
+
+// lastMaxTokens is the max_tokens of the last chat completion mockAI served.
+var lastMaxTokens atomic.Int64
 
 // mockAI serves an OpenAI-compatible endpoint and a Jev /systemone endpoint.
 func mockAI(t *testing.T) *httptest.Server {
@@ -46,9 +50,11 @@ func mockAI(t *testing.T) *httptest.Server {
 			_ = json.NewEncoder(w).Encode(map[string]any{"model": "jev-1.13.0", "answers": answers, "usage": map[string]int{"input_tokens": 300, "output_tokens": 10}})
 		case strings.HasSuffix(r.URL.Path, "/chat/completions"):
 			var req struct {
-				Model string `json:"model"`
+				Model     string `json:"model"`
+				MaxTokens int64  `json:"max_tokens"`
 			}
 			_ = json.Unmarshal(body, &req)
+			lastMaxTokens.Store(req.MaxTokens)
 			if req.Model == "broken" {
 				w.WriteHeader(429)
 				_, _ = w.Write([]byte(`quota`))
@@ -206,6 +212,9 @@ func TestEndToEndAssignmentWithJev(t *testing.T) {
 	if code := stud.do("POST", "/api/ai/generate", map[string]any{"sessionId": sess.ID, "messages": []map[string]string{{"role": "user", "content": "ancora"}}}, nil); code != 409 {
 		t.Fatalf("ended session must refuse chat, got %d", code)
 	}
+	if code := stud.do("POST", fmtPath("/api/sessions/%d/complete", sess.ID), map[string]any{"reflection": "x", "scoreConversation": 99}, nil); code != 400 {
+		t.Fatalf("score off the scale must be refused, got %d", code)
+	}
 	stud.do("POST", fmtPath("/api/sessions/%d/complete", sess.ID), map[string]any{"reflection": "ho imparato", "evaluation": "ok", "scoreConversation": 8}, nil)
 
 	// teacher sees progress and costs are tracked (paid-model: 1000*1 + 500*2 per 1M = 0.002)
@@ -238,6 +247,11 @@ func TestEndToEndAssignmentWithJev(t *testing.T) {
 	admin.do("PUT", "/api/admin/settings/routing", map[string]any{"strategy": "ordered", "tasks": map[string]any{
 		"chat": []map[string]any{{"providerId": prov.ID, "model": "paid-model"}},
 	}}, nil)
+	// an oversized output request is clamped
+	admin.do("POST", "/api/ai/generate", map[string]any{"maxTokens": 1000000, "messages": []map[string]string{{"role": "user", "content": "ciao"}}}, nil)
+	if got := lastMaxTokens.Load(); got != maxGenerateOutputTokens {
+		t.Fatalf("max_tokens forwarded: %d", got)
+	}
 	admin.do("PUT", "/api/admin/settings/budget", map[string]any{"monthlyUsd": 0.001, "warnPercent": 80, "blockPaidWhenExceeded": true}, nil)
 	var errOut apiError
 	if code := admin.do("POST", "/api/ai/generate", map[string]any{"messages": []map[string]string{{"role": "user", "content": "x"}}}, &errOut); code != 502 || !strings.Contains(errOut.Message, "budget") {
