@@ -126,7 +126,9 @@
     "copyInvite": "Copiar enlace de invitación",
     "inviteCopied": "Enlace copiado: quien lo abra entra sin escribir el código.",
     "pathTitle_one": "Recorrido: {{count}} actividad",
-    "pathTitle_other": "Recorrido: {{count}} actividades"
+    "pathTitle_other": "Recorrido: {{count}} actividades",
+    "loadFailed": "No se pudo cargar el aula: revisa la conexión.",
+    "connectionLost": "Conexión perdida, reintentando… Los datos pueden no estar actualizados."
   },
   "import": {
     "title": "Importar el trabajo en una clase",

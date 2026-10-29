@@ -126,7 +126,9 @@
     "copyInvite": "Einladungslink kopieren",
     "inviteCopied": "Einladungslink kopiert: Wer ihn öffnet, tritt ohne Code bei.",
     "pathTitle_one": "Parcours: {{count}} Aktivität",
-    "pathTitle_other": "Parcours: {{count}} Aktivitäten"
+    "pathTitle_other": "Parcours: {{count}} Aktivitäten",
+    "loadFailed": "Der Raum konnte nicht geladen werden: prüfe die Verbindung.",
+    "connectionLost": "Verbindung verloren, neuer Versuch… Die Anzeige ist evtl. nicht aktuell."
   },
   "import": {
     "title": "Arbeit in eine Klasse importieren",
