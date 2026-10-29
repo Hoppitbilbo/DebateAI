@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { htmlToText } from "@/lib/text";
 import i18n from "@/i18n";
 import type { WikiRef } from "@/lib/api";
 
@@ -53,4 +54,4 @@ export const useWikiSummaries = (refs: (WikiRef | null | undefined)[]) => {
 
 /** Biography used in prompts: Wikipedia summary, falling back to the search snippet. */
 export const bioOf = (ref: WikiRef | null | undefined, summaries: Record<string, string>) =>
-  (ref && (summaries[ref.title] || ref.snippet)) || "";
+  (ref && (summaries[ref.title] || htmlToText(ref.snippet ?? ""))) || "";
