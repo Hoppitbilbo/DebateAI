@@ -36,7 +36,7 @@ const AggTable = ({ rows, keyLabel, labelFor }: { rows: Agg[]; keyLabel: string;
             <tr key={r.key} className="border-t border-border">
               <td className="py-1.5 pr-3">{labelFor ? labelFor(r) : r.key}</td>
               <td className="py-1.5 pr-3 text-right tabular-nums">{num(r.requests)}</td>
-              <td className="py-1.5 pr-3 text-right tabular-nums">{r.errors > 0 ? <span className="text-amber-400">{num(r.errors)}</span> : 0}</td>
+              <td className="py-1.5 pr-3 text-right tabular-nums">{r.errors > 0 ? <span className="text-warning">{num(r.errors)}</span> : 0}</td>
               <td className="py-1.5 pr-3 text-right tabular-nums">{num(r.inputTokens)}</td>
               <td className="py-1.5 pr-3 text-right tabular-nums">{num(r.outputTokens)}</td>
               <td className="py-1.5 text-right font-medium tabular-nums">{usd(r.costUsd)}</td>
@@ -142,7 +142,7 @@ const AdminCosts = () => {
                     <td className="py-1 pr-2">{r.user || t("platform.admin.costs.guest")}</td>
                     <td className="py-1 pr-2">{r.task}</td>
                     <td className="py-1 pr-2">
-                      {!r.ok && <span className="mr-1 text-amber-400" aria-label={t("platform.admin.costs.errors")}>⚠</span>}
+                      {!r.ok && <span className="mr-1 text-warning" aria-label={t("platform.admin.costs.errors")}>⚠</span>}
                       {r.provider} / {r.model}
                     </td>
                     <td className="py-1 pr-2 text-right tabular-nums">{num(r.inputTokens)}</td>

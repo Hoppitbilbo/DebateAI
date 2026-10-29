@@ -53,7 +53,7 @@ const StudentDashboard = () => {
         <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
           <AppName type={a.appType} />
           {a.dueAt && (
-            <span className={overdue ? "inline-flex items-center gap-1 text-amber-400" : "inline-flex items-center gap-1"}>
+            <span className={overdue ? "inline-flex items-center gap-1 text-warning" : "inline-flex items-center gap-1"}>
               <CalendarClock className="h-3.5 w-3.5" /> {formatDate(a.dueAt, i18n.language)}
             </span>
           )}

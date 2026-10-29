@@ -56,7 +56,7 @@ export const Panel = ({ title, actions, children, className, tour }: { title?: R
 export const StatTile = ({ label, value, hint, tone }: { label: string; value: React.ReactNode; hint?: React.ReactNode; tone?: "warn" | "ok" }) => (
   <div className="rounded-lg border border-border bg-card p-4 text-card-foreground">
     <p className="text-xs uppercase tracking-wide text-muted-foreground">{label}</p>
-    <p className={cn("mt-1 font-heading text-2xl font-bold", tone === "warn" ? "text-amber-400" : "text-foreground")}>{value}</p>
+    <p className={cn("mt-1 font-heading text-2xl font-bold", tone === "warn" ? "text-warning" : "text-foreground")}>{value}</p>
     {hint && <p className="mt-1 text-xs text-muted-foreground">{hint}</p>}
   </div>
 );
@@ -66,9 +66,9 @@ export const StatusBadge = ({ status }: { status?: SessionSummary["status"] | "t
   const s = status ?? "todo";
   const tone: Record<string, string> = {
     todo: "border-border text-muted-foreground",
-    active: "border-sky-400/60 text-sky-300",
+    active: "border-sky-400/60 text-info",
     goal_reached: "border-primary text-primary",
-    turn_limit: "border-amber-400/60 text-amber-300",
+    turn_limit: "border-amber-400/60 text-warning",
     completed: "border-primary bg-primary text-primary-foreground",
     abandoned: "border-border text-muted-foreground",
   };

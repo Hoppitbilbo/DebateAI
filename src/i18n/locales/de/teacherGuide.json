@@ -114,10 +114,10 @@
     "subtitle": "Sie haben das Potenzial der KI zur Transformation des Unterrichts erkundet. Jetzt ist es an der Zeit, dieses Wissen in die Praxis umzusetzen und Ihre Innovationsreise fortzusetzen.",
     "keyPoints": {
       "title": "Wichtige Punkte zum Merken",
-      "item1": "KI ist ein <strong class=\"text-sky-300\">Verbündeter</strong>, kein Ersatz für den Lehrer.",
-      "item2": "<strong class=\"text-sky-300\">Personalisierung</strong> ist eine der größten Stärken der KI.",
-      "item3": "Die Förderung des <strong class=\"text-sky-300\">kritischen Denkens</strong> über KI ist von grundlegender Bedeutung.",
-      "item4": "Das Experimentieren mit <strong class=\"text-sky-300\">neuen Lehrstilen</strong> bereichert das Lernen."
+      "item1": "KI ist ein <strong class=\"text-info\">Verbündeter</strong>, kein Ersatz für den Lehrer.",
+      "item2": "<strong class=\"text-info\">Personalisierung</strong> ist eine der größten Stärken der KI.",
+      "item3": "Die Förderung des <strong class=\"text-info\">kritischen Denkens</strong> über KI ist von grundlegender Bedeutung.",
+      "item4": "Das Experimentieren mit <strong class=\"text-info\">neuen Lehrstilen</strong> bereichert das Lernen."
     },
     "nextSteps": {
       "title": "Nächste Schritte und Ressourcen",
@@ -125,7 +125,7 @@
       "item2": "Arbeiten Sie mit Kollegen zusammen: Teilen Sie Erfahrungen und Ressourcen.",
       "item3": "Erkunden Sie die Apps auf dieser Plattform für praktische Beispiele.",
       "item4": "Bilden Sie sich weiter: Das Feld der KI entwickelt sich ständig weiter.",
-      "item5": "Erfahren Sie mehr unter <a href=\"#\" class=\"ml-1 text-sky-400 hover:text-sky-300 underline flex items-center\" target=\"_blank\" rel=\"noopener noreferrer\">EduAI.it <ExternalLink size={16} class=\"ml-1\" /></a> (Beispiel)."
+      "item5": "Erfahren Sie mehr unter <a href=\"#\" class=\"ml-1 text-info hover:text-info underline flex items-center\" target=\"_blank\" rel=\"noopener noreferrer\">EduAI.it <ExternalLink size={16} class=\"ml-1\" /></a> (Beispiel)."
     },
     "conclusion": "Vielen Dank, dass Sie diesen Leitfaden verfolgt haben. Viel Erfolg bei Ihren Lehrabenteuern mit KI!"
   }

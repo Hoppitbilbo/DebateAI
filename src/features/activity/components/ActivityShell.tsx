@@ -97,7 +97,7 @@ const ActivityShell = ({ app, phase, session, onReset, children, phaseLabels }: 
 
           {status && !status.text && (
             <div className="flex items-start gap-3 rounded-lg border border-amber-400/50 bg-amber-400/10 p-4 text-sm">
-              <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-amber-400" />
+              <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-warning" />
               <div>
                 {!status.loggedIn && !status.guestAccess ? (
                   <>

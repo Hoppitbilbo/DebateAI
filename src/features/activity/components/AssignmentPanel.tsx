@@ -110,7 +110,7 @@ const AssignmentPanel = ({ session }: { session: ActivitySession }) => {
           )}
           {session.jev?.offTopic && (
             <p className="flex items-center gap-2 rounded-md bg-amber-400/10 p-3 text-sm">
-              <AlertTriangle className="h-4 w-4 text-amber-400" /> {t("platform.assignment.offTopic")}
+              <AlertTriangle className="h-4 w-4 text-warning" /> {t("platform.assignment.offTopic")}
             </p>
           )}
         </div>

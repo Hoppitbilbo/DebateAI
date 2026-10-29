@@ -112,8 +112,8 @@ const DoppiaIntervistaPage = () => {
             <span className="text-muted-foreground">{t("platform.apps.doppiaIntervista.askTo")}</span>
             <ToggleGroup type="single" size="sm" value={target} onValueChange={(v) => v && setTarget(v as Target)}>
               <ToggleGroupItem value="both">{t("platform.apps.doppiaIntervista.both")}</ToggleGroupItem>
-              <ToggleGroupItem value="a" className="data-[state=on]:text-sky-300">{a.title}</ToggleGroupItem>
-              <ToggleGroupItem value="b" className="data-[state=on]:text-amber-300">{b.title}</ToggleGroupItem>
+              <ToggleGroupItem value="a" className="data-[state=on]:text-info">{a.title}</ToggleGroupItem>
+              <ToggleGroupItem value="b" className="data-[state=on]:text-warning">{b.title}</ToggleGroupItem>
             </ToggleGroup>
           </div>
         ),

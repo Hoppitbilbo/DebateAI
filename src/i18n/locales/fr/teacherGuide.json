@@ -114,10 +114,10 @@
     "subtitle": "Vous avez exploré le potentiel de l'IA pour transformer l'enseignement. Il est maintenant temps de mettre ces connaissances en pratique et de poursuivre votre voyage d'innovation.",
     "keyPoints": {
       "title": "Points Clés à Retenir",
-      "item1": "L'IA est un <strong class=\"text-sky-300\">allié</strong>, pas un substitut, de l'enseignant.",
-      "item2": "La <strong class=\"text-sky-300\">personnalisation</strong> est l'une des plus grandes forces de l'IA.",
-      "item3": "Encourager la <strong class=\"text-sky-300\">pensée critique</strong> sur l'IA est fondamental.",
-      "item4": "Expérimenter de <strong class=\"text-sky-300\">nouveaux styles d'enseignement</strong> enrichit l'apprentissage."
+      "item1": "L'IA est un <strong class=\"text-info\">allié</strong>, pas un substitut, de l'enseignant.",
+      "item2": "La <strong class=\"text-info\">personnalisation</strong> est l'une des plus grandes forces de l'IA.",
+      "item3": "Encourager la <strong class=\"text-info\">pensée critique</strong> sur l'IA est fondamental.",
+      "item4": "Expérimenter de <strong class=\"text-info\">nouveaux styles d'enseignement</strong> enrichit l'apprentissage."
     },
     "nextSteps": {
       "title": "Prochaines Étapes et Ressources",
@@ -125,7 +125,7 @@
       "item2": "Collaborez avec des collègues : partagez vos expériences et vos ressources.",
       "item3": "Explorez les applications de cette plateforme pour des exemples pratiques.",
       "item4": "Continuez à vous former : le domaine de l'IA est en constante évolution.",
-      "item5": "Apprenez-en plus sur <a href=\"#\" class=\"ml-1 text-sky-400 hover:text-sky-300 underline flex items-center\" target=\"_blank\" rel=\"noopener noreferrer\">EduAI.it <ExternalLink size={16} class=\"ml-1\" /></a> (exemple)."
+      "item5": "Apprenez-en plus sur <a href=\"#\" class=\"ml-1 text-info hover:text-info underline flex items-center\" target=\"_blank\" rel=\"noopener noreferrer\">EduAI.it <ExternalLink size={16} class=\"ml-1\" /></a> (exemple)."
     },
     "conclusion": "Merci d'avoir suivi ce guide. Bonne chance dans vos aventures pédagogiques avec l'IA !"
   }

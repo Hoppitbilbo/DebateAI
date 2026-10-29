@@ -65,7 +65,7 @@ const InviteForm = ({ invite, roles, onDone }: Props) => {
           </Select>
         </div>
       </div>
-      {!config?.mailConfigured && <p className="rounded-md bg-amber-400/10 p-2 text-xs text-amber-300">{t("platform.invite.noSmtp")}</p>}
+      {!config?.mailConfigured && <p className="rounded-md bg-amber-400/10 p-2 text-xs text-warning">{t("platform.invite.noSmtp")}</p>}
       <Button onClick={submit} disabled={busy || !emails.trim()}>
         {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Mail className="mr-2 h-4 w-4" />} {t("platform.invite.send")}
       </Button>

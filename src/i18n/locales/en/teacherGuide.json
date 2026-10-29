@@ -114,10 +114,10 @@
     "subtitle": "You have explored the potential of AI to transform teaching. Now is the time to put this knowledge into practice and continue your innovation journey.",
     "keyPoints": {
       "title": "Key Points to Remember",
-      "item1": "AI is an <strong class=\"text-sky-300\">ally</strong>, not a substitute, for the teacher.",
-      "item2": "<strong class=\"text-sky-300\">Personalization</strong> is one of AI's greatest strengths.",
-      "item3": "Encouraging <strong class=\"text-sky-300\">critical thinking</strong> about AI is fundamental.",
-      "item4": "Experimenting with <strong class=\"text-sky-300\">new teaching styles</strong> enriches learning."
+      "item1": "AI is an <strong class=\"text-info\">ally</strong>, not a substitute, for the teacher.",
+      "item2": "<strong class=\"text-info\">Personalization</strong> is one of AI's greatest strengths.",
+      "item3": "Encouraging <strong class=\"text-info\">critical thinking</strong> about AI is fundamental.",
+      "item4": "Experimenting with <strong class=\"text-info\">new teaching styles</strong> enriches learning."
     },
     "nextSteps": {
       "title": "Next Steps and Resources",
@@ -125,7 +125,7 @@
       "item2": "Collaborate with colleagues: share experiences and resources.",
       "item3": "Explore the apps on this platform for practical examples.",
       "item4": "Continue learning: the field of AI is constantly evolving.",
-      "item5": "Learn more at <a href=\"#\" class=\"ml-1 text-sky-400 hover:text-sky-300 underline flex items-center\" target=\"_blank\" rel=\"noopener noreferrer\">EduAI.it <ExternalLink size={16} class=\"ml-1\" /></a> (example)."
+      "item5": "Learn more at <a href=\"#\" class=\"ml-1 text-info hover:text-info underline flex items-center\" target=\"_blank\" rel=\"noopener noreferrer\">EduAI.it <ExternalLink size={16} class=\"ml-1\" /></a> (example)."
     },
     "conclusion": "Thank you for following this guide. Good luck with your teaching adventures with AI!"
   }

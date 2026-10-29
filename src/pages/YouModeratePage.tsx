@@ -142,8 +142,8 @@ const YouModeratePage = () => {
               <span className="text-muted-foreground">{t("platform.apps.youModerate.addressTo")}</span>
               <ToggleGroup type="single" size="sm" value={target} onValueChange={(v) => v && setTarget(v as "next" | Key)}>
                 <ToggleGroupItem value="next">{t("platform.apps.youModerate.nextSpeaker", { name: nextSpeaker === "a" ? a.title : b.title })}</ToggleGroupItem>
-                <ToggleGroupItem value="a" className="data-[state=on]:text-sky-300">{a.title}</ToggleGroupItem>
-                <ToggleGroupItem value="b" className="data-[state=on]:text-amber-300">{b.title}</ToggleGroupItem>
+                <ToggleGroupItem value="a" className="data-[state=on]:text-info">{a.title}</ToggleGroupItem>
+                <ToggleGroupItem value="b" className="data-[state=on]:text-warning">{b.title}</ToggleGroupItem>
               </ToggleGroup>
             </div>
             <Button size="sm" variant="outline" onClick={continueDebate} disabled={engine.busy || engine.ended}>

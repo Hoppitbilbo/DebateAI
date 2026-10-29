@@ -27,7 +27,7 @@ const TaskTargets = ({ task, list, providers, onChange, emptyHint, unusedReason 
         <h3 className="font-medium">{t(`platform.admin.tasks.${task}`)}</h3>
         <p className="text-xs text-muted-foreground">{t(`platform.admin.taskHints.${task}`)}</p>
       </div>
-      {list.length === 0 && <p className="mb-2 text-xs text-amber-400">{emptyHint ?? t("platform.admin.ai.noTargets")}</p>}
+      {list.length === 0 && <p className="mb-2 text-xs text-warning">{emptyHint ?? t("platform.admin.ai.noTargets")}</p>}
       <ol className="space-y-2">
         {list.map((target, i) => (
           <li key={i} className="flex flex-wrap items-center gap-2">

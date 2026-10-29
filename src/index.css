@@ -49,6 +49,11 @@
     --destructive: 0 70% 46%;
     --destructive-foreground: 0 0% 100%;
 
+    /* Text and icons that warn or inform, readable on every surface
+       (at least 5:1 on card, background, muted and accent). */
+    --warning: 28 90% 32%;
+    --info: 201 90% 30%;
+
     --border: 252 25% 86%;
     --input: 252 20% 76%;
     --ring: 258 62% 52%;
