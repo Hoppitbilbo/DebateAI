@@ -83,6 +83,13 @@ type SessionCompletion struct {
 	ScoreReflection   *int
 }
 
+// BestAttempt is a student's best attempt on an assignment and how many
+// attempts they made.
+type BestAttempt struct {
+	Session  *SessionSummary
+	Attempts int
+}
+
 // ProgressCell is the best attempt of one student on one assignment.
 type ProgressCell struct {
 	AssignmentID int64   `json:"assignmentId"`

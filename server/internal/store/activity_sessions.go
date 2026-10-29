@@ -15,7 +15,12 @@ func NewActivitySessions(db *sql.DB) *ActivitySessions { return &ActivitySession
 
 const sessionSummaryCols = `s.id, s.user_id, COALESCE(u.name,''), s.assignment_id, COALESCE(a.title,''), s.app_type, s.title, s.status, s.turns, s.progress,
 	s.score_conversation, s.score_reflection, s.teacher_score, s.cost_usd, s.started_at, s.updated_at, s.completed_at`
-const sessionFrom = ` FROM activity_sessions s LEFT JOIN users u ON u.id = s.user_id LEFT JOIN assignments a ON a.id = s.assignment_id`
+const sessionJoins = ` LEFT JOIN users u ON u.id = s.user_id LEFT JOIN assignments a ON a.id = s.assignment_id`
+const sessionFrom = ` FROM activity_sessions s` + sessionJoins
+
+// newestFirst orders attempts from the latest started; the id breaks ties
+// within the same second.
+const newestFirst = `s.started_at DESC, s.id DESC`
 
 // bestFirst orders attempts from the most to the least successful.
 const bestFirst = `CASE s.status WHEN 'completed' THEN 0 WHEN 'goal_reached' THEN 1 ELSE 2 END, s.progress DESC, s.updated_at DESC`
@@ -75,7 +80,7 @@ func (r *ActivitySessions) Detail(id int64) (*domain.SessionDetail, error) {
 
 // Latest returns the most recent attempt of a student on an assignment, or nil.
 func (r *ActivitySessions) Latest(userID, assignmentID int64) *domain.SessionSummary {
-	ss, _ := scanSummary(r.db.QueryRow(`SELECT `+sessionSummaryCols+sessionFrom+` WHERE s.user_id = ? AND s.assignment_id = ? ORDER BY s.started_at DESC LIMIT 1`, userID, assignmentID))
+	ss, _ := scanSummary(r.db.QueryRow(`SELECT `+sessionSummaryCols+sessionFrom+` WHERE s.user_id = ? AND s.assignment_id = ? ORDER BY `+newestFirst+` LIMIT 1`, userID, assignmentID))
 	return ss
 }
 
@@ -84,6 +89,73 @@ func (r *ActivitySessions) Best(userID, assignmentID int64) *domain.SessionSumma
 	ss, _ := scanSummary(r.db.QueryRow(`SELECT `+sessionSummaryCols+sessionFrom+` WHERE s.user_id = ? AND s.assignment_id = ?
 		ORDER BY `+bestFirst+` LIMIT 1`, userID, assignmentID))
 	return ss
+}
+
+// rankedSessions selects the first attempt of each partition in the given
+// order, with the partition size, from the attempts matching where (one
+// query instead of one per student or assignment).
+func (r *ActivitySessions) rankedSessions(partition, order, where string, args ...any) (*sql.Rows, error) {
+	return r.db.Query(`WITH ranked AS (SELECT s.id, ROW_NUMBER() OVER (PARTITION BY `+partition+` ORDER BY `+order+`) AS rn,
+		COUNT(*) OVER (PARTITION BY `+partition+`) AS n FROM activity_sessions s WHERE `+where+`)
+		SELECT `+sessionSummaryCols+`, ranked.n FROM ranked JOIN activity_sessions s ON s.id = ranked.id`+sessionJoins+` WHERE ranked.rn = 1`, args...)
+}
+
+// BestPerUser returns, for an assignment, each student's best attempt and
+// number of attempts, by user id.
+func (r *ActivitySessions) BestPerUser(assignmentID int64) (map[int64]domain.BestAttempt, error) {
+	rows, err := r.rankedSessions(`s.user_id`, bestFirst, `s.assignment_id = ? AND s.user_id IS NOT NULL`, assignmentID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	out := map[int64]domain.BestAttempt{}
+	for rows.Next() {
+		var n int
+		if ss, err := scanSummary(rows, &n); err == nil && ss.UserID != nil {
+			out[*ss.UserID] = domain.BestAttempt{Session: ss, Attempts: n}
+		}
+	}
+	return out, rows.Err()
+}
+
+// LatestPerAssignment returns a user's most recent attempt on each
+// assignment, by assignment id.
+func (r *ActivitySessions) LatestPerAssignment(userID int64) (map[int64]*domain.SessionSummary, error) {
+	rows, err := r.rankedSessions(`s.assignment_id`, newestFirst, `s.user_id = ? AND s.assignment_id IS NOT NULL`, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	out := map[int64]*domain.SessionSummary{}
+	for rows.Next() {
+		var n int
+		if ss, err := scanSummary(rows, &n); err == nil && ss.AssignmentID != nil {
+			out[*ss.AssignmentID] = ss
+		}
+	}
+	return out, rows.Err()
+}
+
+// StatsForClass counts, for each assignment of a class, the students who
+// started it and those who completed it or reached its goals.
+func (r *ActivitySessions) StatsForClass(classID int64) (map[int64]domain.AssignStats, error) {
+	rows, err := r.db.Query(`SELECT s.assignment_id, COUNT(DISTINCT s.user_id),
+		COUNT(DISTINCT CASE WHEN s.status IN ('completed','goal_reached') THEN s.user_id END)
+		FROM activity_sessions s JOIN assignments a ON a.id = s.assignment_id WHERE a.class_id = ? GROUP BY s.assignment_id`, classID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	out := map[int64]domain.AssignStats{}
+	for rows.Next() {
+		var id int64
+		var st domain.AssignStats
+		if err := rows.Scan(&id, &st.Started, &st.Completed); err != nil {
+			return nil, err
+		}
+		out[id] = st
+	}
+	return out, rows.Err()
 }
 
 // ListForUser returns a user's attempts, newest first, without empty abandoned ones.
@@ -244,21 +316,6 @@ func (r *ActivitySessions) AddCost(id int64, usd float64) error {
 // CountWithTurns counts the attempts where the student wrote at least once.
 func (r *ActivitySessions) CountWithTurns() int {
 	return count(r.db, `SELECT COUNT(*) FROM activity_sessions WHERE turns > 0`)
-}
-
-// CountStarted counts the students who started an assignment.
-func (r *ActivitySessions) CountStarted(assignmentID int64) int {
-	return count(r.db, `SELECT COUNT(DISTINCT user_id) FROM activity_sessions WHERE assignment_id = ?`, assignmentID)
-}
-
-// CountFinished counts the students who completed an assignment or reached its goals.
-func (r *ActivitySessions) CountFinished(assignmentID int64) int {
-	return count(r.db, `SELECT COUNT(DISTINCT user_id) FROM activity_sessions WHERE assignment_id = ? AND status IN ('completed','goal_reached')`, assignmentID)
-}
-
-// CountAttempts counts a student's attempts on an assignment.
-func (r *ActivitySessions) CountAttempts(userID, assignmentID int64) int {
-	return count(r.db, `SELECT COUNT(*) FROM activity_sessions WHERE user_id = ? AND assignment_id = ?`, userID, assignmentID)
 }
 
 // Import stores a finished copy of an attempt (from a room export) for a

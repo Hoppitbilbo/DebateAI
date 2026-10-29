@@ -170,6 +170,25 @@ func countErr(db *sql.DB, query string, args ...any) (int, error) {
 	return n, err
 }
 
+// groupedInts runs a query of (id, count) rows into a map.
+func groupedInts(db *sql.DB, query string, args ...any) (map[int64]int, error) {
+	rows, err := db.Query(query, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	out := map[int64]int{}
+	for rows.Next() {
+		var id int64
+		var n int
+		if err := rows.Scan(&id, &n); err != nil {
+			return nil, err
+		}
+		out[id] = n
+	}
+	return out, rows.Err()
+}
+
 // prefixed qualifies a comma-separated column list with a table alias.
 func prefixed(alias, cols string) string {
 	parts := strings.Split(cols, ", ")

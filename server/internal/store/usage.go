@@ -25,11 +25,23 @@ func (r *Usage) SpendSince(since string) (float64, error) {
 	return v.Float64, err
 }
 
-// UserSpendSince sums the cost of a user's calls since a timestamp.
-func (r *Usage) UserSpendSince(userID int64, since string) float64 {
-	var v sql.NullFloat64
-	_ = r.db.QueryRow(`SELECT SUM(cost_usd) FROM usage_log WHERE user_id = ? AND created_at >= ?`, userID, since).Scan(&v)
-	return v.Float64
+// SpendPerUserSince sums the cost of each user's calls since a timestamp, by user id.
+func (r *Usage) SpendPerUserSince(since string) (map[int64]float64, error) {
+	rows, err := r.db.Query(`SELECT user_id, SUM(cost_usd) FROM usage_log WHERE created_at >= ? AND user_id IS NOT NULL GROUP BY user_id`, since)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	out := map[int64]float64{}
+	for rows.Next() {
+		var id int64
+		var v float64
+		if err := rows.Scan(&id, &v); err != nil {
+			return nil, err
+		}
+		out[id] = v
+	}
+	return out, rows.Err()
 }
 
 // CountSince counts the calls since a timestamp, only failed ones when onlyErrors.

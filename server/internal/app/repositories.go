@@ -65,7 +65,7 @@ type classStore interface {
 	Members(classID int64) []domain.Member
 	Students(classID int64) ([]domain.User, error)
 	CountStudents(classID int64) int
-	CountMemberships(userID int64) int
+	CountMemberships() (map[int64]int, error)
 	AddMember(classID, userID int64, role string) error
 	RemoveMember(classID, userID int64) error
 	IsMember(classID, userID int64) bool
@@ -101,9 +101,9 @@ type sessionStore interface {
 	SetTeacherFeedback(id int64, f domain.TeacherFeedback) error
 	AddCost(id int64, usd float64) error
 	CountWithTurns() int
-	CountStarted(assignmentID int64) int
-	CountFinished(assignmentID int64) int
-	CountAttempts(userID, assignmentID int64) int
+	BestPerUser(assignmentID int64) (map[int64]domain.BestAttempt, error)
+	LatestPerAssignment(userID int64) (map[int64]*domain.SessionSummary, error)
+	StatsForClass(classID int64) (map[int64]domain.AssignStats, error)
 	Import(userID int64, assignmentID *int64, d domain.SessionDetail) (int64, error)
 }
 
@@ -164,7 +164,7 @@ type priceStore interface {
 type usageStore interface {
 	Insert(u domain.UsageRecord) error
 	SpendSince(since string) (float64, error)
-	UserSpendSince(userID int64, since string) float64
+	SpendPerUserSince(since string) (map[int64]float64, error)
 	CountSince(since string, onlyErrors bool) int
 	CountUserRequestsSince(userID int64, since, excludedTask string) (int, error)
 	CountRoomRequestsSince(roomID int64, since, excludedTask string) (int, error)

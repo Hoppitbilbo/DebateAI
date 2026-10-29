@@ -61,9 +61,19 @@ func (s *Server) handleListUsers(w http.ResponseWriter, r *http.Request) {
 	for i := range users {
 		out = append(out, userOut{User: &users[i]})
 	}
+	classes, err := s.Classes.CountMemberships()
+	if err != nil {
+		writeErr(w, 500, "internal", err.Error())
+		return
+	}
+	spend, err := s.Usage.SpendPerUserSince(app.MonthStart())
+	if err != nil {
+		writeErr(w, 500, "internal", err.Error())
+		return
+	}
 	for i := range out {
-		out[i].Classes = s.Classes.CountMemberships(out[i].ID)
-		out[i].CostUSD = s.Usage.UserSpendSince(out[i].ID, app.MonthStart())
+		out[i].Classes = classes[out[i].ID]
+		out[i].CostUSD = spend[out[i].ID]
 	}
 	writeJSON(w, 200, out)
 }

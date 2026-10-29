@@ -56,7 +56,10 @@ func TestUsageLog(t *testing.T) {
 	r.Insert(domain.UsageRecord{UserID: &uid, ProviderID: 1, Provider: "p", Model: "m", Task: "judge", CostUSD: 0.25, Error: "x"})
 	r.Insert(domain.UsageRecord{ProviderID: 1, Provider: "p", Model: "m2", Task: "chat", CostUSD: 1, OK: true})
 
-	if spent, err := r.SpendSince(""); err != nil || spent != 1.75 || r.UserSpendSince(uid, "") != 0.75 {
+	if spent, err := r.SpendSince(""); err != nil || spent != 1.75 {
+		t.Fatal("spend")
+	}
+	if per, err := r.SpendPerUserSince(""); err != nil || per[uid] != 0.75 || len(per) != 1 {
 		t.Fatal("spend")
 	}
 	if r.CountSince("", false) != 3 || r.CountSince("", true) != 1 || mustCount(t)(r.CountUserRequestsSince(uid, "", "judge")) != 1 {

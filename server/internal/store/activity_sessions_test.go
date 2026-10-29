@@ -49,8 +49,14 @@ func TestActivitySessionsLifecycle(t *testing.T) {
 	if latest := r.Latest(stud, aid); latest == nil || r.Latest(teacher, aid) != nil {
 		t.Fatal("latest")
 	}
-	if r.CountStarted(aid) != 1 || r.CountFinished(aid) != 1 || r.CountAttempts(stud, aid) != 2 || r.CountWithTurns() != 1 {
-		t.Fatal("counts")
+	if stats, _ := r.StatsForClass(classID); stats[aid].Started != 1 || stats[aid].Completed != 1 || r.CountWithTurns() != 1 {
+		t.Fatalf("counts: %+v", stats)
+	}
+	if best, _ := r.BestPerUser(aid); best[stud].Session == nil || best[stud].Session.ID != id || best[stud].Attempts != 2 {
+		t.Fatalf("best per user: %+v", best)
+	}
+	if latest, _ := r.LatestPerAssignment(stud); latest[aid] == nil || latest[aid].ID != r.Latest(stud, aid).ID {
+		t.Fatalf("latest per assignment: %+v", latest)
 	}
 	if cells, _ := r.BestPerStudent(classID); len(cells) != 1 || cells[0].SessionID != id || *cells[0].Score != 8 {
 		t.Fatalf("best per student: %+v", cells)
