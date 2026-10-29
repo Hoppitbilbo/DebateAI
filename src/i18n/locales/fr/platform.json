@@ -43,7 +43,7 @@
     "active": "En cours",
     "goal_reached": "Objectif atteint",
     "turn_limit": "Tours épuisés",
-    "completed": "Terminé",
+    "completed": "Rendu",
     "abandoned": "Abandonné"
   },
   "appNames": {

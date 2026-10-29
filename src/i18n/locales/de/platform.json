@@ -43,7 +43,7 @@
     "active": "In Bearbeitung",
     "goal_reached": "Ziel erreicht",
     "turn_limit": "Züge aufgebraucht",
-    "completed": "Abgeschlossen",
+    "completed": "Abgegeben",
     "abandoned": "Abgebrochen"
   },
   "appNames": {

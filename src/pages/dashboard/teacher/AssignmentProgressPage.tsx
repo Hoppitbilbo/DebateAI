@@ -6,6 +6,7 @@ import { FileSpreadsheet } from "lucide-react";
 import { gradesUrl, useAssignmentProgress } from "@/features/teacher/teacherApi";
 import { DashboardLayout, EmptyState, Panel, Spinner, StatusBadge } from "../common";
 import { formatDate, usd } from "@/lib/format";
+import { doneForAssignment } from "@/features/activity/attemptStatus";
 
 /** How each student is doing on one assignment. */
 const AssignmentProgressPage = () => {
@@ -15,7 +16,7 @@ const AssignmentProgressPage = () => {
   if (q.isLoading) return <DashboardLayout title="…"><Spinner /></DashboardLayout>;
   if (!q.data) return <DashboardLayout title={t("platform.errors.notFound")}><EmptyState>{t("platform.errors.notFound")}</EmptyState></DashboardLayout>;
   const { assignment: a, students } = q.data;
-  const completed = students.filter((s) => s.session && ["completed", "goal_reached"].includes(s.session.status)).length;
+  const completed = students.filter((s) => doneForAssignment(s.session?.status)).length;
   const avg = (k: "scoreConversation" | "scoreReflection") => {
     const v = students.map((s) => s.session?.[k]).filter((x): x is number => x !== undefined);
     return v.length ? (v.reduce((p, c) => p + c, 0) / v.length).toFixed(1) : "–";

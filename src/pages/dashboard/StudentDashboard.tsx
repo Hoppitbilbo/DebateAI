@@ -10,6 +10,7 @@ import { ApiError, Assignment } from "@/lib/api";
 import { useJoinClass, useMyAssignments, useMyClasses, useMySessions } from "@/features/student/studentApi";
 import { useAuth } from "@/context/auth";
 import { APPS } from "@/features/activity/types";
+import { doneForAssignment } from "@/features/activity/attemptStatus";
 import { AppName, DashboardLayout, EmptyState, LoadError, Panel, Spinner, StatusBadge } from "./common";
 import { formatDate } from "@/lib/format";
 import { usePageTour } from "@/features/tour/tour";
@@ -36,8 +37,8 @@ const StudentDashboard = () => {
     }
   };
 
-  const todo = (assignments.data ?? []).filter((a) => !a.mySession || !["completed", "goal_reached"].includes(a.mySession.status));
-  const done = (assignments.data ?? []).filter((a) => a.mySession && ["completed", "goal_reached"].includes(a.mySession.status));
+  const todo = (assignments.data ?? []).filter((a) => !doneForAssignment(a.mySession?.status));
+  const done = (assignments.data ?? []).filter((a) => doneForAssignment(a.mySession?.status));
 
   const AssignmentCard = ({ a }: { a: Assignment }) => {
     const overdue = a.dueAt && new Date(a.dueAt) < new Date() && !done.includes(a);

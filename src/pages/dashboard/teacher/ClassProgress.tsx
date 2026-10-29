@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import type { UseQueryResult } from "@tanstack/react-query";
 import type { Assignment, Member } from "@/lib/api";
 import { cn } from "@/lib/utils";
+import { doneForAssignment } from "@/features/activity/attemptStatus";
 import type { ProgressCell } from "@/features/teacher/teacherApi";
 import { EmptyState, Panel, Spinner } from "../common";
 
@@ -40,7 +41,7 @@ const ClassProgress = ({ students, assignments, progress }: ClassProgressProps) 
                       <td key={a.id} className="px-2 py-1.5">
                         {c ? (
                           <Link to={`/sessions/${c.sessionId}`} className={cn("block rounded px-2 py-1 text-center text-xs font-semibold",
-                            c.status === "completed" || c.status === "goal_reached" ? "bg-primary text-primary-foreground" : "bg-sky-500/20 text-sky-200")}
+                            doneForAssignment(c.status) ? "bg-primary text-primary-foreground" : "bg-sky-500/20 text-info")}
                             title={t(`platform.status.${c.status}`)}>
                             {c.progress}%{c.score !== undefined ? ` · ${c.score}` : ""}
                             {c.teacherScore !== undefined && <span className="ml-1 underline" title={t("platform.teacher.teacherScore")}>{c.teacherScore}</span>}
