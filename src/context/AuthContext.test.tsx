@@ -1,4 +1,5 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 import { describe, expect, it, vi } from "vitest";
 import { AuthProvider } from "./AuthContext";
@@ -13,10 +14,17 @@ const mocks = vi.hoisted(() => ({
     login: vi.fn(),
     logout: vi.fn().mockResolvedValue(undefined),
   },
+  resetAiStatus: vi.fn(),
 }));
 vi.mock("@/features/auth/authApi", () => ({ authApi: mocks.authApi }));
+vi.mock("@/services/aiService", () => ({ resetAiStatus: mocks.resetAiStatus }));
 
-const wrapper = ({ children }: { children: ReactNode }) => <AuthProvider>{children}</AuthProvider>;
+let queryClient = new QueryClient();
+const wrapper = ({ children }: { children: ReactNode }) => (
+  <QueryClientProvider client={queryClient}>
+    <AuthProvider>{children}</AuthProvider>
+  </QueryClientProvider>
+);
 
 describe("AuthProvider", () => {
   it("loads the config, logs in and out", async () => {
@@ -44,5 +52,34 @@ describe("AuthProvider", () => {
     const { result } = renderHook(() => useAuth(), { wrapper });
     await waitFor(() => expect(result.current.loading).toBe(false));
     expect(result.current.serverAvailable).toBe(false);
+  });
+
+  it("drops the previous account's cached data when the account changes", async () => {
+    queryClient = new QueryClient();
+    mocks.resetAiStatus.mockClear();
+    const { result } = renderHook(() => useAuth(), { wrapper });
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    // The first session load clears nothing.
+    expect(mocks.resetAiStatus).not.toHaveBeenCalled();
+
+    const a = { id: 1, email: "a@x.it", name: "A", role: "student", locale: "it", active: true, createdAt: "" };
+    mocks.authApi.login.mockResolvedValue(a);
+    await act(async () => {
+      await result.current.login("a@x.it", "secret123");
+    });
+    queryClient.setQueryData(["my-sessions"], [{ id: 7 }]);
+
+    await act(async () => {
+      await result.current.logout();
+    });
+    expect(queryClient.getQueryData(["my-sessions"])).toBeUndefined();
+    expect(mocks.resetAiStatus).toHaveBeenCalledTimes(2);
+
+    queryClient.setQueryData(["my-sessions"], [{ id: 8 }]);
+    mocks.authApi.login.mockResolvedValue({ ...a, id: 2, email: "b@x.it" });
+    await act(async () => {
+      await result.current.login("b@x.it", "secret123");
+    });
+    expect(queryClient.getQueryData(["my-sessions"])).toBeUndefined();
   });
 });
