@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import type { ChatMessage } from "@/services/aiService";
+import type { ChatMessage, PromptRecipe } from "@/services/aiService";
 import { useAiClient } from "@/services/aiClient";
 import { useLiveAi } from "@/hooks/useLiveAi";
 import type { ActivitySession, EndReason } from "./useActivitySession";
@@ -8,7 +8,8 @@ import { ActivityMessage, newId } from "./types";
 import { useMessageState } from "./useMessageState";
 
 interface LiveConfig {
-  systemInstruction?: string;
+  /** The server writes the voice instructions from it. */
+  recipe?: PromptRecipe;
   characterName?: string;
   characterBio?: string;
 }
@@ -24,7 +25,8 @@ interface Options {
 }
 
 interface RespondArgs {
-  system: string;
+  /** What the character is; the server writes its instructions from it. */
+  recipe: PromptRecipe;
   history?: ChatMessage[];
   name?: string;
   speakerKey?: string;
@@ -112,7 +114,7 @@ export const useChatEngine = ({ session, live, context, onEnded }: Options) => {
     let partial = "";
     try {
       const text = await ai.generateStream(
-        { task: "chat", system: args.system, messages: args.history ?? toHistory(messagesRef.current.filter((m) => m.id !== msg.id), args.speakerKey), sessionId: session.getSessionId(), maxTokens: args.maxTokens, signal },
+        { task: "chat", recipe: args.recipe, messages: args.history ?? toHistory(messagesRef.current.filter((m) => m.id !== msg.id), args.speakerKey), sessionId: session.getSessionId(), maxTokens: args.maxTokens, signal },
         (_d, full) => {
           partial = full;
           streamMessages((prev) => prev.map((m) => m.id === msg.id ? { ...m, content: full } : m));
@@ -141,11 +143,12 @@ export const useChatEngine = ({ session, live, context, onEnded }: Options) => {
 
   /**
    * The character speaks first, in its own voice, prompted by a hidden stage
-   * direction; `fallback` is shown if no model answers.
+   * direction the server writes from the recipe; `fallback` is shown if no
+   * model answers.
    */
   const open = useCallback(
-    (args: Omit<RespondArgs, "history"> & { cue: string; fallback: RespondArgs["fallback"] }) =>
-      withBusy(() => respond({ ...args, history: [{ role: "user", content: args.cue }] })),
+    (args: Omit<RespondArgs, "history"> & { fallback: RespondArgs["fallback"] }) =>
+      withBusy(() => respond({ ...args, recipe: { ...args.recipe, kind: "opening" }, history: [] })),
     [withBusy, respond],
   );
 
@@ -155,7 +158,7 @@ export const useChatEngine = ({ session, live, context, onEnded }: Options) => {
 
   const liveCtl = useLiveAi({
     disabled: !live || !session.allowLive || ended,
-    systemInstruction: live?.systemInstruction,
+    recipe: live?.recipe,
     characterName: live?.characterName,
     characterBio: live?.characterBio,
     sessionId: session.sessionId,

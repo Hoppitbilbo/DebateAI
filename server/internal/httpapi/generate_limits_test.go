@@ -37,7 +37,7 @@ func TestGenerateRefusesBeyondConcurrentGenerations(t *testing.T) {
 	if err := s.Settings.SaveRouting(app.RoutingSettings{Strategy: "ordered", Tasks: map[string][]app.RouteTarget{app.TaskChat: {{ProviderID: id, Model: "m"}}}}); err != nil {
 		t.Fatal(err)
 	}
-	body := map[string]any{"messages": []map[string]string{{"role": "user", "content": "ciao"}}}
+	body := map[string]any{"recipe": wikiRecipe, "messages": []map[string]string{{"role": "user", "content": "ciao"}}}
 	if code := c.do("POST", "/api/ai/generate", body, nil); code != 200 {
 		t.Fatalf("free slot: %d", code)
 	}

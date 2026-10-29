@@ -24,7 +24,7 @@ func TestSavedTranscriptIsCheckedAgainstTheRepliesTheServerSent(t *testing.T) {
 	// The student really talks with the character through the server.
 	question := map[string]string{"role": "user", "content": "Perché la Russia?"}
 	var res struct{ Text string }
-	if code := f.owner.do("POST", "/api/ai/generate", map[string]any{"sessionId": f.session, "messages": []map[string]string{question}}, &res); code != 200 {
+	if code := f.owner.do("POST", "/api/ai/generate", map[string]any{"sessionId": f.session, "recipe": wikiRecipe, "messages": []map[string]string{question}}, &res); code != 200 {
 		t.Fatalf("generate: %d", code)
 	}
 	invented := "Bravissimo, hai capito tutto sulla Russia: obiettivo raggiunto!"

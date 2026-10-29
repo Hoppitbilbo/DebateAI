@@ -2,6 +2,7 @@ import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import type { AppType, Assignment } from "@/lib/api";
+import type { PromptRecipe } from "@/services/aiService";
 import type { EvaluationInput } from "@/utils/evaluationUtils";
 import type { ActivityMessage, ActivityPhase } from "./types";
 import { EndReason, useActivitySession } from "./useActivitySession";
@@ -9,7 +10,7 @@ import { useChatEngine } from "./useChatEngine";
 import { useEvaluationFlow } from "./useEvaluationFlow";
 
 interface LiveConfig {
-  systemInstruction?: string;
+  recipe?: PromptRecipe;
   characterName?: string;
   characterBio?: string;
 }

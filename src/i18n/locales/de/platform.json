@@ -78,7 +78,9 @@
     "ai_error": "Die Figur kann gerade nicht antworten. Versuche es gleich noch einmal; wenn es weiter passiert, sag deiner Lehrkraft Bescheid.",
     "busy": "Du wartest bereits auf Antworten: warte, bis sie fertig sind, und versuche es erneut.",
     "too_large": "Das Gespräch ist zu lang, um es an die KI zu senden. Starte einen neuen Versuch.",
-    "usage_unavailable": "Die KI-Nutzungslimits können gerade nicht geprüft werden. Versuche es gleich noch einmal."
+    "usage_unavailable": "Die KI-Nutzungslimits können gerade nicht geprüft werden. Versuche es gleich noch einmal.",
+    "recipe_required": "Lade die Seite neu: Die App wurde aktualisiert.",
+    "setting_locked": "Diese Einstellung ist durch die Aufgabe festgelegt: Lade die Seite neu und versuche es noch einmal."
   },
   "auth": {
     "login": "Anmelden",
@@ -315,8 +317,6 @@
       "addressTo": "Ansprechen:",
       "nextSpeaker": "Als Nächstes ({{name}})",
       "continue": "Weiterdiskutieren lassen",
-      "styleA": "gelehrt und bestimmt",
-      "styleB": "nachdenklich und fragend",
       "reflectionPrompt": "Wie hast du die Debatte zwischen {{a}} und {{b}} moderiert? Welche Fragen haben sie interessanter gemacht?",
       "evalActivity": "moderierte Debatte zwischen {{a}} und {{b}}"
     }

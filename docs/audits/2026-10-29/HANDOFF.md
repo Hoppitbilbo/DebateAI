@@ -10,7 +10,7 @@ Read this instead of re-deriving the work. The source audit is `REVIEW.md` in th
 - Branch: `fix/audit-pass1`, based on `master@f1d7178`. Pushed; **PR #21** is open, not merged. Merging to `master` deploys to production on Vercel, so ask the user before merging. Push new commits to the same branch (the PR follows).
 - Verification (all were green at hand-off):
   - `cd server && go vet ./... && go test ./...`; for concurrent code also `go test -race ./internal/...`. Sockets work in this environment, so the `httptest` suites run.
-  - `npm run lint && npx tsc --noEmit -p tsconfig.app.json && npm test && npm run build` (237 Vitest tests).
+  - `npm run lint && npx tsc --noEmit -p tsconfig.app.json && npm test && npm run build` (240 Vitest tests on `server-prompts`).
   - `npm run check:i18n` (962 keys, 5 locales: it, en, es, fr, de). Every new UI string goes into all five `src/i18n/locales/*/platform.json`.
   - API contract: `TestResponseShapes` compares against `server/internal/httpapi/testdata/shapes.json`. If a change is intended, regenerate with `cd server && UPDATE_SHAPES=1 go test ./internal/httpapi -run ResponseShapes` and say so in the Registro.
 
@@ -42,6 +42,7 @@ Read this instead of re-deriving the work. The source audit is `REVIEW.md` in th
 | UI | `61d660c`, `1fd0280`, `b689a11`, `fc23b65`, `184cd6d`, `5c2d728`, `f8108eb`, `2776929` | `<html lang>` sync; `--warning`/`--info` tokens (`text-warning`, `text-info`); `LoadError` in `dashboard/common.tsx`; `WikiSearchSelect` states and aborts, `wikiLanguage()`; icon-only account button below `sm`, compact stepper; WikiChat tutorial linked; `features/activity/attemptStatus.ts`; compact Apps page with named launch links. |
 | tests | `b26b65a` | `src/test/setup.ts` starts every file in Italian (lazy languages race otherwise). |
 | #3 (verified transcripts) | `124f734` | Branch `safe-the-grade`. `ai_replies` (`store/replies.go`), recorded in `handleGenerate` for chat with a session; `checkTranscript`/`sessionService.check` in `app/verification.go`; `SaveTranscript` judges `checked.evidence`, `Evaluate` too; `unverifiedLines` in `SessionSummary`, `voice` in `SessionDetail` (from `live_grants.session_id`). |
+| #3 (prompts built by the server) | `3111b4f`…`0dcb5e2` | Branch `server-prompts` (from `safe-the-grade`), plan in `PLAN_SERVER_PROMPTS.md`. `app/prompts.go`: `PromptRecipe`, `validate` (limits in `limits.go`), `buildPrompt` (templates ported from the removed `prompts.ts`/`difficulty.ts`, English moderated style, guard line), `checkLocked`, `ComposePrompt`. `/api/ai/generate` (chat) and `/api/ai/live/token` take `recipe` and refuse `system`/`systemInstruction` alone (400 `recipe_required`); a recipe that contradicts the assignment gets 409 `setting_locked` before any AI call; 400 `bad_recipe`. `SessionSvc.AssignmentOf`. Client: `recipeFor()` (`features/activity/recipe.ts`), `useChatEngine.respond/open` and `useLiveAi` take a recipe only. Parity reference: `app/testdata/prompts.json` (`TestBuildPromptMatchesFixtures`). |
 
 ## Invariants: do not break
 
@@ -63,6 +64,7 @@ Read this instead of re-deriving the work. The source audit is `REVIEW.md` in th
 9. **`judge: false` is forwarded** by `sync` (it used to be dropped). You Moderate's `speakAlone` saves with `{ judge: false }`, because a line spoken without a moderator turn is not a student turn.
 10. **Start of assigned work**: `useActivityFlow.begin` returns `false` and stays on setup when a logged-in user has an assignment but the session could not be created. All six pages do `if (!(await flow.begin(...))) return;`. Free practice continues, with `session.startFailed` driving the "not being saved" notice.
 11. The submission notice distinguishes `submitted` (assignment, "Handed in") from `savedToHistory` (free practice). AI feedback and hand-in are separate states.
+12. **Chat and voice instructions are built only by `buildPrompt`; the browser sends recipes.** `/api/ai/generate` with `task: chat` and `/api/ai/live/token` refuse a request without `recipe` (`recipe_required`), and every recipe goes through `checkLocked` against the attempt's assignment before the AI is called. Do not add a path that forwards a browser-written system prompt for a character. A deliberate change to a template must also change the expected text in `app/testdata/prompts.json`.
 
 ## Remaining work, in suggested order
 
@@ -70,7 +72,7 @@ Read this instead of re-deriving the work. The source audit is `REVIEW.md` in th
 
 - **#1 resume after reload.** A resumable session route: hydrate from `GET /api/sessions/{id}` (it includes `revision`; set `revisionRef` from it) and rebuild each page's setup (characters, topic) from the saved `context`. Per-app work on six pages; restart must clearly mean a new attempt. The unsent draft is already kept (`draft.ts`).
 - **#3 system lines.** Verified transcripts (`safe-the-grade`) check only AI lines; the app's own `system` lines (e.g. the mystery final-guess log) are still taken as sent.
-- **#3 prompts built by the browser.** Each page builds the character's system prompt (`features/activity/prompts.ts`) and sends it to `/api/ai/generate`; checking the saved `context` against the assignment would only make the record match, not the prompt. Real protection means building prompts on the server for the six apps. Decide with the user before starting.
+- **#3 recipes without a session.** Locked settings are checked against the attempt sent as `sessionId`. A request that leaves it out is free practice (no lock), but then its replies are not recorded and the saved transcript shows them as unverified lines. Bios still come from the browser (accepted risk in the plan).
 - **#4** Reservations use a fixed estimate, released after the call rather than reconciled; live voice is granted but not reserved.
 
 ### Smaller leftovers
@@ -85,7 +87,7 @@ Read this instead of re-deriving the work. The source audit is `REVIEW.md` in th
 
 ### Browser walkthrough recipe
 
-A full flow was run with the real Go server (`go build`, `PORT=8091 DATA_DIR=… APP_SECRET=… ADMIN_EMAIL=… ADMIN_PASSWORD=…`), a Node mock of an OpenAI-compatible provider (free model via `/models` pricing `"0"`, slow SSE answers, an evaluation answer with `SCORE_` lines) added through `POST /api/admin/providers`, and Playwright from `node_modules/playwright` (skip the tour with the text "Salta"; the character search is the `combobox`). Kill the old server before restarting: it was started as `./debateai`.
+A full flow was run with the real Go server (`go build`, `PORT=8091 DATA_DIR=… APP_SECRET=… ADMIN_EMAIL=… ADMIN_PASSWORD=…`), a Node mock of an OpenAI-compatible provider (free model via `/models` pricing `"0"`, slow SSE answers, an evaluation answer with `SCORE_` lines) added through `POST /api/admin/providers`, and Playwright from `node_modules/playwright` (skip the tour with the text "Salta"; the character search is the `combobox`). Kill the old server before restarting: it was started as `./debateai`. On `server-prompts` the check of each app also intercepted Wikipedia in Playwright (`context.route(/wikipedia\.org/)`: search, extracts, page images) and logged the `system` message the mock receives, to confirm the guard line; the JEV judge goes to the same mock, so filter prompts starting with "You are JEV". Wait for the tour dialog before clicking "Salta", and send with the "Invia" button.
 
 ## Gotchas learned
 
@@ -98,5 +100,7 @@ A full flow was run with the real Go server (`go build`, `PORT=8091 DATA_DIR=…
 - `server/internal/httpapi/e2e_test.go` asserts the exact session cost and per-task request counts. Add extra AI calls at the end of the test (before the budget block), without a `sessionId`.
 - The `byClass` rows in `shapes.json` rely on one usage row without a session (the live-usage call in `shapes_test.go` uses a session-less grant on purpose).
 - `AuthProvider` now needs a `QueryClientProvider` above it; `App.tsx` already has one, and tests must wrap it.
+- **Deploy note (`server-prompts`):** browsers still on the old frontend send `system` without `recipe` and get 400 `recipe_required` ("Reload the page: the app was updated") until they reload; the same for voice. Mention at deploy time.
+- Every httpapi test that calls `/api/ai/generate` with `task: chat` must send a recipe: use `wikiRecipe` from `helpers_test.go` (it matches a WikiChat assignment without a locked character).
 - Old browsers still on the previous frontend send the old live-usage payload and get a 409, so that usage goes unrecorded until reload. This is acceptable but worth mentioning at deploy time.
 - No live UI walkthrough was done for the new notices; they are covered by hook and component tests. A browser check of a failed save (offline) and of the hand-in states is still worth doing.
