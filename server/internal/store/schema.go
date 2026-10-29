@@ -169,6 +169,19 @@ CREATE INDEX IF NOT EXISTS idx_usage_created ON usage_log(created_at);
 DROP INDEX IF EXISTS idx_usage_user; -- covered by idx_usage_user_created
 CREATE INDEX IF NOT EXISTS idx_usage_user_created ON usage_log(user_id, created_at);
 
+CREATE TABLE IF NOT EXISTS mail_outbox (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  to_addr TEXT NOT NULL,
+  subject TEXT NOT NULL,
+  body TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  next_at TEXT,
+  attempts INTEGER NOT NULL DEFAULT 0,
+  last_error TEXT NOT NULL DEFAULT '',
+  sent_at TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_outbox_due ON mail_outbox(next_at);
+
 CREATE TABLE IF NOT EXISTS ai_inflight (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   scope TEXT NOT NULL,

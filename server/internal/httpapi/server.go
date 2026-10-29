@@ -34,6 +34,7 @@ func NewServer(cfg app.Config, services *app.Services, static fs.FS) *Server {
 			s.RoomSvc.Purge()
 		}
 	}()
+	go s.Outbox.Run(context.Background())
 	return s
 }
 

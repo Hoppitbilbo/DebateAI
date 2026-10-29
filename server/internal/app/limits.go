@@ -92,5 +92,18 @@ const (
 	roomPurgeInterval    = time.Minute
 )
 
-// smtpDialTimeout bounds the connection to the mail server.
-const smtpDialTimeout = 15 * time.Second
+// Mail: smtpDialTimeout bounds the connection to the mail server,
+// smtpExchangeTimeout the whole conversation with it.
+const (
+	smtpDialTimeout     = 15 * time.Second
+	smtpExchangeTimeout = 60 * time.Second
+)
+
+// Mail outbox (outbox.go): mails claimed per batch, how long a claimed mail
+// waits before it is due again if the process stopped, how often retries
+// are looked for.
+const (
+	outboxBatch = 20
+	outboxLease = 5 * time.Minute
+	outboxPoll  = time.Minute
+)

@@ -31,6 +31,7 @@ type Services struct {
 	Crypto        *Crypto
 	Settings      *settingsService
 	Mailer        mailer
+	Outbox        *mailOutbox
 	Gateway       *aiGateway
 	Accounts      *authService
 	ClassSvc      *classService
@@ -68,7 +69,9 @@ func NewServices(cfg Config, db *sql.DB, opts ...Option) *Services {
 		Crypto:        NewCrypto(cfg.Secret),
 	}
 	sv.Settings = &settingsService{store: newCachedSettings(sv.SettingsStore, settingsCacheTTL), crypto: sv.Crypto, smtpDefaults: cfg.SMTP}
-	sv.Mailer = smtpMailer{settings: sv.Settings}
+	direct := smtpMailer{settings: sv.Settings}
+	sv.Outbox = newMailOutbox(store.NewOutbox(db), direct.SendMail)
+	sv.Mailer = outboxMailer{smtpMailer: direct, outbox: sv.Outbox}
 	siteName := func() string { return sv.Settings.General().SiteName }
 	sv.Gateway = newAIGateway(sv.Providers, sv.Prices, sv.Usage, sv.Sessions, sv.Settings, sv.Crypto)
 	sv.Gateway.grants = sv.LiveGrants

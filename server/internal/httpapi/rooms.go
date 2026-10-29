@@ -420,7 +420,8 @@ func (s *Server) handleRoomImportPreview(w http.ResponseWriter, r *http.Request)
 }
 
 // handleCronPurgeRooms is called by Vercel Cron with the CRON_SECRET; the
-// rooms are also purged on every room request, this is the safety net.
+// rooms are also purged on every room request, this is the safety net. It
+// also delivers the mails a frozen serverless instance left in the outbox.
 func (s *Server) handleCronPurgeRooms(w http.ResponseWriter, r *http.Request) {
 	want := "Bearer " + s.cfg.CronSecret
 	if s.cfg.CronSecret == "" || subtle.ConstantTimeCompare([]byte(r.Header.Get("Authorization")), []byte(want)) != 1 {
@@ -428,5 +429,6 @@ func (s *Server) handleCronPurgeRooms(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	s.RoomSvc.Purge()
+	s.Outbox.Deliver(r.Context())
 	writeOK(w)
 }
