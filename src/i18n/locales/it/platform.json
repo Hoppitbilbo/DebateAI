@@ -158,7 +158,8 @@
     "continueToReflection": "Avanti: riflessione",
     "startFailed": "Non è stato possibile avviare il compito sul server. Controlla la connessione e riprova.",
     "notSaved": "Questa esercitazione non viene salvata: il server non risponde. Puoi continuare e scaricare la conversazione alla fine.",
-    "saveFailed": "Ultimo messaggio non salvato sul server."
+    "saveFailed": "Ultimo messaggio non salvato sul server.",
+    "stepOf": "Passo {{n}} di {{total}}: {{label}}"
   },
   "assignment": {
     "label": "Compito",

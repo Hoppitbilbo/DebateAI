@@ -158,7 +158,8 @@
     "continueToReflection": "Next: reflection",
     "startFailed": "The assignment could not be started on the server. Check your connection and try again.",
     "notSaved": "This practice is not being saved: the server is not responding. You can go on and download the conversation at the end.",
-    "saveFailed": "Your last message was not saved on the server."
+    "saveFailed": "Your last message was not saved on the server.",
+    "stepOf": "Step {{n}} of {{total}}: {{label}}"
   },
   "assignment": {
     "label": "Assignment",

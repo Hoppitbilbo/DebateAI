@@ -158,7 +158,8 @@
     "continueToReflection": "Suite : réflexion",
     "startFailed": "Le devoir n'a pas pu être lancé sur le serveur. Vérifie ta connexion et réessaie.",
     "notSaved": "Cet exercice n'est pas enregistré : le serveur ne répond pas. Tu peux continuer et télécharger la conversation à la fin.",
-    "saveFailed": "Ton dernier message n'a pas été enregistré sur le serveur."
+    "saveFailed": "Ton dernier message n'a pas été enregistré sur le serveur.",
+    "stepOf": "Étape {{n}} sur {{total}} : {{label}}"
   },
   "assignment": {
     "label": "Devoir",

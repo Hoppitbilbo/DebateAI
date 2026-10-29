@@ -158,7 +158,8 @@
     "continueToReflection": "Siguiente: reflexión",
     "startFailed": "No se pudo iniciar la tarea en el servidor. Comprueba la conexión y vuelve a intentarlo.",
     "notSaved": "Esta práctica no se está guardando: el servidor no responde. Puedes continuar y descargar la conversación al final.",
-    "saveFailed": "Tu último mensaje no se guardó en el servidor."
+    "saveFailed": "Tu último mensaje no se guardó en el servidor.",
+    "stepOf": "Paso {{n}} de {{total}}: {{label}}"
   },
   "assignment": {
     "label": "Tarea",

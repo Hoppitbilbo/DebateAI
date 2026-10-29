@@ -158,7 +158,8 @@
     "continueToReflection": "Weiter: Reflexion",
     "startFailed": "Die Aufgabe konnte auf dem Server nicht gestartet werden. Prüfe deine Verbindung und versuche es erneut.",
     "notSaved": "Diese Übung wird nicht gespeichert: Der Server antwortet nicht. Du kannst weitermachen und das Gespräch am Ende herunterladen.",
-    "saveFailed": "Deine letzte Nachricht wurde nicht auf dem Server gespeichert."
+    "saveFailed": "Deine letzte Nachricht wurde nicht auf dem Server gespeichert.",
+    "stepOf": "Schritt {{n}} von {{total}}: {{label}}"
   },
   "assignment": {
     "label": "Aufgabe",

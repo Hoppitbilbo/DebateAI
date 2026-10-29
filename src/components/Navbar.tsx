@@ -52,7 +52,10 @@ const Navbar = () => {
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link to="/" onClick={morph("/")} className="logo flex items-center gap-2 text-xl font-bold text-education">
           <LogoMark className="h-9 w-9 shrink-0 transition-transform duration-300 hover:-rotate-6" />
-          {config?.siteName && config.siteName !== "AiDebate.tech" ? config.siteName : <span>AiDebate<span className="text-foreground">.tech</span></span>}
+          {/* Very narrow screens (a phone at 200% zoom) keep only the mark; the name stays for screen readers. */}
+          <span className="max-[359px]:sr-only">
+            {config?.siteName && config.siteName !== "AiDebate.tech" ? config.siteName : <>AiDebate<span className="text-foreground">.tech</span></>}
+          </span>
         </Link>
 
         <nav className="hidden items-center gap-1 md:flex" aria-label={t("platform.nav.main")} data-tour="nav-links">
@@ -67,9 +70,10 @@ const Navbar = () => {
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="ml-1 border-education text-education hover:bg-education hover:text-education-dark" data-tour="user-menu">
-                  <UserRound className="mr-2 h-4 w-4" />
-                  <span className="max-w-[120px] truncate">{user.name}</span>
+                {/* On a phone only the icon: a long name would push the menu off screen. */}
+                <Button variant="outline" size="sm" aria-label={user.name} className="ml-1 border-education text-education hover:bg-education hover:text-education-dark" data-tour="user-menu">
+                  <UserRound className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden max-w-[120px] truncate sm:inline">{user.name}</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">

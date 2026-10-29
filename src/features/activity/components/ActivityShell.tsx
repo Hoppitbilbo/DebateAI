@@ -43,6 +43,7 @@ const ActivityShell = ({ app, phase, session, onReset, children, phaseLabels }: 
   const title = t(`apps.${app.i18nKey}.title`);
   const description = t(`apps.${app.i18nKey}.description`, { defaultValue: "" }) || t(`apps.${app.i18nKey}.subtitle`, { defaultValue: "" });
   const currentIndex = PHASES.indexOf(phase);
+  const labelOf = (p: ActivityPhase) => phaseLabels?.[p] ?? t(`platform.activity.phase.${p}`);
 
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground">
@@ -77,23 +78,32 @@ const ActivityShell = ({ app, phase, session, onReset, children, phaseLabels }: 
             </div>
           </header>
 
-          <ol className="grid grid-cols-4 gap-2" aria-label={t("platform.activity.steps")} data-tour="activity-steps">
-            {PHASES.map((p, i) => (
-              <li
-                key={p}
-                className={cn(
-                  "truncate rounded-md border px-1 py-2 text-center text-[11px] font-medium sm:px-3 sm:text-sm",
-                  i < currentIndex && "border-primary/40 bg-primary/10 text-primary",
-                  i === currentIndex && "border-primary bg-primary text-primary-foreground",
-                  i > currentIndex && "border-border text-muted-foreground",
-                )}
-                aria-current={i === currentIndex ? "step" : undefined}
-              >
-                <span className="mr-1 hidden opacity-70 sm:inline">{i + 1}.</span>
-                {phaseLabels?.[p] ?? t(`platform.activity.phase.${p}`)}
-              </li>
-            ))}
-          </ol>
+          {/* On a phone the four labels do not fit: one line says where you
+              are, the steps become thin bars (their labels stay for screen readers). */}
+          <div>
+            <p className="mb-1.5 text-sm font-medium text-primary sm:hidden" aria-hidden="true">
+              {t("platform.activity.stepOf", { n: currentIndex + 1, total: PHASES.length, label: labelOf(PHASES[currentIndex]) })}
+            </p>
+            <ol className="grid grid-cols-4 gap-1.5 sm:gap-2" aria-label={t("platform.activity.steps")} data-tour="activity-steps">
+              {PHASES.map((p, i) => (
+                <li
+                  key={p}
+                  className={cn(
+                    "h-1.5 truncate rounded-full border sm:h-auto sm:rounded-md sm:px-3 sm:py-2 sm:text-center sm:text-sm sm:font-medium",
+                    i < currentIndex && "border-primary/40 bg-primary/40 sm:bg-primary/10 sm:text-primary",
+                    i === currentIndex && "border-primary bg-primary sm:text-primary-foreground",
+                    i > currentIndex && "border-border bg-border sm:bg-transparent sm:text-muted-foreground",
+                  )}
+                  aria-current={i === currentIndex ? "step" : undefined}
+                >
+                  <span className="sr-only sm:not-sr-only">
+                    <span className="mr-1 opacity-70">{i + 1}.</span>
+                    {labelOf(p)}
+                  </span>
+                </li>
+              ))}
+            </ol>
+          </div>
 
           {status && !status.text && (
             <div className="flex items-start gap-3 rounded-lg border border-amber-400/50 bg-amber-400/10 p-4 text-sm">
