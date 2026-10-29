@@ -70,7 +70,7 @@ Read this instead of re-deriving the work. The source audit is `REVIEW.md` in th
 
 ## Remaining work, in suggested order
 
-### Decisions for the user (no code change until decided)
+### Decided by the user on 2026-10-29: kept as they are
 
 - **#14** `EvaluateEvery` defaults to 1 (the judge runs after every student turn): raising it lowers cost but notices a reached goal later.
 - Chat answers under 160 characters appear only when complete (refusal check): a product trade-off, visible in `first_text_ms`.
