@@ -10,8 +10,8 @@ Read this instead of re-deriving the work. The source audit is `REVIEW.md` in th
 - Branch: `fix/audit-pass1`, based on `master@f1d7178`. Pushed; **PR #21** is open, not merged. Merging to `master` deploys to production on Vercel, so ask the user before merging. Push new commits to the same branch (the PR follows).
 - Verification (all were green at hand-off):
   - `cd server && go vet ./... && go test ./...`; for concurrent code also `go test -race ./internal/...`. Sockets work in this environment, so the `httptest` suites run.
-  - `npm run lint && npx tsc --noEmit -p tsconfig.app.json && npm test && npm run build` (228 Vitest tests).
-  - `npm run check:i18n` (955 keys, 5 locales: it, en, es, fr, de). Every new UI string goes into all five `src/i18n/locales/*/platform.json`.
+  - `npm run lint && npx tsc --noEmit -p tsconfig.app.json && npm test && npm run build` (237 Vitest tests).
+  - `npm run check:i18n` (962 keys, 5 locales: it, en, es, fr, de). Every new UI string goes into all five `src/i18n/locales/*/platform.json`.
   - API contract: `TestResponseShapes` compares against `server/internal/httpapi/testdata/shapes.json`. If a change is intended, regenerate with `cd server && UPDATE_SHAPES=1 go test ./internal/httpapi -run ResponseShapes` and say so in the Registro.
 
 ## Done on the branch (commits after `b9c5991`, which adds the audit doc; the second session starts at `b1711aa`)
@@ -38,6 +38,9 @@ Read this instead of re-deriving the work. The source audit is `REVIEW.md` in th
 | #12 | `b4eb55a`, `35ec5ae` | Hold only for chat; `firstTextBudget`/`generateDeadline`; `targetHealth` (`app/target_health.go`); `first_delta_ms`/`first_text_ms` via `firstDeltaClock` + `meterTimed`. |
 | #15 | `7c22709` | `mail_outbox`, `store/outbox.go`, `app/outbox.go` (`outboxMailer`, `mailOutbox.Run/Deliver`); started in `NewServer`, also run by the cron. |
 | fixes | `f04cbf1`, `6fe2214` | Found in the browser walkthrough: evaluation now survives a disconnect (`context.WithoutCancel`, `evaluationDeadline`); stopped held-back streams are estimated from the provider's text. |
+| #1 (draft) | `0b6ddb8` | `features/activity/draft.ts`; `ChatPanel` `draftKey` (user + app + assignment, 24 h). |
+| UI | `61d660c`, `1fd0280`, `b689a11`, `fc23b65`, `184cd6d`, `5c2d728`, `f8108eb`, `2776929` | `<html lang>` sync; `--warning`/`--info` tokens (`text-warning`, `text-info`); `LoadError` in `dashboard/common.tsx`; `WikiSearchSelect` states and aborts, `wikiLanguage()`; icon-only account button below `sm`, compact stepper; WikiChat tutorial linked; `features/activity/attemptStatus.ts`; compact Apps page with named launch links. |
+| tests | `b26b65a` | `src/test/setup.ts` starts every file in Italian (lazy languages race otherwise). |
 
 ## Invariants: do not break
 
@@ -63,29 +66,19 @@ Read this instead of re-deriving the work. The source audit is `REVIEW.md` in th
 
 ### Correctness leftovers
 
-- **#1 local draft and resume.** A local draft of unsent text (scoped to user and session, with expiry) and a resumable session route: hydrate from `GET /api/sessions/{id}`, which includes `revision`; set `revisionRef` from it. Restart must clearly mean a new attempt.
-- **#3 prompts built by the browser.** Each page builds the character's system prompt (`features/activity/prompts.ts`) and sends it to `/api/ai/generate`; checking the saved `context` against the assignment would only make the record match, not the prompt. Real protection means building prompts on the server for the six apps (a large change: prompts, i18n, Wikipedia bios). Decide with the user before starting.
+- **#1 resume after reload.** A resumable session route: hydrate from `GET /api/sessions/{id}` (it includes `revision`; set `revisionRef` from it) and rebuild each page's setup (characters, topic) from the saved `context`. Per-app work on six pages; restart must clearly mean a new attempt. The unsent draft is already kept (`draft.ts`).
+- **#3 prompts built by the browser.** Each page builds the character's system prompt (`features/activity/prompts.ts`) and sends it to `/api/ai/generate`; checking the saved `context` against the assignment would only make the record match, not the prompt. Real protection means building prompts on the server for the six apps. Decide with the user before starting.
 - **#4** Reservations use a fixed estimate, released after the call rather than reconciled; live voice is granted but not reserved.
 
-### Pass 2 leftovers
+### Smaller leftovers
 
 - `Grades` still runs two queries per assignment. Leave `SetMaxOpenConns(1)` unless measured.
 - #8: Prism Light with only the needed languages, if code highlighting matters (the optional chunk is ~640 kB).
 - #13: the active message still reparses its Markdown on every streamed update; profile on a slow device before changing.
 - #14: `EvaluateEvery` defaults to 1; raising it is a cost/accuracy decision for the user.
 - #7 (multi-instance): provider cache invalidation only reaches the instance that handled the admin change.
-
-### Pass 3 (UI)
-
-See the "UI and usability" section of `REVIEW.md`:
-- Phone header overflow at 390 px.
-- Compact app selection.
-- `WikiSearchSelect.tsx` search states, stale-request aborts and locale normalization.
-- Error versus empty states in StudentDashboard and AdminCosts (HostRoomPage is done in `0b225ed`).
-- `index.html` has a hard-coded `lang="it"`.
-- Pale amber/sky text colors on light backgrounds.
-- WikiChat tutorial card copy.
-- Status semantics: `turn_limit` and `goal_reached` versus submitted.
+- Apps page: per-app guidance (skill practiced, typical duration, speakers) needs copy in five languages.
+- Chat answers under 160 characters appear only when complete (refusal check): a product trade-off, visible in `first_text_ms`.
 
 ### Browser walkthrough recipe
 
