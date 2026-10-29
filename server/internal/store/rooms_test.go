@@ -176,8 +176,11 @@ func TestRoomWithItsOwnAssignment(t *testing.T) {
 	r := NewRooms(db)
 
 	id, err := r.Create(domain.NewRoom{HostTokenHash: "h", TeacherID: &teacher, AppType: "impersona-tu", Title: "Dante", MaxGuests: 30,
-		ExpiresAt:     time.Now().Add(time.Hour).UTC().Format(time.RFC3339),
-		OwnAssignment: &domain.NewAssignment{Title: "Dante", AppType: "impersona-tu", Config: `{"topic":"Inferno"}`, Goals: []string{"Chiede di Virgilio"}, MaxTurns: 8, Published: true}})
+		ExpiresAt: time.Now().Add(time.Hour).UTC().Format(time.RFC3339),
+		OwnAssignments: []domain.NewAssignment{
+			{Title: "Dante", AppType: "impersona-tu", Config: `{"topic":"Inferno"}`, Goals: []string{"Chiede di Virgilio"}, MaxTurns: 8, Published: true},
+			{Title: "Chi sono?", AppType: "personaggio-misterioso", Published: true},
+		}})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -188,6 +191,12 @@ func TestRoomWithItsOwnAssignment(t *testing.T) {
 	a, err := assignments.Get(*room.AssignmentID)
 	if err != nil || a.Title != "Dante" || a.MaxTurns != 8 || len(a.Goals) != 1 || !a.Published {
 		t.Fatalf("own assignment: %v %+v", err, a)
+	}
+	if room.OwnClassID == nil || *room.OwnClassID != a.ClassID {
+		t.Fatalf("the room knows its hidden class: %v", room.OwnClassID)
+	}
+	if path, _ := assignments.ListForClass(a.ClassID); len(path) != 2 {
+		t.Fatalf("both activities live in the hidden class: %d", len(path))
 	}
 	hidden, _ := classes.Get(a.ClassID)
 	if !hidden.Archived {
@@ -236,7 +245,7 @@ func TestRoomWithoutAccountHasAnAssignmentWithoutAuthor(t *testing.T) {
 	db := openTestDB(t)
 	r := NewRooms(db)
 	id, err := r.Create(domain.NewRoom{HostTokenHash: "h", AppType: "convinci-tu", MaxGuests: 30, ExpiresAt: time.Now().Add(time.Hour).UTC().Format(time.RFC3339),
-		OwnAssignment: &domain.NewAssignment{Title: "Debate", AppType: "convinci-tu", Config: "{}", Published: true}})
+		OwnAssignments: []domain.NewAssignment{{Title: "Debate", AppType: "convinci-tu", Config: "{}", Published: true}}})
 	if err != nil {
 		t.Fatal(err)
 	}

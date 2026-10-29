@@ -355,6 +355,52 @@ func TestRoomWithItsOwnAssignment(t *testing.T) {
 	}
 }
 
+// A path of activities: the guests may work on every step, see them in
+// order with their progress, and nothing else of the platform.
+func TestRoomWithAPath(t *testing.T) {
+	s := newTestServer(t)
+	step := func(title, app string) AssignmentInput { return AssignmentInput{Title: ptr(title), AppType: ptr(app)} }
+	opened, err := s.RoomSvc.Open(nil, RoomRequest{Minutes: 60, Assignments: []AssignmentInput{
+		step("Chi sono?", "personaggio-misterioso"), step("Einstein e Bohr", "doppia-intervista"), step("La bomba", "convinci-tu"),
+	}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	room, _ := s.RoomSvc.ForHost(opened.HostKey)
+	if room.AppType != "personaggio-misterioso" || room.Title != "Chi sono?" {
+		t.Fatalf("the first step names the room: %+v", room)
+	}
+	view, _ := s.RoomSvc.View(room)
+	if len(view.Activities) != 3 || view.Activities[1].Title != "Einstein e Bohr" || view.Activities[2].AppType != "convinci-tu" {
+		t.Fatalf("the teacher sees the path in order: %+v", view.Activities)
+	}
+
+	guest := joinRoom(t, s, room.Code, "Anna")
+	second := view.Activities[1].AssignmentID
+	if _, err := s.SessionSvc.Start(guest, NewAttempt{AppType: "doppia-intervista", AssignmentID: second}); err != nil {
+		t.Fatalf("the guest starts the second step: %v", err)
+	}
+	gr, _ := s.RoomSvc.ForGuest(guest)
+	if len(gr.Activities) != 3 || gr.Activities[1].Status != domain.SessionActive || gr.Activities[0].Status != "" {
+		t.Fatalf("the guest sees their progress on each step: %+v", gr.Activities)
+	}
+
+	teacher := newRoomTestUser(t, s, "t@x.it", domain.RoleTeacher)
+	class, _ := s.ClassSvc.Create(teacher, "3A", "", nil)
+	other, _ := s.AssignmentSvc.Create(teacher, class.ID, AssignmentInput{Title: ptr("Altro"), AppType: ptr("convinci-tu")}, "")
+	if _, err := s.SessionSvc.Start(guest, NewAttempt{AppType: "convinci-tu", AssignmentID: other.ID}); !errors.Is(err, ErrAssignmentForbidden) {
+		t.Fatalf("a guest never reaches assignments outside the room: %v", err)
+	}
+
+	tooMany := make([]AssignmentInput, domain.MaxRoomActivities+1)
+	for i := range tooMany {
+		tooMany[i] = step("Tappa", "wiki-chatbot")
+	}
+	if _, err := s.RoomSvc.Open(nil, RoomRequest{Assignments: tooMany}); !errors.Is(err, ErrTooManyActivities) {
+		t.Fatalf("a path has at most %d steps: %v", domain.MaxRoomActivities, err)
+	}
+}
+
 // The case met in production: a paid model chosen for rooms while FreeOnly
 // is on leaves the guests without a model. The teacher's view and the
 // admin page must say so.

@@ -40,6 +40,27 @@ type Room struct {
 	CreatedAt    string `json:"createdAt"`
 	ExpiresAt    string `json:"expiresAt"`
 	GuestCount   int    `json:"guestCount"`
+	// OwnClassID is the hidden class holding the activities prepared for
+	// this room only; nil when the room uses an assignment of a real class.
+	OwnClassID *int64 `json:"-"`
+}
+
+// MaxRoomActivities bounds the activities of a room's path.
+const MaxRoomActivities = 6
+
+// RoomActivity is one step of a room's path, as the teacher and the guests
+// see it. Status and Turns are those of the guest's latest attempt.
+type RoomActivity struct {
+	AssignmentID int64  `json:"assignmentId"`
+	AppType      string `json:"appType"`
+	Title        string `json:"title"`
+	Status       string `json:"status,omitempty"`
+	Turns        int    `json:"turns,omitempty"`
+}
+
+// Holds reports whether assignment a is one of the room's activities.
+func (r *Room) Holds(a *Assignment) bool {
+	return (r.AssignmentID != nil && *r.AssignmentID == a.ID) || (r.OwnClassID != nil && *r.OwnClassID == a.ClassID)
 }
 
 // Expired reports whether the room is closed at time t.
@@ -55,9 +76,9 @@ type NewRoom struct {
 	AppType       string
 	MaxGuests     int
 	ExpiresAt     string
-	// OwnAssignment, when set, is created with the room in a hidden class of
-	// its own and deleted with it; AssignmentID is then filled in.
-	OwnAssignment *NewAssignment
+	// OwnAssignments, when set, are created with the room in a hidden class
+	// of its own and deleted with it; AssignmentID is then the first one.
+	OwnAssignments []NewAssignment
 }
 
 // RoomGuest is a student inside a room, as the teacher sees it.

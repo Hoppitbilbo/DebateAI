@@ -23,19 +23,20 @@ func NewRooms(db *sql.DB) *Rooms { return &Rooms{db: db} }
 // errNoRoomCode means no free room code was found after several attempts.
 var errNoRoomCode = errors.New("could not create room")
 
-const roomSelect = `SELECT r.id, r.code, r.title, r.instructions, r.app_type, r.assignment_id, r.teacher_id, r.locked, r.max_guests, r.created_at, r.expires_at,
+const roomSelect = `SELECT r.id, r.code, r.title, r.instructions, r.app_type, r.assignment_id, r.teacher_id, r.locked, r.max_guests, r.created_at, r.expires_at, r.own_class_id,
 	(SELECT COUNT(*) FROM room_guests g WHERE g.room_id = r.id)
 	FROM rooms r`
 
 func scanRoom(row interface{ Scan(...any) error }) (*domain.Room, error) {
 	var r domain.Room
-	var assignment, teacher sql.NullInt64
+	var assignment, teacher, ownClass sql.NullInt64
 	var locked int
-	if err := row.Scan(&r.ID, &r.Code, &r.Title, &r.Instructions, &r.AppType, &assignment, &teacher, &locked, &r.MaxGuests, &r.CreatedAt, &r.ExpiresAt, &r.GuestCount); err != nil {
+	if err := row.Scan(&r.ID, &r.Code, &r.Title, &r.Instructions, &r.AppType, &assignment, &teacher, &locked, &r.MaxGuests, &r.CreatedAt, &r.ExpiresAt, &ownClass, &r.GuestCount); err != nil {
 		return nil, err
 	}
 	r.AssignmentID = nullIntPtr64(assignment)
 	r.TeacherID = nullIntPtr64(teacher)
+	r.OwnClassID = nullIntPtr64(ownClass)
 	r.Locked = locked == 1
 	return &r, nil
 }
@@ -47,8 +48,8 @@ func nullIntPtr64(v sql.NullInt64) *int64 {
 	return &v.Int64
 }
 
-// Create inserts a room with a fresh join code; with an OwnAssignment it
-// also creates that assignment in a hidden, archived class of its own.
+// Create inserts a room with a fresh join code; with OwnAssignments it also
+// creates them, in order, in a hidden, archived class of its own.
 func (r *Rooms) Create(n domain.NewRoom) (int64, error) {
 	tx, err := r.db.Begin()
 	if err != nil {
@@ -56,8 +57,8 @@ func (r *Rooms) Create(n domain.NewRoom) (int64, error) {
 	}
 	defer tx.Rollback()
 	var ownClass *int64
-	if n.OwnAssignment != nil {
-		classID, assignmentID, err := insertRoomAssignment(tx, n)
+	if len(n.OwnAssignments) > 0 {
+		classID, assignmentID, err := insertRoomAssignments(tx, n)
 		if err != nil {
 			return 0, err
 		}
@@ -70,15 +71,23 @@ func (r *Rooms) Create(n domain.NewRoom) (int64, error) {
 	return id, tx.Commit()
 }
 
-// insertRoomAssignment creates the hidden class of a room and its assignment.
-func insertRoomAssignment(tx *sql.Tx, n domain.NewRoom) (classID, assignmentID int64, err error) {
-	if classID, err = insertClass(tx, n.OwnAssignment.Title, "", n.TeacherID, true); err != nil {
+// insertRoomAssignments creates the hidden class of a room and its
+// assignments; it returns the class and the first assignment.
+func insertRoomAssignments(tx *sql.Tx, n domain.NewRoom) (classID, firstID int64, err error) {
+	if classID, err = insertClass(tx, n.OwnAssignments[0].Title, "", n.TeacherID, true); err != nil {
 		return 0, 0, err
 	}
-	a := *n.OwnAssignment
-	a.ClassID, a.CreatedBy = classID, n.TeacherID
-	assignmentID, err = insertAssignment(tx, a)
-	return classID, assignmentID, err
+	for i, a := range n.OwnAssignments {
+		a.ClassID, a.CreatedBy = classID, n.TeacherID
+		id, err := insertAssignment(tx, a)
+		if err != nil {
+			return 0, 0, err
+		}
+		if i == 0 {
+			firstID = id
+		}
+	}
+	return classID, firstID, nil
 }
 
 func insertRoom(tx *sql.Tx, n domain.NewRoom, ownClass *int64) (int64, error) {

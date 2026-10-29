@@ -1,12 +1,14 @@
 package app
 
 import (
+	"cmp"
 	"crypto/rand"
 	"crypto/subtle"
 	"errors"
 	"fmt"
 	"math/big"
 	"regexp"
+	"slices"
 	"strings"
 	"sync/atomic"
 	"time"
@@ -66,7 +68,11 @@ type RoomRequest struct {
 	// goals, turns): it lives and dies with the room. Without it and without
 	// AssignmentID the students choose freely.
 	Assignment *AssignmentInput `json:"assignment"`
-	Minutes    int              `json:"minutes"`
+	// Assignments is the room's path: several activities prepared for this
+	// room only, done in order (at most domain.MaxRoomActivities). It
+	// replaces Assignment.
+	Assignments []AssignmentInput `json:"assignments"`
+	Minutes     int               `json:"minutes"`
 	MaxGuests  int              `json:"maxGuests"`
 }
 
@@ -92,8 +98,12 @@ func (svc *roomService) Open(u *domain.User, in RoomRequest) (*OpenedRoom, error
 		if err := svc.setAssignment(&n, u, in.AssignmentID); err != nil {
 			return nil, err
 		}
+	case len(in.Assignments) > 0:
+		if err := setOwnAssignments(&n, in.Assignments); err != nil {
+			return nil, err
+		}
 	case in.Assignment != nil:
-		if err := setOwnAssignment(&n, *in.Assignment); err != nil {
+		if err := setOwnAssignments(&n, []AssignmentInput{*in.Assignment}); err != nil {
 			return nil, err
 		}
 	}
@@ -145,21 +155,31 @@ func (svc *roomService) setAssignment(n *domain.NewRoom, u *domain.User, assignm
 	return nil
 }
 
-// setOwnAssignment gives the room an assignment of its own, read like a
-// class assignment: always published, no due date (the room has its end),
-// no live voice (guests never get it).
-func setOwnAssignment(n *domain.NewRoom, in AssignmentInput) error {
-	a, err := in.newAssignment()
-	if err != nil {
-		return err
+// ErrTooManyActivities means the room's path is longer than allowed.
+var ErrTooManyActivities = fmt.Errorf("a room has at most %d activities", domain.MaxRoomActivities)
+
+// setOwnAssignments gives the room activities of its own, read like class
+// assignments: always published, no due date (the room has its end), no
+// live voice (guests never get it). The first one names the room.
+func setOwnAssignments(n *domain.NewRoom, in []AssignmentInput) error {
+	if len(in) > domain.MaxRoomActivities {
+		return ErrTooManyActivities
 	}
-	a.Published, a.AllowLive, a.DueAt = true, false, nil
-	n.OwnAssignment, n.AppType = &a, a.AppType
+	for _, input := range in {
+		a, err := input.newAssignment()
+		if err != nil {
+			return err
+		}
+		a.Published, a.AllowLive, a.DueAt = true, false, nil
+		n.OwnAssignments = append(n.OwnAssignments, a)
+	}
+	first := n.OwnAssignments[0]
+	n.AppType = first.AppType
 	if n.Title == "" {
-		n.Title = a.Title
+		n.Title = first.Title
 	}
-	if n.Instructions == "" {
-		n.Instructions = a.Instructions
+	if n.Instructions == "" && len(in) == 1 {
+		n.Instructions = first.Instructions
 	}
 	return nil
 }
@@ -227,7 +247,8 @@ type RoomView struct {
 	Now    string             `json:"now"` // server time, for the countdown
 	// AIReady is false when no AI model is usable for rooms: the guests
 	// could not chat, and the teacher must hear it before the lesson.
-	AIReady bool `json:"aiReady"`
+	AIReady    bool                  `json:"aiReady"`
+	Activities []domain.RoomActivity `json:"activities"`
 }
 
 func (svc *roomService) View(room *domain.Room) (*RoomView, error) {
@@ -235,7 +256,35 @@ func (svc *roomService) View(room *domain.Room) (*RoomView, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &RoomView{Room: room, Guests: guests, Now: svc.nowString(), AIReady: svc.aiReady()}, nil
+	return &RoomView{Room: room, Guests: guests, Now: svc.nowString(), AIReady: svc.aiReady(), Activities: svc.activities(room, nil)}, nil
+}
+
+// activities is the room's path in order: its own activities, or the one
+// assignment it was opened on. With a guest, each step carries the status
+// of the guest's latest attempt.
+func (svc *roomService) activities(room *domain.Room, guestID *int64) []domain.RoomActivity {
+	var list []*domain.Assignment
+	if room.OwnClassID != nil {
+		all, err := svc.assignments.ListForClass(*room.OwnClassID)
+		logIfErr("list room activities", err)
+		list = all
+	} else if room.AssignmentID != nil {
+		if a, err := svc.assignments.Get(*room.AssignmentID); err == nil {
+			list = []*domain.Assignment{a}
+		}
+	}
+	slices.SortFunc(list, func(a, b *domain.Assignment) int { return cmp.Compare(a.ID, b.ID) })
+	out := make([]domain.RoomActivity, 0, len(list))
+	for _, a := range list {
+		step := domain.RoomActivity{AssignmentID: a.ID, AppType: a.AppType, Title: a.Title}
+		if guestID != nil {
+			if s := svc.sessions.Latest(*guestID, a.ID); s != nil {
+				step.Status, step.Turns = s.Status, s.Turns
+			}
+		}
+		out = append(out, step)
+	}
+	return out
 }
 
 func (svc *roomService) SetLocked(room *domain.Room, locked bool) error {
@@ -394,6 +443,8 @@ type GuestRoom struct {
 	ExpiresAt    string `json:"expiresAt"`
 	Nickname     string `json:"nickname"`
 	Avatar       string `json:"avatar"`
+	// Activities is the room's path, with the guest's progress on each step.
+	Activities []domain.RoomActivity `json:"activities"`
 }
 
 // ForGuest returns the room of a guest.
@@ -410,7 +461,7 @@ func (svc *roomService) ForGuest(u *domain.User) (*GuestRoom, error) {
 		return nil, ErrGuestNotFound
 	}
 	return &GuestRoom{Title: room.Title, Instructions: room.Instructions, AppType: room.AppType, AssignmentID: room.AssignmentID,
-		ExpiresAt: room.ExpiresAt, Nickname: g.Nickname, Avatar: g.Avatar}, nil
+		ExpiresAt: room.ExpiresAt, Nickname: g.Nickname, Avatar: g.Avatar, Activities: svc.activities(room, &u.ID)}, nil
 }
 
 // AllowAI applies the room limits to an AI request of guest u: requests per
