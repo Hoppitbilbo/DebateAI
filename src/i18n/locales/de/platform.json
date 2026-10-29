@@ -21,7 +21,8 @@
     "score": "Punkte",
     "turns": "Züge",
     "cost": "Kosten",
-    "updated": "Aktualisiert"
+    "updated": "Aktualisiert",
+    "loadError": "Diese Daten konnten nicht geladen werden: prüfe die Verbindung."
   },
   "nav": {
     "main": "Hauptnavigation",

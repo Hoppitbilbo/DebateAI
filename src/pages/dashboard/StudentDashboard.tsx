@@ -10,7 +10,7 @@ import { ApiError, Assignment } from "@/lib/api";
 import { useJoinClass, useMyAssignments, useMyClasses, useMySessions } from "@/features/student/studentApi";
 import { useAuth } from "@/context/auth";
 import { APPS } from "@/features/activity/types";
-import { AppName, DashboardLayout, EmptyState, Panel, Spinner, StatusBadge } from "./common";
+import { AppName, DashboardLayout, EmptyState, LoadError, Panel, Spinner, StatusBadge } from "./common";
 import { formatDate } from "@/lib/format";
 import { usePageTour } from "@/features/tour/tour";
 
@@ -84,7 +84,7 @@ const StudentDashboard = () => {
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
           <Panel title={t("platform.student.todo")} tour="student-todo">
-            {assignments.isLoading ? <Spinner /> : todo.length === 0 ? <EmptyState>{t("platform.student.noTodo")}</EmptyState> : (
+            {assignments.isLoading ? <Spinner /> : assignments.isError && !assignments.data ? <LoadError onRetry={() => void assignments.refetch()} /> : todo.length === 0 ? <EmptyState>{t("platform.student.noTodo")}</EmptyState> : (
               <div className="grid gap-4 md:grid-cols-2">{todo.map((a) => <AssignmentCard key={a.id} a={a} />)}</div>
             )}
           </Panel>
@@ -94,7 +94,7 @@ const StudentDashboard = () => {
             </Panel>
           )}
           <Panel title={t("platform.student.history")} tour="student-history">
-            {sessions.isLoading ? <Spinner /> : (sessions.data ?? []).length === 0 ? <EmptyState>{t("platform.student.noHistory")}</EmptyState> : (
+            {sessions.isLoading ? <Spinner /> : sessions.isError && !sessions.data ? <LoadError onRetry={() => void sessions.refetch()} /> : (sessions.data ?? []).length === 0 ? <EmptyState>{t("platform.student.noHistory")}</EmptyState> : (
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead className="text-left text-muted-foreground">
@@ -136,7 +136,7 @@ const StudentDashboard = () => {
             </Panel>
           )}
           <Panel title={t("platform.student.myClasses")}>
-            {classes.isLoading ? <Spinner /> : (classes.data ?? []).length === 0 ? <EmptyState>{t("platform.student.noClasses")}</EmptyState> : (
+            {classes.isLoading ? <Spinner /> : classes.isError && !classes.data ? <LoadError onRetry={() => void classes.refetch()} /> : (classes.data ?? []).length === 0 ? <EmptyState>{t("platform.student.noClasses")}</EmptyState> : (
               <ul className="space-y-2">
                 {classes.data!.map((c) => (
                   <li key={c.id} className="rounded-md border border-border p-3">

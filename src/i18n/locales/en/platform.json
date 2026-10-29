@@ -21,7 +21,8 @@
     "score": "Score",
     "turns": "Turns",
     "cost": "Cost",
-    "updated": "Updated"
+    "updated": "Updated",
+    "loadError": "This could not be loaded: check the connection."
   },
   "nav": {
     "main": "Main navigation",

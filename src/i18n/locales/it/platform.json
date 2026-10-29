@@ -21,7 +21,8 @@
     "score": "Punteggio",
     "turns": "Turni",
     "cost": "Costo",
-    "updated": "Aggiornato"
+    "updated": "Aggiornato",
+    "loadError": "Impossibile caricare questi dati: controlla la connessione."
   },
   "nav": {
     "main": "Navigazione principale",

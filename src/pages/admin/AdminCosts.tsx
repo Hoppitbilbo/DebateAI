@@ -4,7 +4,7 @@ import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxi
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
 import { Agg, useUsageLog, useUsageSummary } from "@/features/admin/adminApi";
-import { EmptyState, Panel, Spinner, StatTile } from "../dashboard/common";
+import { EmptyState, LoadError, Panel, Spinner, StatTile } from "../dashboard/common";
 import { formatDate, usd } from "@/lib/format";
 
 const num = (n: number) => n.toLocaleString();
@@ -55,6 +55,7 @@ const AdminCosts = () => {
   const summary = useUsageSummary(days);
   const log = useUsageLog();
 
+  if (summary.isError && !summary.data) return <LoadError onRetry={() => void summary.refetch()} />;
   if (summary.isLoading || !summary.data) return <Spinner />;
   const s = summary.data;
   const total = s.byDay.reduce((p, d) => p + d.costUsd, 0);
@@ -124,7 +125,7 @@ const AdminCosts = () => {
       </div>
 
       <Panel title={t("platform.admin.costs.log")}>
-        {log.isLoading ? <Spinner /> : (
+        {log.isLoading ? <Spinner /> : log.isError && !log.data ? <LoadError onRetry={() => void log.refetch()} /> : (
           <div className="max-h-[480px] overflow-auto">
             <table className="w-full text-xs">
               <thead className="sticky top-0 bg-card text-left text-muted-foreground">

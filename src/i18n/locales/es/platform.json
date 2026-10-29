@@ -21,7 +21,8 @@
     "score": "Puntuación",
     "turns": "Turnos",
     "cost": "Coste",
-    "updated": "Actualizado"
+    "updated": "Actualizado",
+    "loadError": "No se pudieron cargar estos datos: revisa la conexión."
   },
   "nav": {
     "main": "Navegación principal",

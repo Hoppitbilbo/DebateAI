@@ -63,6 +63,19 @@ describe("StudentDashboard", () => {
     });
     expect(mocks.post).toHaveBeenCalledWith("/api/classes/join", { code: "ABC234" });
   });
+
+  it("tells a failed load from an empty list and retries", async () => {
+    const saved = routes["/api/me/assignments"];
+    delete routes["/api/me/assignments"]; // the request fails
+    renderAt("/student");
+    expect(await screen.findByText("This could not be loaded: check the connection.")).toBeTruthy();
+    expect(screen.queryByText(/nothing to do|No assignments/i)).toBeNull();
+    routes["/api/me/assignments"] = saved;
+    await act(async () => {
+      fireEvent.click(screen.getAllByRole("button", { name: "Try again" })[0]);
+    });
+    expect(await screen.findByText("Intervista a Napoleone")).toBeTruthy();
+  });
 });
 
 describe("SessionDetailPage", () => {

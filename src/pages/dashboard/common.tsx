@@ -5,6 +5,7 @@ import { Loader2, MessageSquare, Search, Speech, User, Users, BookOpen } from "l
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/auth";
 import type { AppType, Role, SessionSummary } from "@/lib/api";
@@ -78,6 +79,20 @@ export const StatusBadge = ({ status }: { status?: SessionSummary["status"] | "t
 export const EmptyState = ({ children }: { children: React.ReactNode }) => (
   <p className="rounded-md border border-dashed border-border p-6 text-center text-sm text-muted-foreground">{children}</p>
 );
+
+/**
+ * A list or page that could not be loaded: says so, instead of looking
+ * empty, and offers to try again.
+ */
+export const LoadError = ({ onRetry }: { onRetry: () => void }) => {
+  const { t } = useTranslation();
+  return (
+    <div role="alert" className="flex flex-col items-center gap-3 rounded-md border border-dashed border-destructive/50 p-6 text-center text-sm">
+      <p className="text-destructive">{t("platform.common.loadError")}</p>
+      <Button variant="outline" size="sm" onClick={onRetry}>{t("platform.activity.retry")}</Button>
+    </div>
+  );
+};
 
 export const Spinner = () => (
   <div className="flex justify-center p-8"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
