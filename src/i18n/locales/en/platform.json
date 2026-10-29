@@ -811,7 +811,7 @@
       "personaggioMisterioso": {
         "easy": "Generous clues: era, country and field come out quickly.",
         "medium": "Fair clues: you'll have to think a bit.",
-        "hard": "Cryptic answers and little-known details: for expert detectives only.",
+        "hard": "The character answers only “yes” or “no”: no clues, you need clever questions.",
         "free": "Each student picks the difficulty before starting."
       },
       "convinciTu": {
@@ -821,9 +821,9 @@
         "free": "Each student picks the difficulty before starting."
       },
       "impersonaTu": {
-        "easy": "Simple questions on the best-known facts of your character.",
-        "medium": "Questions on life, ideas and context, with corrections.",
-        "hard": "Precise questions on little-known details: every mistake gets noticed.",
+        "easy": "The character is easy-going: accepts your arguments quickly and helps you.",
+        "medium": "Defends their position: changes their mind only with good arguments.",
+        "hard": "Extremely stubborn: rebuts everything and gives in only to excellent arguments.",
         "free": "Each student picks the difficulty before starting."
       }
     }

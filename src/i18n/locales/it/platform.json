@@ -811,7 +811,7 @@
       "personaggioMisterioso": {
         "easy": "Indizi generosi: epoca, paese e campo si capiscono presto.",
         "medium": "Indizi giusti: dovrai ragionare un po'.",
-        "hard": "Risposte criptiche e dettagli poco noti: solo per detective esperti.",
+        "hard": "Il personaggio risponde solo «sì» o «no»: niente indizi, servono domande furbe.",
         "free": "Ogni studente sceglie la difficoltà prima di iniziare."
       },
       "convinciTu": {
@@ -821,9 +821,9 @@
         "free": "Ogni studente sceglie la difficoltà prima di iniziare."
       },
       "impersonaTu": {
-        "easy": "Domande semplici sui fatti più noti del tuo personaggio.",
-        "medium": "Domande su vita, idee e contesto, con correzioni.",
-        "hard": "Domande precise su dettagli poco noti: ogni errore viene notato.",
+        "easy": "Il personaggio è accomodante: accetta presto i tuoi argomenti e ti aiuta.",
+        "medium": "Difende la sua posizione: cambia idea solo con buoni argomenti.",
+        "hard": "Testardissimo: ribatte a tutto e cede solo ad argomenti eccellenti.",
         "free": "Ogni studente sceglie la difficoltà prima di iniziare."
       }
     }

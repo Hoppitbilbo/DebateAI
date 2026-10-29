@@ -11,6 +11,8 @@ describe("difficulty", () => {
   it("exists for the mystery game, Convinci tu and Impersona tu only", () => {
     expect(hasDifficulty("personaggio-misterioso")).toBe(true);
     expect(hasDifficulty("wiki-chatbot")).toBe(false);
-    expect(difficultyRule("mystery", "hard")).toMatch(/HARD/);
+    expect(difficultyRule("mystery", "hard")).toMatch(/ONLY with "Yes\." or "No\."/);
+    expect(difficultyRule("impersona", "hard")).toMatch(/stubborn/);
+    expect(difficultyRule("impersona", "easy")).toMatch(/change your mind as soon as/);
   });
 });

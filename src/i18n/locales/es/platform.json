@@ -811,7 +811,7 @@
       "personaggioMisterioso": {
         "easy": "Pistas generosas: época, país y campo se adivinan pronto.",
         "medium": "Pistas justas: tendrás que pensar un poco.",
-        "hard": "Respuestas crípticas y detalles poco conocidos: solo para detectives expertos.",
+        "hard": "El personaje responde solo «sí» o «no»: sin pistas, hacen falta preguntas astutas.",
         "free": "Cada estudiante elige la dificultad antes de empezar."
       },
       "convinciTu": {
@@ -821,9 +821,9 @@
         "free": "Cada estudiante elige la dificultad antes de empezar."
       },
       "impersonaTu": {
-        "easy": "Preguntas sencillas sobre los hechos más conocidos de tu personaje.",
-        "medium": "Preguntas sobre vida, ideas y contexto, con correcciones.",
-        "hard": "Preguntas precisas sobre detalles poco conocidos: se nota cada error.",
+        "easy": "El personaje es complaciente: acepta pronto tus argumentos y te ayuda.",
+        "medium": "Defiende su postura: cambia de idea solo con buenos argumentos.",
+        "hard": "Testarudísimo: lo rebate todo y cede solo ante argumentos excelentes.",
         "free": "Cada estudiante elige la dificultad antes de empezar."
       }
     }

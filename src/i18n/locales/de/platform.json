@@ -811,7 +811,7 @@
       "personaggioMisterioso": {
         "easy": "Großzügige Hinweise: Epoche, Land und Fachgebiet sind schnell klar.",
         "medium": "Faire Hinweise: Du musst ein wenig nachdenken.",
-        "hard": "Rätselhafte Antworten und wenig bekannte Details: nur für erfahrene Detektive.",
+        "hard": "Die Figur antwortet nur mit „Ja“ oder „Nein“: keine Hinweise, du brauchst kluge Fragen.",
         "free": "Jede Schülerin und jeder Schüler wählt vor dem Start."
       },
       "convinciTu": {
@@ -821,9 +821,9 @@
         "free": "Jede Schülerin und jeder Schüler wählt vor dem Start."
       },
       "impersonaTu": {
-        "easy": "Einfache Fragen zu den bekanntesten Fakten deiner Figur.",
-        "medium": "Fragen zu Leben, Ideen und Kontext, mit Korrekturen.",
-        "hard": "Genaue Fragen zu wenig bekannten Details: Jeder Fehler fällt auf.",
+        "easy": "Die Figur ist entgegenkommend: Sie akzeptiert deine Argumente schnell und hilft dir.",
+        "medium": "Sie verteidigt ihre Position: Sie ändert ihre Meinung nur bei guten Argumenten.",
+        "hard": "Sehr stur: Sie widerspricht allem und gibt nur bei hervorragenden Argumenten nach.",
         "free": "Jede Schülerin und jeder Schüler wählt vor dem Start."
       }
     }

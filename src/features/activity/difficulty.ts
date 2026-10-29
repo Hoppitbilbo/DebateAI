@@ -26,7 +26,7 @@ const RULES: Record<PromptApp, Record<Difficulty, string>> = {
   mystery: {
     easy: "Difficulty: EASY. Give generous clues: mention your era, country and field clearly, and describe your best-known achievements in recognisable terms (still never your name).",
     medium: "Difficulty: MEDIUM. Give fair clues: era and field may be guessed from your answers, but describe your achievements indirectly.",
-    hard: "Difficulty: HARD. Be cryptic: answer truthfully but with the least revealing details, prefer lesser-known facts of your life, avoid naming places, dates or works that point straight to you.",
+    hard: "Difficulty: HARD. This overrides the answer rules above: answer every question ONLY with \"Yes.\" or \"No.\" (in the conversation language), with no other word, detail or clue. If a question cannot be answered with yes or no, say only, in character, that you answer only yes or no. The only exception: when the student explicitly asks for a hint, give one short, vague clue.",
   },
   convinciTu: {
     easy: "Difficulty: EASY. You are open-minded: a couple of reasonable arguments are enough to make you change your mind, and you help the student by saying what would convince you.",
@@ -34,9 +34,9 @@ const RULES: Record<PromptApp, Record<Difficulty, string>> = {
     hard: "Difficulty: HARD. You are very stubborn and sharp: raise strong counter-arguments from your era, point out every weak or vague reasoning, and concede only to excellent, well-supported arguments.",
   },
   impersona: {
-    easy: "Difficulty: EASY. Be friendly and patient: ask simple questions about the best-known facts of the student's character and gently suggest corrections.",
-    medium: "Difficulty: MEDIUM. Ask questions about the life, ideas and context of the student's character and point out inaccuracies.",
-    hard: "Difficulty: HARD. Be demanding: ask precise questions on lesser-known details, dates and ideas of the student's character, challenge every inaccuracy and contradiction.",
+    easy: "Difficulty: EASY. You are easy-going: accept the student's arguments readily, change your mind as soon as they make a reasonable point, and help them by suggesting what their character could answer.",
+    medium: "Difficulty: MEDIUM. Defend your own position: change your mind only after several good, relevant arguments that answer your objections, and point out inaccuracies about the student's character.",
+    hard: "Difficulty: HARD. You are very stubborn: hold your position firmly, answer every argument with strong counter-arguments from your life and era, point out every inaccuracy about the student's character, and concede only to excellent, well-supported arguments.",
   },
 };
 
