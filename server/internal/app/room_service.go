@@ -73,7 +73,7 @@ type RoomRequest struct {
 	// replaces Assignment.
 	Assignments []AssignmentInput `json:"assignments"`
 	Minutes     int               `json:"minutes"`
-	MaxGuests  int              `json:"maxGuests"`
+	MaxGuests   int               `json:"maxGuests"`
 }
 
 // OpenedRoom is the new room with the secret key that manages it; the key
