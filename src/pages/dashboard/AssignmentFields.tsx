@@ -8,15 +8,15 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import type { AppType, AssignmentConfig, WikiRef } from "@/lib/api";
+import type { AppType } from "@/lib/api";
 import { useAiClient } from "@/services/aiClient";
-import { CharacterPicker } from "@/features/activity/components/SetupCard";
 import { uiLanguage } from "@/features/activity/prompts";
 import { APP_TYPES } from "@/features/activity/appCatalog";
-import { MAX_TEACHER_HINTS, QUESTIONS } from "@/features/activity/mystery";
+import LanguagePicker from "@/features/activity/components/LanguagePicker";
 import { TURN_BOUNDS } from "@/features/teacher/assignmentLimits";
 import { AssignmentDraft, draftLimits } from "@/features/teacher/assignmentDraft";
 import { AppName } from "./common";
+import PresetFields from "./PresetFields";
 
 /** Goals a judge can check at most (as on the server). */
 const MAX_GOALS = 12;
@@ -31,31 +31,15 @@ export const ToggleRow = ({ label, hint, checked, onChange }: { label: string; h
   </label>
 );
 
-/**
- * The fields of an activity a teacher sets: app, title, instructions, goals
- * (with AI suggestions), the choices fixed for the students, limits and
- * options. Used by class assignments and by temporary rooms.
- */
-const AssignmentFields = ({ draft, onChange, showLive = true, idPrefix = "a" }: {
-  draft: AssignmentDraft;
-  onChange: (d: AssignmentDraft) => void;
-  /** Rooms hide the live-voice option: their guests never get it. */
-  showLive?: boolean;
-  idPrefix?: string;
-}) => {
+type DraftProps = { draft: AssignmentDraft; onChange: (d: AssignmentDraft) => void; idPrefix?: string };
+
+/** Goals the judge checks, with AI suggestions from the instructions. */
+export const GoalsEditor = ({ draft, onChange }: DraftProps) => {
   const ai = useAiClient();
   const { t } = useTranslation();
   const [suggesting, setSuggesting] = useState(false);
-  const { appType, config, goals } = draft;
+  const { appType, goals } = draft;
   const set = (patch: Partial<AssignmentDraft>) => onChange({ ...draft, ...patch });
-  const setConfig = (c: AssignmentConfig) => set({ config: c });
-  const setRef = (key: keyof AssignmentConfig) => (v: WikiRef | null) => setConfig({ ...config, [key]: v ?? undefined });
-  const setPair = (i: 0 | 1) => (v: WikiRef | null) => {
-    const pair = [...(config.characters ?? [])];
-    pair[i] = v as WikiRef;
-    setConfig({ ...config, characters: pair.filter(Boolean).length ? pair : undefined });
-  };
-  const id = (name: string) => `${idPrefix}-${name}`;
 
   const suggestGoals = async () => {
     if (!draft.instructions.trim()) return toast.error(t("platform.teacher.form.writeInstructionsFirst"));
@@ -74,110 +58,45 @@ const AssignmentFields = ({ draft, onChange, showLive = true, idPrefix = "a" }: 
     }
   };
 
+  return (
+    <div className="space-y-2 rounded-md border border-primary/40 p-3">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <Label>{t("platform.teacher.form.goals")}</Label>
+          <p className="text-xs text-muted-foreground">{t("platform.teacher.form.goalsHint")}</p>
+        </div>
+        <Button type="button" variant="outline" size="sm" onClick={suggestGoals} disabled={suggesting}>
+          {suggesting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+          {t("platform.teacher.form.suggestGoals")}
+        </Button>
+      </div>
+      {goals.map((g, i) => (
+        <div key={i} className="flex gap-2">
+          <Input value={g} onChange={(e) => set({ goals: goals.map((x, j) => (j === i ? e.target.value : x)) })} placeholder={t("platform.teacher.form.goalPlaceholder", { n: i + 1 })} />
+          <Button type="button" variant="ghost" size="icon" onClick={() => set({ goals: goals.filter((_, j) => j !== i) })} aria-label={t("platform.common.delete")}>
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
+      ))}
+      {goals.length < MAX_GOALS && (
+        <Button type="button" variant="ghost" size="sm" onClick={() => set({ goals: [...goals, ""] })}>
+          <Plus className="mr-2 h-4 w-4" /> {t("platform.teacher.form.addGoal")}
+        </Button>
+      )}
+    </div>
+  );
+};
+
+/** Minimum and maximum turns, with the notes on what saving will adapt. */
+export const LimitFields = ({ draft, onChange, idPrefix = "a" }: DraftProps) => {
+  const { t } = useTranslation();
+  const set = (patch: Partial<AssignmentDraft>) => onChange({ ...draft, ...patch });
+  const id = (name: string) => `${idPrefix}-${name}`;
   const limits = draftLimits(draft);
-  const turnsFromQuestions = appType === "personaggio-misterioso" && limits.questions !== undefined;
-  const needsPair = appType === "doppia-intervista" || appType === "you-moderate";
-  const needsTopic = appType === "convinci-tu" || appType === "impersona-tu" || appType === "you-moderate";
+  const turnsFromQuestions = draft.appType === "personaggio-misterioso" && limits.questions !== undefined;
 
   return (
-    <div className="space-y-5">
-      <div className="grid gap-4 md:grid-cols-2">
-        <div className="space-y-2">
-          <Label htmlFor={id("title")}>{t("platform.teacher.form.title")}</Label>
-          <Input id={id("title")} value={draft.title} onChange={(e) => set({ title: e.target.value })} />
-        </div>
-        <div className="space-y-2">
-          <Label>{t("platform.teacher.form.app")}</Label>
-          <Select value={appType} onValueChange={(v) => set({ appType: v as AppType, config: {} })}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
-            <SelectContent>
-              {APP_TYPES.map((a) => <SelectItem key={a} value={a}><AppName type={a} /></SelectItem>)}
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor={id("instr")}>{t("platform.teacher.form.instructions")}</Label>
-        <Textarea id={id("instr")} value={draft.instructions} onChange={(e) => set({ instructions: e.target.value })} className="min-h-[110px]" placeholder={t("platform.teacher.form.instructionsPlaceholder")} />
-      </div>
-
-      <div className="space-y-2 rounded-md border border-primary/40 p-3">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <div>
-            <Label>{t("platform.teacher.form.goals")}</Label>
-            <p className="text-xs text-muted-foreground">{t("platform.teacher.form.goalsHint")}</p>
-          </div>
-          <Button type="button" variant="outline" size="sm" onClick={suggestGoals} disabled={suggesting}>
-            {suggesting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-            {t("platform.teacher.form.suggestGoals")}
-          </Button>
-        </div>
-        {goals.map((g, i) => (
-          <div key={i} className="flex gap-2">
-            <Input value={g} onChange={(e) => set({ goals: goals.map((x, j) => (j === i ? e.target.value : x)) })} placeholder={t("platform.teacher.form.goalPlaceholder", { n: i + 1 })} />
-            <Button type="button" variant="ghost" size="icon" onClick={() => set({ goals: goals.filter((_, j) => j !== i) })} aria-label={t("platform.common.delete")}>
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          </div>
-        ))}
-        {goals.length < MAX_GOALS && (
-          <Button type="button" variant="ghost" size="sm" onClick={() => set({ goals: [...goals, ""] })}>
-            <Plus className="mr-2 h-4 w-4" /> {t("platform.teacher.form.addGoal")}
-          </Button>
-        )}
-      </div>
-
-      <div className="space-y-3 rounded-md border border-border p-3">
-        <p className="text-sm font-medium">{t("platform.teacher.form.presets")}</p>
-        <p className="text-xs text-muted-foreground">{t("platform.teacher.form.presetsHint")}</p>
-        {(appType === "convinci-tu" || appType === "wiki-chatbot" || appType === "personaggio-misterioso") && (
-          <CharacterPicker label={appType === "wiki-chatbot" ? t("platform.apps.wikiChatbot.topicLabel") : t("platform.apps.common.character")} value={config.character ?? null} onChange={setRef("character")} />
-        )}
-        {appType === "impersona-tu" && (
-          <div className="grid gap-3 md:grid-cols-2">
-            <CharacterPicker label={t("platform.apps.impersonaTu.yourCharacter")} value={config.userCharacter ?? null} onChange={setRef("userCharacter")} />
-            <CharacterPicker label={t("platform.apps.impersonaTu.aiCharacter")} value={config.aiCharacter ?? null} onChange={setRef("aiCharacter")} />
-          </div>
-        )}
-        {needsPair && (
-          <div className="grid gap-3 md:grid-cols-2">
-            <CharacterPicker label={t("platform.apps.common.characterN", { n: 1 })} value={config.characters?.[0] ?? null} onChange={setPair(0)} />
-            <CharacterPicker label={t("platform.apps.common.characterN", { n: 2 })} value={config.characters?.[1] ?? null} onChange={setPair(1)} />
-          </div>
-        )}
-        {needsTopic && (
-          <div className="space-y-2">
-            <Label htmlFor={id("topic")}>{t("platform.teacher.form.topic")}</Label>
-            <Input id={id("topic")} value={config.topic ?? ""} onChange={(e) => setConfig({ ...config, topic: e.target.value || undefined })} />
-          </div>
-        )}
-        {appType === "personaggio-misterioso" && (
-          <fieldset className="space-y-2">
-            <legend className="text-sm font-medium">{t("platform.teacher.form.hints")}</legend>
-            <p className="text-xs text-muted-foreground">{config.character ? t("platform.teacher.form.hintsHint") : t("platform.teacher.form.hintsNeedCharacter")}</p>
-            {config.character && Array.from({ length: MAX_TEACHER_HINTS }, (_, i) => (
-              <Input
-                key={i}
-                aria-label={t("platform.teacher.form.hintN", { n: i + 1 })}
-                placeholder={t("platform.teacher.form.hintN", { n: i + 1 })}
-                value={config.hints?.[i] ?? ""}
-                onChange={(e) => {
-                  const hints = Array.from({ length: MAX_TEACHER_HINTS }, (_, j) => (j === i ? e.target.value : config.hints?.[j] ?? ""));
-                  setConfig({ ...config, hints: hints.some((h) => h.trim()) ? hints : undefined });
-                }}
-              />
-            ))}
-          </fieldset>
-        )}
-        {appType === "personaggio-misterioso" && (
-          <div className="space-y-2">
-            <Label htmlFor={id("q")}>{t("platform.teacher.form.questions")}</Label>
-            <Input id={id("q")} type="number" min={QUESTIONS.min} max={QUESTIONS.max} value={config.questions ?? ""} onChange={(e) => setConfig({ ...config, questions: e.target.value ? Number(e.target.value) : undefined })} />
-          </div>
-        )}
-      </div>
-
+    <>
       <div className="grid gap-4 md:grid-cols-2">
         <div className="space-y-2">
           <Label htmlFor={id("min")}>{t("platform.teacher.form.minTurns")}</Label>
@@ -208,12 +127,75 @@ const AssignmentFields = ({ draft, onChange, showLive = true, idPrefix = "a" }: 
           </ul>
         </div>
       )}
+    </>
+  );
+};
 
-      <div className="grid gap-3 md:grid-cols-2">
-        <ToggleRow label={t("platform.teacher.form.autoEnd")} hint={t("platform.teacher.form.autoEndHint")} checked={draft.autoEnd} onChange={(v) => set({ autoEnd: v })} />
-        <ToggleRow label={t("platform.teacher.form.requireReflection")} checked={draft.requireReflection} onChange={(v) => set({ requireReflection: v })} />
-        {showLive && <ToggleRow label={t("platform.teacher.form.allowLive")} hint={t("platform.teacher.form.allowLiveHint")} checked={draft.allowLive} onChange={(v) => set({ allowLive: v })} />}
+/** Ending, reflection and (for classes) live voice. */
+export const OptionToggles = ({ draft, onChange, showLive = true }: DraftProps & { showLive?: boolean }) => {
+  const { t } = useTranslation();
+  const set = (patch: Partial<AssignmentDraft>) => onChange({ ...draft, ...patch });
+  return (
+    <div className="grid gap-3 md:grid-cols-2">
+      <ToggleRow label={t("platform.teacher.form.autoEnd")} hint={t("platform.teacher.form.autoEndHint")} checked={draft.autoEnd} onChange={(v) => set({ autoEnd: v })} />
+      <ToggleRow label={t("platform.teacher.form.requireReflection")} checked={draft.requireReflection} onChange={(v) => set({ requireReflection: v })} />
+      {showLive && <ToggleRow label={t("platform.teacher.form.allowLive")} hint={t("platform.teacher.form.allowLiveHint")} checked={draft.allowLive} onChange={(v) => set({ allowLive: v })} />}
+    </div>
+  );
+};
+
+/**
+ * The fields of an activity a teacher sets: app, title, instructions, goals
+ * (with AI suggestions), the choices fixed for the students, the language
+ * the characters speak, limits and options. Used by class assignments.
+ */
+const AssignmentFields = ({ draft, onChange, showLive = true, idPrefix = "a" }: DraftProps & {
+  /** Rooms hide the live-voice option: their guests never get it. */
+  showLive?: boolean;
+}) => {
+  const { t } = useTranslation();
+  const { appType, config } = draft;
+  const set = (patch: Partial<AssignmentDraft>) => onChange({ ...draft, ...patch });
+  const id = (name: string) => `${idPrefix}-${name}`;
+
+  return (
+    <div className="space-y-5">
+      <div className="grid gap-4 md:grid-cols-2">
+        <div className="space-y-2">
+          <Label htmlFor={id("title")}>{t("platform.teacher.form.title")}</Label>
+          <Input id={id("title")} value={draft.title} onChange={(e) => set({ title: e.target.value })} />
+        </div>
+        <div className="space-y-2">
+          <Label>{t("platform.teacher.form.app")}</Label>
+          <Select value={appType} onValueChange={(v) => set({ appType: v as AppType, config: config.language ? { language: config.language } : {} })}>
+            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {APP_TYPES.map((a) => <SelectItem key={a} value={a}><AppName type={a} /></SelectItem>)}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
+
+      <div className="space-y-2">
+        <Label htmlFor={id("instr")}>{t("platform.teacher.form.instructions")}</Label>
+        <Textarea id={id("instr")} value={draft.instructions} onChange={(e) => set({ instructions: e.target.value })} className="min-h-[110px]" placeholder={t("platform.teacher.form.instructionsPlaceholder")} />
+      </div>
+
+      <GoalsEditor draft={draft} onChange={onChange} />
+
+      <div className="space-y-3 rounded-md border border-border p-3">
+        <p className="text-sm font-medium">{t("platform.teacher.form.presets")}</p>
+        <p className="text-xs text-muted-foreground">{t("platform.teacher.form.presetsHint")}</p>
+        <PresetFields draft={draft} onChange={(c) => set({ config: c })} idPrefix={idPrefix} />
+      </div>
+
+      <div className="rounded-md border border-border p-3">
+        <LanguagePicker value={config.language} onChange={(language) => set({ config: { ...config, language } })} optional label={t("platform.language.assignmentLabel")} />
+        <p className="mt-2 text-xs text-muted-foreground">{t("platform.language.assignmentHint")}</p>
+      </div>
+
+      <LimitFields draft={draft} onChange={onChange} idPrefix={idPrefix} />
+      <OptionToggles draft={draft} onChange={onChange} showLive={showLive} />
     </div>
   );
 };

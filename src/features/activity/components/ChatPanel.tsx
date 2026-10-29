@@ -12,6 +12,8 @@ import type { ActivityMessage } from "../types";
 
 interface ChatPanelProps {
   messages: ActivityMessage[];
+  /** Language of the dictation (BCP 47) when the teacher fixed one; the interface language otherwise. */
+  speechLang?: string;
   onSend: (text: string) => void;
   busy?: boolean;
   disabled?: boolean;
@@ -85,10 +87,11 @@ const ChatPanel = ({
   canRetry,
   avatarFallback,
   ended,
+  speechLang,
 }: ChatPanelProps) => {
   const { t, i18n } = useTranslation();
   const [input, setInput] = useState("");
-  const dictation = useSpeechDictation(i18n.language, setInput);
+  const dictation = useSpeechDictation(speechLang ?? i18n.language, setInput);
 
   const submit = () => {
     const text = input.trim();

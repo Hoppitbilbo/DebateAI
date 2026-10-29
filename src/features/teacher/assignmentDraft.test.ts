@@ -31,4 +31,29 @@ describe("assignment drafts", () => {
     expect(draftBody({ ...mystery, config: { hints: ["Fu imperatore"] } }).config.hints).toBeUndefined();
     expect(draftBody({ ...mystery, appType: "convinci-tu" }).config.hints).toBeUndefined();
   });
+
+  it("saves one mystery character as before, several as a list with shuffle and without hints", () => {
+    const base = { ...draftOf(), appType: "personaggio-misterioso" as const };
+    const one = draftBody({ ...base, config: { characters: [ref("Einstein")], shuffle: true, hints: ["Fisico"] } }).config;
+    expect(one.character).toEqual(ref("Einstein"));
+    expect(one.characters).toBeUndefined();
+    expect(one.shuffle).toBeUndefined();
+    expect(one.hints).toEqual(["Fisico"]);
+
+    const many = draftBody({ ...base, config: { characters: [ref("Einstein"), ref("Curie")], shuffle: true, hints: ["Fisico"] } }).config;
+    expect(many.characters).toHaveLength(2);
+    expect(many.character).toBeUndefined();
+    expect(many.shuffle).toBe(true);
+    expect(many.hints).toBeUndefined();
+  });
+
+  it("edits a saved mystery character as a one-item list", () => {
+    const a = { appType: "personaggio-misterioso", config: { character: ref("Einstein") }, goals: [] } as never;
+    expect(draftOf(a).config).toMatchObject({ characters: [ref("Einstein")], character: undefined });
+  });
+
+  it("keeps the difficulty only for the apps that have one", () => {
+    expect(draftBody({ ...draftOf(), appType: "convinci-tu", config: { difficulty: "hard" } }).config.difficulty).toBe("hard");
+    expect(draftBody({ ...draftOf(), appType: "wiki-chatbot", config: { difficulty: "hard" } }).config.difficulty).toBeUndefined();
+  });
 });

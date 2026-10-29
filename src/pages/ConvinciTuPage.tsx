@@ -9,6 +9,8 @@ import { useActivityFlow } from "@/features/activity/useActivityFlow";
 import { bioOf, useWikiSummaries } from "@/features/activity/wiki";
 import { openings, prompts } from "@/features/activity/prompts";
 import { APPS } from "@/features/activity/types";
+import { Difficulty, difficultyOf } from "@/features/activity/difficulty";
+import DifficultyPicker from "@/features/activity/components/DifficultyPicker";
 
 const app = APPS["convinci-tu"];
 
@@ -17,18 +19,21 @@ const ConvinciTuPage = () => {
   const { t } = useTranslation();
   const [character, setCharacter] = useState<WikiRef | null>(null);
   const [topic, setTopic] = useState("");
+  const [chosenLevel, setChosenLevel] = useState<Difficulty>();
 
   const { summaries, loading } = useWikiSummaries([character]);
   const bio = bioOf(character, summaries);
-  const systemFor = (assignment: Assignment | null) => (character ? prompts.convinciTu(character.title, bio, topic, assignment) : "");
+  const levelFor = (assignment: Assignment | null) => difficultyOf(assignment?.config.difficulty, chosenLevel);
+  const systemFor = (assignment: Assignment | null) => (character ? prompts.convinciTu(character.title, bio, topic, assignment, levelFor(assignment)) : "");
 
   const flow = useActivityFlow(app.type, {
     live: (phase, assignment) =>
       phase === "chat" && character ? { systemInstruction: systemFor(assignment), characterName: character.title, characterBio: bio } : null,
-    context: { character: character?.title, topic },
+    context: (assignment) => ({ character: character?.title, topic, difficulty: levelFor(assignment) }),
   });
   const { preset, engine } = flow;
   const system = systemFor(flow.session.assignment);
+  const level = levelFor(flow.session.assignment);
 
   useEffect(() => {
     if (preset.character) setCharacter(preset.character);
@@ -37,7 +42,7 @@ const ConvinciTuPage = () => {
 
   const start = async () => {
     if (!character || !topic.trim()) return;
-    await flow.begin(`${character.title}: ${topic}`, { character, topic }, []);
+    await flow.begin(`${character.title}: ${topic}`, { character, topic, difficulty: level }, []);
     await engine.open({
       system,
       cue: openings.convinciTu(topic),
@@ -76,6 +81,7 @@ const ConvinciTuPage = () => {
                 disabled={!!preset.topic}
               />
             </div>
+            <DifficultyPicker app="convinciTu" value={level} onChange={(v) => setChosenLevel(v)} locked={!!preset.difficulty} />
           </>
         ),
       }}
@@ -98,6 +104,7 @@ const ConvinciTuPage = () => {
         facts: [
           { label: t("platform.apps.common.character"), value: character?.title },
           { label: t("platform.apps.convinciTu.topicShort"), value: topic },
+          { label: t("platform.difficulty.label"), value: t(`platform.difficulty.levels.${level}`) },
         ],
       }}
     />

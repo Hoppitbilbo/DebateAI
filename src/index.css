@@ -611,3 +611,131 @@ html:has(> body[data-scroll-locked]) {
     animation: none;
   }
 }
+
+/* Difficulty picker: a yellow pill slides under the chosen level with a
+   springy ease, the chosen icon pops, the note below rises in. The pill's
+   ink colour follows the level (green, purple, red outline). */
+.difficulty-track {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(var(--difficulty-count), minmax(0, 1fr));
+  padding: 0.25rem;
+  border: 2px solid hsl(var(--foreground));
+  border-radius: 9999px;
+  background: hsl(var(--card));
+}
+
+.difficulty-pill {
+  position: absolute;
+  top: 0.25rem;
+  bottom: 0.25rem;
+  left: 0.25rem;
+  width: calc((100% - 0.5rem) / var(--difficulty-count));
+  border: 2px solid hsl(var(--foreground));
+  border-radius: 9999px;
+  background: hsl(var(--sun));
+  box-shadow: 2px 2px 0 0 hsl(var(--foreground));
+  transform: translateX(calc(var(--difficulty-index) * 100%));
+  transition: transform 420ms cubic-bezier(0.34, 1.56, 0.64, 1), background-color 200ms ease-out;
+}
+
+.difficulty-track[data-level="easy"] .difficulty-pill {
+  background: hsl(142 60% 78%);
+}
+
+.difficulty-track[data-level="hard"] .difficulty-pill {
+  background: hsl(8 85% 80%);
+}
+
+.difficulty-track[data-level="free"] .difficulty-pill {
+  background: hsl(var(--secondary));
+}
+
+.difficulty-option {
+  position: relative;
+  display: flex;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  border-radius: 9999px;
+  padding: 0.375rem 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: hsl(var(--muted-foreground));
+  transition: color 150ms ease-out;
+}
+
+.difficulty-option:hover:not(:disabled),
+.difficulty-option--active {
+  color: hsl(var(--foreground));
+}
+
+.difficulty-option:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+
+.difficulty-option:disabled {
+  cursor: not-allowed;
+}
+
+@media (max-width: 420px) {
+  .difficulty-option {
+    flex-direction: column;
+    gap: 0.125rem;
+    font-size: 0.75rem;
+  }
+}
+
+.difficulty-icon-pop {
+  animation: story-bump 420ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.difficulty-note {
+  animation: 260ms cubic-bezier(0, 0, 0.2, 1) both phase-in;
+}
+
+/* Language chips: the chosen one wears the highlighter and an ink shadow. */
+.language-chip {
+  border: 2px solid hsl(var(--border));
+  border-radius: 9999px;
+  padding: 0.375rem 0.875rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  background: hsl(var(--card));
+  transition: transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1), border-color 150ms, box-shadow 150ms;
+}
+
+.language-chip:hover:not(:disabled) {
+  transform: translateY(-2px);
+  border-color: hsl(var(--foreground) / 0.6);
+}
+
+.language-chip--active {
+  border-color: hsl(var(--foreground));
+  background: hsl(var(--sun));
+  box-shadow: 2px 2px 0 0 hsl(var(--foreground));
+}
+
+.language-chip:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.language-chip:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .difficulty-pill,
+  .language-chip {
+    transition: none;
+  }
+
+  .difficulty-icon-pop,
+  .difficulty-note {
+    animation: none;
+  }
+}

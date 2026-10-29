@@ -36,6 +36,7 @@ interface FeedbackStepProps {
   messages: ActivityMessage[];
   facts?: { label: string; value: React.ReactNode }[];
   onRestart: () => void;
+  restartLabel?: string;
   isAssignment?: boolean;
   title: string;
 }
@@ -47,7 +48,7 @@ const ScoreCard = ({ label, value }: { label: string; value?: number }) => (
   </div>
 );
 
-const FeedbackStep = ({ evaluation, partial, loading, error, reflection, messages, facts, onRestart, isAssignment, title }: FeedbackStepProps) => {
+const FeedbackStep = ({ evaluation, partial, loading, error, reflection, messages, facts, onRestart, restartLabel, isAssignment, title }: FeedbackStepProps) => {
   const { t } = useTranslation();
   const { user } = useAuth();
   const diffusion = useDiffusionPreference();
@@ -157,7 +158,7 @@ const FeedbackStep = ({ evaluation, partial, loading, error, reflection, message
 
       <div className="flex flex-col gap-2 sm:flex-row">
         <Button className="flex-1" onClick={onRestart} disabled={loading}>
-          <RotateCcw className="mr-2 h-4 w-4" /> {t("platform.feedback.newActivity")}
+          <RotateCcw className="mr-2 h-4 w-4" /> {restartLabel ?? t("platform.feedback.newActivity")}
         </Button>
         <Button variant="outline" onClick={download} disabled={loading}>
           <Download className="mr-2 h-4 w-4" /> {t("platform.feedback.download")}
@@ -165,7 +166,7 @@ const FeedbackStep = ({ evaluation, partial, loading, error, reflection, message
         {user && (
           <Button variant="outline" asChild>
             <Link to="/dashboard">
-              <LayoutDashboard className="mr-2 h-4 w-4" /> {isAssignment ? t("platform.feedback.backToAssignments") : t("platform.nav.dashboard")}
+              <LayoutDashboard className="mr-2 h-4 w-4" /> {user.roomId ? t("room.guest.backToPath") : isAssignment ? t("platform.feedback.backToAssignments") : t("platform.nav.dashboard")}
             </Link>
           </Button>
         )}
