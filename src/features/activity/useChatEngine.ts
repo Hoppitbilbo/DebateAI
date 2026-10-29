@@ -76,15 +76,26 @@ export const useChatEngine = ({ session, live, context, onEnded }: Options) => {
     setMessages((prev) => prev.map((m) => (m.id === id ? { ...m, ...patch } : m)));
   }, [setMessages]);
 
-  /** Keeps the chat busy (input disabled) while `work` runs. */
+  // The replies being generated can be stopped (Stop, restart, leaving the
+  // page): one controller per busy period, shared by its replies.
+  const abortRef = useRef<AbortController | null>(null);
+
+  /** Keeps the chat busy (sending gated) while `work` runs. */
   const withBusy = useCallback(async <T,>(work: () => Promise<T>) => {
+    const controller = new AbortController();
+    abortRef.current = controller;
     setBusy(true);
     try {
       return await work();
     } finally {
+      if (abortRef.current === controller) abortRef.current = null;
       setBusy(false);
     }
   }, []);
+
+  /** Stops the replies being generated; what was written so far stays. */
+  const stop = useCallback(() => abortRef.current?.abort(), []);
+  useEffect(() => () => abortRef.current?.abort(), []);
 
   /** Failed replies the student can ask again, by message id. */
   const retries = useRef(new Map<string, () => Promise<unknown>>());
@@ -95,15 +106,27 @@ export const useChatEngine = ({ session, live, context, onEnded }: Options) => {
    * null on error; with `fallback` a failure shows that text instead.
    */
   const respond = useCallback(async (args: RespondArgs) => {
+    const signal = abortRef.current?.signal;
+    if (signal?.aborted) return null; // stopped: the next speakers do not start
     const msg = addMessage({ role: "assistant", content: "", name: args.name, speakerKey: args.speakerKey, streaming: true });
+    let partial = "";
     try {
       const text = await ai.generateStream(
-        { task: "chat", system: args.system, messages: args.history ?? toHistory(messagesRef.current.filter((m) => m.id !== msg.id), args.speakerKey), sessionId: session.getSessionId(), maxTokens: args.maxTokens },
-        (_d, full) => streamMessages((prev) => prev.map((m) => m.id === msg.id ? { ...m, content: full } : m)),
+        { task: "chat", system: args.system, messages: args.history ?? toHistory(messagesRef.current.filter((m) => m.id !== msg.id), args.speakerKey), sessionId: session.getSessionId(), maxTokens: args.maxTokens, signal },
+        (_d, full) => {
+          partial = full;
+          streamMessages((prev) => prev.map((m) => m.id === msg.id ? { ...m, content: full } : m));
+        },
       );
       patchMessage(msg.id, { content: text || "…", streaming: false });
       return text;
     } catch (e) {
+      if (signal?.aborted) {
+        // Stopped by the student: keep what was written, drop an empty bubble.
+        if (partial.trim()) patchMessage(msg.id, { content: partial.trim(), streaming: false });
+        else setMessages((prev) => prev.filter((m) => m.id !== msg.id));
+        return null;
+      }
       if (args.fallback) {
         patchMessage(msg.id, { ...args.fallback, streaming: false });
         return null;
@@ -113,7 +136,7 @@ export const useChatEngine = ({ session, live, context, onEnded }: Options) => {
       toast.error(ai.formatError(e));
       return null;
     }
-  }, [addMessage, patchMessage, streamMessages, messagesRef, session, ai]);
+  }, [addMessage, patchMessage, setMessages, streamMessages, messagesRef, session, ai]);
   respondRef.current = respond;
 
   /**
@@ -189,6 +212,7 @@ export const useChatEngine = ({ session, live, context, onEnded }: Options) => {
   }, [busy, setMessages, afterTurn, withBusy]);
 
   const reset = useCallback((initial: ActivityMessage[] = []) => {
+    abortRef.current?.abort();
     liveCtl.stopLive();
     retries.current.clear();
     setMessages(initial);
@@ -210,6 +234,7 @@ export const useChatEngine = ({ session, live, context, onEnded }: Options) => {
     afterTurn,
     busy,
     withBusy,
+    stop,
     ended,
     live: liveCtl,
     reset,

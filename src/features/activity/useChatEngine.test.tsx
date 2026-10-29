@@ -235,3 +235,35 @@ describe("useChatEngine", () => {
     expect(mocks.toastError).not.toHaveBeenCalled();
   });
 });
+
+describe("stop", () => {
+  it("keeps what was written, does not start the next speaker, and still saves the turn", async () => {
+    // The first reply writes a few words, then waits until it is aborted.
+    mocks.generateStream.mockImplementation((o: { signal?: AbortSignal }, onDelta: (d: string, full: string) => void) => {
+      onDelta("Ho vinto ", "Ho vinto ");
+      return new Promise((_, reject) => o.signal?.addEventListener("abort", () => reject(new DOMException("aborted", "AbortError"))));
+    });
+    const session = fakeSession();
+    const { result } = renderHook(() => useChatEngine({ session }), { wrapper: withAi });
+    let turn: Promise<unknown> = Promise.resolve();
+    act(() => {
+      turn = result.current.runTurn("Chi ha vinto?", async () => {
+        await result.current.respond({ system: "a", name: "A" });
+        await result.current.respond({ system: "b", name: "B" });
+      });
+    });
+    await act(async () => {
+      await Promise.resolve();
+      result.current.stop();
+      await turn;
+    });
+    expect(mocks.generateStream).toHaveBeenCalledTimes(1);
+    expect(result.current.messages.map((m) => [m.role, m.content, !!m.error, !!m.streaming])).toEqual([
+      ["user", "Chi ha vinto?", false, false],
+      ["assistant", "Ho vinto", false, false],
+    ]);
+    expect(mocks.toastError).not.toHaveBeenCalled();
+    expect(session.sync).toHaveBeenCalled();
+    expect(result.current.busy).toBe(false);
+  });
+});

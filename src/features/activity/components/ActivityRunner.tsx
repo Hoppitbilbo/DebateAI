@@ -79,6 +79,7 @@ const ActivityRunner = ({ app, flow, onRestart, phaseLabels, setup, chat, reflec
           <ChatPanel
             messages={engine.messages}
             busy={engine.busy}
+            onStop={engine.stop}
             disabled={engine.ended}
             disabledReason={t("platform.activity.ended")}
             onEnd={flow.finishChat}

@@ -138,6 +138,7 @@
     "placeholder": "Schreibe deine Nachricht…",
     "typing": "Schreibt",
     "send": "Senden",
+    "stopReply": "Antwort stoppen",
     "dictate": "Diktieren (Sprache zu Text)",
     "stopDictation": "Diktat beenden",
     "endAndReflect": "Beenden und reflektieren",

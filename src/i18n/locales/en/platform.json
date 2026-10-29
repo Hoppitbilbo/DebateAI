@@ -138,6 +138,7 @@
     "placeholder": "Write your message…",
     "typing": "Typing",
     "send": "Send",
+    "stopReply": "Stop the answer",
     "dictate": "Dictate (voice to text)",
     "stopDictation": "Stop dictation",
     "endAndReflect": "End and reflect",
