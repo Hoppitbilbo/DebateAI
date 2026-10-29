@@ -268,7 +268,12 @@
       "evalActivity": "guessing game with a limited number of questions",
       "judgeEnded": "JEV decided you have reached the goal: the game is over. Write your final answer.",
       "readLastAnswer": "No questions left! Take your time to reread the answers, then press “Make your guess”.",
-      "judgeEndedChat": "JEV decided you reached the goal: no more questions. Reread the answers, then press “Make your guess”."
+      "judgeEndedChat": "JEV decided you reached the goal: no more questions. Reread the answers, then press “Make your guess”.",
+      "askHint": "Ask for a hint",
+      "hintCost": "A hint costs a question.",
+      "hintRequest": "Can you give me a hint?",
+      "teacherHint": "Hint: {{hint}}",
+      "hintsUsed": "Hints used"
     },
     "impersonaTu": {
       "setupTitle": "Choose the roles",
@@ -419,7 +424,10 @@
         "questionsClamped": "Questions go from {{min}} to {{max}}: set to {{count}}.",
         "maxTurnsFromQuestions": "Each question is one message: the maximum goes from {{from}} to {{count}}, so the game doesn't stop early.",
         "minTurnsLowered": "The minimum ({{from}}) was above the maximum: set to {{count}}."
-      }
+      },
+      "hints": "Hints (optional)",
+      "hintsHint": "From the vaguest to the clearest. The student gets them in order with «Ask for a hint»; after them, the character makes one up. Each hint costs a question.",
+      "hintN": "Hint {{n}}"
     },
     "exportExcel": "Export grades (Excel)",
     "teacherScore": "Teacher score"

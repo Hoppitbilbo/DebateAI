@@ -268,7 +268,12 @@
       "evalActivity": "Ratespiel mit begrenzter Anzahl an Fragen",
       "judgeEnded": "JEV hat entschieden, dass du das Ziel erreicht hast: Das Spiel ist vorbei. Schreib deine endgültige Antwort.",
       "readLastAnswer": "Keine Fragen mehr! Lies die Antworten in Ruhe nach und drücke dann „Jetzt raten“.",
-      "judgeEndedChat": "JEV hat entschieden, dass du das Ziel erreicht hast: keine Fragen mehr. Lies die Antworten nach und drücke dann „Jetzt raten“."
+      "judgeEndedChat": "JEV hat entschieden, dass du das Ziel erreicht hast: keine Fragen mehr. Lies die Antworten nach und drücke dann „Jetzt raten“.",
+      "askHint": "Um einen Hinweis bitten",
+      "hintCost": "Ein Hinweis kostet eine Frage.",
+      "hintRequest": "Kannst du mir einen Hinweis geben?",
+      "teacherHint": "Hinweis: {{hint}}",
+      "hintsUsed": "Benutzte Hinweise"
     },
     "impersonaTu": {
       "setupTitle": "Rollen wählen",
@@ -419,7 +424,10 @@
         "questionsClamped": "Fragen gehen von {{min}} bis {{max}}: auf {{count}} gesetzt.",
         "maxTurnsFromQuestions": "Jede Frage ist eine Nachricht: Das Maximum geht von {{from}} auf {{count}}, damit das Spiel nicht vorzeitig endet.",
         "minTurnsLowered": "Das Minimum ({{from}}) lag über dem Maximum: auf {{count}} gesetzt."
-      }
+      },
+      "hints": "Hinweise (optional)",
+      "hintsHint": "Vom vagsten zum deutlichsten. Die Schüler/innen erhalten sie der Reihe nach mit «Um einen Hinweis bitten»; danach denkt sich die Figur einen aus. Jeder Hinweis kostet eine Frage.",
+      "hintN": "Hinweis {{n}}"
     },
     "exportExcel": "Noten exportieren (Excel)",
     "teacherScore": "Note Lehrkraft"

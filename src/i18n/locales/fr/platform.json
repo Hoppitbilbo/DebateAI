@@ -268,7 +268,12 @@
       "evalActivity": "jeu de devinette avec un nombre limité de questions",
       "judgeEnded": "JEV a estimé que tu as atteint l'objectif : la partie est terminée. Écris ta réponse finale.",
       "readLastAnswer": "Plus de questions ! Relis les réponses tranquillement, puis appuie sur « Deviner maintenant ».",
-      "judgeEndedChat": "JEV a décidé que tu as atteint l'objectif : plus de questions. Relis les réponses, puis appuie sur « Deviner maintenant »."
+      "judgeEndedChat": "JEV a décidé que tu as atteint l'objectif : plus de questions. Relis les réponses, puis appuie sur « Deviner maintenant ».",
+      "askHint": "Demander un indice",
+      "hintCost": "Un indice coûte une question.",
+      "hintRequest": "Tu peux me donner un indice ?",
+      "teacherHint": "Indice : {{hint}}",
+      "hintsUsed": "Indices utilisés"
     },
     "impersonaTu": {
       "setupTitle": "Choisissez les rôles",
@@ -419,7 +424,10 @@
         "questionsClamped": "Les questions vont de {{min}} à {{max}} : fixées à {{count}}.",
         "maxTurnsFromQuestions": "Chaque question est un message : le maximum passe de {{from}} à {{count}}, pour que le jeu ne s'arrête pas avant.",
         "minTurnsLowered": "Le minimum ({{from}}) dépassait le maximum : fixé à {{count}}."
-      }
+      },
+      "hints": "Indices (facultatifs)",
+      "hintsHint": "Du plus vague au plus clair. L'élève les reçoit dans l'ordre avec « Demander un indice » ; ensuite, le personnage en invente un. Chaque indice coûte une question.",
+      "hintN": "Indice {{n}}"
     },
     "exportExcel": "Exporter les notes (Excel)",
     "teacherScore": "Note enseignant"

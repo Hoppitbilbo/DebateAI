@@ -95,6 +95,7 @@ export interface AssignmentConfig {
   userCharacter?: WikiRef; // impersona-tu
   topic?: string;
   questions?: number; // personaggio-misterioso
+  hints?: string[]; // personaggio-misterioso: the teacher's hints, vaguest first
 }
 
 export interface SessionSummary {

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { CheckCircle2, Dices, HelpCircle, XCircle } from "lucide-react";
+import { CheckCircle2, Dices, HelpCircle, Lightbulb, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,7 +15,7 @@ import type { EndReason } from "@/features/activity/useActivitySession";
 import { bioOf, useWikiSummaries } from "@/features/activity/wiki";
 import { openings, prompts } from "@/features/activity/prompts";
 import { APPS } from "@/features/activity/types";
-import { availableQuestions, isCorrectGuess, QUESTIONS, RANDOM_CHARACTERS } from "@/features/activity/mystery";
+import { availableQuestions, isCorrectGuess, nextTeacherHint, QUESTIONS, RANDOM_CHARACTERS } from "@/features/activity/mystery";
 
 const app = APPS["personaggio-misterioso"];
 
@@ -58,6 +58,7 @@ const PersonaggioMisteriosoPage = () => {
     onEnded,
   });
   const { preset, engine, session, phase } = flow;
+  const [hintsUsed, setHintsUsed] = useState(0);
   const system = systemFor(session.assignment);
   // Never more questions than the assignment's turn limit, so the game ends when it says it does.
   const turnCap = session.assignment?.maxTurns ?? 0;
@@ -93,12 +94,26 @@ const PersonaggioMisteriosoPage = () => {
     setResult(null);
     setGuess("");
     setReasoning("");
+    setHintsUsed(0);
     await flow.begin(t("apps.personaggioMisterioso.title"), { character: character.title, questions: maxQuestions }, []);
     await engine.open({
       system,
       cue: openings.mystery(maxQuestions),
       name: "???",
       fallback: { role: "assistant", content: t("platform.apps.personaggioMisterioso.intro", { count: maxQuestions }) },
+    });
+  };
+
+  /**
+   * A hint costs a question: the request is a message of the student. The
+   * teacher's hints come first, in order; then the character makes one up.
+   */
+  const askHint = () => {
+    const teacherHint = nextTeacherHint(preset.hints, hintsUsed);
+    setHintsUsed((n) => n + 1);
+    void engine.runTurn(t("platform.apps.personaggioMisterioso.hintRequest"), async () => {
+      if (teacherHint) engine.addMessage({ role: "assistant", name: "???", content: t("platform.apps.personaggioMisterioso.teacherHint", { hint: teacherHint }) });
+      else await engine.respond({ system, name: "???" });
     });
   };
 
@@ -215,6 +230,14 @@ const PersonaggioMisteriosoPage = () => {
           ? { message: chatEndMessage, continueLabel: t("platform.apps.personaggioMisterioso.guessNow"), onContinue: startGuess }
           : null,
         canEnd: session.turns >= 1 || questionsOver,
+        toolbar: !questionsOver && questionsLeft > 0 && !engine.ended ? (
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <span className="text-xs text-muted-foreground">{t("platform.apps.personaggioMisterioso.hintCost")}</span>
+            <Button type="button" variant="outline" size="sm" onClick={askHint} disabled={engine.busy}>
+              <Lightbulb className="mr-2 h-4 w-4" />{t("platform.apps.personaggioMisterioso.askHint")}
+            </Button>
+          </div>
+        ) : undefined,
         footerNote: (
           <span className="inline-flex items-center gap-1">
             <HelpCircle className="h-3.5 w-3.5" /> {t("platform.apps.personaggioMisterioso.questionsLeft", { count: questionsLeft })}
@@ -239,7 +262,7 @@ const PersonaggioMisteriosoPage = () => {
           extraFacts: [
             `FINAL GUESS: ${guess} — ${result ? "CORRECT" : "WRONG"} (answer: ${character?.title})`,
             `STUDENT REASONING: ${reasoning}`,
-            `QUESTIONS USED: ${session.turns}/${maxQuestions}`,
+            `QUESTIONS USED: ${session.turns}/${maxQuestions} (of which hints asked: ${hintsUsed})`,
           ],
         }),
       }}
@@ -249,6 +272,7 @@ const PersonaggioMisteriosoPage = () => {
           { label: t("platform.apps.common.character"), value: character?.title },
           { label: t("platform.apps.personaggioMisterioso.guessLabel"), value: `${guess} ${result ? "✅" : "❌"}` },
           { label: t("platform.apps.personaggioMisterioso.questionsUsed"), value: `${session.turns}/${maxQuestions}` },
+          { label: t("platform.apps.personaggioMisterioso.hintsUsed"), value: String(hintsUsed) },
         ],
       }}
     />

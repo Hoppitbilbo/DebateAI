@@ -44,3 +44,14 @@ export const availableQuestions = (questions: number | undefined, maxTurns = 0) 
   const chosen = Math.min(QUESTIONS.max, Math.max(QUESTIONS.min, Math.round(questions || QUESTIONS.default)));
   return maxTurns > 0 ? Math.min(chosen, maxTurns) : chosen;
 };
+
+/** Hints a teacher can write for the mystery game, from the vaguest to the clearest. */
+export const MAX_TEACHER_HINTS = 3;
+
+/**
+ * The next hint for a student who already asked `used` of them: the
+ * teacher's own hints come first, in order; after them (or without them)
+ * null, and the character makes one up.
+ */
+export const nextTeacherHint = (teacherHints: string[] | undefined, used: number): string | null =>
+  teacherHints?.map((h) => h.trim()).filter(Boolean)[used] ?? null;
