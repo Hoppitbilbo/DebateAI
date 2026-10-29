@@ -46,19 +46,21 @@ describe("app lists", () => {
     expect(screen.getByText("Modera tu")).toBeTruthy();
   });
 
-  it("shows every app on the apps page, the prompt one not yet open", () => {
+  it("shows every app on the apps page, the prompt one last and not yet open", () => {
     const { container } = inRouter(<AppsPage />);
     expect(morphCards(container)).toEqual([
       "you-moderate",
       "doppia-intervista",
       "wiki-chatbot",
       "personaggio-misterioso",
-      "prompt-engineer",
       "convinci-tu",
       "impersona-tu",
+      "prompt-engineer",
     ]);
-    const launch = screen.getAllByRole("button").filter((b) => !b.hasAttribute("disabled"));
-    expect(launch).toHaveLength(6);
+    // Real links, named after their app (they can be opened in a new tab).
+    const start = screen.getByRole("link", { name: "Inizia Doppia intervista" });
+    expect(start.getAttribute("href")).toBe("/apps/doppia-intervista");
+    expect(screen.getAllByRole("link", { name: /^Inizia / })).toHaveLength(6);
   });
 
   it("links each tutorial card to its app and tutorial", () => {
