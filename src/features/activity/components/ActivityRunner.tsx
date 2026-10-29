@@ -4,6 +4,7 @@ import type { ActivityPhase, AppMeta } from "../types";
 import type { ActivityFlow, EvaluationBrief } from "../useActivityFlow";
 import ActivityShell from "./ActivityShell";
 import ChatPanel from "./ChatPanel";
+import { draftKey } from "../draft";
 import FeedbackStep from "./FeedbackStep";
 import ReflectionStep from "./ReflectionStep";
 import { SetupCard } from "./SetupCard";
@@ -80,6 +81,7 @@ const ActivityRunner = ({ app, flow, onRestart, phaseLabels, setup, chat, reflec
             messages={engine.messages}
             busy={engine.busy}
             onStop={engine.stop}
+            draftKey={draftKey(session.user?.id, `${app.type}:${session.assignment?.id ?? 0}`)}
             disabled={engine.ended}
             disabledReason={t("platform.activity.ended")}
             onEnd={flow.finishChat}

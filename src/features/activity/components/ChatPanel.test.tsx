@@ -137,3 +137,19 @@ describe("ChatPanel", () => {
     expect(disconnect).toHaveBeenCalledOnce();
   });
 });
+
+describe("ChatPanel draft", () => {
+  it("restores the unsent text after a reload and clears it once sent", () => {
+    localStorage.clear();
+    const onSend = vi.fn();
+    const first = render(<ChatPanel messages={history} onSend={onSend} draftKey="debateai:draft:1:x" />);
+    fireEvent.change(screen.getByRole("textbox"), { target: { value: "half a question" } });
+    first.unmount(); // the tab is reloaded
+    render(<ChatPanel messages={history} onSend={onSend} draftKey="debateai:draft:1:x" />);
+    const box = screen.getByRole("textbox") as HTMLTextAreaElement;
+    expect(box.value).toBe("half a question");
+    fireEvent.keyDown(box, { key: "Enter" });
+    expect(onSend).toHaveBeenCalledWith("half a question");
+    expect(localStorage.getItem("debateai:draft:1:x")).toBeNull();
+  });
+});

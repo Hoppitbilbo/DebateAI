@@ -9,6 +9,7 @@ import type { AvatarFallback } from "../speakerAvatar";
 import { useSpeechDictation } from "@/hooks/useSpeechDictation";
 import type { LiveControls } from "@/hooks/useLiveAi";
 import type { ActivityMessage } from "../types";
+import { loadDraft, pruneDrafts, saveDraft } from "../draft";
 
 interface ChatPanelProps {
   messages: ActivityMessage[];
@@ -44,6 +45,8 @@ interface ChatPanelProps {
    * with its continue button, replaces the input.
    */
   ended?: ChatEnd | null;
+  /** Where the unsent text is kept in this browser (see draft.ts); none: not kept. */
+  draftKey?: string;
 }
 
 export interface ChatEnd {
@@ -92,9 +95,20 @@ const ChatPanel = ({
   avatarFallback,
   ended,
   speechLang,
+  draftKey,
 }: ChatPanelProps) => {
   const { t, i18n } = useTranslation();
-  const [input, setInput] = useState("");
+  const [input, setInput] = useState(() => (draftKey ? loadDraft(draftKey) : ""));
+  // A new attempt (another key) starts from its own draft.
+  const [shownKey, setShownKey] = useState(draftKey);
+  if (shownKey !== draftKey) {
+    setShownKey(draftKey);
+    setInput(draftKey ? loadDraft(draftKey) : "");
+  }
+  useEffect(() => {
+    if (draftKey) saveDraft(draftKey, input);
+  }, [draftKey, input]);
+  useEffect(() => pruneDrafts(), []);
   const dictation = useSpeechDictation(speechLang ?? i18n.language, setInput);
 
   const submit = () => {
