@@ -132,7 +132,8 @@ CREATE TABLE IF NOT EXISTS live_grants (
   model TEXT NOT NULL,
   created_at TEXT NOT NULL,
   expires_at TEXT NOT NULL,
-  used_at TEXT
+  used_at TEXT,
+  reservation_id INTEGER NOT NULL DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS providers (
@@ -287,6 +288,7 @@ var migrations = []string{
 	`ALTER TABLE usage_log ADD COLUMN unpriced INTEGER NOT NULL DEFAULT 0`,
 	`ALTER TABLE usage_log ADD COLUMN first_delta_ms INTEGER NOT NULL DEFAULT 0`,
 	`ALTER TABLE usage_log ADD COLUMN first_text_ms INTEGER NOT NULL DEFAULT 0`,
+	`ALTER TABLE live_grants ADD COLUMN reservation_id INTEGER NOT NULL DEFAULT 0`,
 }
 
 func applyMigrations(db *sql.DB) error {

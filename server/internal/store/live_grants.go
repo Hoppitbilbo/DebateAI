@@ -21,8 +21,8 @@ func (r *LiveGrants) Create(g domain.LiveGrant) error {
 	if _, err := r.db.Exec(`DELETE FROM live_grants WHERE expires_at < ?`, domain.Now()); err != nil {
 		return err
 	}
-	_, err := r.db.Exec(`INSERT INTO live_grants(id, user_id, session_id, provider_id, model, created_at, expires_at) VALUES(?,?,?,?,?,?,?)`,
-		g.ID, g.UserID, g.SessionID, g.ProviderID, g.Model, g.CreatedAt, g.ExpiresAt)
+	_, err := r.db.Exec(`INSERT INTO live_grants(id, user_id, session_id, provider_id, model, created_at, expires_at, reservation_id) VALUES(?,?,?,?,?,?,?,?)`,
+		g.ID, g.UserID, g.SessionID, g.ProviderID, g.Model, g.CreatedAt, g.ExpiresAt, g.ReservationID)
 	return err
 }
 
@@ -37,8 +37,8 @@ func (r *LiveGrants) Consume(id string) (*domain.LiveGrant, error) {
 	}
 	var g domain.LiveGrant
 	var uid, sid sql.NullInt64
-	if err := r.db.QueryRow(`SELECT id, user_id, session_id, provider_id, model, created_at, expires_at FROM live_grants WHERE id = ?`, id).
-		Scan(&g.ID, &uid, &sid, &g.ProviderID, &g.Model, &g.CreatedAt, &g.ExpiresAt); err != nil {
+	if err := r.db.QueryRow(`SELECT id, user_id, session_id, provider_id, model, created_at, expires_at, reservation_id FROM live_grants WHERE id = ?`, id).
+		Scan(&g.ID, &uid, &sid, &g.ProviderID, &g.Model, &g.CreatedAt, &g.ExpiresAt, &g.ReservationID); err != nil {
 		return nil, err
 	}
 	if uid.Valid {

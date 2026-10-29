@@ -12,4 +12,7 @@ type LiveGrant struct {
 	Model      string
 	CreatedAt  string
 	ExpiresAt  string
+	// ReservationID is the budget reserved for it until the usage is
+	// reported (0: none, e.g. a free model).
+	ReservationID int64
 }

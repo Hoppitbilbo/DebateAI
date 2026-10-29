@@ -46,6 +46,10 @@ const (
 	// liveGrantTTL is how long after the token the browser may report a
 	// voice conversation's usage; it also bounds the reported duration.
 	liveGrantTTL = time.Hour
+	// liveReservedTokens is the input and the output reserved for a voice
+	// conversation on a paid model until its usage is reported: about a
+	// quarter of an hour of audio each way (25 tokens per second).
+	liveReservedTokens = 25 * 15 * 60
 )
 
 // Fallback chain (gateway.go, target_health.go).

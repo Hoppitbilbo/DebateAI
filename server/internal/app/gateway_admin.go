@@ -227,18 +227,27 @@ func (g *aiGateway) LiveToken(ctx context.Context, systemInstruction, voice stri
 		if err != nil || cp.cfg.Kind != ai.KindGemini {
 			continue
 		}
+		// The audio goes straight to the provider: its cost is reserved
+		// until the browser reports the usage, or the grant expires.
+		reservation, err := g.reserveTokens(t, liveReservedTokens, liveReservedTokens, liveGrantTTL)
+		if err != nil {
+			lastErr = err
+			continue
+		}
 		tctx, cancel := context.WithTimeout(ctx, liveTokenTimeout)
 		tok, exp, err := ai.CreateLiveToken(tctx, cp.cfg, ai.LiveTokenOptions{Model: t.Model, SystemInstruction: systemInstruction, VoiceName: voice})
 		cancel()
 		if err != nil {
+			g.releaseReservation(reservation)
 			lastErr = err
 			log.Printf("live token via %s/%s: %v", cp.name, t.Model, err)
 			continue
 		}
 		now := time.Now().UTC()
 		grant := domain.LiveGrant{ID: randomToken(18), UserID: userID, SessionID: sessionID, ProviderID: t.ProviderID, Model: t.Model,
-			CreatedAt: now.Format(time.RFC3339), ExpiresAt: now.Add(liveGrantTTL).Format(time.RFC3339)}
+			CreatedAt: now.Format(time.RFC3339), ExpiresAt: now.Add(liveGrantTTL).Format(time.RFC3339), ReservationID: reservation}
 		if err := g.grants.Create(grant); err != nil {
+			g.releaseReservation(reservation)
 			return nil, err
 		}
 		return &LiveToken{GrantID: grant.ID, Token: tok, Model: t.Model, ProviderID: t.ProviderID, ExpiresAt: exp.UTC().Format(time.RFC3339), VoiceName: voice}, nil
@@ -271,6 +280,7 @@ func (g *aiGateway) RecordLiveUsage(u LiveUsage) (float64, error) {
 	}
 	started, _ := time.Parse(time.RFC3339, grant.CreatedAt)
 	took := min(time.Since(started), liveGrantTTL)
+	defer g.releaseReservation(grant.ReservationID) // after the real usage is logged
 	return g.logUsage(usageEntry{UserID: grant.UserID, SessionID: grant.SessionID, ProviderID: grant.ProviderID, Provider: g.providers.Name(grant.ProviderID),
 		Model: grant.Model, Task: TaskLive, Usage: ai.Usage{InputTokens: u.InputTokens, OutputTokens: u.OutputTokens}, OK: true,
 		Latency: took}), nil
