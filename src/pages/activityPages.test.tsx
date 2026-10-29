@@ -168,6 +168,14 @@ describe("YouModeratePage", () => {
     await start();
     expect(mocks.begin).toHaveBeenCalledWith("Person Character 1 vs Person Character 2: il potere", expect.anything());
     expect(mocks.generateStream).toHaveBeenCalledTimes(1); // the opening statement
+    expect(mocks.generateStream.mock.calls[0][0].recipe).toMatchObject({
+      app: "you-moderate",
+      kind: "opening",
+      character: "Person Character 1",
+      other: "Person Character 2",
+      topic: "il potere",
+      style: "a",
+    });
     expect(screen.getByText("risposta")).toBeTruthy();
   });
 });
