@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import type { WikiRef } from "@/lib/api";
 import ActivityRunner from "@/features/activity/components/ActivityRunner";
 import { CharacterPicker } from "@/features/activity/components/SetupCard";
-import { useActivityFlow } from "@/features/activity/useActivityFlow";
+import { titleOf, useActivityFlow } from "@/features/activity/useActivityFlow";
 import { bioOf, useWikiSummaries } from "@/features/activity/wiki";
 import { recipeFor } from "@/features/activity/recipe";
 import { APPS } from "@/features/activity/types";
@@ -23,6 +23,10 @@ const WikiChatbotPage = () => {
   const flow = useActivityFlow(app.type, {
     live: (phase) => (phase === "chat" && page ? { recipe, characterName: page.title, characterBio: summary } : null),
     context: { page: page?.title },
+    restore: (saved) => {
+      const title = titleOf(saved.page);
+      if (title) setPage({ title });
+    },
   });
   const { preset, engine } = flow;
 

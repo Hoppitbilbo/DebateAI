@@ -5,11 +5,11 @@ import { Label } from "@/components/ui/label";
 import type { Assignment, WikiRef } from "@/lib/api";
 import ActivityRunner from "@/features/activity/components/ActivityRunner";
 import { CharacterPicker } from "@/features/activity/components/SetupCard";
-import { useActivityFlow } from "@/features/activity/useActivityFlow";
+import { titleOf, useActivityFlow } from "@/features/activity/useActivityFlow";
 import { bioOf, useWikiSummaries } from "@/features/activity/wiki";
 import { MAX_TOPIC_CHARS, recipeFor } from "@/features/activity/recipe";
 import { APPS } from "@/features/activity/types";
-import { Difficulty, difficultyOf } from "@/features/activity/difficulty";
+import { Difficulty, difficultyOf, isDifficulty } from "@/features/activity/difficulty";
 import DifficultyPicker from "@/features/activity/components/DifficultyPicker";
 
 const app = APPS["convinci-tu"];
@@ -32,6 +32,12 @@ const ConvinciTuPage = () => {
     live: (phase, assignment) =>
       phase === "chat" && character ? { recipe: recipeOf(assignment), characterName: character.title, characterBio: bio } : null,
     context: (assignment) => ({ character: character?.title, topic, difficulty: levelFor(assignment) }),
+    restore: (saved) => {
+      const title = titleOf(saved.character);
+      if (title) setCharacter({ title });
+      if (typeof saved.topic === "string") setTopic(saved.topic);
+      if (isDifficulty(saved.difficulty)) setChosenLevel(saved.difficulty);
+    },
   });
   const { preset, engine } = flow;
   const recipe = recipeOf(flow.session.assignment);

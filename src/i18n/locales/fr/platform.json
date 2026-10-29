@@ -159,6 +159,7 @@
     "endedTurns": "Tu as utilisé tous tes tours. Prends le temps de lire la dernière réponse, puis continue.",
     "continueToReflection": "Suite : réflexion",
     "startFailed": "Le devoir n'a pas pu être lancé sur le serveur. Vérifie ta connexion et réessaie.",
+    "resumed": "Vous avez repris la conversation là où vous l'aviez laissée.",
     "notSaved": "Cet exercice n'est pas enregistré : le serveur ne répond pas. Tu peux continuer et télécharger la conversation à la fin.",
     "saveFailed": "Ton dernier message n'a pas été enregistré sur le serveur.",
     "stepOf": "Étape {{n}} sur {{total}} : {{label}}"

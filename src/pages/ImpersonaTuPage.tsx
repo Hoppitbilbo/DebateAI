@@ -5,11 +5,11 @@ import { Label } from "@/components/ui/label";
 import type { Assignment, WikiRef } from "@/lib/api";
 import ActivityRunner from "@/features/activity/components/ActivityRunner";
 import { CharacterPicker } from "@/features/activity/components/SetupCard";
-import { useActivityFlow } from "@/features/activity/useActivityFlow";
+import { titleOf, useActivityFlow } from "@/features/activity/useActivityFlow";
 import { bioOf, useWikiSummaries } from "@/features/activity/wiki";
 import { MAX_TOPIC_CHARS, recipeFor } from "@/features/activity/recipe";
 import { APPS } from "@/features/activity/types";
-import { Difficulty, difficultyOf } from "@/features/activity/difficulty";
+import { Difficulty, difficultyOf, isDifficulty } from "@/features/activity/difficulty";
 import DifficultyPicker from "@/features/activity/components/DifficultyPicker";
 
 const app = APPS["impersona-tu"];
@@ -42,6 +42,14 @@ const ImpersonaTuPage = () => {
     live: (phase, assignment) =>
       phase === "chat" && aiChar ? { recipe: recipeOf(assignment), characterName: aiChar.title, characterBio: aiBio } : null,
     context: (assignment) => ({ aiCharacter: aiChar?.title, userCharacter: userChar?.title, topic, difficulty: levelFor(assignment) }),
+    restore: (saved) => {
+      const ai = titleOf(saved.aiCharacter);
+      const student = titleOf(saved.userCharacter);
+      if (ai) setAiChar({ title: ai });
+      if (student) setUserChar({ title: student });
+      if (typeof saved.topic === "string") setTopic(saved.topic);
+      if (isDifficulty(saved.difficulty)) setChosenLevel(saved.difficulty);
+    },
   });
   const { preset, engine } = flow;
   const recipe = recipeOf(flow.session.assignment);

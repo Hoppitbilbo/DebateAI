@@ -4,7 +4,7 @@ import type { WikiRef } from "@/lib/api";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import ActivityRunner from "@/features/activity/components/ActivityRunner";
 import { CharacterPicker } from "@/features/activity/components/SetupCard";
-import { useActivityFlow } from "@/features/activity/useActivityFlow";
+import { titleOf, useActivityFlow } from "@/features/activity/useActivityFlow";
 import { toHistory } from "@/features/activity/useChatEngine";
 import { bioOf, useWikiSummaries } from "@/features/activity/wiki";
 import { recipeFor } from "@/features/activity/recipe";
@@ -26,7 +26,13 @@ const DoppiaIntervistaPage = () => {
   const [a, b] = chars;
   const { summaries, loading } = useWikiSummaries(chars);
 
-  const flow = useActivityFlow(app.type, { context: { characters: [a?.title, b?.title] } });
+  const flow = useActivityFlow(app.type, {
+    context: { characters: [a?.title, b?.title] },
+    restore: (saved) => {
+      const [x, y] = Array.isArray(saved.characters) ? saved.characters.map(titleOf) : [];
+      if (x && y) setChars([{ title: x }, { title: y }]);
+    },
+  });
   const { preset, engine } = flow;
 
   /** The recipe of one character's answers; the server writes the instructions. */

@@ -158,6 +158,8 @@ export interface SessionDetail extends SessionSummary {
   teacherFeedbackAt?: string;
   /** Part of the conversation was spoken: its AI lines cannot be checked. */
   voice?: boolean;
+  /** Grows by one at every transcript save. */
+  revision: number;
 }
 
 export interface Assignment {
