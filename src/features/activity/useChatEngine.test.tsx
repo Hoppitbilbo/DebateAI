@@ -99,7 +99,7 @@ describe("useChatEngine", () => {
     act(() => onDelta(" tre", "Uno due tre"));
     await act(async () => { finish("Uno due tre"); await turn; });
     expect(result.current.messages[1]).toMatchObject({ content: "Uno due tre", streaming: false });
-    expect(session.sync).toHaveBeenCalledWith(result.current.messagesRef.current, undefined);
+    expect(session.sync).toHaveBeenCalledWith(result.current.messagesRef.current, undefined, {});
     expect(vi.getTimerCount()).toBe(0);
   });
 
@@ -116,7 +116,7 @@ describe("useChatEngine", () => {
     await act(async () => live().onTurnComplete!());
     expect(result.current.messages.map((m) => m.content)).toEqual(["La domanda", "La risposta"]);
     expect(result.current.messages[1].streaming).toBe(false);
-    expect(session.sync).toHaveBeenCalledWith(result.current.messagesRef.current, undefined);
+    expect(session.sync).toHaveBeenCalledWith(result.current.messagesRef.current, undefined, {});
     expect(vi.getTimerCount()).toBe(0);
   });
 
@@ -131,7 +131,7 @@ describe("useChatEngine", () => {
     });
     expect(reply).toHaveBeenCalledOnce();
     expect(result.current.messages).toMatchObject([{ role: "user", content: "ciao", name: "Io", speakerKey: "a" }]);
-    expect(session.sync).toHaveBeenCalledWith(result.current.messagesRef.current, { topic: "t" });
+    expect(session.sync).toHaveBeenCalledWith(result.current.messagesRef.current, { topic: "t" }, {});
     expect(onEnded).toHaveBeenCalledWith("goal_reached");
     expect(result.current.busy).toBe(false);
   });

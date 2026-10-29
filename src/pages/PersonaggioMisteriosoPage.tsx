@@ -107,7 +107,7 @@ const PersonaggioMisteriosoPage = () => {
     const ok = isCorrectGuess(guess, character.title);
     setResult(ok);
     engine.addMessage({ role: "system", content: t("platform.apps.personaggioMisterioso.guessLog", { guess, answer: character.title }) });
-    void engine.afterTurn();
+    void engine.afterTurn({ judge: true }); // the guess may complete the goal after the last question
     session.markManualEnd();
     if (ok) toast.success(t("platform.apps.personaggioMisterioso.correct", { name: character.title }));
     else toast.error(t("platform.apps.personaggioMisterioso.wrong", { name: character.title }));
