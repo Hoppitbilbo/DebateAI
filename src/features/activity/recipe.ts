@@ -3,6 +3,9 @@ import type { AppType } from "@/lib/api";
 import type { PromptRecipe } from "@/services/aiService";
 import { DEFAULT_DIFFICULTY } from "./difficulty";
 
+/** The longest topic a student can write (the server refuses longer ones). */
+export const MAX_TOPIC_CHARS = 500;
+
 /** The fields a page fills; the rest has defaults. */
 export type RecipeFields = Omit<PromptRecipe, "app" | "kind" | "difficulty" | "uiLang"> &
   Partial<Pick<PromptRecipe, "kind" | "difficulty">>;

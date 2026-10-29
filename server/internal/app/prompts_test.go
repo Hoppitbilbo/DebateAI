@@ -174,6 +174,16 @@ func TestRecipeValidate(t *testing.T) {
 			}
 		})
 	}
+	// The teacher's topic is accepted whatever its length.
+	long501 := ok
+	long501.Topic = long(maxRecipeTopicChars + 1)
+	a := assignmentWith("convinci-tu", `{"topic":"`+long501.Topic+`"}`)
+	if _, _, err := ComposePrompt(long501, a); err != nil {
+		t.Fatalf("locked long topic: %v", err)
+	}
+	if _, _, err := ComposePrompt(long501, nil); !IsInvalid(err) {
+		t.Fatalf("free long topic: %v", err)
+	}
 	// Limits are inclusive; long bios are cut, not refused.
 	edge := ok
 	edge.Character, edge.Topic, edge.Questions = long(maxRecipeTitleChars), long(maxRecipeTopicChars), maxRecipeQuestions

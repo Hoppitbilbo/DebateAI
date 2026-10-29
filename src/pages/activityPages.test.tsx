@@ -95,6 +95,9 @@ describe("ConvinciTuPage", () => {
     expect(startButton().disabled).toBe(false);
     await start();
     expect(mocks.begin).toHaveBeenCalledWith("Person Character: la guerra", { character: { title: "Person Character" }, topic: "la guerra", difficulty: "medium" });
+    const [opening] = mocks.generateStream.mock.calls[0];
+    expect(opening.system).toBeUndefined();
+    expect(opening.recipe).toMatchObject({ app: "convinci-tu", kind: "opening", character: "Person Character", topic: "la guerra", difficulty: "medium" });
     expect(screen.getByText(/Person Character/)).toBeTruthy(); // the intro names the character
     expect(screen.getByRole("textbox")).toBeTruthy(); // the chat input
   });

@@ -77,7 +77,11 @@ var practiceLanguages = map[string]string{
 	"la": "Latin (simple classical Latin, suitable for school students)",
 }
 
-func (r PromptRecipe) validate() error {
+func (r PromptRecipe) validate() error { return r.validateTopic(true) }
+
+// validateTopic checks the limits; limitTopic is false for the topic the
+// teacher fixed, whatever its length.
+func (r PromptRecipe) validateTopic(limitTopic bool) error {
 	if !domain.AppTypes[r.App] {
 		return invalid(errors.New("unknown app"))
 	}
@@ -95,7 +99,7 @@ func (r PromptRecipe) validate() error {
 			return invalid(errors.New("character names are one line"))
 		}
 	}
-	if utf8.RuneCountInString(r.Topic) > maxRecipeTopicChars {
+	if limitTopic && utf8.RuneCountInString(r.Topic) > maxRecipeTopicChars {
 		return invalid(fmt.Errorf("the topic is at most %d characters", maxRecipeTopicChars))
 	}
 	if r.Difficulty != "" && !difficulties[r.Difficulty] {
@@ -161,13 +165,17 @@ func configOf(a *domain.Assignment) (assignmentConfig, error) {
 // (IsInvalid) or one that contradicts the assignment (ErrSettingLocked),
 // then builds the prompt.
 func ComposePrompt(r PromptRecipe, a *domain.Assignment) (system, opening string, err error) {
-	if err := r.validate(); err != nil {
+	c, err := configOf(a)
+	if err != nil {
+		return "", "", err
+	}
+	if err := r.validateTopic(c.Topic == "" || !sameTitle(r.Topic, c.Topic)); err != nil {
 		return "", "", err
 	}
 	if err := checkLocked(r, a); err != nil {
 		return "", "", err
 	}
-	return buildPrompt(r, a)
+	return build(r, a, c)
 }
 
 // buildPrompt writes the system prompt of a recipe and, for an opening, the
@@ -176,11 +184,16 @@ func buildPrompt(r PromptRecipe, a *domain.Assignment) (system, opening string, 
 	if err := r.validate(); err != nil {
 		return "", "", err
 	}
-	r = r.normalized()
 	c, err := configOf(a)
 	if err != nil {
 		return "", "", err
 	}
+	return build(r, a, c)
+}
+
+// build writes the prompt of a valid recipe.
+func build(r PromptRecipe, a *domain.Assignment, c assignmentConfig) (system, opening string, err error) {
+	r = r.normalized()
 	system, opening = templates(r, common(r.UILang, a, c))
 	system += "\n" + guardLine
 	if r.Kind != recipeOpening {
