@@ -35,11 +35,13 @@ type aiGateway struct {
 
 	provMu sync.Mutex
 	provs  map[int64]cachedProvider
+
+	health *targetHealth
 }
 
 func newAIGateway(providers providerStore, prices priceStore, usage usageStore, sessions sessionStore, settings *settingsService, crypto *Crypto) *aiGateway {
 	return &aiGateway{providers: providers, prices: prices, usage: usage, sessions: sessions, settings: settings, crypto: crypto,
-		newProvider: ai.New, provs: map[int64]cachedProvider{}}
+		newProvider: ai.New, provs: map[int64]cachedProvider{}, health: newTargetHealth()}
 }
 
 type cachedProvider struct {
@@ -217,8 +219,13 @@ func (g *aiGateway) Generate(ctx context.Context, task string, req ai.Request, u
 		}
 		return nil, ErrNoTargets
 	}
-	call := genCall{task: task, req: req, userID: userID, sessionID: sessionID}
+	call := genCall{task: task, req: req, userID: userID, sessionID: sessionID, firstTextBy: time.Now().Add(firstTextBudget)}
 	call.req.Messages = userFirst(req.Messages)
+	if onDelta == nil {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(ctx, generateDeadline)
+		defer cancel()
+	}
 	var started atomic.Bool
 	if onDelta != nil {
 		call.onDelta = func(d string) error {
@@ -241,7 +248,7 @@ func (g *aiGateway) Generate(ctx context.Context, task string, req ai.Request, u
 	}, func(err error) bool {
 		// Fall back only before the student saw any text, and only for
 		// errors another model may not have (a silent model is one).
-		return started.Load() || !retryable(err) || ctx.Err() != nil
+		return started.Load() || !retryable(err) || ctx.Err() != nil || errors.Is(err, errNoTimeForFallback)
 	})
 	if err != nil && refused != nil && !started.Load() && errors.Is(err, errRefusal) {
 		return deliver(refused, onDelta)
@@ -258,6 +265,7 @@ type genCall struct {
 	req               ai.Request
 	userID, sessionID *int64
 	onDelta           func(string) error
+	firstTextBy       time.Time // deadline for the first text, across targets
 }
 
 // tryTarget sends the request to one route target, with the first-token
@@ -278,7 +286,11 @@ func (g *aiGateway) tryTarget(ctx context.Context, c genCall, t RouteTarget, cp 
 		return nil, err
 	}
 	defer release()
-	model := g.meterText(screenAnswers(ai.WithFirstTokenTimeout(tm, firstTokenTimeout), c.task),
+	wait, err := firstTextTimeout(c.firstTextBy)
+	if err != nil {
+		return nil, err
+	}
+	model := g.meterText(screenAnswers(ai.WithFirstTokenTimeout(tm, wait), c.task),
 		usageEntry{UserID: c.userID, SessionID: c.sessionID, ProviderID: t.ProviderID, Provider: cp.name, Model: t.Model, Task: c.task})
 	var res *ai.Response
 	if c.onDelta != nil {

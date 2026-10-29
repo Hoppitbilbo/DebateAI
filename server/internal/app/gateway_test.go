@@ -489,3 +489,45 @@ func TestLiveUsageOnlyAgainstOwnGrant(t *testing.T) {
 		t.Fatalf("reported twice: %v", err)
 	}
 }
+
+// Only character answers are held back for the refusal check: an
+// evaluation shows its first words at once.
+func TestOnlyChatAnswersAreHeldBack(t *testing.T) {
+	for task, wantFirst := range map[string]string{TaskChat: "Hello there, ", TaskEvaluation: "Hello "} {
+		m := screenAnswers(wordStream{"Hello ", "there, ", "student."}, task)
+		var first string
+		if _, err := m.Stream(context.Background(), ai.Request{}, func(d string) error {
+			if first == "" {
+				first = d
+			}
+			return nil
+		}); err != nil {
+			t.Fatal(err)
+		}
+		// a chat answer shorter than the probe comes out whole, at the end
+		if task == TaskChat {
+			wantFirst = "Hello there, student."
+		}
+		if first != wantFirst {
+			t.Fatalf("%s: first delta %q, want %q", task, first, wantFirst)
+		}
+	}
+}
+
+// wordStream streams its words one by one.
+type wordStream []string
+
+func (w wordStream) Generate(ctx context.Context, req ai.Request) (*ai.Response, error) {
+	return &ai.Response{Text: strings.Join(w, "")}, nil
+}
+
+func (w wordStream) Stream(ctx context.Context, req ai.Request, onDelta func(string) error) (*ai.Response, error) {
+	for _, d := range w {
+		if err := onDelta(d); err != nil {
+			return nil, err
+		}
+	}
+	return &ai.Response{Text: strings.Join(w, "")}, nil
+}
+
+func (w wordStream) ListModels(ctx context.Context) ([]ai.ModelInfo, error) { return nil, nil }

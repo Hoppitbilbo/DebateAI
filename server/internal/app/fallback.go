@@ -20,15 +20,17 @@ type stopFallback func(err error) bool
 // runFallbackChain calls attempt for each target until one succeeds. It
 // returns nil on success, otherwise the last failure prefixed with the
 // provider and model, or ErrNoTargets when no target was tried.
+// Targets that keep failing are tried last (targetHealth).
 func (g *aiGateway) runFallbackChain(label string, targets []RouteTarget, attempt func(t RouteTarget, cp *cachedProvider) error, stop stopFallback) error {
 	var lastErr error
-	for _, t := range targets {
+	for _, t := range g.health.order(targets) {
 		cp, err := g.provider(t.ProviderID)
 		if err != nil {
 			lastErr = err
 			continue
 		}
 		err = attempt(t, cp)
+		g.health.record(t, err)
 		if err == nil {
 			return nil
 		}

@@ -38,6 +38,19 @@ const (
 	liveGrantTTL = time.Hour
 )
 
+// Fallback chain (gateway.go, target_health.go).
+const (
+	// firstTextBudget bounds the wait for the first text of a streamed
+	// answer across all the targets tried, so slow fallbacks do not add up.
+	firstTextBudget = 45 * time.Second
+	// generateDeadline bounds a whole non-streamed generation, fallbacks included.
+	generateDeadline = 150 * time.Second
+	// A target that failed failuresBeforeCooldown times in a row is tried
+	// after the others for targetCooldown.
+	failuresBeforeCooldown = 3
+	targetCooldown         = 2 * time.Minute
+)
+
 // settingsCacheTTL bounds how long a settings change made by another
 // instance takes to be seen (settings_cache.go).
 const settingsCacheTTL = 5 * time.Second

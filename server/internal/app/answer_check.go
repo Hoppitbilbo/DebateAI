@@ -72,9 +72,10 @@ func checkAnswer(task, text string) error {
 }
 
 // screenAnswers decorates a TextModel so that a failed checkAnswer counts as
-// a failed request (logged, and passed on by the fallback chain). A stream
-// holds back the opening of the answer until it passes the check, then lets
-// the rest through unchanged.
+// a failed request (logged, and passed on by the fallback chain). A chat
+// stream holds back the opening of the answer until it passes the check,
+// then lets the rest through unchanged; other tasks only wait for the first
+// non-blank text.
 func screenAnswers(m ai.TextModel, task string) ai.TextModel {
 	return screenedModel{TextModel: m, task: task}
 }
@@ -107,7 +108,12 @@ func (m screenedModel) Stream(ctx context.Context, req ai.Request, onDelta func(
 			return onDelta(d)
 		}
 		held.WriteString(d)
-		if utf8.RuneCountInString(held.String()) < refusalProbeChars {
+		// Only character answers are checked for refusals; any other
+		// answer is shown as soon as it is not empty.
+		if m.task == TaskChat && utf8.RuneCountInString(held.String()) < refusalProbeChars {
+			return nil
+		}
+		if m.task != TaskChat && strings.TrimSpace(held.String()) == "" {
 			return nil
 		}
 		return release()
