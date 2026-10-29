@@ -37,7 +37,3 @@ export const preloadPath = (path: string): Promise<unknown> => {
   const preload = byPath.get(clean);
   return preload ? preload().catch(() => undefined) : Promise.resolve();
 };
-
-/** All the registered pages under a prefix (e.g. "/apps/"). */
-export const preloadPrefix = (prefix: string) =>
-  Promise.all([...byPath.keys()].filter((p) => p.startsWith(prefix)).map(preloadPath));

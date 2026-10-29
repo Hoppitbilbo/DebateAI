@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import type { ReactElement } from "react";
-import { lazyPage, preloadPath, preloadPrefix } from "./lazyPage";
+import { lazyPage, preloadPath } from "./lazyPage";
 
 const Hello = () => null;
 const loaderOf = () => vi.fn(() => Promise.resolve({ default: Hello }));
@@ -55,15 +55,5 @@ describe("preloadPath", () => {
     lazyPage(() => Promise.reject(new Error("offline")), ["/test/broken"]);
     await expect(preloadPath("/test/broken")).resolves.toBeUndefined();
     await expect(preloadPath("/test/unknown")).resolves.toBeUndefined();
-  });
-
-  it("preloads every page under a prefix and nothing else", async () => {
-    const inside = loaderOf();
-    const outside = loaderOf();
-    lazyPage(inside, ["/prefix/a", "/prefix/b"]);
-    lazyPage(outside, ["/other/a"]);
-    await preloadPrefix("/prefix/");
-    expect(inside).toHaveBeenCalledTimes(1);
-    expect(outside).not.toHaveBeenCalled();
   });
 });

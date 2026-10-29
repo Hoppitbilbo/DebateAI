@@ -36,6 +36,7 @@ const AppCard = ({ app }: { app: ListedApp }) => {
         ) : (
           <Button 
             onClick={() => void morphTo(link)}
+            data-preload={link}
             className="w-full bg-education hover:bg-education-muted text-education-dark font-medium"
           >
             {t('appsPage.buttons.launchApp')}

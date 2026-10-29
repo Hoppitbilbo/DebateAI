@@ -1,12 +1,12 @@
 import { useEffect, useLayoutEffect } from "react";
 import { useLocation, useNavigationType } from "react-router-dom";
-import { preloadPrefix } from "@/lib/lazyPage";
+import { preloadOnIntent } from "./intentPreload";
 import { settleMorph } from "./morph";
 
 /**
  * Lives inside the router: tells a running morph that the new page is
- * rendered, starts new pages from the top, and downloads the app pages in the
- * background so that opening one is instant.
+ * rendered, starts new pages from the top, and downloads a page as soon as
+ * the user shows the intent to open it (see intentPreload).
  */
 const MorphGate = () => {
   const location = useLocation();
@@ -17,10 +17,7 @@ const MorphGate = () => {
     settleMorph();
   }, [location.key, location.hash, navigationType]);
 
-  useEffect(() => {
-    const idle = window.requestIdleCallback ?? ((cb: () => void) => window.setTimeout(cb, 1500));
-    idle(() => void preloadPrefix("/apps"));
-  }, []);
+  useEffect(() => preloadOnIntent(), []);
 
   return null;
 };
