@@ -212,17 +212,20 @@ func TestEndToEndAssignmentWithJev(t *testing.T) {
 	if code := stud.do("POST", "/api/ai/generate", map[string]any{"sessionId": sess.ID, "messages": []map[string]string{{"role": "user", "content": "ancora"}}}, nil); code != 409 {
 		t.Fatalf("ended session must refuse chat, got %d", code)
 	}
-	if code := stud.do("POST", fmtPath("/api/sessions/%d/complete", sess.ID), map[string]any{"reflection": "x", "scoreConversation": 99}, nil); code != 400 {
-		t.Fatalf("score off the scale must be refused, got %d", code)
+	// a grade sent by the browser is ignored: only the server evaluates
+	if code := stud.do("POST", fmtPath("/api/sessions/%d/complete", sess.ID), map[string]any{"reflection": "ho imparato", "evaluation": "ok", "scoreConversation": 10}, nil); code != 200 {
+		t.Fatalf("complete: %d", code)
 	}
-	stud.do("POST", fmtPath("/api/sessions/%d/complete", sess.ID), map[string]any{"reflection": "ho imparato", "evaluation": "ok", "scoreConversation": 8}, nil)
+	if code := stud.do("POST", fmtPath("/api/sessions/%d/complete", sess.ID), map[string]any{"reflection": "again"}, nil); code != 409 {
+		t.Fatalf("a handed-in attempt is not rewritten, got %d", code)
+	}
 
 	// teacher sees progress and costs are tracked (paid-model: 1000*1 + 500*2 per 1M = 0.002)
 	var prog struct {
 		Students []app.StudentProgress `json:"students"`
 	}
 	admin.do("GET", fmtPath("/api/assignments/%d/progress", a.ID), nil, &prog)
-	if len(prog.Students) != 1 || prog.Students[0].Session == nil || prog.Students[0].Session.Status != "completed" {
+	if len(prog.Students) != 1 || prog.Students[0].Session == nil || prog.Students[0].Session.Status != "completed" || prog.Students[0].Session.ScoreConversation != nil {
 		t.Fatalf("progress: %+v", prog)
 	}
 	if c := prog.Students[0].Session.CostUSD; c < 0.0019 || c > 0.0021 {

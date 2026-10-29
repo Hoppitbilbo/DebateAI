@@ -32,7 +32,7 @@ func TestGradesExport(t *testing.T) {
 	ss, _ := api.SessionSvc.Start(stud, app.NewAttempt{AppType: appType, AssignmentID: a.ID})
 	conv, teacher := 7, 9
 	d, _ := api.Sessions.Detail(ss.ID)
-	api.SessionSvc.Complete(d, app.Completion{Reflection: "r", ScoreConversation: &conv})
+	api.Sessions.Complete(d.ID, domain.SessionCompletion{Reflection: "r", ScoreConversation: &conv})
 	if _, err := api.SessionSvc.GiveFeedback(me, ss.ID, domain.TeacherFeedback{Text: "Bene", Score: &teacher}, srv.URL); err != nil {
 		t.Fatal(err)
 	}

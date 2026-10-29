@@ -92,14 +92,29 @@ export const generate = async (o: GenerateOptions): Promise<string> => {
   return res.text.trim();
 };
 
-/** Streams the answer; onDelta receives each chunk. Resolves with the full text. */
-export const generateStream = async (o: GenerateOptions, onDelta: (chunk: string, full: string) => void): Promise<string> => {
-  const res = await fetch("/api/ai/generate", {
+interface StreamEvent {
+  delta?: string;
+  error?: string;
+  done?: boolean;
+}
+
+/**
+ * POSTs payload and reads the server-sent events of the answer: onDelta
+ * receives each chunk and the text so far. Resolves with the last event
+ * (the "done" one when the stream ended normally) and the full text.
+ */
+const postEventStream = async <E extends StreamEvent>(
+  url: string,
+  payload: unknown,
+  onDelta: (chunk: string, full: string) => void,
+  signal?: AbortSignal,
+): Promise<{ last: E | null; full: string }> => {
+  const res = await fetch(url, {
     method: "POST",
     credentials: "same-origin",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body(o, true)),
-    signal: o.signal,
+    body: JSON.stringify(payload),
+    signal,
   });
   if (!res.ok || !res.body) {
     let data: { error?: string; message?: string } = {};
@@ -114,6 +129,7 @@ export const generateStream = async (o: GenerateOptions, onDelta: (chunk: string
   const decoder = new TextDecoder();
   let buffer = "";
   let full = "";
+  let last: E | null = null;
   for (;;) {
     const { done, value } = await reader.read();
     if (done) break;
@@ -123,15 +139,55 @@ export const generateStream = async (o: GenerateOptions, onDelta: (chunk: string
       const line = buffer.slice(0, idx).trim();
       buffer = buffer.slice(idx + 2);
       if (!line.startsWith("data:")) continue;
-      const evt = JSON.parse(line.slice(5).trim()) as { delta?: string; error?: string; done?: boolean };
+      const evt = JSON.parse(line.slice(5).trim()) as E;
       if (evt.error) throw new ApiError(502, "ai_error", evt.error);
+      last = evt;
       if (evt.delta) {
         full += evt.delta;
         onDelta(evt.delta, full);
       }
     }
   }
+  return { last, full };
+};
+
+/** Streams the answer; onDelta receives each chunk. Resolves with the full text. */
+export const generateStream = async (o: GenerateOptions, onDelta: (chunk: string, full: string) => void): Promise<string> => {
+  const { full } = await postEventStream("/api/ai/generate", body(o, true), onDelta, o.signal);
   return full.trim();
+};
+
+/** What the student sends to be evaluated: the activity description and the reflection. */
+export interface EvaluationRequest {
+  reflection: string;
+  activity: string;
+  characters: string;
+  studentRole?: string;
+  topic?: string;
+  extraFacts?: string[];
+  locale: string;
+}
+
+/** The server's evaluation of an attempt, stored with it. */
+export interface SessionEvaluation {
+  evaluation: string;
+  scoreConversation?: number;
+  scoreReflection?: number;
+}
+
+/**
+ * Asks the server to evaluate a saved attempt and hand it in: the server
+ * grades the transcript it stored, so the scores cannot come from the
+ * browser. onDelta receives the answer as it is written.
+ */
+export const evaluateSession = async (
+  sessionId: number,
+  request: EvaluationRequest,
+  onDelta: (chunk: string, full: string) => void,
+): Promise<SessionEvaluation> => {
+  const { last } = await postEventStream<StreamEvent & Partial<SessionEvaluation>>(`/api/sessions/${sessionId}/evaluate`, request, onDelta);
+  if (!last?.done) throw new ApiError(502, "ai_error", "the evaluation was interrupted");
+  return { evaluation: last.evaluation ?? "", scoreConversation: last.scoreConversation, scoreReflection: last.scoreReflection };
 };
 
 /** One-shot helper: single prompt with optional system instruction. */

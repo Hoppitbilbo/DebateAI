@@ -1,9 +1,15 @@
 import { useCallback, useState } from "react";
-import { evaluateActivity, EvaluationInput, EvaluationResult } from "@/utils/evaluationUtils";
+import i18n from "@/i18n";
+import { evaluateActivity, EvaluationInput, EvaluationResult, parseEvaluation } from "@/utils/evaluationUtils";
 import { useAiClient } from "@/services/aiClient";
 import type { ActivitySession } from "./useActivitySession";
 
-/** Reflection → AI evaluation → session completion, shared by all apps. */
+/**
+ * Reflection → AI evaluation → session completion, shared by all apps. A
+ * saved attempt is evaluated and handed in by the server, from the
+ * transcript it stored; without a session the evaluation runs through the
+ * generic AI endpoint and nothing is handed in.
+ */
 export const useEvaluationFlow = (session: ActivitySession) => {
   const ai = useAiClient();
   const [reflection, setReflection] = useState("");
@@ -19,21 +25,17 @@ export const useEvaluationFlow = (session: ActivitySession) => {
     setError(null);
     setLoading(true);
     try {
-      const res = await evaluateActivity(
-        { ...input, assignment: session.assignment, jev: session.jev, sessionId: session.getSessionId() },
-        setPartial,
-        ai,
-      );
-      setEvaluation(res);
-      await session.complete({
-        reflection: input.reflection,
-        evaluation: res.markdown,
-        scoreConversation: res.scoreConversation,
-        scoreReflection: res.scoreReflection,
-      });
+      const preview = (_d: string, full: string) => setPartial(parseEvaluation(full).markdown);
+      const { messages: _messages, reflection, ...about } = input;
+      const graded = await session.evaluate({ ...about, reflection, locale: i18n.language || "it" }, preview);
+      if (graded) {
+        setEvaluation({ markdown: graded.evaluation, scoreConversation: graded.scoreConversation, scoreReflection: graded.scoreReflection });
+        return;
+      }
+      setEvaluation(await evaluateActivity({ ...input, assignment: session.assignment, jev: session.jev, sessionId: null }, setPartial, ai));
     } catch (e) {
       setError(ai.formatError(e));
-      await session.complete({ reflection: input.reflection, evaluation: "" });
+      await session.complete({ reflection: input.reflection });
     } finally {
       setLoading(false);
     }

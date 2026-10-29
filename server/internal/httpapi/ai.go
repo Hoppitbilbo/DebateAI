@@ -105,10 +105,11 @@ type generateIn struct {
 }
 
 func (s *Server) handleGenerate(w http.ResponseWriter, r *http.Request) {
-	u, ok := s.aiAllowed(w, r)
+	u, release, ok := s.admit(w, r)
 	if !ok {
 		return
 	}
+	defer release()
 	var in generateIn
 	if err := readJSONLimit(r, &in, maxGenerateBodyBytes); err != nil {
 		writeErr(w, 400, "bad_request", err.Error())
@@ -144,15 +145,6 @@ func (s *Server) handleGenerate(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 409, "session_ended", "this activity has ended")
 		return
 	}
-	release, err := s.Gateway.Admit(s.generationScopes(r, u))
-	if errors.Is(err, app.ErrTooManyGenerations) {
-		writeErr(w, 429, "busy", err.Error())
-		return
-	} else if err != nil {
-		writeErr(w, 503, "usage_unavailable", err.Error())
-		return
-	}
-	defer release()
 	req := ai.Request{System: in.System, Messages: in.Messages, JSON: in.JSON, Temperature: in.Temperature, MaxTokens: in.MaxTokens}
 
 	if !in.Stream {
@@ -165,12 +157,23 @@ func (s *Server) handleGenerate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	send := startEventStream(w)
+	res, err := s.Gateway.Generate(aiContext(r, u), in.Task, req, userID, sessionID, func(d string) error { return send(streamDelta{Delta: d}) })
+	if err != nil {
+		_ = send(streamError{Error: err.Error()})
+		return
+	}
+	_ = send(streamDone{Done: true, Provider: res.Provider, Model: res.Model})
+}
+
+// startEventStream answers with server-sent events; send writes one.
+func startEventStream(w http.ResponseWriter) (send func(v any) error) {
 	flusher, _ := w.(http.Flusher)
 	w.Header().Set("Content-Type", "text/event-stream")
 	w.Header().Set("Cache-Control", "no-cache")
 	w.Header().Set("X-Accel-Buffering", "no")
 	w.WriteHeader(200)
-	send := func(v any) error {
+	return func(v any) error {
 		b, _ := json.Marshal(v)
 		if _, err := fmt.Fprintf(w, "data: %s\n\n", b); err != nil {
 			return err
@@ -180,12 +183,25 @@ func (s *Server) handleGenerate(w http.ResponseWriter, r *http.Request) {
 		}
 		return nil
 	}
-	res, err := s.Gateway.Generate(aiContext(r, u), in.Task, req, userID, sessionID, func(d string) error { return send(streamDelta{Delta: d}) })
-	if err != nil {
-		_ = send(streamError{Error: err.Error()})
-		return
+}
+
+// admit applies the AI limits of an endpoint that generates for u: rate
+// limits and quotas (aiAllowed), then the concurrency caps. It answers the
+// refusal itself; release must be called when the request ends.
+func (s *Server) admit(w http.ResponseWriter, r *http.Request) (u *domain.User, release func(), ok bool) {
+	u, ok = s.aiAllowed(w, r)
+	if !ok {
+		return nil, nil, false
 	}
-	_ = send(streamDone{Done: true, Provider: res.Provider, Model: res.Model})
+	release, err := s.Gateway.Admit(s.generationScopes(r, u))
+	if errors.Is(err, app.ErrTooManyGenerations) {
+		writeErr(w, 429, "busy", err.Error())
+		return nil, nil, false
+	} else if err != nil {
+		writeErr(w, 503, "usage_unavailable", err.Error())
+		return nil, nil, false
+	}
+	return u, release, true
 }
 
 // boundHistory keeps the newest messages within maxChatHistoryMessages and

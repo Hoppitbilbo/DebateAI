@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { api, AppType, Assignment, JudgeResult, SessionSummary, TranscriptMessage } from "@/lib/api";
 import { useAuth } from "@/context/auth";
+import { evaluateSession, EvaluationRequest, SessionEvaluation } from "@/services/aiService";
 import type { ActivityMessage } from "./types";
 
 export type EndReason = "goal_reached" | "turn_limit" | "manual" | null;
@@ -11,7 +12,11 @@ export type SaveState = "idle" | "saving" | "saved" | "failed";
 /** Whether the work was handed in (separate from getting the AI feedback). */
 export type SubmitState = "idle" | "submitting" | "submitted" | "failed";
 
-type Completion = { reflection: string; evaluation: string; scoreConversation?: number; scoreReflection?: number };
+/** A hand-in without an AI evaluation: the server owns evaluations and scores. */
+type Completion = { reflection: string };
+
+/** The attempt was already handed in (e.g. a retry of a request that went through). */
+const alreadyHandedIn = (e: unknown) => (e as { code?: string }).code === "session_completed";
 
 interface SyncResponse {
   status: SessionSummary["status"];
@@ -137,7 +142,7 @@ export const useActivitySession = (appType: AppType) => {
       return null;
     }
     const transcript: TranscriptMessage[] = messages
-      .filter((m) => !m.streaming && m.content.trim())
+      .filter((m) => !m.streaming && !m.error && m.content.trim())
       .map((m) => ({ role: m.role, content: m.content, name: m.name }));
     const seq = ++syncSeq.current;
     lastSave.current = [messages, context, opts];
@@ -192,10 +197,31 @@ export const useActivitySession = (appType: AppType) => {
       setSubmitState("submitted");
       return true;
     } catch (e) {
+      if (alreadyHandedIn(e)) {
+        setSubmitState("submitted");
+        return true;
+      }
       console.warn("Could not complete session", e);
       setSubmitState("failed");
       return false;
     }
+  }, []);
+
+  /**
+   * Has the server evaluate the saved attempt and hand it in with the
+   * result, after the last transcript save. Null without a server session
+   * (the caller evaluates locally, nothing is saved). Throws when the
+   * evaluation failed: the caller then hands in the reflection alone.
+   */
+  const evaluate = useCallback(async (request: EvaluationRequest, onDelta: (chunk: string, full: string) => void): Promise<SessionEvaluation | null> => {
+    const id = sessionRef.current;
+    if (!id) return null;
+    lastCompletion.current = { reflection: request.reflection };
+    setSubmitState("submitting");
+    await saveQueue.current; // the last transcript save goes first
+    const res = await evaluateSession(id, request, onDelta);
+    setSubmitState("submitted");
+    return res;
   }, []);
 
   /** Hands in again what a failed submission carried. */
@@ -231,6 +257,7 @@ export const useActivitySession = (appType: AppType) => {
     sync,
     retrySave,
     complete,
+    evaluate,
     retrySubmit,
     markManualEnd,
     allowLive: assignment ? assignment.allowLive : true,

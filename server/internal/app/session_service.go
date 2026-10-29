@@ -19,6 +19,7 @@ type sessionService struct {
 	classes     classStore
 	classSvc    *classService
 	judge       goalEvaluator
+	generator   textGenerator
 	jevSettings func() JevSettings
 	listeners   []feedbackListener
 }
@@ -121,28 +122,19 @@ func (svc *sessionService) GiveFeedback(u *domain.User, id int64, f domain.Teach
 	return d, nil
 }
 
-// Completion is what the student hands in after the activity.
+// Completion is what the student hands in without an AI evaluation (e.g.
+// when it failed). Evaluations and scores come only from Evaluate: fields
+// a browser still sends for them are ignored.
 type Completion struct {
-	Reflection        string `json:"reflection"`
-	Evaluation        string `json:"evaluation"`
-	ScoreConversation *int   `json:"scoreConversation"`
-	ScoreReflection   *int   `json:"scoreReflection"`
+	Reflection string `json:"reflection"`
 }
 
 // validScore accepts a missing score or one on the 0-10 scale.
 func validScore(s *int) bool { return s == nil || (*s >= 0 && *s <= 10) }
 
-// Complete closes the attempt with the student's reflection and evaluation.
-// The scores still come from the browser (audit 2026-10-29, item 3): until the
-// server grades the submission itself, at least keep them on the scale.
+// Complete hands in the attempt with the student's reflection only.
 func (svc *sessionService) Complete(d *domain.SessionDetail, c Completion) error {
-	if !validScore(c.ScoreConversation) || !validScore(c.ScoreReflection) {
-		return invalid(errors.New("scores must be between 0 and 10"))
-	}
-	return svc.sessions.Complete(d.ID, domain.SessionCompletion{
-		Reflection: truncate(c.Reflection, maxReflectionChars), Evaluation: truncate(c.Evaluation, maxEvaluationChars),
-		ScoreConversation: c.ScoreConversation, ScoreReflection: c.ScoreReflection,
-	})
+	return svc.sessions.Complete(d.ID, domain.SessionCompletion{Reflection: truncate(c.Reflection, maxReflectionChars)})
 }
 
 // goalEvaluator scores a conversation against the assignment goals

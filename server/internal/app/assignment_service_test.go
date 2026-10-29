@@ -74,7 +74,9 @@ func TestAssignmentVisibility(t *testing.T) {
 	}
 }
 
-func TestCompleteRejectsScoresOffTheScale(t *testing.T) {
+// Without an AI evaluation the attempt is handed in with the reflection
+// only, and once: a second hand-in does not rewrite it.
+func TestCompleteHandsInTheReflectionOnce(t *testing.T) {
 	s, _, _, stud, _ := visibilityFixture(t)
 	ss, err := s.SessionSvc.Start(stud, NewAttempt{AppType: "wiki-chatbot"})
 	if err != nil {
@@ -84,17 +86,14 @@ func TestCompleteRejectsScoresOffTheScale(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, bad := range []int{-1, 11, 100} {
-		if err := s.SessionSvc.Complete(d, Completion{ScoreConversation: &bad}); !IsInvalid(err) {
-			t.Fatalf("score %d: %v", bad, err)
-		}
-		if err := s.SessionSvc.Complete(d, Completion{ScoreReflection: &bad}); !IsInvalid(err) {
-			t.Fatalf("reflection score %d: %v", bad, err)
-		}
-	}
-	ok := 10
-	if err := s.SessionSvc.Complete(d, Completion{ScoreConversation: &ok}); err != nil {
+	if err := s.SessionSvc.Complete(d, Completion{Reflection: "r"}); err != nil {
 		t.Fatal(err)
+	}
+	if err := s.SessionSvc.Complete(d, Completion{Reflection: "other"}); !errors.Is(err, domain.ErrSessionCompleted) {
+		t.Fatalf("second hand-in: %v", err)
+	}
+	if got, _ := s.Sessions.Detail(ss.ID); got.Reflection != "r" || got.ScoreConversation != nil || got.Status != domain.SessionCompleted {
+		t.Fatalf("stored: %+v", got)
 	}
 }
 

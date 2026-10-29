@@ -293,11 +293,17 @@ func affected(res sql.Result, err error) (bool, error) {
 }
 
 // Complete marks the attempt completed with the student's reflection and evaluation.
+// It happens once: a completed attempt gets domain.ErrSessionCompleted.
 func (r *ActivitySessions) Complete(id int64, c domain.SessionCompletion) error {
 	now := domain.Now()
-	_, err := r.db.Exec(`UPDATE activity_sessions SET status = 'completed', reflection = ?, evaluation = ?, score_conversation = ?, score_reflection = ?, completed_at = ?, updated_at = ? WHERE id = ?`,
-		c.Reflection, c.Evaluation, c.ScoreConversation, c.ScoreReflection, now, now, id)
-	return err
+	res, err := r.db.Exec(`UPDATE activity_sessions SET status = 'completed', reflection = ?, evaluation = ?, score_conversation = ?, score_reflection = ?, completed_at = ?, updated_at = ?
+		WHERE id = ? AND status != 'completed'`, c.Reflection, c.Evaluation, c.ScoreConversation, c.ScoreReflection, now, now, id)
+	if ok, err := affected(res, err); err != nil {
+		return err
+	} else if !ok {
+		return domain.ErrSessionCompleted
+	}
+	return nil
 }
 
 // SetTeacherFeedback stores (or replaces) the teacher's feedback on an attempt.

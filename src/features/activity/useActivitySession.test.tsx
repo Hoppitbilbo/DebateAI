@@ -10,10 +10,12 @@ import { useActivitySession } from "./useActivitySession";
 const mocks = vi.hoisted(() => ({
   user: null as null | { id: number },
   api: { get: vi.fn(), post: vi.fn(), put: vi.fn() },
+  evaluateSession: vi.fn(),
 }));
 
 vi.mock("@/context/auth", () => ({ useAuth: () => ({ user: mocks.user }) }));
 vi.mock("@/lib/api", () => ({ api: mocks.api }));
+vi.mock("@/services/aiService", () => ({ evaluateSession: mocks.evaluateSession }));
 
 const assignment = { id: 5, appType: "convinci-tu", maxTurns: 3, minTurns: 1, allowLive: false, requireReflection: false };
 
@@ -32,6 +34,7 @@ const msg = (role: ActivityMessage["role"], content: string, extra: Partial<Acti
 beforeEach(() => {
   mocks.user = null;
   Object.values(mocks.api).forEach((fn) => fn.mockReset());
+  mocks.evaluateSession.mockReset();
   vi.spyOn(console, "warn").mockImplementation(() => {});
 });
 
@@ -219,9 +222,9 @@ describe("server session", () => {
 
     mocks.api.post.mockResolvedValue({ ok: true });
     await act(async () => {
-      await result.current.complete({ reflection: "r", evaluation: "e" });
+      await result.current.complete({ reflection: "r" });
     });
-    expect(mocks.api.post).toHaveBeenLastCalledWith("/api/sessions/42/complete", { reflection: "r", evaluation: "e" });
+    expect(mocks.api.post).toHaveBeenLastCalledWith("/api/sessions/42/complete", { reflection: "r" });
   });
 
   it("reports a failed save and sends it again on retry", async () => {
@@ -244,7 +247,7 @@ describe("server session", () => {
     mocks.api.post.mockRejectedValueOnce(new Error("offline"));
     let ok: unknown;
     await act(async () => {
-      ok = await result.current.complete({ reflection: "r", evaluation: "e" });
+      ok = await result.current.complete({ reflection: "r" });
     });
     expect(ok).toBe(false);
     expect(result.current.submitState).toBe("failed");
@@ -255,7 +258,38 @@ describe("server session", () => {
     });
     expect(ok).toBe(true);
     expect(result.current.submitState).toBe("submitted");
-    expect(mocks.api.post).toHaveBeenLastCalledWith("/api/sessions/42/complete", { reflection: "r", evaluation: "e" });
+    expect(mocks.api.post).toHaveBeenLastCalledWith("/api/sessions/42/complete", { reflection: "r" });
+  });
+
+  it("counts an attempt the server already has as handed in", async () => {
+    const { result } = await loggedIn();
+    mocks.api.post.mockRejectedValueOnce(Object.assign(new Error("done"), { code: "session_completed" }));
+    let ok: unknown;
+    await act(async () => {
+      ok = await result.current.complete({ reflection: "r" });
+    });
+    expect(ok).toBe(true);
+    expect(result.current.submitState).toBe("submitted");
+  });
+
+  it("has the server evaluate after the last save, and keeps failed AI lines out of the transcript", async () => {
+    const { result } = await loggedIn();
+    let finishSave: (v: unknown) => void = () => {};
+    mocks.api.put.mockReturnValueOnce(new Promise((resolve) => (finishSave = resolve)));
+    mocks.evaluateSession.mockResolvedValue({ evaluation: "## Bravo", scoreConversation: 8 });
+    let graded: unknown;
+    await act(async () => {
+      void result.current.sync([msg("user", "ciao"), msg("assistant", "network down", { error: true })]);
+      const evaluation = result.current.evaluate({ reflection: "r", activity: "a", characters: "c", locale: "it" }, () => {});
+      await Promise.resolve();
+      expect(mocks.evaluateSession).not.toHaveBeenCalled();
+      finishSave({ status: "active", turns: 1, progress: 0, ended: false, revision: 1 });
+      graded = await evaluation;
+    });
+    expect(mocks.api.put.mock.calls[0][1].messages).toEqual([{ role: "user", content: "ciao", name: undefined }]);
+    expect(mocks.evaluateSession).toHaveBeenCalledWith(42, expect.objectContaining({ reflection: "r" }), expect.any(Function));
+    expect(graded).toEqual({ evaluation: "## Bravo", scoreConversation: 8 });
+    expect(result.current.submitState).toBe("submitted");
   });
 
   it("marks the attempt as not saved when it could not be created", async () => {

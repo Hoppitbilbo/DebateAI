@@ -87,6 +87,36 @@ func (s *Server) handleSaveTranscript(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, 200, resp)
 }
 
+// handleEvaluateSession grades the attempt on the server, streaming the
+// evaluation as server-sent events, and hands it in with the result.
+func (s *Server) handleEvaluateSession(w http.ResponseWriter, r *http.Request) {
+	_, d, ok := s.ownSession(w, r)
+	if !ok {
+		return
+	}
+	if d.Status == domain.SessionCompleted {
+		writeErr(w, 409, "session_completed", domain.ErrSessionCompleted.Error())
+		return
+	}
+	var in app.EvaluationRequest
+	if err := readJSON(r, &in); err != nil {
+		writeErr(w, 400, "bad_request", err.Error())
+		return
+	}
+	u, release, ok := s.admit(w, r)
+	if !ok {
+		return
+	}
+	defer release()
+	send := startEventStream(w)
+	ev, err := s.SessionSvc.Evaluate(aiContext(r, u), u, d, in, func(delta string) error { return send(streamDelta{Delta: delta}) })
+	if err != nil {
+		_ = send(streamError{Error: err.Error()})
+		return
+	}
+	_ = send(evaluationDone{Done: true, Evaluation: *ev})
+}
+
 // handleSessionFeedback stores the teacher's written feedback and score.
 func (s *Server) handleSessionFeedback(w http.ResponseWriter, r *http.Request) {
 	var in domain.TeacherFeedback
@@ -119,7 +149,10 @@ func (s *Server) handleCompleteSession(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 400, "bad_request", err.Error())
 		return
 	}
-	if err := s.SessionSvc.Complete(d, in); err != nil {
+	if err := s.SessionSvc.Complete(d, in); errors.Is(err, domain.ErrSessionCompleted) {
+		writeErr(w, 409, "session_completed", err.Error())
+		return
+	} else if err != nil {
 		writeServiceErr(w, err)
 		return
 	}
