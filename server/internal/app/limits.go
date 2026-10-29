@@ -66,8 +66,13 @@ const (
 )
 
 // settingsCacheTTL bounds how long a settings change made by another
-// instance takes to be seen (settings_cache.go).
-const settingsCacheTTL = 5 * time.Second
+// instance takes to be seen (settings_cache.go); providerCacheTTL does the
+// same for a provider's adapter (key, address, enabled), rebuilt from the
+// database when it expires.
+const (
+	settingsCacheTTL = 5 * time.Second
+	providerCacheTTL = 30 * time.Second
+)
 
 // Admission and budget reservations (admission.go).
 const (

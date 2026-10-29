@@ -74,9 +74,43 @@ func newTestServer(t *testing.T) *Services {
 	return NewServices(cfg, db)
 }
 
-// useProvider puts a provider straight into the adapter cache, bypassing the DB.
+// useProvider puts a provider straight into the adapter cache, bypassing
+// the DB; it never expires there (loaded in the far future).
 func useProvider(s *Services, id int64, kind string, p ai.Provider) {
-	s.Gateway.provs[id] = cachedProvider{p: p, cfg: ai.Config{ID: id, Kind: kind}, name: "fake" + itoa(id)}
+	s.Gateway.provs[id] = cachedProvider{p: p, cfg: ai.Config{ID: id, Kind: kind}, name: "fake" + itoa(id), loaded: time.Now().AddDate(100, 0, 0)}
+}
+
+// A provider changed on another instance (here: straight in the database)
+// is rebuilt once its cached adapter is older than providerCacheTTL.
+func TestProviderCacheExpires(t *testing.T) {
+	s := newTestServer(t)
+	now := time.Now()
+	s.Gateway.provNow = func() time.Time { return now }
+	built := 0
+	s.Gateway.newProvider = func(c ai.Config) (ai.Provider, error) { built++; return &fakeProvider{}, nil }
+	id, err := s.Gateway.insertProvider("p", ai.KindOpenAI, "", "key")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for range 2 {
+		if _, err := s.Gateway.provider(id); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if built != 1 {
+		t.Fatalf("built %d times, want 1 (cached)", built)
+	}
+	disabled := false
+	if err := s.Providers.Update(id, domain.ProviderPatch{Enabled: &disabled}); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := s.Gateway.provider(id); err != nil {
+		t.Fatal("still cached before the TTL")
+	}
+	now = now.Add(providerCacheTTL)
+	if _, err := s.Gateway.provider(id); err == nil {
+		t.Fatal("a provider disabled elsewhere must be seen after the TTL")
+	}
 }
 
 func setChatRoute(t *testing.T, s *Services, strategy string, targets ...RouteTarget) {

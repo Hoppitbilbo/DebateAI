@@ -33,21 +33,23 @@ type aiGateway struct {
 	// replaced with WithProviderFactory).
 	newProvider func(ai.Config) (ai.Provider, error)
 
-	provMu sync.Mutex
-	provs  map[int64]cachedProvider
+	provMu  sync.Mutex
+	provs   map[int64]cachedProvider
+	provNow func() time.Time // clock of the provider cache, replaced in tests
 
 	health *targetHealth
 }
 
 func newAIGateway(providers providerStore, prices priceStore, usage usageStore, sessions sessionStore, settings *settingsService, crypto *Crypto) *aiGateway {
 	return &aiGateway{providers: providers, prices: prices, usage: usage, sessions: sessions, settings: settings, crypto: crypto,
-		newProvider: ai.New, provs: map[int64]cachedProvider{}, health: newTargetHealth()}
+		newProvider: ai.New, provs: map[int64]cachedProvider{}, provNow: time.Now, health: newTargetHealth()}
 }
 
 type cachedProvider struct {
-	p    ai.Provider
-	cfg  ai.Config
-	name string
+	p      ai.Provider
+	cfg    ai.Config
+	name   string
+	loaded time.Time
 }
 
 func (g *aiGateway) insertProvider(name, kind, baseURL, apiKey string) (int64, error) {
@@ -60,13 +62,17 @@ func (g *aiGateway) invalidateProvider(id int64) {
 	g.provMu.Unlock()
 }
 
-// provider returns a ready adapter for an enabled provider.
+// provider returns a ready adapter for an enabled provider. An admin change
+// made through this process invalidates it at once; one made on another
+// instance is seen within providerCacheTTL.
 func (g *aiGateway) provider(id int64) (*cachedProvider, error) {
 	g.provMu.Lock()
 	defer g.provMu.Unlock()
-	if cp, ok := g.provs[id]; ok {
+	now := g.provNow()
+	if cp, ok := g.provs[id]; ok && now.Sub(cp.loaded) < providerCacheTTL {
 		return &cp, nil
 	}
+	delete(g.provs, id)
 	rec, err := g.providers.Get(id)
 	if err != nil {
 		return nil, fmt.Errorf("provider %d not found", id)
@@ -83,7 +89,7 @@ func (g *aiGateway) provider(id int64) (*cachedProvider, error) {
 	if err != nil {
 		return nil, err
 	}
-	cp := cachedProvider{p: p, cfg: cfg, name: rec.Name}
+	cp := cachedProvider{p: p, cfg: cfg, name: rec.Name, loaded: now}
 	g.provs[id] = cp
 	return &cp, nil
 }
