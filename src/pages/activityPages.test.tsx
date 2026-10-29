@@ -123,6 +123,10 @@ describe("WikiChatbotPage", () => {
     pickAll();
     await start();
     expect(mocks.begin).toHaveBeenCalledWith(expect.stringMatching(/^Person /), expect.objectContaining({ page: expect.anything() }));
+    // the server writes the prompt and the opening cue from the recipe
+    const [opening] = mocks.generateStream.mock.calls[0];
+    expect(opening.system).toBeUndefined();
+    expect(opening.recipe).toMatchObject({ app: "wiki-chatbot", kind: "opening", character: expect.stringMatching(/^Person /), uiLang: "en" });
   });
 });
 
