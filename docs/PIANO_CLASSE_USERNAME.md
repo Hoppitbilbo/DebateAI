@@ -1,9 +1,7 @@
 # Classe permanente con username e password
 
-Data: 29 ottobre 2026. Stato: **T1, P1 e P2 implementate (branch `feat/classe-username`,
-non unito); P3 implementata sul branch `feat/classe-username-p3` (da `feat/classe-username`,
-non unito); P4 implementata sul branch `feat/classe-username-p4` (non unito né pushato);
-P5–P7 e T2–T4 da fare**. Vedi «Stato di avanzamento» qui sotto.
+Data: 29 ottobre 2026. Stato: **T1 e P1–P4 implementate sul branch `feat/classe-username`
+(non pushato, non unito a master); P5–P7 e T2–T4 da fare**. Vedi «Stato di avanzamento» qui sotto.
 
 ## Stato di avanzamento (per chi riprende il lavoro)
 
@@ -43,7 +41,8 @@ P5–P7 e T2–T4 da fare**. Vedi «Stato di avanzamento» qui sotto.
   dopo il lock di scrittura (più avvii insieme la eseguono una volta sola), contatore
   AUTOINCREMENT conservato, `foreign_key_check` che non deve peggiorare. Diversamente da §8
   non c'è un comando separato: la migrazione è sicura anche se più istanze partono insieme.
-  **Prima del deploy fare comunque un backup/branch del database Turso.**
+  **Superato il 30/10 (commit `784e429`): la ricostruzione e le migrazioni additive sono state
+  tolte, il database di produzione va ricreato vuoto (vedi «Database nuovo» sotto).**
 - Repository: letture con `COALESCE` per email/username, `GetByEmail("")` non trova nulla,
   `GetByUsername`, ricerca anche per username, `Users.CreateStudentInClass` (account +
   appartenenza in una transazione che ricontrolla codice, modalità e classe attiva).
@@ -146,7 +145,7 @@ commit `388e932`, `2759522`, `2e68c94`, `3452614`; non unito né pushato):
 - Test: `store/password_resets_test.go` (uso singolo, sostituzione, scadenza, regole,
   proprietario cambiato, studente rimosso, classe archiviata/cancellata, emittente
   declassato/cancellato, account con email, 8 consumi concorrenti, `ChangePassword` atomico,
-  `JoinByCode`), prova su libSQL in Docker (`migrate_users_remote_test.go`: link usato una volta),
+  `JoinByCode`), prova su libSQL in Docker (ora `store/remote_test.go`: link usato una volta),
   `app/password_reset_test.go` (proprietario e admin, co-docente, docente estraneo, classe non
   d'origine, ospite, email, archiviata, rimosso, cambio proprietario, emittente declassato o
   cancellato, nuova emissione, scaduto, riuso, due consumi concorrenti, sessioni revocate,
@@ -163,8 +162,20 @@ commit `388e932`, `2759522`, `2e68c94`, `3452614`; non unito né pushato):
   e cancellando l'emittente); limite delle richieste di login in corso (§7) ancora assente; i
   punti di P6 elencati in P3. Test HTTP con socket reali da eseguire in CI/staging.
 
-**Da fare, in quest'ordine:** P5 → P6 → T2 → T3 → P7/T4. Prima, unire
-`feat/classe-username-p3` e `feat/classe-username-p4` in `feat/classe-username`.
+**Fatto — database nuovo, niente migrazioni legacy** (Claude Code, 30/10, commit `784e429`):
+
+- Decisione dell'utente: il database esistente non ha dati da conservare. Tolti
+  `store/migrate_users.go` (ricostruzione di `users`), i suoi test e le 14 migrazioni additive
+  di colonne: `schema` crea tutte le tabelle nella forma attuale. Il meccanismo
+  `applyMigrations` resta, con elenco vuoto, per le modifiche dopo il rilascio.
+- `requireCurrentSchema` rifiuta all'avvio un database di una versione precedente (errore
+  chiaro invece di un guasto alla prima query). Test `TestOpenRefusesOldDatabase`;
+  `store/remote_test.go` prova lo schema su libSQL in Docker (verde).
+- **Rilascio:** il database Turso di produzione va svuotato (o sostituito da uno nuovo) prima
+  del deploy; il server ricrea le tabelle al primo avvio e l'admin si ricrea da `/setup`.
+  Operazione distruttiva: chiedere conferma all'utente in quel momento.
+
+**Da fare, in quest'ordine:** P5 → P6 → T2 → T3 → P7/T4.
 Piccola miglioria possibile: il testo dell'email d'invito dice «completa la registrazione»
 anche a chi ha già un account; la pagina gestisce comunque il caso.
 
