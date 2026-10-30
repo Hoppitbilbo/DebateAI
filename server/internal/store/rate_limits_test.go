@@ -72,7 +72,7 @@ func TestAuthRateLimitsAreAtomic(t *testing.T) {
 }
 
 // The conditional upsert on a libSQL server, as on Turso (see
-// TestRemoteMakesEmailOptional for LIBSQL_TEST_URL).
+// TestRemoteSchema for LIBSQL_TEST_URL).
 func TestRemoteAuthRateLimits(t *testing.T) {
 	url := os.Getenv("LIBSQL_TEST_URL")
 	if url == "" {
