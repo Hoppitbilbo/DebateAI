@@ -67,7 +67,8 @@
     "already_setup": "La piattaforma è già configurata.",
     "username_taken": "Questo username è già usato: scegline un altro.",
     "unavailable": "Il servizio non è disponibile al momento. Riprova tra poco.",
-    "ambiguous_identifier": "L'email e lo username indicano account diversi: usane uno solo."
+    "ambiguous_identifier": "L'email e lo username indicano account diversi: usane uno solo.",
+    "reset_not_allowed": "Per questo account non si può creare un link di recupero: serve uno studente senza email, ancora iscritto alla sua classe d'origine, non archiviata."
   },
   "aiErrors": {
     "generic": "L'IA non ha risposto. Riprova.",

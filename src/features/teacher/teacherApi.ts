@@ -11,6 +11,13 @@ export interface ProgressCell { assignmentId: number; userId: number; status: Se
 
 export interface ProgressRow { userId: number; name: string; email: string; session?: SessionSummary; attemptCount: number }
 
+/** A one-time link to choose a new password, valid 15 minutes; shown once. */
+export interface ResetLink { url: string; expiresAt: string }
+
+/** Asks for an assisted reset link for a student without e-mail (owner of the class of origin or admin). */
+export const requestPasswordReset = (classId: number, userId: number) =>
+  api.post<ResetLink>(`/api/classes/${classId}/members/${userId}/password-reset`);
+
 export const createClass = (c: { name: string; description: string; ownerId?: number }) => api.post<ClassInfo>("/api/classes", c);
 
 export const useMyClasses = () => {

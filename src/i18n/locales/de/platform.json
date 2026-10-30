@@ -67,7 +67,8 @@
     "already_setup": "Die Plattform ist bereits eingerichtet.",
     "username_taken": "Dieser Benutzername ist bereits vergeben: Wähle einen anderen.",
     "unavailable": "Der Dienst ist gerade nicht verfügbar. Versuche es gleich noch einmal.",
-    "ambiguous_identifier": "E-Mail und Benutzername gehören zu verschiedenen Konten: Verwende nur eines."
+    "ambiguous_identifier": "E-Mail und Benutzername gehören zu verschiedenen Konten: Verwende nur eines.",
+    "reset_not_allowed": "Für dieses Konto kann kein Wiederherstellungslink erstellt werden: Es muss ein Schüler ohne E-Mail sein, der noch in seiner aktiven Ursprungsklasse ist."
   },
   "aiErrors": {
     "generic": "Die KI hat nicht geantwortet. Bitte versuche es erneut.",

@@ -67,7 +67,8 @@
     "already_setup": "La plateforme est déjà configurée.",
     "username_taken": "Ce nom d'utilisateur est déjà pris : choisis-en un autre.",
     "unavailable": "Le service n'est pas disponible pour le moment. Réessaie dans un instant.",
-    "ambiguous_identifier": "L'e-mail et le nom d'utilisateur désignent des comptes différents : n'en utilise qu'un."
+    "ambiguous_identifier": "L'e-mail et le nom d'utilisateur désignent des comptes différents : n'en utilise qu'un.",
+    "reset_not_allowed": "Impossible de créer un lien de récupération pour ce compte : il doit s'agir d'un élève sans e-mail, encore inscrit dans sa classe d'origine active."
   },
   "aiErrors": {
     "generic": "L'IA n'a pas répondu. Réessayez.",

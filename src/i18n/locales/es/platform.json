@@ -67,7 +67,8 @@
     "already_setup": "La plataforma ya está configurada.",
     "username_taken": "Este nombre de usuario ya está en uso: elige otro.",
     "unavailable": "El servicio no está disponible en este momento. Inténtalo de nuevo en un rato.",
-    "ambiguous_identifier": "El correo y el nombre de usuario corresponden a cuentas distintas: usa solo uno."
+    "ambiguous_identifier": "El correo y el nombre de usuario corresponden a cuentas distintas: usa solo uno.",
+    "reset_not_allowed": "No se puede crear un enlace de recuperación para esta cuenta: debe ser un estudiante sin correo, todavía inscrito en su clase de origen activa."
   },
   "aiErrors": {
     "generic": "La IA no respondió. Inténtalo de nuevo.",

@@ -67,7 +67,8 @@
     "already_setup": "The platform is already configured.",
     "username_taken": "This username is already taken: choose another one.",
     "unavailable": "The service is not available right now. Please try again shortly.",
-    "ambiguous_identifier": "The email and the username name different accounts: use only one."
+    "ambiguous_identifier": "The email and the username name different accounts: use only one.",
+    "reset_not_allowed": "No recovery link can be created for this account: it must be a student without e-mail, still enrolled in the active class it was created in."
   },
   "aiErrors": {
     "generic": "The AI did not answer. Please try again.",

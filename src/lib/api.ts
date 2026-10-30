@@ -217,6 +217,8 @@ export interface Member {
   role: "student" | "teacher";
   joinedAt: string;
   lastLoginAt?: string;
+  /** The viewer may give this member an assisted password reset link (decided by the server). */
+  canResetPassword: boolean;
 }
 
 export interface Invite {
