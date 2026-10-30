@@ -942,5 +942,36 @@
     "error": "Das Wörterbuch antwortet nicht: versuche es gleich noch einmal.",
     "source": "Im Wiktionary öffnen",
     "close": "Schließen"
+  },
+  "enroll": {
+    "title": "Tritt {{className}} bei",
+    "subtitle": "Wähle einen Benutzernamen und ein Passwort.",
+    "pseudonym": "Dein Benutzername ist hier dein Name: Dein echter Name ist nicht nötig. Die Lehrkraft sieht die Aktivitäten und Gespräche, die zu deinem Benutzernamen gehören.",
+    "username": "Benutzername",
+    "usernameHint": "3 bis 30 Zeichen: Buchstaben a-z, Ziffern, Punkt, Bindestrich oder Unterstrich. Beginnt mit einem Buchstaben oder einer Ziffer.",
+    "passwordHint": "8 bis 72 Zeichen.",
+    "submit": "Konto erstellen",
+    "haveAccount": "Ich habe schon ein Konto",
+    "invalidTitle": "Link ungültig",
+    "invalidText": "Dieser Link funktioniert nicht: Vielleicht wurde er geändert oder die Anmeldung ist geschlossen. Frag deine Lehrkraft nach dem neuen Link.",
+    "failedTitle": "Klasse nicht geladen",
+    "guestText": "Du bist in einem Blitzraum mit einem vorläufigen Konto. Um dein Klassenkonto zu erstellen, verlasse zuerst den Raum.",
+    "guestLogout": "Raum verlassen",
+    "staffText": "Mit diesem Link melden sich Schülerinnen und Schüler in der Klasse an. Du bist als Lehrkraft oder Administrator angemeldet: Teile ihn mit deiner Klasse.",
+    "loggedInText": "Du bist schon als {{name}} angemeldet. Möchtest du mit diesem Konto der Klasse beitreten?",
+    "useMine": "Mein Konto verwenden",
+    "logoutAndCreate": "Abmelden und neues Konto erstellen",
+    "doneTitle": "Konto erstellt!",
+    "doneUsername": "Dein Benutzername ist",
+    "doneNote": "Schreib Benutzername und Passwort an einem sicheren Ort auf: Du brauchst sie für die nächste Anmeldung. Wenn du das Passwort vergisst, frag deine Lehrkraft.",
+    "doneLogin": "Nächstes Mal meldest du dich hier an:",
+    "goToClass": "Zur Klasse",
+    "errors": {
+      "taken": "Dieser Benutzername ist schon vergeben: Wähle einen anderen.",
+      "invalid": "Prüfe Benutzername und Passwort: Folge den Hinweisen unter den Feldern.",
+      "closed": "Die Anmeldung per Link ist geschlossen. Frag deine Lehrkraft.",
+      "guest": "Du bist in einem Blitzraum: Verlasse ihn, bevor du ein Konto erstellst.",
+      "link": "Dieser Link gilt nicht mehr. Frag deine Lehrkraft nach dem neuen Link."
+    }
   }
 }

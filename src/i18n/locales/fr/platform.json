@@ -942,5 +942,36 @@
     "error": "Le dictionnaire ne répond pas : réessaie dans un instant.",
     "source": "Ouvrir sur le Wiktionnaire",
     "close": "Fermer"
+  },
+  "enroll": {
+    "title": "Rejoindre {{className}}",
+    "subtitle": "Choisis un nom d'utilisateur et un mot de passe.",
+    "pseudonym": "Ton nom d'utilisateur est ton nom ici : pas besoin de ton vrai nom. L'enseignant voit les activités et les conversations liées à ton nom d'utilisateur.",
+    "username": "Nom d'utilisateur",
+    "usernameHint": "De 3 à 30 caractères : lettres a-z, chiffres, point, tiret ou tiret bas. Commence par une lettre ou un chiffre.",
+    "passwordHint": "De 8 à 72 caractères.",
+    "submit": "Créer le compte",
+    "haveAccount": "J'ai déjà un compte",
+    "invalidTitle": "Lien non valide",
+    "invalidText": "Ce lien ne fonctionne pas : il a peut-être changé ou les inscriptions sont fermées. Demande le nouveau lien à ton enseignant.",
+    "failedTitle": "Classe non chargée",
+    "guestText": "Tu es dans une salle éclair avec un compte temporaire. Pour créer ton compte de la classe, quitte d'abord la salle.",
+    "guestLogout": "Quitter la salle",
+    "staffText": "Ce lien permet aux élèves de s'inscrire à la classe. Tu es connecté comme enseignant ou administrateur : partage-le avec tes élèves.",
+    "loggedInText": "Tu es déjà connecté comme {{name}}. Veux-tu rejoindre la classe avec ce compte ?",
+    "useMine": "Utiliser mon compte",
+    "logoutAndCreate": "Me déconnecter et créer un nouveau compte",
+    "doneTitle": "Compte créé !",
+    "doneUsername": "Ton nom d'utilisateur est",
+    "doneNote": "Note ton nom d'utilisateur et ton mot de passe dans un endroit sûr : tu en as besoin pour te connecter la prochaine fois. Si tu oublies le mot de passe, demande à ton enseignant.",
+    "doneLogin": "La prochaine fois, connecte-toi sur",
+    "goToClass": "Aller à la classe",
+    "errors": {
+      "taken": "Ce nom d'utilisateur est déjà pris : choisis-en un autre.",
+      "invalid": "Vérifie le nom d'utilisateur et le mot de passe : suis les indications sous les champs.",
+      "closed": "Les inscriptions par lien sont fermées. Demande à ton enseignant.",
+      "guest": "Tu es dans une salle éclair : quitte-la avant de créer un compte.",
+      "link": "Ce lien n'est plus valable. Demande le nouveau lien à ton enseignant."
+    }
   }
 }

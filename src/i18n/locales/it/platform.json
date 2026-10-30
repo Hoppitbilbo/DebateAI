@@ -942,5 +942,36 @@
     "error": "Il dizionario non risponde: riprova tra poco.",
     "source": "Apri su Wikizionario",
     "close": "Chiudi"
+  },
+  "enroll": {
+    "title": "Iscriviti a {{className}}",
+    "subtitle": "Scegli uno username e una password.",
+    "pseudonym": "Lo username è il tuo nome qui: non serve il nome vero. Il docente vede le attività e le conversazioni legate al tuo username.",
+    "username": "Username",
+    "usernameHint": "Da 3 a 30 caratteri: lettere a-z, cifre, punto, trattino o trattino basso. Inizia con una lettera o una cifra.",
+    "passwordHint": "Da 8 a 72 caratteri.",
+    "submit": "Crea account",
+    "haveAccount": "Ho già un account",
+    "invalidTitle": "Link non valido",
+    "invalidText": "Questo link non funziona: forse è stato cambiato o le iscrizioni sono chiuse. Chiedi al docente il link nuovo.",
+    "failedTitle": "Classe non caricata",
+    "guestText": "Sei in un'aula lampo con un account temporaneo. Per creare il tuo account della classe, prima esci dall'aula.",
+    "guestLogout": "Esci dall'aula",
+    "staffText": "Questo link serve agli studenti per iscriversi alla classe. Sei connesso come docente o amministratore: condividilo con gli studenti.",
+    "loggedInText": "Sei già connesso come {{name}}. Vuoi entrare nella classe con questo account?",
+    "useMine": "Usa il mio account",
+    "logoutAndCreate": "Esci e crea un account nuovo",
+    "doneTitle": "Account creato!",
+    "doneUsername": "Il tuo username è",
+    "doneNote": "Scrivi username e password in un posto sicuro: ti servono per entrare le prossime volte. Se dimentichi la password, chiedi al docente.",
+    "doneLogin": "La prossima volta entra da",
+    "goToClass": "Vai alla classe",
+    "errors": {
+      "taken": "Questo username è già usato: scegline un altro.",
+      "invalid": "Controlla username e password: segui le indicazioni sotto i campi.",
+      "closed": "Le iscrizioni con link sono chiuse. Chiedi al docente.",
+      "guest": "Sei in un'aula lampo: esci dall'aula prima di creare un account.",
+      "link": "Questo link non vale più. Chiedi al docente il link nuovo."
+    }
   }
 }

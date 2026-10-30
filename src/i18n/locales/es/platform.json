@@ -942,5 +942,36 @@
     "error": "El diccionario no responde: inténtalo de nuevo en un momento.",
     "source": "Abrir en Wikcionario",
     "close": "Cerrar"
+  },
+  "enroll": {
+    "title": "Inscríbete en {{className}}",
+    "subtitle": "Elige un nombre de usuario y una contraseña.",
+    "pseudonym": "Tu nombre de usuario es tu nombre aquí: no hace falta el real. Tu docente ve las actividades y conversaciones ligadas a tu nombre de usuario.",
+    "username": "Nombre de usuario",
+    "usernameHint": "De 3 a 30 caracteres: letras a-z, cifras, punto, guion o guion bajo. Empieza por una letra o una cifra.",
+    "passwordHint": "De 8 a 72 caracteres.",
+    "submit": "Crear cuenta",
+    "haveAccount": "Ya tengo una cuenta",
+    "invalidTitle": "Enlace no válido",
+    "invalidText": "Este enlace no funciona: quizá ha cambiado o las inscripciones están cerradas. Pide a tu docente el enlace nuevo.",
+    "failedTitle": "Clase no cargada",
+    "guestText": "Estás en un aula rápida con una cuenta temporal. Para crear tu cuenta de la clase, primero sal del aula.",
+    "guestLogout": "Salir del aula",
+    "staffText": "Este enlace sirve para que los estudiantes se inscriban en la clase. Has iniciado sesión como docente o administrador: compártelo con tus estudiantes.",
+    "loggedInText": "Ya has iniciado sesión como {{name}}. ¿Quieres entrar en la clase con esta cuenta?",
+    "useMine": "Usar mi cuenta",
+    "logoutAndCreate": "Cerrar sesión y crear una cuenta nueva",
+    "doneTitle": "¡Cuenta creada!",
+    "doneUsername": "Tu nombre de usuario es",
+    "doneNote": "Apunta tu nombre de usuario y contraseña en un lugar seguro: los necesitas para entrar la próxima vez. Si olvidas la contraseña, pregunta a tu docente.",
+    "doneLogin": "La próxima vez entra en",
+    "goToClass": "Ir a la clase",
+    "errors": {
+      "taken": "Este nombre de usuario ya está en uso: elige otro.",
+      "invalid": "Revisa el nombre de usuario y la contraseña: sigue las indicaciones bajo los campos.",
+      "closed": "Las inscripciones por enlace están cerradas. Pregunta a tu docente.",
+      "guest": "Estás en un aula rápida: sal de ella antes de crear una cuenta.",
+      "link": "Este enlace ya no vale. Pide a tu docente el enlace nuevo."
+    }
   }
 }

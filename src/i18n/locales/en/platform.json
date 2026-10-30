@@ -942,5 +942,36 @@
     "error": "The dictionary is not responding: try again shortly.",
     "source": "Open on Wiktionary",
     "close": "Close"
+  },
+  "enroll": {
+    "title": "Join {{className}}",
+    "subtitle": "Choose a username and a password.",
+    "pseudonym": "Your username is your name here: no real name needed. Your teacher sees the activities and conversations linked to your username.",
+    "username": "Username",
+    "usernameHint": "3 to 30 characters: letters a-z, digits, dot, hyphen or underscore. Start with a letter or a digit.",
+    "passwordHint": "8 to 72 characters.",
+    "submit": "Create account",
+    "haveAccount": "I already have an account",
+    "invalidTitle": "Link not valid",
+    "invalidText": "This link does not work: it may have been changed, or sign-up is closed. Ask your teacher for the new link.",
+    "failedTitle": "Class not loaded",
+    "guestText": "You are in a quick room with a temporary account. To create your class account, leave the room first.",
+    "guestLogout": "Leave the room",
+    "staffText": "This link lets students join the class. You are logged in as a teacher or administrator: share it with your students.",
+    "loggedInText": "You are already logged in as {{name}}. Do you want to join the class with this account?",
+    "useMine": "Use my account",
+    "logoutAndCreate": "Log out and create a new account",
+    "doneTitle": "Account created!",
+    "doneUsername": "Your username is",
+    "doneNote": "Write down your username and password somewhere safe: you need them to log in next time. If you forget the password, ask your teacher.",
+    "doneLogin": "Next time, log in at",
+    "goToClass": "Go to the class",
+    "errors": {
+      "taken": "This username is already taken: choose another one.",
+      "invalid": "Check your username and password: follow the notes under the fields.",
+      "closed": "Joining by link is closed. Ask your teacher.",
+      "guest": "You are in a quick room: leave it before creating an account.",
+      "link": "This link no longer works. Ask your teacher for the new link."
+    }
   }
 }
