@@ -126,3 +126,15 @@ const (
 	outboxLease = 5 * time.Minute
 	outboxPoll  = time.Minute
 )
+
+// Login and enrollment limits (auth_limits.go), counted in the database so
+// that every instance shares them. A class of 40 students on one IP, some
+// mistyping, stays far below the network cap.
+const (
+	loginAttemptsWindow          = 15 * time.Minute
+	loginAttemptsPerIdentifierIP = 20   // one account from one network
+	loginAttemptsPerIdentifier   = 60   // one account from any network
+	loginAttemptsPerNetwork      = 1200 // all the accounts of one network
+	enrollmentsWindow            = time.Hour
+	enrollmentsPerLink           = 120 // account creation attempts per class link
+)

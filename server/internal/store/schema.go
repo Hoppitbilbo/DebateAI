@@ -191,6 +191,15 @@ CREATE TABLE IF NOT EXISTS ai_inflight (
 );
 CREATE INDEX IF NOT EXISTS idx_inflight_scope ON ai_inflight(scope, expires_at);
 
+-- Login and enrollment attempts per window; key is an HMAC, never an
+-- e-mail, username or IP in clear.
+CREATE TABLE IF NOT EXISTS auth_rate_limits (
+  key TEXT PRIMARY KEY,
+  count INTEGER NOT NULL,
+  expires_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_auth_rate_limits_expires ON auth_rate_limits(expires_at);
+
 CREATE TABLE IF NOT EXISTS settings (
   key TEXT PRIMARY KEY,
   value TEXT NOT NULL
