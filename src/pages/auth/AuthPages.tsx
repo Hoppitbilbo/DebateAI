@@ -3,56 +3,25 @@ import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Loader2, ShieldCheck } from "lucide-react";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { useTour } from "@/features/tour/tour";
-import { ApiError } from "@/lib/api";
+import { apiErrorText } from "@/lib/apiErrorText";
+import { loginName } from "@/lib/format";
+import { internalPath } from "@/lib/internalPath";
 import { authApi, InviteInfo, ProfileChange } from "@/features/auth/authApi";
 import { dashboardPath, useAuth } from "@/context/auth";
 import i18n from "@/i18n";
 import { LOCALES } from "@/i18n/languages";
 import { useBusyAction } from "@/hooks/useBusyAction";
-
-export const AuthLayout = ({ title, subtitle, children }: { title: string; subtitle?: string; children: React.ReactNode }) => (
-  <div className="flex min-h-screen flex-col bg-background text-foreground">
-    <Navbar />
-    <main className="flex flex-1 items-center justify-center px-4 py-12">
-      <div className="w-full max-w-md space-y-6 rounded-lg border border-border bg-card p-8 text-card-foreground shadow-lg">
-        <div className="space-y-1 text-center">
-          <h1 className="font-heading text-2xl font-bold text-primary">{title}</h1>
-          {subtitle && <p className="text-sm text-muted-foreground">{subtitle}</p>}
-        </div>
-        {children}
-      </div>
-    </main>
-    <Footer />
-  </div>
-);
-
-const Field = ({ id, label, ...props }: { id: string; label: string } & React.InputHTMLAttributes<HTMLInputElement>) => (
-  <div className="space-y-2">
-    <Label htmlFor={id}>{label}</Label>
-    <Input id={id} {...props} />
-  </div>
-);
-
-const errMsg = (e: unknown, t: (k: string) => string) => {
-  if (e instanceof ApiError) {
-    const key = `platform.errors.${e.code}`;
-    return i18n.exists(key) ? t(key) : e.message;
-  }
-  return t("platform.errors.generic");
-};
+import { AuthLayout, Field, PasswordField } from "./authFields";
 
 /** useBusyAction with the auth error texts. */
 const useAuthAction = () => {
   const { t } = useTranslation();
-  return useBusyAction((err) => errMsg(err, t));
+  return useBusyAction((err) => apiErrorText(err, t));
 };
 
 export const LoginPage = () => {
@@ -63,15 +32,17 @@ export const LoginPage = () => {
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const { busy, run } = useAuthAction();
+  // Only a path of this site: an outside address would turn the login into a redirect.
+  const next = internalPath(params.get("next"));
 
   if (config?.setupRequired) return <Navigate to="/setup" replace />;
-  if (user) return <Navigate to={params.get("next") || dashboardPath(user)} replace />;
+  if (user) return <Navigate to={next || dashboardPath(user)} replace />;
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     void run(async () => {
       const u = await login(identifier, password);
-      navigate(params.get("next") || dashboardPath(u), { replace: true });
+      navigate(next || dashboardPath(u), { replace: true });
     });
   };
 
@@ -79,7 +50,7 @@ export const LoginPage = () => {
     <AuthLayout title={t("platform.auth.loginTitle")} subtitle={t("platform.auth.loginSubtitle")}>
       <form onSubmit={submit} className="space-y-4">
         <Field id="identifier" label={t("platform.auth.identifier")} type="text" autoComplete="username" autoCapitalize="none" spellCheck={false} required value={identifier} onChange={(e) => setIdentifier(e.target.value)} />
-        <Field id="password" label={t("platform.auth.password")} type="password" autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+        <PasswordField id="password" label={t("platform.auth.password")} autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} />
         <Button type="submit" className="w-full" disabled={busy}>
           {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} {t("platform.auth.login")}
         </Button>
@@ -284,20 +255,24 @@ export const AccountPage = () => {
 
   const save = async (change: ProfileChange, msg: string) => {
     try {
+      // A new password also gives this browser a new session (the others end).
       const u = await authApi.updateProfile(change);
       setUser(u);
       toast.success(msg);
       setCurrent("");
       setNext("");
     } catch (err) {
-      toast.error(errMsg(err, t));
+      toast.error(apiErrorText(err, t));
     }
   };
 
   return (
-    <AuthLayout title={t("platform.account.title")} subtitle={`${user.email} · ${t(`platform.roles.${user.role}`)}`}>
+    <AuthLayout title={t("platform.account.title")} subtitle={`${loginName(user)} · ${t(`platform.roles.${user.role}`)}`}>
       <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); void save({ name }, t("platform.common.saved")); }}>
-        <Field id="name" label={t("platform.auth.name")} value={name} onChange={(e) => setName(e.target.value)} />
+        {/* An account without e-mail needs no real name: it is the name the class sees. */}
+        {user.email
+          ? <Field id="name" label={t("platform.auth.name")} value={name} onChange={(e) => setName(e.target.value)} />
+          : <Field id="name" label={t("platform.account.displayName")} hint={t("platform.account.displayNameHint")} value={name} onChange={(e) => setName(e.target.value)} />}
         <div className="space-y-2">
           <Label>{t("platform.auth.language")}</Label>
           <Select value={user.locale} onValueChange={(v) => { void i18n.changeLanguage(v); void save({ locale: v }, t("platform.common.saved")); }}>
@@ -308,8 +283,10 @@ export const AccountPage = () => {
         <Button type="submit" className="w-full">{t("platform.common.save")}</Button>
       </form>
       <form className="space-y-4 border-t border-border pt-4" onSubmit={(e) => { e.preventDefault(); void save({ currentPassword: current, newPassword: next }, t("platform.auth.passwordChanged")); }}>
-        <Field id="cur" label={t("platform.account.currentPassword")} type="password" required value={current} onChange={(e) => setCurrent(e.target.value)} />
-        <Field id="new" label={t("platform.auth.newPassword")} type="password" minLength={8} required value={next} onChange={(e) => setNext(e.target.value)} />
+        {/* For password managers: which account the new password belongs to. */}
+        <input type="text" name="username" autoComplete="username" value={loginName(user)} readOnly hidden />
+        <PasswordField id="cur" label={t("platform.account.currentPassword")} autoComplete="current-password" required value={current} onChange={(e) => setCurrent(e.target.value)} />
+        <PasswordField id="new" label={t("platform.auth.newPassword")} autoComplete="new-password" minLength={8} maxLength={72} required value={next} onChange={(e) => setNext(e.target.value)} />
         <Button type="submit" variant="secondary" className="w-full">{t("platform.account.changePassword")}</Button>
       </form>
       <div className="space-y-3 border-t border-border pt-4">

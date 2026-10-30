@@ -69,7 +69,9 @@
     "unavailable": "Le service n'est pas disponible pour le moment. Réessaie dans un instant.",
     "ambiguous_identifier": "L'e-mail et le nom d'utilisateur désignent des comptes différents : n'en utilise qu'un.",
     "reset_not_allowed": "Impossible de créer un lien de récupération pour ce compte : il doit s'agir d'un élève sans e-mail, encore inscrit dans sa classe d'origine active.",
-    "network": "Pas de connexion ou connexion interrompue. Vérifie le réseau et réessaie."
+    "network": "Pas de connexion ou connexion interrompue. Vérifie le réseau et réessaie.",
+    "invalid": "Données non valides : vérifie les champs et réessaie.",
+    "bad_request": "Données non valides : vérifie les champs et réessaie."
   },
   "aiErrors": {
     "generic": "L'IA n'a pas répondu. Réessayez.",
@@ -100,7 +102,7 @@
     "language": "Langue",
     "forgot": "Mot de passe oublié ?",
     "continueAsGuest": "Continuer en invité",
-    "inviteOnly": "Les comptes sont créés sur invitation de votre école.",
+    "inviteOnly": "Pas de compte ? Demande à ton enseignant : il t'enverra une invitation ou un lien d'inscription.",
     "registerTitle": "Créez votre compte",
     "registerSubtitle": "{{inviter}} vous a invité en tant que {{role}} (classe : {{className}}).",
     "existingAccount": "Vous avez déjà un compte avec cet e-mail : saisissez votre mot de passe pour accepter l'invitation.",
@@ -117,7 +119,9 @@
     "backToLogin": "Retour à la connexion",
     "resetTitle": "Choisissez un nouveau mot de passe",
     "savePassword": "Enregistrer le mot de passe",
-    "passwordChanged": "Mot de passe mis à jour"
+    "passwordChanged": "Mot de passe mis à jour",
+    "showPassword": "Afficher le mot de passe",
+    "hidePassword": "Masquer le mot de passe"
   },
   "setup": {
     "title": "Configurer DebateAI",
@@ -127,7 +131,9 @@
   "account": {
     "title": "Mon compte",
     "currentPassword": "Mot de passe actuel",
-    "changePassword": "Changer le mot de passe"
+    "changePassword": "Changer le mot de passe",
+    "displayName": "Nom affiché",
+    "displayNameHint": "Ton enseignant et la classe le voient. Ton vrai nom n'est pas nécessaire."
   },
   "activity": {
     "tutorial": "Tutoriel",

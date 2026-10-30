@@ -69,7 +69,9 @@
     "unavailable": "El servicio no está disponible en este momento. Inténtalo de nuevo en un rato.",
     "ambiguous_identifier": "El correo y el nombre de usuario corresponden a cuentas distintas: usa solo uno.",
     "reset_not_allowed": "No se puede crear un enlace de recuperación para esta cuenta: debe ser un estudiante sin correo, todavía inscrito en su clase de origen activa.",
-    "network": "Sin conexión o conexión interrumpida. Revisa la red y vuelve a intentarlo."
+    "network": "Sin conexión o conexión interrumpida. Revisa la red y vuelve a intentarlo.",
+    "invalid": "Datos no válidos: revisa los campos e inténtalo de nuevo.",
+    "bad_request": "Datos no válidos: revisa los campos e inténtalo de nuevo."
   },
   "aiErrors": {
     "generic": "La IA no respondió. Inténtalo de nuevo.",
@@ -100,7 +102,7 @@
     "language": "Idioma",
     "forgot": "¿Olvidaste tu contraseña?",
     "continueAsGuest": "Continuar como invitado",
-    "inviteOnly": "Las cuentas se crean por invitación de tu centro.",
+    "inviteOnly": "¿No tienes cuenta? Pídesela a tu docente: te enviará una invitación o un enlace para inscribirte.",
     "registerTitle": "Crea tu cuenta",
     "registerSubtitle": "{{inviter}} te ha invitado como {{role}} (clase: {{className}}).",
     "existingAccount": "Ya tienes una cuenta con este correo: introduce tu contraseña para aceptar la invitación.",
@@ -117,7 +119,9 @@
     "backToLogin": "Volver al inicio de sesión",
     "resetTitle": "Elige una nueva contraseña",
     "savePassword": "Guardar contraseña",
-    "passwordChanged": "Contraseña actualizada"
+    "passwordChanged": "Contraseña actualizada",
+    "showPassword": "Mostrar contraseña",
+    "hidePassword": "Ocultar contraseña"
   },
   "setup": {
     "title": "Configura DebateAI",
@@ -127,7 +131,9 @@
   "account": {
     "title": "Mi cuenta",
     "currentPassword": "Contraseña actual",
-    "changePassword": "Cambiar contraseña"
+    "changePassword": "Cambiar contraseña",
+    "displayName": "Nombre visible",
+    "displayNameHint": "Lo ven tu docente y la clase. No hace falta tu nombre real."
   },
   "activity": {
     "tutorial": "Tutorial",

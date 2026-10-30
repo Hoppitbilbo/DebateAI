@@ -69,7 +69,9 @@
     "unavailable": "Il servizio non è disponibile al momento. Riprova tra poco.",
     "ambiguous_identifier": "L'email e lo username indicano account diversi: usane uno solo.",
     "reset_not_allowed": "Per questo account non si può creare un link di recupero: serve uno studente senza email, ancora iscritto alla sua classe d'origine, non archiviata.",
-    "network": "Connessione assente o interrotta. Controlla la rete e riprova."
+    "network": "Connessione assente o interrotta. Controlla la rete e riprova.",
+    "invalid": "Dati non validi: controlla i campi e riprova.",
+    "bad_request": "Dati non validi: controlla i campi e riprova."
   },
   "aiErrors": {
     "generic": "L'IA non ha risposto. Riprova.",
@@ -100,7 +102,7 @@
     "language": "Lingua",
     "forgot": "Password dimenticata?",
     "continueAsGuest": "Continua come ospite",
-    "inviteOnly": "Gli account vengono creati su invito della tua scuola.",
+    "inviteOnly": "Non hai un account? Chiedilo al docente: ti manderà un invito o un link per iscriverti.",
     "registerTitle": "Crea il tuo account",
     "registerSubtitle": "{{inviter}} ti ha invitato come {{role}} (classe: {{className}}).",
     "existingAccount": "Hai già un account con questa email: inserisci la password per accettare l'invito.",
@@ -117,7 +119,9 @@
     "backToLogin": "Torna all'accesso",
     "resetTitle": "Scegli una nuova password",
     "savePassword": "Salva password",
-    "passwordChanged": "Password aggiornata"
+    "passwordChanged": "Password aggiornata",
+    "showPassword": "Mostra password",
+    "hidePassword": "Nascondi password"
   },
   "setup": {
     "title": "Configura DebateAI",
@@ -127,7 +131,9 @@
   "account": {
     "title": "Il mio account",
     "currentPassword": "Password attuale",
-    "changePassword": "Cambia password"
+    "changePassword": "Cambia password",
+    "displayName": "Nome visualizzato",
+    "displayNameHint": "Lo vedono il docente e la classe. Non serve il nome vero."
   },
   "activity": {
     "tutorial": "Tutorial",

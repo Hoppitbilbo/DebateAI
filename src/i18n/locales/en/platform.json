@@ -69,7 +69,9 @@
     "unavailable": "The service is not available right now. Please try again shortly.",
     "ambiguous_identifier": "The email and the username name different accounts: use only one.",
     "reset_not_allowed": "No recovery link can be created for this account: it must be a student without e-mail, still enrolled in the active class it was created in.",
-    "network": "No connection or the connection dropped. Check the network and try again."
+    "network": "No connection or the connection dropped. Check the network and try again.",
+    "invalid": "Some data is not valid: check the fields and try again.",
+    "bad_request": "Some data is not valid: check the fields and try again."
   },
   "aiErrors": {
     "generic": "The AI did not answer. Please try again.",
@@ -100,7 +102,7 @@
     "language": "Language",
     "forgot": "Forgot your password?",
     "continueAsGuest": "Continue as guest",
-    "inviteOnly": "Accounts are created by invitation from your school.",
+    "inviteOnly": "No account? Ask your teacher: they will send you an invite or a sign-up link.",
     "registerTitle": "Create your account",
     "registerSubtitle": "{{inviter}} invited you as {{role}} (class: {{className}}).",
     "existingAccount": "You already have an account with this email: enter your password to accept the invitation.",
@@ -117,7 +119,9 @@
     "backToLogin": "Back to login",
     "resetTitle": "Choose a new password",
     "savePassword": "Save password",
-    "passwordChanged": "Password updated"
+    "passwordChanged": "Password updated",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password"
   },
   "setup": {
     "title": "Set up DebateAI",
@@ -127,7 +131,9 @@
   "account": {
     "title": "My account",
     "currentPassword": "Current password",
-    "changePassword": "Change password"
+    "changePassword": "Change password",
+    "displayName": "Display name",
+    "displayNameHint": "Your teacher and class see it. Your real name is not needed."
   },
   "activity": {
     "tutorial": "Tutorial",

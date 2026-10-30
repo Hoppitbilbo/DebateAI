@@ -69,7 +69,9 @@
     "unavailable": "Der Dienst ist gerade nicht verfügbar. Versuche es gleich noch einmal.",
     "ambiguous_identifier": "E-Mail und Benutzername gehören zu verschiedenen Konten: Verwende nur eines.",
     "reset_not_allowed": "Für dieses Konto kann kein Wiederherstellungslink erstellt werden: Es muss ein Schüler ohne E-Mail sein, der noch in seiner aktiven Ursprungsklasse ist.",
-    "network": "Keine Verbindung oder Verbindung unterbrochen. Prüfe das Netzwerk und versuche es erneut."
+    "network": "Keine Verbindung oder Verbindung unterbrochen. Prüfe das Netzwerk und versuche es erneut.",
+    "invalid": "Ungültige Angaben: Prüfe die Felder und versuche es erneut.",
+    "bad_request": "Ungültige Angaben: Prüfe die Felder und versuche es erneut."
   },
   "aiErrors": {
     "generic": "Die KI hat nicht geantwortet. Bitte versuche es erneut.",
@@ -100,7 +102,7 @@
     "language": "Sprache",
     "forgot": "Passwort vergessen?",
     "continueAsGuest": "Als Gast fortfahren",
-    "inviteOnly": "Konten werden auf Einladung deiner Schule erstellt.",
+    "inviteOnly": "Noch kein Konto? Frag deine Lehrkraft: Sie schickt dir eine Einladung oder einen Link zur Anmeldung.",
     "registerTitle": "Konto erstellen",
     "registerSubtitle": "{{inviter}} hat dich als {{role}} eingeladen (Klasse: {{className}}).",
     "existingAccount": "Du hast bereits ein Konto mit dieser E-Mail: gib dein Passwort ein, um die Einladung anzunehmen.",
@@ -117,7 +119,9 @@
     "backToLogin": "Zurück zur Anmeldung",
     "resetTitle": "Neues Passwort wählen",
     "savePassword": "Passwort speichern",
-    "passwordChanged": "Passwort aktualisiert"
+    "passwordChanged": "Passwort aktualisiert",
+    "showPassword": "Passwort anzeigen",
+    "hidePassword": "Passwort verbergen"
   },
   "setup": {
     "title": "DebateAI einrichten",
@@ -127,7 +131,9 @@
   "account": {
     "title": "Mein Konto",
     "currentPassword": "Aktuelles Passwort",
-    "changePassword": "Passwort ändern"
+    "changePassword": "Passwort ändern",
+    "displayName": "Angezeigter Name",
+    "displayNameHint": "Deine Lehrkraft und die Klasse sehen ihn. Dein echter Name ist nicht nötig."
   },
   "activity": {
     "tutorial": "Tutorial",
