@@ -2,7 +2,8 @@
 
 Data: 29 ottobre 2026. Stato: **T1, P1 e P2 implementate (branch `feat/classe-username`,
 non unito); P3 implementata sul branch `feat/classe-username-p3` (da `feat/classe-username`,
-non unito); P4–P7 e T2–T4 da fare**. Vedi «Stato di avanzamento» qui sotto.
+non unito); P4 implementata sul branch `feat/classe-username-p4` (non unito né pushato);
+P5–P7 e T2–T4 da fare**. Vedi «Stato di avanzamento» qui sotto.
 
 ## Stato di avanzamento (per chi riprende il lavoro)
 
@@ -96,8 +97,74 @@ commit `b9dd945`, `e18820d`, `d5be42d`; non unito né pushato):
   la pagina P6 deve proporre «Ho già un account»; il testo `inviteOnly` del login va rivisto
   in P6. Test HTTP con socket reali da eseguire in CI/staging.
 
-**Da fare, in quest'ordine:** P4 → P5 → P6 → T2 → T3 → P7/T4. Prima, unire
-`feat/classe-username-p3` in `feat/classe-username`.
+**Fatto — P4, recupero e notifiche** (Claude Code, 30/10, branch `feat/classe-username-p4`,
+commit `388e932`, `2759522`, `2e68c94`, `3452614`; non unito né pushato):
+
+- **Decisione dell'utente (30/10): nessuna migrazione dei dati precedenti.** Il database
+  esistente non ha dati da conservare: i token `invites` kind='reset' non vengono spostati in
+  `password_resets` (niente migrazione né test relativo, a differenza di §4 e del punto 4 di §8)
+  e `store/migrate_users.go` non è stato toccato (la sessione principale toglierà la
+  ricostruzione legacy su `feat/classe-username` dopo il merge). Il recupero via email non scrive
+  più in `invites`; nessun ripiego per i vecchi token. Tolta la costante `InviteKindReset`.
+- Schema: `password_resets` nello schema (`CREATE TABLE IF NOT EXISTS`): `token_hash` univoco,
+  `user_id` (CASCADE), `created_at`, `expires_at`, `consumed_at`, `issued_by` e `class_id`
+  (CASCADE, impostati insieme solo per il recupero assistito: un link assistito non può mai
+  sembrare un reset via email). `Users.Delete` e `Classes.Delete` tolgono i link anche senza
+  foreign key.
+- `store.PasswordResets`: `Issue` (invalida i precedenti dello stesso utente e pulisce gli
+  scaduti; per il link assistito `INSERT … SELECT` con le regole, 0 righe → `ErrResetNotAllowed`),
+  `Consume` (in una transazione: `UPDATE … WHERE consumed_at IS NULL AND expires_at > now` con le
+  regole ricontrollate in SQL e controllo delle righe, nuovo hash, altri link invalidati, tutte
+  le sessioni revocate), `Invalidate`, `Resettable(classID)`. Regole in un solo frammento SQL:
+  studente attivo, senza email, non ospite, ancora studente della sua classe d'origine non
+  archiviata; emittente attivo admin o docente proprietario.
+- `authService` (`app/password_reset.go`): `RequestReset` per user_id (username, indirizzo
+  vuoto o account senza email: nessun invio, nessun link, risposta invariata);
+  `ResetPassword` calcola l'hash prima, poi `Consume`; `AssistedReset` (15 minuti,
+  `assistedResetTTL`) con errori 403 `ErrResetForbidden` (co-docente, docente di altra classe,
+  classe non d'origine), 404 `ErrNotClassStudent`, 409 `domain.ErrResetNotAllowed` (email,
+  ospite, non studente, disattivato, classe archiviata). Al consumo ricontrollati emittente,
+  appartenenza e classe.
+- **Sessione dopo il reset:** come già faceva `handleReset` per l'email, il browser che sceglie la
+  nuova password riceve una sessione; tutte le altre sono revocate. Aprire il link non dà nulla
+  (pagina con i due campi). Chi emette il link non ottiene più di quanto potesse già fare.
+  Il recupero via email ora richiede anche l'account attivo al consumo.
+- Cambio password (`UpdateProfile`): password attuale e nuova verificate prima di scrivere;
+  `Users.ChangePassword` salva nome/lingua/hash in una transazione che invalida i link e revoca
+  tutte le sessioni; `PATCH /api/auth/me` dà al browser corrente una nuova sessione. Un errore
+  non salva nulla (prima nome e lingua venivano scritti comunque). Il cambio password dall'admin
+  invalida i link di reset.
+- `ClassSvc.Join` atomico: `Classes.JoinByCode` fa `INSERT OR IGNORE … SELECT … WHERE join_code = ?
+  AND archived = 0` e rilegge la classe sotto lo stesso lock (punto rimasto da P3, chiuso).
+- HTTP: `POST /api/classes/{id}/members/{userId}/password-reset` → `{url, expiresAt}`,
+  `no-store`; `/api/auth/reset` anche `no-store`, contratto invariato. Il dettaglio classe usa
+  `ClassSvc.Members`: `Member.canResetPassword` vero solo per il proprietario/admin e gli studenti
+  che rispettano le regole.
+- Frontend minimo: `Member.canResetPassword`, `requestPasswordReset` in `teacherApi.ts` (con
+  test), testo d'errore `reset_not_allowed` in 5 lingue. La pagina di reset funziona con i nuovi
+  token senza modifiche (stesso contratto, provato dai test HTTP).
+- Test: `store/password_resets_test.go` (uso singolo, sostituzione, scadenza, regole,
+  proprietario cambiato, studente rimosso, classe archiviata/cancellata, emittente
+  declassato/cancellato, account con email, 8 consumi concorrenti, `ChangePassword` atomico,
+  `JoinByCode`), prova su libSQL in Docker (`migrate_users_remote_test.go`: link usato una volta),
+  `app/password_reset_test.go` (proprietario e admin, co-docente, docente estraneo, classe non
+  d'origine, ospite, email, archiviata, rimosso, cambio proprietario, emittente declassato o
+  cancellato, nuova emissione, scaduto, riuso, due consumi concorrenti, sessioni revocate,
+  vecchia password rifiutata, `forgot` per username, `canResetPassword`, password attuale
+  sbagliata che non salva neanche nome/lingua), `httpapi/password_reset_test.go` (stessi casi
+  attraverso gli handler in-process). Due test esistenti cambiati di proposito (il salvataggio
+  parziale del profilo e l'errore del reset). Golden `shapes.json`: `canResetPassword` nei
+  membri e la risposta nuova `member password reset`.
+  Verifiche: `gofmt`, `go vet`, `go test ./...`, `-race` su app/store/httpapi, lint, TypeScript,
+  Vitest 253, `check:i18n` 966, build.
+- Non fatto in P4, da riprendere: il cambio password dell'admin (`PATCH /api/admin/users/{id}`)
+  scrive i campi e poi la password senza transazione e non revoca le sessioni (invalida solo i
+  link); non esiste un endpoint di trasferimento del proprietario (provato cambiando `owner_id`
+  e cancellando l'emittente); limite delle richieste di login in corso (§7) ancora assente; i
+  punti di P6 elencati in P3. Test HTTP con socket reali da eseguire in CI/staging.
+
+**Da fare, in quest'ordine:** P5 → P6 → T2 → T3 → P7/T4. Prima, unire
+`feat/classe-username-p3` e `feat/classe-username-p4` in `feat/classe-username`.
 Piccola miglioria possibile: il testo dell'email d'invito dice «completa la registrazione»
 anche a chi ha già un account; la pagina gestisce comunque il caso.
 
@@ -377,7 +444,7 @@ solo quando codice e prove della fase sono presenti; questo documento non le dic
 - [x] **P3 — Registrazione e login.** Service, handler, cookie e compatibilità del campo `email`.
   Provare username normalizzato/doppio, password invalida, invito standard o revocato,
   classe archiviata, account disabilitato, ruolo forgiato, rollback e perdita della risposta.
-- [ ] **P4 — Recupero e notifiche.** Recupero assistito, consumo una sola volta, revoca sessioni,
+- [x] **P4 — Recupero e notifiche.** Recupero assistito, consumo una sola volta, revoca sessioni,
   cambio password atomico e nessun invio a indirizzi assenti. Provare docente estraneo,
   co-docente, cambio proprietario, studente rimosso, token scaduto e due consumi concorrenti.
 - [ ] **P5 — Dashboard docente.** Selettore modalità, copia/QR, rigenerazione, membri e recupero
