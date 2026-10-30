@@ -189,3 +189,28 @@ func TestRoomGuestCannotLogInByIdentifier(t *testing.T) {
 		t.Fatalf("guest by name: %v", err)
 	}
 }
+
+// The progress of an assignment names an account without e-mail by its
+// username, which the student cannot change (the display name they can).
+func TestProgressShowsTheUsernameOfAnAccountWithoutEmail(t *testing.T) {
+	s := newTestServer(t)
+	c := newUsernameClass(t, s)
+	u, err := s.Accounts.RegisterClassStudent(ClassEnrollment{Code: c.JoinCode, Username: "anna.b", Password: "password123"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	name := "Anna"
+	if _, err := s.Accounts.UpdateProfile(u, ProfileChange{Name: &name}); err != nil {
+		t.Fatal(err)
+	}
+	owner, _ := s.Users.Get(*c.OwnerID)
+	title, app := "T", "wiki-chatbot"
+	a, err := s.AssignmentSvc.Create(owner, c.ID, AssignmentInput{Title: &title, AppType: &app}, "http://site")
+	if err != nil {
+		t.Fatal(err)
+	}
+	p, err := s.AssignmentSvc.Progress(a)
+	if err != nil || len(p) != 1 || p[0].Name != "Anna" || p[0].Email != "" || p[0].Username != "anna.b" {
+		t.Fatalf("progress: %v %+v", err, p)
+	}
+}
