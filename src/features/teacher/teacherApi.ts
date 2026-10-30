@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { api, Assignment, ClassInfo, Invite, InviteResult, Member, Role, SessionDetail, SessionSummary } from "@/lib/api";
+import { api, Assignment, ClassInfo, EnrollmentMode, Invite, InviteResult, Member, Role, SessionDetail, SessionSummary } from "@/lib/api";
 
 // Data layer of the teacher pages: classes, their members and assignments,
 // and the students' progress.
@@ -18,7 +18,15 @@ export interface ResetLink { url: string; expiresAt: string }
 export const requestPasswordReset = (classId: number, userId: number) =>
   api.post<ResetLink>(`/api/classes/${classId}/members/${userId}/password-reset`);
 
-export const createClass = (c: { name: string; description: string; ownerId?: number }) => api.post<ClassInfo>("/api/classes", c);
+export interface NewClass { name: string; description: string; enrollmentMode: EnrollmentMode; ownerId?: number }
+
+export const createClass = (c: NewClass) => api.post<ClassInfo>("/api/classes", c);
+
+/** The sign-up link of a username class (page `/iscriviti`), built from the site's origin. */
+export const enrollLink = (code: string) => `${window.location.origin}/iscriviti?code=${encodeURIComponent(code)}`;
+
+/** How a member logs in, as the teacher sees it: the e-mail, or the username of an account without one. */
+export const memberLogin = (m: Pick<Member, "email" | "username">) => m.email || m.username || "";
 
 export const useMyClasses = () => {
   const qc = useQueryClient();

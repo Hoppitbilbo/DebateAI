@@ -68,7 +68,8 @@
     "username_taken": "This username is already taken: choose another one.",
     "unavailable": "The service is not available right now. Please try again shortly.",
     "ambiguous_identifier": "The email and the username name different accounts: use only one.",
-    "reset_not_allowed": "No recovery link can be created for this account: it must be a student without e-mail, still enrolled in the active class it was created in."
+    "reset_not_allowed": "No recovery link can be created for this account: it must be a student without e-mail, still enrolled in the active class it was created in.",
+    "network": "No connection or the connection dropped. Check the network and try again."
   },
   "aiErrors": {
     "generic": "The AI did not answer. Please try again.",
@@ -470,7 +471,40 @@
       "shuffleHint": "Each student meets them in a different order: in the computer lab, neighbours don't get the same character."
     },
     "exportExcel": "Export grades (Excel)",
-    "teacherScore": "Teacher score"
+    "teacherScore": "Teacher score",
+    "loginColumn": "E-mail or username",
+    "enrollment": {
+      "label": "How students enrol",
+      "standard": "E-mail invitations",
+      "standardHint": "Each student gets an invitation by e-mail and logs in with e-mail and password.",
+      "username": "Username and password, no e-mail",
+      "usernameHint": "Share a link: each student chooses a username and password. No e-mail needed.",
+      "pseudonym": "A username is a pseudonym, not anonymity: you see the activities, conversations and results of each username."
+    },
+    "enrollLink": {
+      "title": "Sign-up link",
+      "hint": "Share the link or show the QR: each student chooses a username and password.",
+      "copy": "Copy link",
+      "qr": "QR of the sign-up link",
+      "regenerate": "Regenerate link",
+      "regenerateTitle": "Regenerate the link?",
+      "regenerateText": "The old link will stop working for new sign-ups. Accounts already created and enrolled students stay."
+    },
+    "resetLink": {
+      "action": "Password recovery link for {{name}}",
+      "title": "Password recovery for {{name}}",
+      "inPerson": "Hand the link over in person, once you have recognised the student.",
+      "explain": "The student will choose a new password. The link is valid for 15 minutes and works once; a new link cancels the previous ones.",
+      "create": "Create link",
+      "linkLabel": "Recovery link",
+      "expires": "Expires at {{time}} (15 minutes).",
+      "once": "The link is shown only now: once you close this window you cannot see it again.",
+      "done": "Done",
+      "errors": {
+        "forbidden": "Only the owner of the class the student signed up in, or an admin, can create this link.",
+        "not_found": "This student is no longer in the class."
+      }
+    }
   },
   "invite": {
     "emails": "Email addresses",

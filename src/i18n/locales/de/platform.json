@@ -68,7 +68,8 @@
     "username_taken": "Dieser Benutzername ist bereits vergeben: Wähle einen anderen.",
     "unavailable": "Der Dienst ist gerade nicht verfügbar. Versuche es gleich noch einmal.",
     "ambiguous_identifier": "E-Mail und Benutzername gehören zu verschiedenen Konten: Verwende nur eines.",
-    "reset_not_allowed": "Für dieses Konto kann kein Wiederherstellungslink erstellt werden: Es muss ein Schüler ohne E-Mail sein, der noch in seiner aktiven Ursprungsklasse ist."
+    "reset_not_allowed": "Für dieses Konto kann kein Wiederherstellungslink erstellt werden: Es muss ein Schüler ohne E-Mail sein, der noch in seiner aktiven Ursprungsklasse ist.",
+    "network": "Keine Verbindung oder Verbindung unterbrochen. Prüfe das Netzwerk und versuche es erneut."
   },
   "aiErrors": {
     "generic": "Die KI hat nicht geantwortet. Bitte versuche es erneut.",
@@ -470,7 +471,40 @@
       "shuffleHint": "Alle treffen sie in einer anderen Reihenfolge: Im Computerraum haben Sitznachbarn nicht dieselbe Figur."
     },
     "exportExcel": "Noten exportieren (Excel)",
-    "teacherScore": "Note Lehrkraft"
+    "teacherScore": "Note Lehrkraft",
+    "loginColumn": "E-Mail oder Benutzername",
+    "enrollment": {
+      "label": "Wie sich die Schüler anmelden",
+      "standard": "Einladungen per E-Mail",
+      "standardHint": "Jeder Schüler erhält eine Einladung per E-Mail und meldet sich mit E-Mail und Passwort an.",
+      "username": "Benutzername und Passwort, ohne E-Mail",
+      "usernameHint": "Teile einen Link: Jeder Schüler wählt Benutzername und Passwort. Keine E-Mail nötig.",
+      "pseudonym": "Der Benutzername ist ein Pseudonym, keine Anonymität: Du siehst Aktivitäten, Gespräche und Ergebnisse jedes Benutzernamens."
+    },
+    "enrollLink": {
+      "title": "Anmeldelink",
+      "hint": "Teile den Link oder zeige den QR-Code: Jeder Schüler wählt Benutzername und Passwort.",
+      "copy": "Link kopieren",
+      "qr": "QR-Code des Anmeldelinks",
+      "regenerate": "Link neu erstellen",
+      "regenerateTitle": "Link neu erstellen?",
+      "regenerateText": "Der alte Link funktioniert für neue Anmeldungen nicht mehr. Bereits erstellte Konten und angemeldete Schüler bleiben."
+    },
+    "resetLink": {
+      "action": "Link zur Passwort-Wiederherstellung für {{name}}",
+      "title": "Passwort-Wiederherstellung für {{name}}",
+      "inPerson": "Gib den Link persönlich weiter, nachdem du den Schüler erkannt hast.",
+      "explain": "Der Schüler wählt ein neues Passwort. Der Link gilt 15 Minuten und nur einmal; ein neuer Link macht die vorherigen ungültig.",
+      "create": "Link erstellen",
+      "linkLabel": "Wiederherstellungslink",
+      "expires": "Läuft um {{time}} ab (15 Minuten).",
+      "once": "Der Link wird nur jetzt angezeigt: Nach dem Schließen des Fensters kannst du ihn nicht mehr sehen.",
+      "done": "Fertig",
+      "errors": {
+        "forbidden": "Nur der Eigentümer der Ursprungsklasse des Schülers oder ein Administrator kann diesen Link erstellen.",
+        "not_found": "Dieser Schüler ist nicht mehr in der Klasse."
+      }
+    }
   },
   "invite": {
     "emails": "E-Mail-Adressen",

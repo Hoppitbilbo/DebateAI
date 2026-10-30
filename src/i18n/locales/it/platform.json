@@ -68,7 +68,8 @@
     "username_taken": "Questo username è già usato: scegline un altro.",
     "unavailable": "Il servizio non è disponibile al momento. Riprova tra poco.",
     "ambiguous_identifier": "L'email e lo username indicano account diversi: usane uno solo.",
-    "reset_not_allowed": "Per questo account non si può creare un link di recupero: serve uno studente senza email, ancora iscritto alla sua classe d'origine, non archiviata."
+    "reset_not_allowed": "Per questo account non si può creare un link di recupero: serve uno studente senza email, ancora iscritto alla sua classe d'origine, non archiviata.",
+    "network": "Connessione assente o interrotta. Controlla la rete e riprova."
   },
   "aiErrors": {
     "generic": "L'IA non ha risposto. Riprova.",
@@ -470,7 +471,40 @@
       "shuffleHint": "Ogni studente li incontra in un ordine diverso: in laboratorio i vicini di banco non hanno lo stesso personaggio."
     },
     "exportExcel": "Esporta voti (Excel)",
-    "teacherScore": "Voto docente"
+    "teacherScore": "Voto docente",
+    "loginColumn": "Email o username",
+    "enrollment": {
+      "label": "Come si iscrivono gli studenti",
+      "standard": "Inviti via email",
+      "standardHint": "Ogni studente riceve un invito all'indirizzo email e accede con email e password.",
+      "username": "Username e password, senza email",
+      "usernameHint": "Condividi un link: ogni studente sceglie username e password. Nessuna email richiesta.",
+      "pseudonym": "Lo username è uno pseudonimo, non anonimato: vedi attività, conversazioni e risultati associati a ciascuno username."
+    },
+    "enrollLink": {
+      "title": "Link di iscrizione",
+      "hint": "Condividi il link o mostra il QR: ogni studente sceglie username e password.",
+      "copy": "Copia link",
+      "qr": "QR del link di iscrizione",
+      "regenerate": "Rigenera link",
+      "regenerateTitle": "Rigenerare il link?",
+      "regenerateText": "Il vecchio link non funzionerà più per le nuove iscrizioni. Gli account già creati e gli studenti iscritti restano."
+    },
+    "resetLink": {
+      "action": "Link di recupero password per {{name}}",
+      "title": "Recupero password di {{name}}",
+      "inPerson": "Consegna il link di persona, dopo aver riconosciuto lo studente.",
+      "explain": "Lo studente sceglierà una nuova password. Il link vale 15 minuti e si usa una volta; un nuovo link annulla quelli precedenti.",
+      "create": "Crea link",
+      "linkLabel": "Link di recupero",
+      "expires": "Scade alle {{time}} (15 minuti).",
+      "once": "Il link è mostrato solo ora: chiudendo la finestra non potrai rivederlo.",
+      "done": "Fatto",
+      "errors": {
+        "forbidden": "Solo chi ha creato la classe d'origine dello studente, o un amministratore, può creare questo link.",
+        "not_found": "Questo studente non fa più parte della classe."
+      }
+    }
   },
   "invite": {
     "emails": "Indirizzi email",

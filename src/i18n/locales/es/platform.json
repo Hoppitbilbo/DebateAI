@@ -68,7 +68,8 @@
     "username_taken": "Este nombre de usuario ya está en uso: elige otro.",
     "unavailable": "El servicio no está disponible en este momento. Inténtalo de nuevo en un rato.",
     "ambiguous_identifier": "El correo y el nombre de usuario corresponden a cuentas distintas: usa solo uno.",
-    "reset_not_allowed": "No se puede crear un enlace de recuperación para esta cuenta: debe ser un estudiante sin correo, todavía inscrito en su clase de origen activa."
+    "reset_not_allowed": "No se puede crear un enlace de recuperación para esta cuenta: debe ser un estudiante sin correo, todavía inscrito en su clase de origen activa.",
+    "network": "Sin conexión o conexión interrumpida. Revisa la red y vuelve a intentarlo."
   },
   "aiErrors": {
     "generic": "La IA no respondió. Inténtalo de nuevo.",
@@ -470,7 +471,40 @@
       "shuffleHint": "Cada estudiante los encuentra en un orden distinto: en el aula de informática los compañeros de al lado no tienen el mismo personaje."
     },
     "exportExcel": "Exportar notas (Excel)",
-    "teacherScore": "Nota docente"
+    "teacherScore": "Nota docente",
+    "loginColumn": "Correo o nombre de usuario",
+    "enrollment": {
+      "label": "Cómo se inscriben los estudiantes",
+      "standard": "Invitaciones por correo",
+      "standardHint": "Cada estudiante recibe una invitación por correo y entra con correo y contraseña.",
+      "username": "Usuario y contraseña, sin correo",
+      "usernameHint": "Comparte un enlace: cada estudiante elige usuario y contraseña. No hace falta correo.",
+      "pseudonym": "El nombre de usuario es un seudónimo, no anonimato: ves las actividades, conversaciones y resultados de cada usuario."
+    },
+    "enrollLink": {
+      "title": "Enlace de inscripción",
+      "hint": "Comparte el enlace o muestra el QR: cada estudiante elige usuario y contraseña.",
+      "copy": "Copiar enlace",
+      "qr": "QR del enlace de inscripción",
+      "regenerate": "Regenerar enlace",
+      "regenerateTitle": "¿Regenerar el enlace?",
+      "regenerateText": "El enlace anterior dejará de funcionar para nuevas inscripciones. Las cuentas ya creadas y los estudiantes inscritos se mantienen."
+    },
+    "resetLink": {
+      "action": "Enlace de recuperación de contraseña para {{name}}",
+      "title": "Recuperar la contraseña de {{name}}",
+      "inPerson": "Entrega el enlace en persona, después de reconocer al estudiante.",
+      "explain": "El estudiante elegirá una nueva contraseña. El enlace vale 15 minutos y se usa una vez; un enlace nuevo anula los anteriores.",
+      "create": "Crear enlace",
+      "linkLabel": "Enlace de recuperación",
+      "expires": "Caduca a las {{time}} (15 minutos).",
+      "once": "El enlace solo se muestra ahora: al cerrar la ventana no podrás volver a verlo.",
+      "done": "Hecho",
+      "errors": {
+        "forbidden": "Solo quien creó la clase de origen del estudiante, o un administrador, puede crear este enlace.",
+        "not_found": "Este estudiante ya no está en la clase."
+      }
+    }
   },
   "invite": {
     "emails": "Direcciones de correo",

@@ -68,7 +68,8 @@
     "username_taken": "Ce nom d'utilisateur est déjà pris : choisis-en un autre.",
     "unavailable": "Le service n'est pas disponible pour le moment. Réessaie dans un instant.",
     "ambiguous_identifier": "L'e-mail et le nom d'utilisateur désignent des comptes différents : n'en utilise qu'un.",
-    "reset_not_allowed": "Impossible de créer un lien de récupération pour ce compte : il doit s'agir d'un élève sans e-mail, encore inscrit dans sa classe d'origine active."
+    "reset_not_allowed": "Impossible de créer un lien de récupération pour ce compte : il doit s'agir d'un élève sans e-mail, encore inscrit dans sa classe d'origine active.",
+    "network": "Pas de connexion ou connexion interrompue. Vérifie le réseau et réessaie."
   },
   "aiErrors": {
     "generic": "L'IA n'a pas répondu. Réessayez.",
@@ -470,7 +471,40 @@
       "shuffleHint": "Chaque élève les rencontre dans un ordre différent : en salle informatique, les voisins n'ont pas le même personnage."
     },
     "exportExcel": "Exporter les notes (Excel)",
-    "teacherScore": "Note enseignant"
+    "teacherScore": "Note enseignant",
+    "loginColumn": "E-mail ou nom d'utilisateur",
+    "enrollment": {
+      "label": "Comment les élèves s'inscrivent",
+      "standard": "Invitations par e-mail",
+      "standardHint": "Chaque élève reçoit une invitation par e-mail et se connecte avec e-mail et mot de passe.",
+      "username": "Nom d'utilisateur et mot de passe, sans e-mail",
+      "usernameHint": "Partage un lien : chaque élève choisit un nom d'utilisateur et un mot de passe. Aucun e-mail requis.",
+      "pseudonym": "Le nom d'utilisateur est un pseudonyme, pas l'anonymat : tu vois les activités, conversations et résultats de chaque nom d'utilisateur."
+    },
+    "enrollLink": {
+      "title": "Lien d'inscription",
+      "hint": "Partage le lien ou affiche le QR : chaque élève choisit un nom d'utilisateur et un mot de passe.",
+      "copy": "Copier le lien",
+      "qr": "QR du lien d'inscription",
+      "regenerate": "Régénérer le lien",
+      "regenerateTitle": "Régénérer le lien ?",
+      "regenerateText": "L'ancien lien ne fonctionnera plus pour les nouvelles inscriptions. Les comptes déjà créés et les élèves inscrits restent."
+    },
+    "resetLink": {
+      "action": "Lien de récupération du mot de passe pour {{name}}",
+      "title": "Récupération du mot de passe de {{name}}",
+      "inPerson": "Remets le lien en personne, après avoir reconnu l'élève.",
+      "explain": "L'élève choisira un nouveau mot de passe. Le lien vaut 15 minutes et ne sert qu'une fois ; un nouveau lien annule les précédents.",
+      "create": "Créer le lien",
+      "linkLabel": "Lien de récupération",
+      "expires": "Expire à {{time}} (15 minutes).",
+      "once": "Le lien n'est affiché que maintenant : une fois la fenêtre fermée, tu ne pourras plus le revoir.",
+      "done": "Terminé",
+      "errors": {
+        "forbidden": "Seul le propriétaire de la classe d'origine de l'élève, ou un administrateur, peut créer ce lien.",
+        "not_found": "Cet élève ne fait plus partie de la classe."
+      }
+    }
   },
   "invite": {
     "emails": "Adresses e-mail",

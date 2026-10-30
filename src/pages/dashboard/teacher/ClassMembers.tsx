@@ -1,12 +1,14 @@
 import { useTranslation } from "react-i18next";
 import { Copy, RefreshCw, UserMinus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ClassDetail, inviteToClass } from "@/features/teacher/teacherApi";
+import { ClassDetail, inviteToClass, memberLogin } from "@/features/teacher/teacherApi";
 import { EmptyState, Panel } from "../common";
 import { formatDate } from "@/lib/format";
 import ConfirmButton from "../ConfirmButton";
 import InviteForm from "../InviteForm";
 import { copy } from "@/lib/clipboard";
+import ClassEnrollLink from "./ClassEnrollLink";
+import MemberResetLink from "./MemberResetLink";
 
 interface ClassMembersProps {
   detail: ClassDetail;
@@ -15,29 +17,38 @@ interface ClassMembersProps {
   onInvited: () => void;
 }
 
-/** Members, pending invites, the invite form and the join code of a class. */
+/**
+ * Members, pending invites, the invite form and how students join: the short
+ * code of a standard class, or the sign-up link and QR of a username class.
+ */
 const ClassMembers = ({ detail, onRemoveMember, onRegenerateCode, onInvited }: ClassMembersProps) => {
   const { t, i18n } = useTranslation();
   const { class: cls, members, invites } = detail;
   const classId = cls.id;
   const joinLink = `${window.location.origin}/student?join=${cls.joinCode}`;
+  const invitePanel = (
+    <Panel title={t("platform.teacher.inviteStudents")}>
+      <InviteForm invite={inviteToClass(classId)} roles={["student", "teacher"]} onDone={onInvited} />
+    </Panel>
+  );
   return (
-    <div className="grid gap-6 lg:grid-cols-3">
-      <Panel title={t("platform.teacher.members")} className="lg:col-span-2">
+    <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+      <Panel title={t("platform.teacher.members")} className="min-w-0 lg:col-span-2">
         {members.length === 0 ? <EmptyState>{t("platform.teacher.noStudents")}</EmptyState> : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="text-left text-muted-foreground">
-                <tr><th className="py-2 pr-3">{t("platform.auth.name")}</th><th className="py-2 pr-3">{t("platform.auth.email")}</th><th className="py-2 pr-3">{t("platform.invite.role")}</th><th className="py-2 pr-3">{t("platform.teacher.lastLogin")}</th><th /></tr>
+                <tr><th className="py-2 pr-3">{t("platform.auth.name")}</th><th className="py-2 pr-3">{t("platform.teacher.loginColumn")}</th><th className="py-2 pr-3">{t("platform.invite.role")}</th><th className="py-2 pr-3">{t("platform.teacher.lastLogin")}</th><th /></tr>
               </thead>
               <tbody>
                 {members.map((m) => (
                   <tr key={m.userId} className="border-t border-border">
                     <td className="py-2 pr-3 font-medium">{m.name}</td>
-                    <td className="py-2 pr-3 text-muted-foreground">{m.email}</td>
+                    <td className="py-2 pr-3 text-muted-foreground">{memberLogin(m)}</td>
                     <td className="py-2 pr-3">{t(`platform.roles.${m.role}`)}</td>
                     <td className="py-2 pr-3 text-muted-foreground">{formatDate(m.lastLoginAt, i18n.language)}</td>
-                    <td className="py-2 text-right">
+                    <td className="whitespace-nowrap py-2 text-right">
+                      {m.canResetPassword && <MemberResetLink classId={classId} member={m} />}
                       <ConfirmButton title={t("platform.teacher.removeMember", { name: m.name })} icon={<UserMinus className="h-4 w-4" />} onConfirm={() => onRemoveMember(m.userId)} />
                     </td>
                   </tr>
@@ -60,19 +71,26 @@ const ClassMembers = ({ detail, onRemoveMember, onRegenerateCode, onInvited }: C
           </div>
         )}
       </Panel>
-      <div className="space-y-6">
-        <Panel title={t("platform.teacher.inviteStudents")}>
-          <InviteForm invite={inviteToClass(classId)} roles={["student", "teacher"]} onDone={onInvited} />
-        </Panel>
-        <Panel title={t("platform.teacher.joinCode")}>
-          <p className="mb-3 text-sm text-muted-foreground">{t("platform.teacher.joinCodeHint")}</p>
-          <div className="flex items-center gap-2">
-            <code className="flex-1 rounded bg-background px-3 py-2 text-center font-mono text-2xl tracking-widest text-primary">{cls.joinCode}</code>
-            <Button size="icon" variant="outline" onClick={() => copy(cls.joinCode ?? "", t("platform.common.copied"))} aria-label={t("platform.common.copy")}><Copy className="h-4 w-4" /></Button>
-            <ConfirmButton title={t("platform.teacher.regenerateCode")} variant="outline" icon={<RefreshCw className="h-4 w-4" />} onConfirm={onRegenerateCode} />
-          </div>
-          <Button variant="link" className="px-0" onClick={() => copy(joinLink, t("platform.common.copied"))}>{t("platform.teacher.copyJoinLink")}</Button>
-        </Panel>
+      <div className="min-w-0 space-y-6">
+        {cls.enrollmentMode === "username" ? (
+          <>
+            <ClassEnrollLink joinCode={cls.joinCode ?? ""} onRegenerate={onRegenerateCode} />
+            {invitePanel}
+          </>
+        ) : (
+          <>
+            {invitePanel}
+            <Panel title={t("platform.teacher.joinCode")}>
+              <p className="mb-3 text-sm text-muted-foreground">{t("platform.teacher.joinCodeHint")}</p>
+              <div className="flex items-center gap-2">
+                <code className="flex-1 rounded bg-background px-3 py-2 text-center font-mono text-2xl tracking-widest text-primary">{cls.joinCode}</code>
+                <Button size="icon" variant="outline" onClick={() => copy(cls.joinCode ?? "", t("platform.common.copied"))} aria-label={t("platform.common.copy")}><Copy className="h-4 w-4" /></Button>
+                <ConfirmButton title={t("platform.teacher.regenerateCode")} variant="outline" icon={<RefreshCw className="h-4 w-4" />} onConfirm={onRegenerateCode} />
+              </div>
+              <Button variant="link" className="px-0" onClick={() => copy(joinLink, t("platform.common.copied"))}>{t("platform.teacher.copyJoinLink")}</Button>
+            </Panel>
+          </>
+        )}
       </div>
     </div>
   );
