@@ -118,6 +118,13 @@ func TestResponseShapes(t *testing.T) {
 	call(guest, "invite info", "GET", "/api/auth/invite/"+token, nil)
 	call(admin, "class detail", "GET", fmtPath("/api/classes/%d", classID), nil)
 
+	ucls := call(admin, "create username class", "POST", "/api/classes", map[string]string{"name": "3B", "enrollmentMode": "username"})
+	ucode := ucls["joinCode"].(string)
+	call(guest, "class link info", "GET", "/api/auth/class-invite/"+ucode, nil)
+	call(newHandlerClient(t, handler), "register class", "POST", "/api/auth/register-class",
+		map[string]string{"code": ucode, "username": "anna", "password": "password123", "locale": "it"})
+	call(newHandlerClient(t, handler), "login by username", "POST", "/api/auth/login", map[string]string{"identifier": "anna", "password": "password123"})
+
 	a := call(admin, "create assignment", "POST", fmtPath("/api/classes/%d/assignments", classID), map[string]any{
 		"title": "T", "appType": "wiki-chatbot", "instructions": "I", "goals": []string{"g"}, "maxTurns": 5, "autoEnd": true,
 	})

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"log"
+	"strings"
 	"time"
 
 	"github.com/Hoppitbilbo/DebateAI/server/internal/domain"
@@ -40,6 +41,10 @@ func newMailOutbox(store outboxStore, send func(to, subject, body string) error)
 var outboxRetries = []time.Duration{time.Minute, 5 * time.Minute, 30 * time.Minute, 2 * time.Hour}
 
 func (o *mailOutbox) enqueue(to, subject, body string) {
+	if !hasRecipient(to) {
+		log.Printf("mail %q not queued: no recipient", subject)
+		return
+	}
 	if err := o.store.Enqueue(to, subject, body); err != nil {
 		log.Printf("mail to %s not queued: %v", to, err)
 		return
@@ -119,4 +124,29 @@ func (m outboxMailer) SendMailAsync(to, subject, body string) {
 		return
 	}
 	m.outbox.enqueue(to, subject, body)
+}
+
+// ErrNoRecipient refuses a mail without address: accounts created from a
+// username class have no e-mail.
+var ErrNoRecipient = errors.New("no e-mail recipient")
+
+func hasRecipient(to string) bool { return strings.TrimSpace(to) != "" }
+
+// recipientGuard is the mailer every service uses: it never sends to an
+// empty address and says so, instead of failing somewhere inside SMTP.
+type recipientGuard struct{ mailer }
+
+func (g recipientGuard) SendMail(to, subject, body string) error {
+	if !hasRecipient(to) {
+		return ErrNoRecipient
+	}
+	return g.mailer.SendMail(to, subject, body)
+}
+
+func (g recipientGuard) SendMailAsync(to, subject, body string) {
+	if !hasRecipient(to) {
+		log.Printf("mail %q not sent: no recipient", subject)
+		return
+	}
+	g.mailer.SendMailAsync(to, subject, body)
 }

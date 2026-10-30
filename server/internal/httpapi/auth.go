@@ -4,6 +4,7 @@ import (
 	"errors"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/Hoppitbilbo/DebateAI/server/internal/app"
@@ -95,17 +96,43 @@ func (s *Server) handleSetup(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, 201, u)
 }
 
-func (s *Server) handleLogin(w http.ResponseWriter, r *http.Request) {
-	if !s.limiter.allow("login:"+s.clientIP(r), loginAttemptsLimit, loginAttemptsWindow) {
-		writeErr(w, 429, "rate_limited", "too many attempts, retry later")
-		return
+// loginRequest accepts an identifier (username or e-mail) and, for older
+// clients, the e-mail alone.
+type loginRequest struct {
+	Identifier string `json:"identifier"`
+	Email      string `json:"email"`
+	Password   string `json:"password"`
+}
+
+// identifier is the account the request names; ok is false when the two
+// fields name different accounts.
+func (in loginRequest) identifier() (id string, ok bool) {
+	ident, email := strings.TrimSpace(in.Identifier), strings.TrimSpace(in.Email)
+	switch {
+	case ident == "":
+		return email, true
+	case email == "" || strings.EqualFold(ident, email):
+		return ident, true
 	}
-	var in struct{ Email, Password string }
+	return "", false
+}
+
+func (s *Server) handleLogin(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Cache-Control", "no-store")
+	var in loginRequest
 	if err := readJSON(r, &in); err != nil {
 		writeErr(w, 400, "bad_request", err.Error())
 		return
 	}
-	u, err := s.Accounts.Login(in.Email, in.Password)
+	identifier, ok := in.identifier()
+	if !ok {
+		writeErr(w, 400, "ambiguous_identifier", "identifier and email name different accounts")
+		return
+	}
+	if !s.checkLimit(w, s.AuthLimits.Login(s.clientIP(r), identifier)) {
+		return
+	}
+	u, err := s.Accounts.Login(identifier, in.Password)
 	switch {
 	case errors.Is(err, app.ErrAccountDisabled):
 		writeErr(w, 403, "disabled", err.Error())
@@ -120,6 +147,20 @@ func (s *Server) handleLogin(w http.ResponseWriter, r *http.Request) {
 	}
 	u, _ = s.getUser(u.ID) // reload: the login time just changed
 	writeJSON(w, 200, u)
+}
+
+// checkLimit answers 429 or 503 when an authentication limit refuses the
+// request; an unavailable counter never lets the request through.
+func (s *Server) checkLimit(w http.ResponseWriter, err error) bool {
+	switch {
+	case err == nil:
+		return true
+	case errors.Is(err, app.ErrRateLimited):
+		writeErr(w, 429, "rate_limited", "too many attempts, retry later")
+	default:
+		writeErr(w, 503, "unavailable", "retry in a moment")
+	}
+	return false
 }
 
 func (s *Server) handleLogout(w http.ResponseWriter, r *http.Request) {
@@ -200,6 +241,58 @@ func (s *Server) handleRegister(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	u, _ := s.getUser(uid)
+	writeJSON(w, 201, u)
+}
+
+// handleClassLinkInfo shows the class a username link opens: name and mode
+// only, never students, e-mails or the teacher.
+func (s *Server) handleClassLinkInfo(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Cache-Control", "no-store")
+	info, err := s.Accounts.ClassInvite(r.PathValue("code"))
+	if err != nil || !s.Settings.General().AllowJoinByCode {
+		writeErr(w, 404, "invalid_invite", domain.ErrEnrollmentClosed.Error())
+		return
+	}
+	writeJSON(w, 200, classInviteResponse{ClassName: info.ClassName, EnrollmentMode: info.EnrollmentMode})
+}
+
+// handleRegisterClass creates a student account from a username class link
+// and logs it in. A room guest cannot use it to keep its temporary account.
+func (s *Server) handleRegisterClass(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Cache-Control", "no-store")
+	if u := s.userFromRequest(r); u != nil && u.IsGuest() {
+		writeErr(w, 403, "forbidden", "room guests cannot create an account")
+		return
+	}
+	if !s.Settings.General().AllowJoinByCode {
+		writeErr(w, 403, "disabled", "joining by code is disabled")
+		return
+	}
+	var in struct{ Code, Username, Password, Locale string }
+	if err := readJSON(r, &in); err != nil {
+		writeErr(w, 400, "bad_request", err.Error())
+		return
+	}
+	if !s.checkLimit(w, s.AuthLimits.ClassEnrollment(domain.NormalizeJoinCode(in.Code))) {
+		return
+	}
+	u, err := s.Accounts.RegisterClassStudent(app.ClassEnrollment(in))
+	switch {
+	case errors.Is(err, domain.ErrEnrollmentClosed):
+		writeErr(w, 404, "invalid_invite", err.Error())
+		return
+	case errors.Is(err, domain.ErrUsernameTaken):
+		writeErr(w, 409, "username_taken", err.Error())
+		return
+	case err != nil:
+		writeServiceErr(w, err)
+		return
+	}
+	if err := s.startSession(w, r, u.ID); err != nil {
+		writeErr(w, 500, "internal", err.Error())
+		return
+	}
+	u, _ = s.getUser(u.ID)
 	writeJSON(w, 201, u)
 }
 

@@ -53,6 +53,8 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("PATCH /api/auth/me", s.auth(s.handleUpdateMe))
 	mux.HandleFunc("GET /api/auth/invite/{token}", s.handleInviteInfo)
 	mux.HandleFunc("POST /api/auth/register", s.handleRegister)
+	mux.HandleFunc("GET /api/auth/class-invite/{code}", s.handleClassLinkInfo)
+	mux.HandleFunc("POST /api/auth/register-class", s.handleRegisterClass)
 	mux.HandleFunc("POST /api/auth/forgot", s.handleForgot)
 	mux.HandleFunc("POST /api/auth/reset", s.handleReset)
 

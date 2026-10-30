@@ -32,7 +32,7 @@ type mailer interface {
 
 // Errors the handlers map to HTTP statuses.
 var (
-	ErrInvalidCredentials = errors.New("invalid email or password")
+	ErrInvalidCredentials = errors.New("invalid username, e-mail or password")
 	ErrAccountDisabled    = errors.New("account disabled")
 	ErrWrongPassword      = errors.New("current password is wrong")
 	ErrInvalidInvite      = errors.New("invite not found, expired or already used")
@@ -58,23 +58,42 @@ func validEmail(e string) bool {
 
 func validRole(r string) bool { return domain.ValidRole(r) }
 
-const minPasswordLength = 8
+// Password policy: bcrypt reads only the first 72 bytes, so a longer
+// password is refused instead of being silently cut.
+const (
+	minPasswordLength = 8
+	maxPasswordBytes  = 72
+)
 
 // sessionTTL is how long a login lasts.
 const sessionTTL = 30 * 24 * time.Hour
 
 // hashPassword checks the password policy and returns the bcrypt hash.
 func hashPassword(password string) (string, error) {
-	if len(password) < minPasswordLength {
-		return "", invalid(fmt.Errorf("password must be at least %d characters", minPasswordLength))
+	if err := checkPassword(password); err != nil {
+		return "", err
 	}
 	h, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	return string(h), err
 }
 
+func checkPassword(password string) error {
+	if len(password) < minPasswordLength {
+		return invalid(fmt.Errorf("password must be at least %d characters", minPasswordLength))
+	}
+	if len(password) > maxPasswordBytes {
+		return invalid(fmt.Errorf("password must be at most %d bytes", maxPasswordBytes))
+	}
+	return nil
+}
+
 func passwordMatches(hash, password string) bool {
 	return hash != "" && bcrypt.CompareHashAndPassword([]byte(hash), []byte(password)) == nil
 }
+
+// timingHash is compared when the account is missing, so a login takes the
+// same time whether the account exists or not.
+var timingHash, _ = bcrypt.GenerateFromPassword([]byte("no account has this password"), bcrypt.DefaultCost)
 
 // CreateUser registers an account; an empty password leaves it without one
 // (it will be set through an invite).
@@ -147,19 +166,88 @@ func (a *authService) Logout(token string) {
 	logIfErr("logout", a.logins.Delete(hashToken(token)))
 }
 
-// Login checks the credentials; it returns ErrInvalidCredentials or ErrAccountDisabled.
-func (a *authService) Login(email, password string) (*domain.User, error) {
-	u, err := a.users.GetByEmail(email)
+// Login checks the credentials. identifier is an e-mail when it holds an
+// '@', a username otherwise. It returns ErrInvalidCredentials, without
+// telling whether the account exists, or ErrAccountDisabled once the
+// password is right. Room guests never log in this way.
+func (a *authService) Login(identifier, password string) (*domain.User, error) {
+	u, err := a.findByIdentifier(identifier)
 	if err != nil {
+		_ = bcrypt.CompareHashAndPassword(timingHash, []byte(password))
 		return nil, ErrInvalidCredentials
 	}
-	if hash, err := a.users.PasswordHash(u.ID); err != nil || !passwordMatches(hash, password) {
+	if hash, err := a.users.PasswordHash(u.ID); err != nil || !passwordMatches(hash, password) || u.IsGuest() {
 		return nil, ErrInvalidCredentials
 	}
 	if !u.Active {
 		return nil, ErrAccountDisabled
 	}
 	return u, nil
+}
+
+func (a *authService) findByIdentifier(identifier string) (*domain.User, error) {
+	identifier = strings.TrimSpace(identifier)
+	if strings.Contains(identifier, "@") {
+		return a.users.GetByEmail(strings.ToLower(identifier))
+	}
+	username, err := domain.NormalizeUsername(identifier)
+	if err != nil {
+		return nil, err
+	}
+	return a.users.GetByUsername(username)
+}
+
+// ClassInviteInfo is what anyone holding a class link may see.
+type ClassInviteInfo struct {
+	ClassName      string
+	EnrollmentMode string
+}
+
+// ClassInvite describes the active username class opened by a link code,
+// or returns domain.ErrEnrollmentClosed.
+func (a *authService) ClassInvite(code string) (*ClassInviteInfo, error) {
+	code = domain.NormalizeJoinCode(code)
+	if code == "" {
+		return nil, domain.ErrEnrollmentClosed
+	}
+	c, err := a.classes.FindByJoinCode(code)
+	if err != nil || c.EnrollmentMode != domain.EnrollUsername {
+		return nil, domain.ErrEnrollmentClosed
+	}
+	return &ClassInviteInfo{ClassName: c.Name, EnrollmentMode: c.EnrollmentMode}, nil
+}
+
+// ClassEnrollment is what a student sends from a class link. There is no
+// role, e-mail or name: the account is a student named by its username.
+type ClassEnrollment struct {
+	Code, Username, Password, Locale string
+}
+
+// RegisterClassStudent creates a student account without e-mail and its
+// membership of the class of the link, in one transaction that checks the
+// link again. The password is hashed before the transaction. It returns
+// invalid input, domain.ErrEnrollmentClosed or domain.ErrUsernameTaken.
+func (a *authService) RegisterClassStudent(in ClassEnrollment) (*domain.User, error) {
+	username, err := domain.NormalizeUsername(in.Username)
+	if err != nil {
+		return nil, invalid(err)
+	}
+	if err := checkPassword(in.Password); err != nil {
+		return nil, err
+	}
+	if _, err := a.ClassInvite(in.Code); err != nil {
+		return nil, err
+	}
+	hash, err := hashPassword(in.Password)
+	if err != nil {
+		return nil, err
+	}
+	uid, _, err := a.users.CreateStudentInClass(domain.NewClassStudent{Code: domain.NormalizeJoinCode(in.Code), Username: username,
+		Name: username, PasswordHash: hash, Locale: NormLocale(in.Locale)})
+	if err != nil {
+		return nil, err
+	}
+	return a.users.Get(uid)
 }
 
 // ProfileChange is what a user may change about their own account.

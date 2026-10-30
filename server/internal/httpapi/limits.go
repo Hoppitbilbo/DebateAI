@@ -44,8 +44,6 @@ const (
 
 // Rate limits.
 const (
-	loginAttemptsLimit  = 20
-	loginAttemptsWindow = 15 * time.Minute
 	forgotRequestsLimit = 5  // per hour and IP
 	joinAttemptsLimit   = 20 // per hour and user
 	liveTokensLimit     = 30 // per hour, IP and login state
