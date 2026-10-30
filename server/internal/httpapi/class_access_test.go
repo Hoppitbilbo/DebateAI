@@ -31,11 +31,11 @@ func TestClassAccessAndInvitationHTTP(t *testing.T) {
 	teacher, teacherClient := newUser("teacher@test.it", domain.RoleTeacher)
 	other, otherClient := newUser("other@test.it", domain.RoleTeacher)
 	student, studentClient := newUser("student@test.it", domain.RoleStudent)
-	class, err := s.ClassSvc.Create(teacher, "Class", "", nil)
+	class, err := s.ClassSvc.Create(teacher, app.NewClass{Name: "Class"})
 	if err != nil {
 		t.Fatal(err)
 	}
-	foreign, err := s.ClassSvc.Create(other, "Foreign", "", nil)
+	foreign, err := s.ClassSvc.Create(other, app.NewClass{Name: "Foreign"})
 	if err != nil {
 		t.Fatal(err)
 	}

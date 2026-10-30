@@ -20,7 +20,7 @@ func visibilityFixture(t *testing.T) (s *Services, owner, stranger, stud *domain
 		return u
 	}
 	owner, stranger, stud = user("o@x.it", domain.RoleTeacher), user("x@x.it", domain.RoleTeacher), user("s@x.it", domain.RoleStudent)
-	class, _ := s.ClassSvc.Create(owner, "3A", "", nil)
+	class, _ := s.ClassSvc.Create(owner, NewClass{Name: "3A"})
 	s.Classes.AddMember(class.ID, stud.ID, domain.RoleStudent)
 	title, app, draft := "T", "wiki-chatbot", false
 	a, err := s.AssignmentSvc.Create(owner, class.ID, AssignmentInput{Title: &title, AppType: &app, Published: &draft}, "http://site")

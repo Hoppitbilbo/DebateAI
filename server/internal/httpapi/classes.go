@@ -32,15 +32,16 @@ func (s *Server) handleListClasses(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleCreateClass(w http.ResponseWriter, r *http.Request) {
-	var in struct {
-		Name, Description string
-		OwnerID           *int64 `json:"ownerId"`
-	}
+	var in app.NewClass
 	if err := readJSON(r, &in); err != nil || strings.TrimSpace(in.Name) == "" {
 		writeErr(w, 400, "bad_request", "name required")
 		return
 	}
-	c, err := s.ClassSvc.Create(currentUser(r), in.Name, in.Description, in.OwnerID)
+	c, err := s.ClassSvc.Create(currentUser(r), in)
+	if app.IsInvalid(err) {
+		writeErr(w, 400, "bad_request", err.Error())
+		return
+	}
 	if err != nil {
 		writeErr(w, 500, "internal", err.Error())
 		return

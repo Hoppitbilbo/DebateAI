@@ -45,13 +45,29 @@ func (c *classService) List(u *domain.User, onlyMine bool) ([]*domain.Class, err
 	return c.classes.ListTaughtBy(u.ID)
 }
 
+// NewClass is what a teacher fills in to create a class. OwnerID is only
+// honoured for admins; EnrollmentMode defaults to EnrollStandard.
+type NewClass struct {
+	Name           string `json:"name"`
+	Description    string `json:"description"`
+	OwnerID        *int64 `json:"ownerId"`
+	EnrollmentMode string `json:"enrollmentMode"`
+}
+
 // Create makes a class owned by u; an admin may create it for another teacher.
-func (c *classService) Create(u *domain.User, name, description string, ownerID *int64) (*domain.Class, error) {
+func (c *classService) Create(u *domain.User, in NewClass) (*domain.Class, error) {
 	owner := u.ID
-	if u.Role == domain.RoleAdmin && ownerID != nil {
-		owner = *ownerID
+	if u.Role == domain.RoleAdmin && in.OwnerID != nil {
+		owner = *in.OwnerID
 	}
-	id, err := c.classes.Create(strings.TrimSpace(name), strings.TrimSpace(description), owner)
+	mode := in.EnrollmentMode
+	if mode == "" {
+		mode = domain.EnrollStandard
+	}
+	if !domain.ValidEnrollmentMode(mode) {
+		return nil, invalid(errors.New("invalid enrollment mode"))
+	}
+	id, err := c.classes.Create(strings.TrimSpace(in.Name), strings.TrimSpace(in.Description), owner, mode)
 	if err != nil {
 		return nil, err
 	}
@@ -81,7 +97,11 @@ func (c *classService) Update(id int64, ch ClassChange) (*domain.Class, error) {
 
 // RegenerateCode gives the class a new join code.
 func (c *classService) RegenerateCode(id int64) (string, error) {
-	code := domain.NewJoinCode()
+	cl, err := c.classes.Get(id)
+	if err != nil {
+		return "", err
+	}
+	code := domain.NewClassCode(cl.EnrollmentMode)
 	return code, c.classes.SetJoinCode(id, code)
 }
 

@@ -26,7 +26,7 @@ func TestClassInviteRules(t *testing.T) {
 	}
 	owner, co, other := newUser("o@x.it", domain.RoleTeacher), newUser("c@x.it", domain.RoleTeacher), newUser("x@x.it", domain.RoleTeacher)
 	stud := newUser("s@x.it", domain.RoleStudent)
-	class, _ := svc.Create(owner, "3A", "", nil)
+	class, _ := svc.Create(owner, NewClass{Name: "3A"})
 
 	if svc.CanManage(other, class.ID) {
 		t.Fatal("a teacher of another class must not manage it")
@@ -69,7 +69,7 @@ func TestJoinByCode(t *testing.T) {
 	sid, _ := s.Accounts.CreateUser("s@x.it", "", "", domain.RoleStudent, "it")
 	teacher, _ := s.Users.Get(tid)
 	stud, _ := s.Users.Get(sid)
-	class, _ := s.ClassSvc.Create(teacher, "3A", "", nil)
+	class, _ := s.ClassSvc.Create(teacher, NewClass{Name: "3A"})
 
 	if _, err := s.ClassSvc.Join(stud, "nope"); !errors.Is(err, ErrInvalidCode) {
 		t.Fatalf("invalid code: %v", err)

@@ -1,7 +1,7 @@
 # Classe permanente con username e password
 
-Data: 29 ottobre 2026. Stato: **T1 implementata (branch `feat/classe-username`, non unita);
-P1–P7 e T2–T4 da fare**. Vedi «Stato di avanzamento» qui sotto.
+Data: 29 ottobre 2026. Stato: **T1, P1 e P2 implementate (branch `feat/classe-username`,
+non unito); P3–P7 e T2–T4 da fare**. Vedi «Stato di avanzamento» qui sotto.
 
 ## Stato di avanzamento (per chi riprende il lavoro)
 
@@ -27,9 +27,36 @@ P1–P7 e T2–T4 da fare**. Vedi «Stato di avanzamento» qui sotto.
   Verificati: `go vet`, `go test ./...`, `-race` su app e store, lint, TypeScript, Vitest 248,
   `check:i18n` 965, build.
 
-**Da fare, in quest'ordine:** P1 → P2 (attenzione: ricostruzione della tabella `users`,
-vedi §8, da provare su una copia del DB prima della produzione) → P3 → P4 → P5 → P6 → T2 → T3
-→ P7/T4. Rimane aperto anche il limite di login per IP (§7).
+**Fatto — P1 e P2, contratti e schema** (Claude Code, 29/10):
+
+- Dominio: `User.Username`, `Member.Username` (omessi se vuoti; `email` resta stringa, `""`
+  senza indirizzo), `NormalizeUsername` (regole §2), `Class.EnrollmentMode`
+  (`standard`/`username`), `NewEnrollmentCode` (24 byte, base32, 39 caratteri) e
+  `NewClassCode(mode)`, usato da creazione e «Rigenera». Errori `ErrUsernameTaken`,
+  `ErrInvalidUsername`, `ErrEnrollmentClosed`.
+- Schema: `users.email` nullable, `users.username` univoco `NOCASE`, `users.recovery_class_id`,
+  vincolo `CHECK (email IS NOT NULL OR username IS NOT NULL)`; `classes.enrollment_mode`.
+  `store/migrate_users.go` ricostruisce la tabella dei database esistenti all'avvio: connessione
+  dedicata con foreign key spente (il `DROP` non deve propagarsi), una transazione, ricontrollo
+  dopo il lock di scrittura (più avvii insieme la eseguono una volta sola), contatore
+  AUTOINCREMENT conservato, `foreign_key_check` che non deve peggiorare. Diversamente da §8
+  non c'è un comando separato: la migrazione è sicura anche se più istanze partono insieme.
+  **Prima del deploy fare comunque un backup/branch del database Turso.**
+- Repository: letture con `COALESCE` per email/username, `GetByEmail("")` non trova nulla,
+  `GetByUsername`, ricerca anche per username, `Users.CreateStudentInClass` (account +
+  appartenenza in una transazione che ricontrolla codice, modalità e classe attiva).
+  `Classes.Delete` azzera anche `recovery_class_id`. `ClassSvc.Create` riceve `app.NewClass`
+  (con `enrollmentMode`, default `standard`); `POST /api/classes` accetta il campo.
+- Test: `store/migrate_users_test.go` (DB vecchio con dati in tutte le tabelle collegate,
+  cascata dopo la ricostruzione, ID non riusati, quattro ricostruzioni concorrenti, iscrizione
+  atomica, codice standard/rigenerato/classe archiviata, stesso username da 8 richieste insieme),
+  `migrate_users_remote_test.go` (stessa migrazione su un server libSQL in Docker, verde;
+  si salta senza `LIBSQL_TEST_URL`), `domain/user_test.go`.
+- Spostati: tabella `password_resets` e migrazione dei token reset → P4; contatori persistenti
+  `auth_rate_limits` → P3, dove vengono usati.
+
+**Da fare, in quest'ordine:** P3 (registrazione via link + login con username + limiti) →
+P4 → P5 → P6 → T2 → T3 → P7/T4.
 Piccola miglioria possibile: il testo dell'email d'invito dice «completa la registrazione»
 anche a chi ha già un account; la pagina gestisce comunque il caso.
 
@@ -301,9 +328,9 @@ collation, indici e tutti i riferimenti. SQLite non rimuove `NOT NULL` con un se
 Ogni fase è una modifica funzionale separata dai task di refactoring. Le caselle si spuntano
 solo quando codice e prove della fase sono presenti; questo documento non le dichiara eseguite.
 
-- [ ] **P1 — Contratti e test di caratterizzazione.** Fissare accessi email, inviti docenti,
+- [x] **P1 — Contratti e test di caratterizzazione.** Fissare accessi email, inviti docenti,
   cambio password, iscrizione e ospiti attuali. Definire DTO, invarianti e casi della nuova modalità.
-- [ ] **P2 — Schema e repository.** Migrazione, username univoci, modalità/link, creazione
+- [x] **P2 — Schema e repository.** Migrazione, username univoci, modalità/link, creazione
   atomica account+appartenenza, query nullable, recupero per user ID e limiti persistenti.
   Provare migrazione da DB precedente e concorrenza su SQLite e libSQL.
 - [ ] **P3 — Registrazione e login.** Service, handler, cookie e compatibilità del campo `email`.

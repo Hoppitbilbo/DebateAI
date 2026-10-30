@@ -153,7 +153,7 @@ func TestRoomsDeleteLeavesNothingBehind(t *testing.T) {
 	}
 
 	student, _ := users.Create("s@x.it", "Bruno Rossi", "", domain.RoleStudent, "it")
-	classID, err := NewClasses(db).Create("Destination", "", student)
+	classID, err := NewClasses(db).Create("Destination", "", student, domain.EnrollStandard)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -178,7 +178,7 @@ func TestRoomWithItsOwnAssignment(t *testing.T) {
 	assignments := NewAssignments(db)
 	sessions := NewActivitySessions(db)
 	teacher, _ := users.Create("t@x.it", "Prof", "", domain.RoleTeacher, "it")
-	real, _ := classes.Create("3A", "", teacher)
+	real, _ := classes.Create("3A", "", teacher, domain.EnrollStandard)
 	r := NewRooms(db)
 
 	id, err := r.Create(domain.NewRoom{HostTokenHash: "h", TeacherID: &teacher, AppType: "impersona-tu", Title: "Dante", MaxGuests: 30,

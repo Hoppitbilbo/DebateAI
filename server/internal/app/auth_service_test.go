@@ -135,7 +135,7 @@ func TestRegisterExistingAccountNeedsPassword(t *testing.T) {
 	a, m := newAuthService(t)
 	teacherID, _ := a.CreateUser("t@x.it", "Prof", "", domain.RoleTeacher, "it")
 	teacher, _ := a.users.Get(teacherID)
-	classID, _ := a.classes.Create("3A", "", teacherID)
+	classID, _ := a.classes.Create("3A", "", teacherID, domain.EnrollStandard)
 	studID, _ := a.CreateUser("s@x.it", "Sara", "password123", domain.RoleStudent, "it")
 
 	if _, err := a.CreateInvite(Invitation{Inviter: teacher, Email: "s@x.it", Role: domain.RoleStudent, ClassID: &classID, ClassName: "3A", Locale: "it"}, "http://site"); err != nil {

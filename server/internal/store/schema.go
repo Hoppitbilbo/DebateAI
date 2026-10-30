@@ -9,18 +9,7 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-const schema = `
-CREATE TABLE IF NOT EXISTS users (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  email TEXT NOT NULL UNIQUE COLLATE NOCASE,
-  name TEXT NOT NULL,
-  password_hash TEXT NOT NULL DEFAULT '',
-  role TEXT NOT NULL CHECK (role IN ('admin','teacher','student')),
-  locale TEXT NOT NULL DEFAULT 'it',
-  active INTEGER NOT NULL DEFAULT 1,
-  created_at TEXT NOT NULL,
-  last_login_at TEXT
-);
+var schema = fmt.Sprintf(usersTable, "IF NOT EXISTS users") + `;
 
 CREATE TABLE IF NOT EXISTS auth_sessions (
   token_hash TEXT PRIMARY KEY,
@@ -52,6 +41,7 @@ CREATE TABLE IF NOT EXISTS classes (
   join_code TEXT NOT NULL UNIQUE,
   owner_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
   archived INTEGER NOT NULL DEFAULT 0,
+  enrollment_mode TEXT NOT NULL DEFAULT 'standard',
   created_at TEXT NOT NULL
 );
 
@@ -268,6 +258,10 @@ func prepare(db *sql.DB) (*sql.DB, error) {
 		db.Close()
 		return nil, fmt.Errorf("migrate: %w", err)
 	}
+	if err := makeEmailOptional(db); err != nil {
+		db.Close()
+		return nil, err
+	}
 	if err := applyMigrations(db); err != nil {
 		db.Close()
 		return nil, err
@@ -291,6 +285,7 @@ var migrations = []string{
 	`ALTER TABLE usage_log ADD COLUMN first_text_ms INTEGER NOT NULL DEFAULT 0`,
 	`ALTER TABLE live_grants ADD COLUMN reservation_id INTEGER NOT NULL DEFAULT 0`,
 	`ALTER TABLE activity_sessions ADD COLUMN class_id INTEGER REFERENCES classes(id) ON DELETE SET NULL`,
+	`ALTER TABLE classes ADD COLUMN enrollment_mode TEXT NOT NULL DEFAULT 'standard'`,
 }
 
 func applyMigrations(db *sql.DB) error {

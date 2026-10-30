@@ -14,7 +14,7 @@ func TestClassesLifecycle(t *testing.T) {
 	stud, _ := users.Create("s@x.it", "Sara", "", domain.RoleStudent, "it")
 	r := NewClasses(db)
 
-	id, err := r.Create("3A", "storia", teacher)
+	id, err := r.Create("3A", "storia", teacher, domain.EnrollStandard)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -91,7 +91,12 @@ func TestDeletedClassRevokesImportAccessWithoutForeignKeys(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	classID, err := classes.Create("Class", "", teacher)
+	classID, err := classes.Create("Class", "", teacher, domain.EnrollUsername)
+	if err != nil {
+		t.Fatal(err)
+	}
+	c, _ := classes.Get(classID)
+	pupil, _, err := users.CreateStudentInClass(domain.NewClassStudent{Code: c.JoinCode, Username: "pupil", Name: "pupil", PasswordHash: "h", Locale: "it"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -104,6 +109,9 @@ func TestDeletedClassRevokesImportAccessWithoutForeignKeys(t *testing.T) {
 	}
 	if classes.Teaches(classID, teacher) {
 		t.Fatal("an orphaned membership grants access to a deleted class")
+	}
+	if n := count(db, `SELECT COUNT(*) FROM users WHERE id = ? AND recovery_class_id IS NULL`, pupil); n != 1 {
+		t.Fatal("the account must survive without its recovery class")
 	}
 	d, err := sessions.Detail(id)
 	if err != nil || d.ClassID != nil || d.UserID == nil || *d.UserID != student {

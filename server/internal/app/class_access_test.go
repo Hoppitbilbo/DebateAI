@@ -11,7 +11,7 @@ import (
 
 func TestTeacherCannotReadOtherClassOrPrivatePractice(t *testing.T) {
 	s, teacher, other, student, assignment := visibilityFixture(t)
-	otherClass, err := s.ClassSvc.Create(other, "Other class", "", nil)
+	otherClass, err := s.ClassSvc.Create(other, NewClass{Name: "Other class"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -63,11 +63,11 @@ func TestImportedRoomWorkBelongsOnlyToDestinationClass(t *testing.T) {
 				other := newRoomTestUser(t, s, "other@x.it", domain.RoleTeacher)
 				co := newRoomTestUser(t, s, "co@x.it", domain.RoleTeacher)
 				student := newRoomTestUser(t, s, "student@x.it", domain.RoleStudent)
-				dest, err := s.ClassSvc.Create(teacher, "Destination", "", nil)
+				dest, err := s.ClassSvc.Create(teacher, NewClass{Name: "Destination"})
 				if err != nil {
 					t.Fatal(err)
 				}
-				foreign, err := s.ClassSvc.Create(other, "Other class", "", nil)
+				foreign, err := s.ClassSvc.Create(other, NewClass{Name: "Other class"})
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -183,7 +183,7 @@ func TestDisabledAccountCannotAcceptClassInvite(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	classID, err := a.classes.Create("Class", "", teacherID)
+	classID, err := a.classes.Create("Class", "", teacherID, domain.EnrollStandard)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -210,7 +210,7 @@ func TestClassInviteRequiresExistingAccountAcceptance(t *testing.T) {
 	s := newTestServer(t)
 	s.Accounts.mail = &captureMailer{}
 	teacher := newRoomTestUser(t, s, "teacher@x.it", domain.RoleTeacher)
-	class, err := s.ClassSvc.Create(teacher, "Class", "", nil)
+	class, err := s.ClassSvc.Create(teacher, NewClass{Name: "Class"})
 	if err != nil {
 		t.Fatal(err)
 	}

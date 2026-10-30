@@ -74,7 +74,7 @@ func (r *Rooms) Create(n domain.NewRoom) (int64, error) {
 // insertRoomAssignments creates the hidden class of a room and its
 // assignments; it returns the class and the first assignment.
 func insertRoomAssignments(tx *sql.Tx, n domain.NewRoom) (classID, firstID int64, err error) {
-	if classID, err = insertClass(tx, n.OwnAssignments[0].Title, "", n.TeacherID, true); err != nil {
+	if classID, err = insertClass(tx, n.OwnAssignments[0].Title, "", n.TeacherID, true, domain.EnrollStandard); err != nil {
 		return 0, 0, err
 	}
 	for i, a := range n.OwnAssignments {

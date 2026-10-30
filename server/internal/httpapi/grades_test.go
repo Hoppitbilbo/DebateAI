@@ -22,7 +22,7 @@ func TestGradesExport(t *testing.T) {
 
 	studID, _ := api.Accounts.CreateUser("sara@test.it", "Sara Bianchi", "", domain.RoleStudent, "it")
 	stud, _ := api.Users.Get(studID)
-	class, _ := api.ClassSvc.Create(me, "3A", "", nil)
+	class, _ := api.ClassSvc.Create(me, app.NewClass{Name: "3A"})
 	api.Classes.AddMember(class.ID, studID, domain.RoleStudent)
 	title, appType := "Napoleone", "wiki-chatbot"
 	a, err := api.AssignmentSvc.Create(me, class.ID, app.AssignmentInput{Title: &title, AppType: &appType}, srv.URL)

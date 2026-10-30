@@ -18,8 +18,10 @@ type settingsStore interface {
 type userStore interface {
 	Get(id int64) (*domain.User, error)
 	GetByEmail(email string) (*domain.User, error)
+	GetByUsername(username string) (*domain.User, error)
 	Search(q, role string, limit int) ([]domain.User, error)
 	Create(email, name, passwordHash, role, locale string) (int64, error)
+	CreateStudentInClass(n domain.NewClassStudent) (userID, classID int64, err error)
 	Update(id int64, p domain.UserPatch) error
 	Delete(id int64) error
 	PasswordHash(id int64) (string, error)
@@ -56,7 +58,7 @@ type classStore interface {
 	ListTaughtBy(userID int64) ([]*domain.Class, error)
 	ListJoinedBy(userID int64) ([]*domain.Class, error)
 	FindByJoinCode(code string) (*domain.Class, error)
-	Create(name, description string, ownerID int64) (int64, error)
+	Create(name, description string, ownerID int64, mode string) (int64, error)
 	Update(id int64, p domain.ClassPatch) error
 	Delete(id int64) error
 	SetJoinCode(id int64, code string) error

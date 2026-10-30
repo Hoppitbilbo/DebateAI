@@ -12,7 +12,7 @@ func TestAssignmentsLifecycle(t *testing.T) {
 	teacher, _ := users.Create("t@x.it", "Prof", "", domain.RoleTeacher, "it")
 	stud, _ := users.Create("s@x.it", "Sara", "", domain.RoleStudent, "it")
 	classes := NewClasses(db)
-	classID, _ := classes.Create("3A", "", teacher)
+	classID, _ := classes.Create("3A", "", teacher, domain.EnrollStandard)
 	classes.AddMember(classID, stud, domain.RoleStudent)
 	r := NewAssignments(db)
 
