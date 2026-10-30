@@ -3,7 +3,7 @@ import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { ApiError } from "@/lib/api";
 import type { User } from "@/lib/api";
-import { AccountPage, LoginPage, ResetPasswordPage } from "./AuthPages";
+import { AccountPage, ForgotPasswordPage, LoginPage, ResetPasswordPage } from "./AuthPages";
 
 // Fixes how the auth forms report busy and errors before the shared
 // useBusyAction replaces their try/finally (refactoring task 11.6).
@@ -20,7 +20,7 @@ vi.mock("@/context/auth", () => ({
   useAuth: () => ({ login: mocks.login, setUser: mocks.setUser, user: mocks.user, config: { setupRequired: false } }),
   dashboardPath: () => "/dashboard",
 }));
-vi.mock("@/features/auth/authApi", () => ({ authApi: { resetPassword: mocks.resetPassword, updateProfile: mocks.updateProfile } }));
+vi.mock("@/features/auth/authApi", () => ({ authApi: { resetPassword: mocks.resetPassword, updateProfile: mocks.updateProfile, forgotPassword: vi.fn() } }));
 vi.mock("@/features/tour/tour", () => ({ useTour: () => ({ enabled: true, setEnabled: vi.fn(), resetSeen: vi.fn() }) }));
 vi.mock("@/i18n", () => ({ default: { exists: (key: string) => key === "platform.errors.bad_credentials", language: "it" } }));
 
@@ -158,5 +158,10 @@ describe("auth forms", () => {
     at("/account", <AccountPage />);
     expect(screen.getByText("prof@x.it · platform.roles.teacher")).toBeTruthy();
     expect(screen.getByLabelText("platform.auth.name")).toBeTruthy();
+  });
+
+  it("tells a student without e-mail to ask the teacher for a reset link", () => {
+    at("/forgot-password", <ForgotPasswordPage />);
+    expect(screen.getByText("platform.auth.forgotNoEmail")).toBeTruthy();
   });
 });

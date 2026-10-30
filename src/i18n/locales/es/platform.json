@@ -115,6 +115,7 @@
     "forgotTitle": "Restablece tu contraseña",
     "forgotSubtitle": "Te enviaremos un enlace por correo.",
     "forgotSent": "Si la dirección pertenece a una cuenta, recibirás un correo en unos minutos.",
+    "forgotNoEmail": "¿Entras con un nombre de usuario, sin correo? Pide a tu docente un enlace para elegir una contraseña nueva.",
     "sendLink": "Enviar enlace",
     "backToLogin": "Volver al inicio de sesión",
     "resetTitle": "Elige una nueva contraseña",

@@ -115,6 +115,7 @@
     "forgotTitle": "Passwort zurücksetzen",
     "forgotSubtitle": "Wir schicken dir einen Link per E-Mail.",
     "forgotSent": "Wenn die Adresse zu einem Konto gehört, erhältst du in wenigen Minuten eine E-Mail.",
+    "forgotNoEmail": "Du meldest dich mit einem Benutzernamen ohne E-Mail an? Bitte deine Lehrkraft um einen Link für ein neues Passwort.",
     "sendLink": "Link senden",
     "backToLogin": "Zurück zur Anmeldung",
     "resetTitle": "Neues Passwort wählen",

@@ -115,6 +115,7 @@
     "forgotTitle": "Réinitialiser le mot de passe",
     "forgotSubtitle": "Nous vous enverrons un lien par e-mail.",
     "forgotSent": "Si l'adresse correspond à un compte, vous recevrez un e-mail dans quelques minutes.",
+    "forgotNoEmail": "Tu te connectes avec un nom d'utilisateur, sans e-mail ? Demande à ton enseignant un lien pour choisir un nouveau mot de passe.",
     "sendLink": "Envoyer le lien",
     "backToLogin": "Retour à la connexion",
     "resetTitle": "Choisissez un nouveau mot de passe",

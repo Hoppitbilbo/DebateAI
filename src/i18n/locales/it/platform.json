@@ -115,6 +115,7 @@
     "forgotTitle": "Reimposta la password",
     "forgotSubtitle": "Ti invieremo un link via email.",
     "forgotSent": "Se l'indirizzo appartiene a un account, riceverai un'email entro pochi minuti.",
+    "forgotNoEmail": "Entri con uno username, senza email? Chiedi al docente un link per scegliere una nuova password.",
     "sendLink": "Invia link",
     "backToLogin": "Torna all'accesso",
     "resetTitle": "Scegli una nuova password",

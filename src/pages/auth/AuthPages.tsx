@@ -175,6 +175,7 @@ export const ForgotPasswordPage = () => {
           <Button type="submit" className="w-full">{t("platform.auth.sendLink")}</Button>
         </form>
       )}
+      <p className="text-center text-xs text-muted-foreground">{t("platform.auth.forgotNoEmail")}</p>
       <Link to="/login" className="block text-center text-sm text-primary hover:underline">{t("platform.auth.backToLogin")}</Link>
     </AuthLayout>
   );
