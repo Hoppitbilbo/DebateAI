@@ -199,6 +199,13 @@ func (s *Server) handleUpdateMe(w http.ResponseWriter, r *http.Request) {
 		writeServiceErr(w, err)
 		return
 	}
+	if in.NewPassword != "" {
+		// The new password ended every login: this browser gets a new one.
+		if err := s.startSession(w, r, u.ID); err != nil {
+			writeErr(w, 500, "internal", err.Error())
+			return
+		}
+	}
 	writeJSON(w, 200, u)
 }
 
@@ -308,6 +315,7 @@ func (s *Server) handleForgot(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleReset(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Cache-Control", "no-store")
 	var in struct{ Token, Password string }
 	if err := readJSON(r, &in); err != nil {
 		writeErr(w, 400, "bad_request", err.Error())
@@ -315,16 +323,15 @@ func (s *Server) handleReset(w http.ResponseWriter, r *http.Request) {
 	}
 	u, err := s.Accounts.ResetPassword(in.Token, in.Password)
 	switch {
-	case errors.Is(err, app.ErrInvalidInvite):
+	case errors.Is(err, domain.ErrResetLinkInvalid):
 		writeErr(w, 404, "invalid_token", "link expired or already used")
-		return
-	case errors.Is(err, app.ErrUserNotFound):
-		writeErr(w, 404, "invalid_token", err.Error())
 		return
 	case err != nil:
 		writeServiceErr(w, err)
 		return
 	}
+	// As before, the browser that chose the new password is logged in; every
+	// other login of the account has just ended. Opening the link gives nothing.
 	_ = s.startSession(w, r, u.ID)
 	writeJSON(w, 200, u)
 }

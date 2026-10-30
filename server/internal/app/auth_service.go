@@ -3,7 +3,6 @@ package app
 import (
 	"errors"
 	"fmt"
-	"log"
 	"net/mail"
 	"strings"
 	"time"
@@ -12,13 +11,15 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// authService owns accounts, logins, invitations and password resets. It
+// authService owns accounts, logins, invitations and password resets
+// (password_reset.go). It
 // knows nothing about HTTP: handlers turn its errors into status codes and
 // its login tokens into cookies.
 type authService struct {
 	users    userStore
 	logins   authSessionStore
 	invites  inviteStore
+	resets   resetStore
 	classes  classStore
 	mail     mailer
 	siteName func() string
@@ -37,6 +38,8 @@ var (
 	ErrWrongPassword      = errors.New("current password is wrong")
 	ErrInvalidInvite      = errors.New("invite not found, expired or already used")
 	ErrUserNotFound       = errors.New("user not found")
+	ErrResetForbidden     = errors.New("only the owner of the student's class or an admin can reset this password")
+	ErrNotClassStudent    = errors.New("not a student of this class")
 )
 
 // invalidInput wraps an error caused by the request data (HTTP 400).
@@ -122,12 +125,17 @@ func (a *authService) CreateUser(email, name, password, role, locale string) (in
 	return id, err
 }
 
+// SetPassword replaces the password (admin panel) and invalidates the
+// pending reset links of the account.
 func (a *authService) SetPassword(userID int64, password string) error {
 	hash, err := hashPassword(password)
 	if err != nil {
 		return err
 	}
-	return a.users.SetPasswordHash(userID, hash)
+	if err := a.users.SetPasswordHash(userID, hash); err != nil {
+		return err
+	}
+	return a.resets.Invalidate(userID)
 }
 
 // StartSession logs a user in and returns the secret token for the cookie.
@@ -258,8 +266,11 @@ type ProfileChange struct {
 	NewPassword     string // empty keeps the password
 }
 
-// UpdateProfile applies a user's changes to their own account; a new
-// password requires the current one.
+// UpdateProfile applies a user's changes to their own account. A new
+// password requires the current one; everything is checked before writing,
+// then profile and password are saved in one transaction that also ends
+// every login and reset link of the account (the caller gives the current
+// browser a new session).
 func (a *authService) UpdateProfile(u *domain.User, c ProfileChange) (*domain.User, error) {
 	var p domain.UserPatch
 	if c.Name != nil && strings.TrimSpace(*c.Name) != "" {
@@ -268,17 +279,25 @@ func (a *authService) UpdateProfile(u *domain.User, c ProfileChange) (*domain.Us
 	if c.Locale != nil {
 		p.Locale = ptr(NormLocale(*c.Locale))
 	}
-	if err := a.users.Update(u.ID, p); err != nil {
-		return nil, err
-	}
-	if c.NewPassword != "" {
-		hash, _ := a.users.PasswordHash(u.ID)
-		if !passwordMatches(hash, c.CurrentPassword) {
-			return nil, ErrWrongPassword
-		}
-		if err := a.SetPassword(u.ID, c.NewPassword); err != nil {
+	if c.NewPassword == "" {
+		if err := a.users.Update(u.ID, p); err != nil {
 			return nil, err
 		}
+		return a.users.Get(u.ID)
+	}
+	current, err := a.users.PasswordHash(u.ID)
+	if err != nil {
+		return nil, err
+	}
+	if !passwordMatches(current, c.CurrentPassword) {
+		return nil, ErrWrongPassword
+	}
+	hash, err := hashPassword(c.NewPassword)
+	if err != nil {
+		return nil, err
+	}
+	if err := a.users.ChangePassword(u.ID, p, hash); err != nil {
+		return nil, err
 	}
 	return a.users.Get(u.ID)
 }
@@ -339,44 +358,6 @@ func (a *authService) Register(in Registration, baseURL string) (int64, error) {
 		}
 	}
 	return uid, a.invites.MarkAccepted(inv.ID)
-}
-
-// RequestReset e-mails a password reset link to an active account. It never
-// reports whether the address exists, so it cannot be used to find accounts.
-func (a *authService) RequestReset(email, baseURL string) {
-	u, err := a.users.GetByEmail(email)
-	if err != nil || !u.Active {
-		return
-	}
-	tok := randomToken(24)
-	_, err = a.invites.Create(domain.NewInvite{TokenHash: hashToken(tok), Kind: domain.InviteKindReset, Email: u.Email, Role: u.Role,
-		Locale: u.Locale, ExpiresAt: time.Now().Add(resetLinkTTL).UTC().Format(time.RFC3339)})
-	if err != nil {
-		log.Printf("password reset for user %d: %v", u.ID, err)
-		return
-	}
-	subj, body := RenderMail("reset", u.Locale, map[string]string{"site": a.siteName(), "name": u.Name, "link": baseURL + "/reset-password?token=" + tok})
-	a.mail.SendMailAsync(u.Email, subj, body)
-}
-
-// ResetPassword sets a new password from a reset link, then makes the link
-// unusable and ends every existing login of the user.
-func (a *authService) ResetPassword(token, password string) (*domain.User, error) {
-	inv, err := a.FindInvite(token, domain.InviteKindReset)
-	if err != nil {
-		return nil, err
-	}
-	u, err := a.users.GetByEmail(inv.Email)
-	if err != nil {
-		return nil, ErrUserNotFound
-	}
-	if err := a.SetPassword(u.ID, password); err != nil {
-		return nil, err
-	}
-	if err := errors.Join(a.invites.MarkAccepted(inv.ID), a.logins.DeleteForUser(u.ID)); err != nil {
-		return nil, err
-	}
-	return u, nil
 }
 
 // Invitation is a request to invite someone, optionally into a class.

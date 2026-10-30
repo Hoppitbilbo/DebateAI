@@ -26,6 +26,7 @@ type userStore interface {
 	Delete(id int64) error
 	PasswordHash(id int64) (string, error)
 	SetPasswordHash(id int64, hash string) error
+	ChangePassword(id int64, p domain.UserPatch, hash string) error
 	RecordLogin(id int64) error
 	Count(role string) int
 }
@@ -51,6 +52,14 @@ type inviteStore interface {
 	CountPending() int
 }
 
+// resetStore holds the password reset links: issued, used once, invalidated.
+type resetStore interface {
+	Issue(n domain.NewPasswordReset) error
+	Consume(tokenHash, passwordHash string) (userID int64, err error)
+	Invalidate(userID int64) error
+	Resettable(classID int64) (map[int64]bool, error)
+}
+
 type classStore interface {
 	Get(id int64) (*domain.Class, error)
 	Name(id int64) string
@@ -69,6 +78,7 @@ type classStore interface {
 	CountStudents(classID int64) int
 	CountMemberships() (map[int64]int, error)
 	AddMember(classID, userID int64, role string) error
+	JoinByCode(code string, userID int64) (classID int64, err error)
 	RemoveMember(classID, userID int64) error
 	IsMember(classID, userID int64) bool
 	IsOwner(classID, userID int64) bool

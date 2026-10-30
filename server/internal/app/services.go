@@ -18,6 +18,7 @@ type Services struct {
 	Users         userStore
 	Logins        authSessionStore
 	Invites       inviteStore
+	Resets        resetStore
 	Classes       classStore
 	Assignments   assignmentStore
 	Sessions      sessionStore
@@ -59,6 +60,7 @@ func NewServices(cfg Config, db *sql.DB, opts ...Option) *Services {
 		Users:         store.NewUsers(db),
 		Logins:        store.NewAuthSessions(db),
 		Invites:       store.NewInvites(db),
+		Resets:        store.NewPasswordResets(db),
 		Classes:       store.NewClasses(db),
 		Assignments:   store.NewAssignments(db),
 		Sessions:      store.NewActivitySessions(db),
@@ -79,9 +81,9 @@ func NewServices(cfg Config, db *sql.DB, opts ...Option) *Services {
 	sv.Gateway = newAIGateway(sv.Providers, sv.Prices, sv.Usage, sv.Sessions, sv.Settings, sv.Crypto)
 	sv.Gateway.grants = sv.LiveGrants
 	sv.Gateway.inflight = sv.Inflight
-	sv.Accounts = &authService{users: sv.Users, logins: sv.Logins, invites: sv.Invites, classes: sv.Classes, mail: sv.Mailer, siteName: siteName}
+	sv.Accounts = &authService{users: sv.Users, logins: sv.Logins, invites: sv.Invites, resets: sv.Resets, classes: sv.Classes, mail: sv.Mailer, siteName: siteName}
 	sv.AuthLimits = newAuthLimits(sv.RateLimits, cfg.Secret)
-	sv.ClassSvc = &classService{classes: sv.Classes, rooms: sv.Rooms, accounts: sv.Accounts}
+	sv.ClassSvc = &classService{classes: sv.Classes, rooms: sv.Rooms, resets: sv.Resets, accounts: sv.Accounts}
 	sv.AssignmentSvc = &assignmentService{assignments: sv.Assignments, classes: sv.Classes, sessions: sv.Sessions, classSvc: sv.ClassSvc,
 		listeners: []assignmentListener{mailNotifier{classes: sv.Classes, mail: sv.Mailer, siteName: siteName}}}
 	sv.SessionSvc = &sessionService{sessions: sv.Sessions, assignments: sv.Assignments, classes: sv.Classes, classSvc: sv.ClassSvc,

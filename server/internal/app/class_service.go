@@ -1,6 +1,7 @@
 package app
 
 import (
+	"database/sql"
 	"errors"
 	"strings"
 
@@ -12,6 +13,7 @@ import (
 type classService struct {
 	classes  classStore
 	rooms    roomStore
+	resets   resetStore
 	accounts *authService
 }
 
@@ -143,13 +145,35 @@ func (c *classService) Invite(u *domain.User, classID int64, in MemberInvitation
 	return results, nil
 }
 
-// Join adds u as a student of the active class with this code.
+// Join adds u as a student of the active class with this code; the code
+// is checked in the same statement that adds the member.
 func (c *classService) Join(u *domain.User, code string) (*domain.Class, error) {
-	cl, err := c.classes.FindByJoinCode(domain.NormalizeJoinCode(code))
-	if err != nil {
+	id, err := c.classes.JoinByCode(domain.NormalizeJoinCode(code), u.ID)
+	if errors.Is(err, sql.ErrNoRows) {
 		return nil, ErrInvalidCode
 	}
-	return cl, c.classes.AddMember(cl.ID, u.ID, domain.RoleStudent)
+	if err != nil {
+		return nil, err
+	}
+	return c.classes.Get(id)
+}
+
+// Members lists the members of a class for u, who manages it. Each tells
+// whether u may give it an assisted reset link (canResetPassword); the
+// server checks again when the link is asked for and used.
+func (c *classService) Members(u *domain.User, cl *domain.Class) ([]domain.Member, error) {
+	members := c.classes.Members(cl.ID)
+	if !mayIssueAssistedReset(u, cl) {
+		return members, nil
+	}
+	resettable, err := c.resets.Resettable(cl.ID)
+	if err != nil {
+		return nil, err
+	}
+	for i := range members {
+		members[i].CanResetPassword = resettable[members[i].UserID]
+	}
+	return members, nil
 }
 
 // Joined lists the active classes of a student, without their join codes.

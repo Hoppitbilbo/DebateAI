@@ -96,7 +96,9 @@ var unpricedReserve = price{In: 15, Out: 75, Known: true}
 // Authentication and invites.
 const (
 	resetLinkTTL = 2 * time.Hour
-	inviteTTL    = 14 * 24 * time.Hour
+	// assistedResetTTL: a teacher hands the link over in person.
+	assistedResetTTL = 15 * time.Minute
+	inviteTTL        = 14 * 24 * time.Hour
 )
 
 // Temporary rooms ("aula lampo").

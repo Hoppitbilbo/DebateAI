@@ -90,7 +90,7 @@ func TestInvites(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	r.Create(domain.NewInvite{TokenHash: "h2", Kind: domain.InviteKindReset, Email: "t@x.it", Role: domain.RoleTeacher, Locale: "it", ExpiresAt: future})
+	r.Create(domain.NewInvite{TokenHash: "h2", Kind: "other", Email: "t@x.it", Role: domain.RoleTeacher, Locale: "it", ExpiresAt: future})
 
 	inv, err := r.FindByToken("h1", domain.InviteKindInvite)
 	if err != nil || inv.ID != id || inv.InvitedBy != "Prof" || !inv.Usable(time.Now()) {

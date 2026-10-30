@@ -76,13 +76,11 @@ type UserPatch struct {
 	Locale *string
 }
 
-// Invite kinds.
-const (
-	InviteKindInvite = "invite" // registration or class invitation
-	InviteKindReset  = "reset"  // password reset link
-)
+// InviteKindInvite is the kind of a registration or class invitation.
+// Password reset links live in password_resets (NewPasswordReset).
+const InviteKindInvite = "invite"
 
-// Invite is a one-time link: a registration/class invitation or a password reset.
+// Invite is a one-time link: a registration or class invitation.
 type Invite struct {
 	ID         int64   `json:"id"`
 	Kind       string  `json:"kind"`

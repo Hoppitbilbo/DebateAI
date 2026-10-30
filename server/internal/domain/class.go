@@ -50,6 +50,8 @@ type Member struct {
 	Role        string  `json:"role"` // RoleStudent or RoleTeacher
 	JoinedAt    string  `json:"joinedAt"`
 	LastLoginAt *string `json:"lastLoginAt,omitempty"`
+	// CanResetPassword: the viewer may give this member an assisted reset link.
+	CanResetPassword bool `json:"canResetPassword"`
 }
 
 // joinCodeAlphabet avoids ambiguous characters (0/O, 1/I/L).
