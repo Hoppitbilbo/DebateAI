@@ -104,8 +104,8 @@ func (s *Server) handleRegenerateCode(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, 200, joinCodeResponse{JoinCode: code})
 }
 
-// handleClassInvite invites a list of e-mails. Existing users are added to the
-// class immediately (and notified); new addresses receive a registration link.
+// handleClassInvite sends invitations; existing users must accept with their
+// password before joining the class.
 func (s *Server) handleClassInvite(w http.ResponseWriter, r *http.Request) {
 	u, id, ok := s.managedClass(w, r)
 	if !ok {

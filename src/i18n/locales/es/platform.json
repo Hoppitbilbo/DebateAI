@@ -477,7 +477,6 @@
     "done": "{{count}} invitaciones procesadas",
     "copyLink": "Copiar enlace",
     "status": {
-      "added": "añadido a la clase",
       "invited": "invitado",
       "error": "error"
     },

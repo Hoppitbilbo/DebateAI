@@ -172,7 +172,7 @@ func (svc *roomTransfer) ImportRoom(u *domain.User, classID int64, room *domain.
 			res.Discarded++
 			continue
 		}
-		if err := svc.rooms.MoveGuestSessions(g.UserID, studentID); err != nil {
+		if err := svc.rooms.MoveGuestSessions(g.UserID, studentID, classID); err != nil {
 			return nil, err
 		}
 		res.Sessions += g.Sessions
@@ -197,12 +197,6 @@ func (svc *roomTransfer) ImportFile(u *domain.User, classID int64, file string, 
 	if err != nil {
 		return nil, err
 	}
-	var assignmentID *int64
-	if e.AssignmentID != nil {
-		if a, err := svc.assignments.Get(*e.AssignmentID); err == nil && a.ClassID == classID {
-			assignmentID = &a.ID
-		}
-	}
 	res := &ImportResult{}
 	students := map[int64]bool{}
 	for _, g := range e.Guests {
@@ -212,7 +206,13 @@ func (svc *roomTransfer) ImportFile(u *domain.User, classID int64, file string, 
 			continue
 		}
 		for _, d := range g.Sessions {
-			if _, err := svc.sessions.Import(studentID, assignmentID, d); err != nil {
+			var assignmentID *int64
+			if d.AssignmentID != nil {
+				if a, err := svc.assignments.Get(*d.AssignmentID); err == nil && a.ClassID == classID {
+					assignmentID = &a.ID
+				}
+			}
+			if _, err := svc.sessions.Import(studentID, classID, assignmentID, d); err != nil {
 				return nil, err
 			}
 			res.Sessions++

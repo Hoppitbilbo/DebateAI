@@ -42,6 +42,9 @@ func TestOpenMigratesOldDatabase(t *testing.T) {
 	if err != nil || d.TeacherFeedback != "Bravo" || *d.TeacherScore != 9 || d.TeacherFeedbackAt == nil {
 		t.Fatalf("after migration: %v %+v", err, d)
 	}
+	if d.ClassID != nil {
+		t.Fatal("old work without provenance must not acquire a class during migration")
+	}
 	// Opening again must not fail on the already added columns.
 	db.Close()
 	if db, err = Open(path); err != nil {

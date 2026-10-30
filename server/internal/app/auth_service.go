@@ -222,12 +222,19 @@ func (a *authService) Register(in Registration, baseURL string) (int64, error) {
 		locale = inv.Locale
 	}
 	var uid int64
+	memberRole := inv.Role
 	if existing, err := a.users.GetByEmail(inv.Email); err == nil {
 		// The invite only adds the class, but the owner must prove it is them.
 		if hash, _ := a.users.PasswordHash(existing.ID); !passwordMatches(hash, in.Password) {
 			return 0, ErrInvalidCredentials
 		}
+		if !existing.Active {
+			return 0, ErrAccountDisabled
+		}
 		uid = existing.ID
+		if existing.Role == domain.RoleStudent {
+			memberRole = domain.RoleStudent
+		}
 	} else {
 		if uid, err = a.CreateUser(inv.Email, in.Name, in.Password, inv.Role, locale); err != nil {
 			return 0, err
@@ -236,9 +243,8 @@ func (a *authService) Register(in Registration, baseURL string) (int64, error) {
 		a.mail.SendMailAsync(inv.Email, subj, body)
 	}
 	if inv.ClassID != nil {
-		memberRole := domain.RoleStudent
-		if inv.Role == domain.RoleTeacher {
-			memberRole = domain.RoleTeacher
+		if memberRole != domain.RoleTeacher {
+			memberRole = domain.RoleStudent
 		}
 		if err := a.classes.AddMember(*inv.ClassID, uid, memberRole); err != nil {
 			return 0, err

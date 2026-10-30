@@ -147,8 +147,19 @@ func (r *Classes) Update(id int64, p domain.ClassPatch) error {
 }
 
 func (r *Classes) Delete(id int64) error {
-	_, err := r.db.Exec(`DELETE FROM classes WHERE id = ?`, id)
-	return err
+	tx, err := r.db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	// Also clear provenance on libSQL connections without foreign keys.
+	if _, err := tx.Exec(`UPDATE activity_sessions SET class_id = NULL WHERE class_id = ?`, id); err != nil {
+		return err
+	}
+	if _, err := tx.Exec(`DELETE FROM classes WHERE id = ?`, id); err != nil {
+		return err
+	}
+	return tx.Commit()
 }
 
 func (r *Classes) SetJoinCode(id int64, code string) error {
@@ -233,11 +244,6 @@ func (r *Classes) IsOwner(classID, userID int64) bool {
 // Teaches reports whether the user owns or co-teaches the class.
 func (r *Classes) Teaches(classID, userID int64) bool {
 	return r.IsOwner(classID, userID) ||
-		count(r.db, `SELECT COUNT(*) FROM class_members WHERE class_id = ? AND user_id = ? AND role = 'teacher'`, classID, userID) > 0
-}
-
-// TeachesStudent reports whether the teacher teaches a class the student is in.
-func (r *Classes) TeachesStudent(teacherID, studentID int64) bool {
-	return count(r.db, `SELECT COUNT(*) FROM class_members m1 JOIN class_members m2 ON m1.class_id = m2.class_id
-		WHERE m1.user_id = ? AND m1.role = 'teacher' AND m2.user_id = ?`, teacherID, studentID) > 0
+		count(r.db, `SELECT COUNT(*) FROM class_members m JOIN classes c ON c.id = m.class_id
+			WHERE m.class_id = ? AND m.user_id = ? AND m.role = 'teacher'`, classID, userID) > 0
 }

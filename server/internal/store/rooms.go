@@ -249,9 +249,12 @@ func (r *Rooms) RejoinPIN(userID int64) (pinHash, expiresAt string, err error) {
 	return pinHash, exp.String, err
 }
 
-// MoveGuestSessions gives the attempts of a guest to a real student.
-func (r *Rooms) MoveGuestSessions(guestID, studentID int64) error {
-	_, err := r.db.Exec(`UPDATE activity_sessions SET user_id = ? WHERE user_id = ?`, studentID, guestID)
+// MoveGuestSessions gives attempts to a student in the destination class.
+// Assignments from another class must not retain access to the moved work.
+func (r *Rooms) MoveGuestSessions(guestID, studentID, classID int64) error {
+	_, err := r.db.Exec(`UPDATE activity_sessions SET user_id = ?, class_id = ?,
+		assignment_id = CASE WHEN assignment_id IN (SELECT id FROM assignments WHERE class_id = ?) THEN assignment_id ELSE NULL END
+		WHERE user_id = ?`, studentID, classID, classID, guestID)
 	return err
 }
 

@@ -12,11 +12,7 @@ import (
 type classService struct {
 	classes  classStore
 	rooms    roomStore
-	users    userStore
 	accounts *authService
-	mail     mailer
-	siteName func() string
-	mailOn   func() bool // whether SMTP is configured
 }
 
 var (
@@ -27,7 +23,7 @@ var (
 
 // CanManage: admins, the owner, or co-teachers.
 func (c *classService) CanManage(u *domain.User, classID int64) bool {
-	return u.Role == domain.RoleAdmin || c.classes.Teaches(classID, u.ID)
+	return u.Role == domain.RoleAdmin || (u.Role == domain.RoleTeacher && c.classes.Teaches(classID, u.ID))
 }
 
 // MayAttempt tells whether u may work on assignment a: its teachers, the
@@ -96,9 +92,9 @@ type MemberInvitation struct {
 	Locale string   `json:"locale"`
 }
 
-// Invite brings people into a class: existing accounts are added at once
-// (and notified), new addresses receive a registration link. Only the owner
-// (or an admin) may add co-teachers.
+// Invite sends a proposal to join a class. Existing accounts must accept
+// with their password; knowing an email never grants membership or access.
+// Only the owner (or an admin) may invite co-teachers.
 func (c *classService) Invite(u *domain.User, classID int64, in MemberInvitation, baseURL string) ([]InviteResult, error) {
 	role := in.Role
 	if role == "" {
@@ -117,10 +113,6 @@ func (c *classService) Invite(u *domain.User, classID int64, in MemberInvitation
 	className := c.classes.Name(classID)
 	results := []InviteResult{}
 	for _, email := range SplitEmails(in.Emails) {
-		if existing, err := c.users.GetByEmail(email); err == nil {
-			results = append(results, c.addExisting(u, existing, classID, className, role, baseURL))
-			continue
-		}
 		inv, err := c.accounts.CreateInvite(Invitation{Inviter: u, Email: email, Role: role, ClassID: &classID, ClassName: className, Locale: locale}, baseURL)
 		if err != nil {
 			results = append(results, InviteResult{Email: email, Status: "error", EmailSent: boolPtr(false), Error: err.Error()})
@@ -129,21 +121,6 @@ func (c *classService) Invite(u *domain.User, classID int64, in MemberInvitation
 		results = append(results, InvitedResult(inv))
 	}
 	return results, nil
-}
-
-// addExisting adds an account to the class; students stay students even
-// when invited as teachers.
-func (c *classService) addExisting(inviter, existing *domain.User, classID int64, className, role, baseURL string) InviteResult {
-	memberRole := domain.RoleStudent
-	if existing.Role != domain.RoleStudent && role == domain.RoleTeacher {
-		memberRole = domain.RoleTeacher
-	}
-	if err := c.classes.AddMember(classID, existing.ID, memberRole); err != nil {
-		return InviteResult{Email: existing.Email, Status: "error", EmailSent: boolPtr(false), Error: err.Error()}
-	}
-	subj, body := RenderMail("added", existing.Locale, map[string]string{"site": c.siteName(), "name": existing.Name, "inviter": inviter.Name, "class": className, "link": baseURL + "/dashboard"})
-	c.mail.SendMailAsync(existing.Email, subj, body)
-	return InviteResult{Email: existing.Email, Status: "added", EmailSent: boolPtr(c.mailOn())}
 }
 
 // Join adds u as a student of the active class with this code.

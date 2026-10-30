@@ -75,8 +75,8 @@ func (svc *sessionService) Start(u *domain.User, in NewAttempt) (*domain.Session
 }
 
 // Load returns a session u may see and whether u is its owner. Admins see
-// every session; teachers those of their classes' assignments and the free
-// practice of their students.
+// every session; teachers only the work of classes they manage. A student's
+// membership never grants access to their private practice or other classes.
 func (svc *sessionService) Load(u *domain.User, id int64) (*domain.SessionDetail, bool, error) {
 	d, err := svc.sessions.Detail(id)
 	if err != nil {
@@ -93,8 +93,7 @@ func (svc *sessionService) Load(u *domain.User, id int64) (*domain.SessionDetail
 		if a, err := svc.assignments.Get(*d.AssignmentID); err == nil && svc.classSvc.CanManage(u, a.ClassID) {
 			return d, false, nil
 		}
-	}
-	if u.Role == domain.RoleTeacher && d.UserID != nil && svc.classes.TeachesStudent(u.ID, *d.UserID) {
+	} else if d.ClassID != nil && svc.classSvc.CanManage(u, *d.ClassID) {
 		return d, false, nil
 	}
 	return nil, false, ErrSessionNotFound

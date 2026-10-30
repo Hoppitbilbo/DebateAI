@@ -153,7 +153,13 @@ func TestRoomsDeleteLeavesNothingBehind(t *testing.T) {
 	}
 
 	student, _ := users.Create("s@x.it", "Bruno Rossi", "", domain.RoleStudent, "it")
-	r.MoveGuestSessions(kept, student)
+	classID, err := NewClasses(db).Create("Destination", "", student)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := r.MoveGuestSessions(kept, student, classID); err != nil {
+		t.Fatal(err)
+	}
 	if err := r.Delete(live.ID); err != nil {
 		t.Fatal(err)
 	}
@@ -221,7 +227,9 @@ func TestRoomWithItsOwnAssignment(t *testing.T) {
 	student, _ := users.Create("s@x.it", "Anna Rossi", "", domain.RoleStudent, "it")
 	sessions.Create(domain.NewSession{UserID: moved, AssignmentID: room.AssignmentID, AppType: "impersona-tu", Context: "{}"})
 	sessions.Create(domain.NewSession{UserID: gone, AssignmentID: room.AssignmentID, AppType: "impersona-tu", Context: "{}"})
-	r.MoveGuestSessions(moved, student)
+	if err := r.MoveGuestSessions(moved, student, real); err != nil {
+		t.Fatal(err)
+	}
 
 	if err := r.Delete(id); err != nil {
 		t.Fatal(err)

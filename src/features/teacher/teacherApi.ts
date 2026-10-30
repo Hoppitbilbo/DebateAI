@@ -72,7 +72,7 @@ export type InviteSender = (req: InviteRequest) => Promise<InviteResult[]>;
 const sendInvites = (endpoint: string): InviteSender => async (req) =>
   (await api.post<{ results: InviteResult[] }>(endpoint, req)).results;
 
-/** Invites into a class (existing accounts are added at once). */
+/** Invites into a class; existing accounts join only after accepting with their password. */
 export const inviteToClass = (classId: number) => sendInvites(`/api/classes/${classId}/invite`);
 
 /** Invites new accounts to the platform (admin). */

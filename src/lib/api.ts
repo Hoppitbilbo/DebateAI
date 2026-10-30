@@ -227,7 +227,7 @@ export interface Invite {
 
 export interface InviteResult {
   email: string;
-  status: "added" | "invited" | "error";
+  status: "invited" | "error";
   emailSent?: boolean;
   link?: string;
   error?: string;

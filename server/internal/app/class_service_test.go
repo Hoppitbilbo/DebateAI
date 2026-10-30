@@ -2,6 +2,7 @@ package app
 
 import (
 	"errors"
+	"net/url"
 	"testing"
 
 	"github.com/Hoppitbilbo/DebateAI/server/internal/domain"
@@ -11,13 +12,12 @@ func TestClassInviteRules(t *testing.T) {
 	s := newTestServer(t)
 	m := &captureMailer{}
 	svc := *s.ClassSvc
-	svc.mail = m
 	acc := *s.Accounts
 	acc.mail = m
 	svc.accounts = &acc
 
 	newUser := func(email, role string) *domain.User {
-		id, err := acc.CreateUser(email, "", "", role, "it")
+		id, err := acc.CreateUser(email, "", "password123", role, "it")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -35,11 +35,28 @@ func TestClassInviteRules(t *testing.T) {
 		t.Fatalf("bad role: %v", err)
 	}
 	res, err := svc.Invite(owner, class.ID, MemberInvitation{Emails: []string{"c@x.it, s@x.it", "new@x.it"}, Role: domain.RoleTeacher}, "http://site")
-	if err != nil || len(res) != 3 || res[0].Status != "added" || res[2].Status != "invited" {
+	if err != nil || len(res) != 3 || res[0].Status != "invited" || res[2].Status != "invited" {
 		t.Fatalf("invite: %v %+v", err, res)
+	}
+	if svc.CanManage(co, class.ID) || s.Classes.IsMember(class.ID, stud.ID) {
+		t.Fatal("invitations do not grant access before acceptance")
+	}
+	for _, result := range res[:2] {
+		link, err := url.Parse(result.Link)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if _, err := acc.Register(Registration{Token: link.Query().Get("token"), Password: "password123"}, "http://site"); err != nil {
+			t.Fatal(err)
+		}
 	}
 	if !svc.CanManage(co, class.ID) || svc.CanManage(stud, class.ID) {
 		t.Fatal("teachers become co-teachers, students stay students")
+	}
+	for _, member := range s.Classes.Members(class.ID) {
+		if member.UserID == stud.ID && member.Role != domain.RoleStudent {
+			t.Fatal("an invited student must not gain teacher membership")
+		}
 	}
 	if _, err := svc.Invite(co, class.ID, MemberInvitation{Emails: []string{"z@x.it"}, Role: domain.RoleTeacher}, "http://site"); !errors.Is(err, ErrOnlyOwner) {
 		t.Fatalf("co-teachers cannot add co-teachers: %v", err)

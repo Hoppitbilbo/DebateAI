@@ -77,8 +77,7 @@ func NewServices(cfg Config, db *sql.DB, opts ...Option) *Services {
 	sv.Gateway.grants = sv.LiveGrants
 	sv.Gateway.inflight = sv.Inflight
 	sv.Accounts = &authService{users: sv.Users, logins: sv.Logins, invites: sv.Invites, classes: sv.Classes, mail: sv.Mailer, siteName: siteName}
-	sv.ClassSvc = &classService{classes: sv.Classes, rooms: sv.Rooms, users: sv.Users, accounts: sv.Accounts, mail: sv.Mailer,
-		siteName: siteName, mailOn: sv.Settings.MailConfigured}
+	sv.ClassSvc = &classService{classes: sv.Classes, rooms: sv.Rooms, accounts: sv.Accounts}
 	sv.AssignmentSvc = &assignmentService{assignments: sv.Assignments, classes: sv.Classes, sessions: sv.Sessions, classSvc: sv.ClassSvc,
 		listeners: []assignmentListener{mailNotifier{classes: sv.Classes, mail: sv.Mailer, siteName: siteName}}}
 	sv.SessionSvc = &sessionService{sessions: sv.Sessions, assignments: sv.Assignments, classes: sv.Classes, classSvc: sv.ClassSvc,

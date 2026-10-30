@@ -56,7 +56,7 @@ const dyn = {
   "platform.admin.ai.presetNotes": ["gemini", "opencode", "jev", "openrouter", "local"],
   "platform.live.state": ["off", "connecting", "listening", "thinking", "speaking"],
   "platform.vocabulary.levels": ["basic", "standard", "advanced"],
-  "platform.invite.status": ["added", "invited", "error"],
+  "platform.invite.status": ["invited", "error"],
   "platform.difficulty.levels": ["easy", "medium", "hard", "free"],
   ...Object.fromEntries(["personaggioMisterioso", "convinciTu", "impersonaTu"].map((a) => [`platform.difficulty.notes.${a}`, ["easy", "medium", "hard", "free"]])),
   "room.wizard.steps": ["theme", "path", "launch"],

@@ -182,6 +182,9 @@ func (s *Server) handleRegister(w http.ResponseWriter, r *http.Request) {
 	}
 	uid, err := s.Accounts.Register(in, s.baseURL(r))
 	switch {
+	case errors.Is(err, app.ErrAccountDisabled):
+		writeErr(w, 403, "disabled", err.Error())
+		return
 	case errors.Is(err, app.ErrInvalidInvite):
 		writeErr(w, 404, "invalid_invite", err.Error())
 		return

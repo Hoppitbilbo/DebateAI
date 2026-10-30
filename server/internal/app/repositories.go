@@ -71,7 +71,6 @@ type classStore interface {
 	IsMember(classID, userID int64) bool
 	IsOwner(classID, userID int64) bool
 	Teaches(classID, userID int64) bool
-	TeachesStudent(teacherID, studentID int64) bool
 }
 
 type assignmentStore interface {
@@ -105,7 +104,7 @@ type sessionStore interface {
 	BestPerUserIn(assignmentIDs []int64) (map[int64]map[int64]domain.BestAttempt, error)
 	LatestPerAssignment(userID int64) (map[int64]*domain.SessionSummary, error)
 	StatsForClass(classID int64) (map[int64]domain.AssignStats, error)
-	Import(userID int64, assignmentID *int64, d domain.SessionDetail) (int64, error)
+	Import(userID, classID int64, assignmentID *int64, d domain.SessionDetail) (int64, error)
 }
 
 // inflightStore holds the AI calls in progress: generation slots and budget
@@ -137,7 +136,7 @@ type roomStore interface {
 	GuestByNickname(roomID int64, nickname string) (*domain.RoomGuest, error)
 	SetRejoinPIN(userID int64, pinHash string, expiresAt *string) error
 	RejoinPIN(userID int64) (pinHash, expiresAt string, err error)
-	MoveGuestSessions(guestID, studentID int64) error
+	MoveGuestSessions(guestID, studentID, classID int64) error
 	DeleteGuest(roomID, userID int64) error
 	Delete(id int64) error
 	PurgeExpired(now string) error

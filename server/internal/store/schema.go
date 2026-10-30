@@ -89,6 +89,7 @@ CREATE TABLE IF NOT EXISTS activity_sessions (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
   assignment_id INTEGER REFERENCES assignments(id) ON DELETE SET NULL,
+  class_id INTEGER REFERENCES classes(id) ON DELETE SET NULL,
   app_type TEXT NOT NULL,
   title TEXT NOT NULL DEFAULT '',
   context_json TEXT NOT NULL DEFAULT '{}',
@@ -289,6 +290,7 @@ var migrations = []string{
 	`ALTER TABLE usage_log ADD COLUMN first_delta_ms INTEGER NOT NULL DEFAULT 0`,
 	`ALTER TABLE usage_log ADD COLUMN first_text_ms INTEGER NOT NULL DEFAULT 0`,
 	`ALTER TABLE live_grants ADD COLUMN reservation_id INTEGER NOT NULL DEFAULT 0`,
+	`ALTER TABLE activity_sessions ADD COLUMN class_id INTEGER REFERENCES classes(id) ON DELETE SET NULL`,
 }
 
 func applyMigrations(db *sql.DB) error {
