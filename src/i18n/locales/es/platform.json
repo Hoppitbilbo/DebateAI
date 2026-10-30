@@ -57,14 +57,17 @@
   "errors": {
     "generic": "Algo salió mal. Inténtalo de nuevo.",
     "notFound": "No encontrado",
-    "invalid_credentials": "Correo o contraseña incorrectos.",
+    "invalid_credentials": "Nombre de usuario, correo o contraseña incorrectos.",
     "disabled": "Esta cuenta está desactivada.",
     "rate_limited": "Demasiados intentos. Espera unos minutos.",
     "invalid_invite": "Esta invitación ya no es válida.",
     "invalid_token": "El enlace ha caducado o ya se usó.",
     "wrong_password": "La contraseña actual es incorrecta.",
     "server_unreachable": "No se puede contactar con el servidor.",
-    "already_setup": "La plataforma ya está configurada."
+    "already_setup": "La plataforma ya está configurada.",
+    "username_taken": "Este nombre de usuario ya está en uso: elige otro.",
+    "unavailable": "El servicio no está disponible en este momento. Inténtalo de nuevo en un rato.",
+    "ambiguous_identifier": "El correo y el nombre de usuario corresponden a cuentas distintas: usa solo uno."
   },
   "aiErrors": {
     "generic": "La IA no respondió. Inténtalo de nuevo.",
@@ -87,6 +90,7 @@
     "loginTitle": "Bienvenido de nuevo",
     "loginSubtitle": "Inicia sesión con la cuenta de tu centro",
     "email": "Correo electrónico",
+    "identifier": "Correo o nombre de usuario",
     "password": "Contraseña",
     "name": "Nombre y apellidos",
     "newPassword": "Nueva contraseña (mín. 8 caracteres)",

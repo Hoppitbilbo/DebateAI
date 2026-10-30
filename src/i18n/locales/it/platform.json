@@ -57,14 +57,17 @@
   "errors": {
     "generic": "Qualcosa è andato storto. Riprova.",
     "notFound": "Non trovato",
-    "invalid_credentials": "Email o password errate.",
+    "invalid_credentials": "Username, email o password errati.",
     "disabled": "Questo account è disattivato.",
     "rate_limited": "Troppi tentativi. Attendi qualche minuto.",
     "invalid_invite": "Questo invito non è più valido.",
     "invalid_token": "Il link è scaduto o è già stato usato.",
     "wrong_password": "La password attuale non è corretta.",
     "server_unreachable": "Il server non è raggiungibile.",
-    "already_setup": "La piattaforma è già configurata."
+    "already_setup": "La piattaforma è già configurata.",
+    "username_taken": "Questo username è già usato: scegline un altro.",
+    "unavailable": "Il servizio non è disponibile al momento. Riprova tra poco.",
+    "ambiguous_identifier": "L'email e lo username indicano account diversi: usane uno solo."
   },
   "aiErrors": {
     "generic": "L'IA non ha risposto. Riprova.",
@@ -87,6 +90,7 @@
     "loginTitle": "Bentornato",
     "loginSubtitle": "Accedi con l'account della tua scuola",
     "email": "Email",
+    "identifier": "Email o username",
     "password": "Password",
     "name": "Nome e cognome",
     "newPassword": "Nuova password (min. 8 caratteri)",

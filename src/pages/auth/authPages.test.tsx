@@ -41,7 +41,7 @@ describe("auth forms", () => {
     let fail!: (e: Error) => void;
     mocks.login.mockReturnValue(new Promise((_, reject) => (fail = reject)));
     at("/login", <LoginPage />);
-    fill("email", "a@b.it");
+    fill("identifier", "a@b.it");
     fill("password", "secret123");
     fireEvent.submit(screen.getByRole("button", { name: /platform.auth.login/ }).closest("form")!);
     expect(screen.getByRole("button", { name: /platform.auth.login/ })).toHaveProperty("disabled", true);
@@ -61,6 +61,19 @@ describe("auth forms", () => {
     mocks.login.mockRejectedValueOnce(new TypeError("Failed to fetch"));
     await act(async () => void fireEvent.submit(form));
     expect(mocks.error).toHaveBeenLastCalledWith("platform.errors.generic");
+  });
+
+  it("asks for an e-mail or a username in a plain text field", async () => {
+    mocks.login.mockResolvedValue({ role: "student" });
+    at("/login", <LoginPage />);
+    const field = document.getElementById("identifier") as HTMLInputElement;
+    expect(field.type).toBe("text");
+    expect(field.autocomplete).toBe("username");
+    expect(screen.getByLabelText("platform.auth.identifier")).toBe(field);
+    fill("identifier", "anna.b");
+    fill("password", "secret123");
+    await act(async () => void fireEvent.submit(field.closest("form")!));
+    expect(mocks.login).toHaveBeenCalledWith("anna.b", "secret123");
   });
 
   it("goes to the dashboard after logging in", async () => {

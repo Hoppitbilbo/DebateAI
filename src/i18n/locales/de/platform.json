@@ -57,14 +57,17 @@
   "errors": {
     "generic": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
     "notFound": "Nicht gefunden",
-    "invalid_credentials": "E-Mail oder Passwort falsch.",
+    "invalid_credentials": "Benutzername, E-Mail oder Passwort falsch.",
     "disabled": "Dieses Konto ist deaktiviert.",
     "rate_limited": "Zu viele Versuche. Bitte warte einige Minuten.",
     "invalid_invite": "Diese Einladung ist nicht mehr gültig.",
     "invalid_token": "Der Link ist abgelaufen oder wurde bereits verwendet.",
     "wrong_password": "Das aktuelle Passwort ist falsch.",
     "server_unreachable": "Der Server ist nicht erreichbar.",
-    "already_setup": "Die Plattform ist bereits eingerichtet."
+    "already_setup": "Die Plattform ist bereits eingerichtet.",
+    "username_taken": "Dieser Benutzername ist bereits vergeben: Wähle einen anderen.",
+    "unavailable": "Der Dienst ist gerade nicht verfügbar. Versuche es gleich noch einmal.",
+    "ambiguous_identifier": "E-Mail und Benutzername gehören zu verschiedenen Konten: Verwende nur eines."
   },
   "aiErrors": {
     "generic": "Die KI hat nicht geantwortet. Bitte versuche es erneut.",
@@ -87,6 +90,7 @@
     "loginTitle": "Willkommen zurück",
     "loginSubtitle": "Melde dich mit deinem Schulkonto an",
     "email": "E-Mail",
+    "identifier": "E-Mail oder Benutzername",
     "password": "Passwort",
     "name": "Vollständiger Name",
     "newPassword": "Neues Passwort (mind. 8 Zeichen)",

@@ -60,7 +60,7 @@ export const LoginPage = () => {
   const { login, user, config } = useAuth();
   const [params] = useSearchParams();
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const { busy, run } = useAuthAction();
 
@@ -70,7 +70,7 @@ export const LoginPage = () => {
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     void run(async () => {
-      const u = await login(email, password);
+      const u = await login(identifier, password);
       navigate(params.get("next") || dashboardPath(u), { replace: true });
     });
   };
@@ -78,7 +78,7 @@ export const LoginPage = () => {
   return (
     <AuthLayout title={t("platform.auth.loginTitle")} subtitle={t("platform.auth.loginSubtitle")}>
       <form onSubmit={submit} className="space-y-4">
-        <Field id="email" label={t("platform.auth.email")} type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+        <Field id="identifier" label={t("platform.auth.identifier")} type="text" autoComplete="username" autoCapitalize="none" spellCheck={false} required value={identifier} onChange={(e) => setIdentifier(e.target.value)} />
         <Field id="password" label={t("platform.auth.password")} type="password" autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} />
         <Button type="submit" className="w-full" disabled={busy}>
           {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} {t("platform.auth.login")}

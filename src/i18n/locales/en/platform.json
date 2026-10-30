@@ -57,14 +57,17 @@
   "errors": {
     "generic": "Something went wrong. Please try again.",
     "notFound": "Not found",
-    "invalid_credentials": "Wrong email or password.",
+    "invalid_credentials": "Wrong username, email or password.",
     "disabled": "This account is disabled.",
     "rate_limited": "Too many attempts. Please wait a few minutes.",
     "invalid_invite": "This invitation is not valid any more.",
     "invalid_token": "This link has expired or was already used.",
     "wrong_password": "The current password is wrong.",
     "server_unreachable": "The server is not reachable.",
-    "already_setup": "The platform is already configured."
+    "already_setup": "The platform is already configured.",
+    "username_taken": "This username is already taken: choose another one.",
+    "unavailable": "The service is not available right now. Please try again shortly.",
+    "ambiguous_identifier": "The email and the username name different accounts: use only one."
   },
   "aiErrors": {
     "generic": "The AI did not answer. Please try again.",
@@ -87,6 +90,7 @@
     "loginTitle": "Welcome back",
     "loginSubtitle": "Log in with your school account",
     "email": "Email",
+    "identifier": "Email or username",
     "password": "Password",
     "name": "Full name",
     "newPassword": "New password (min. 8 characters)",

@@ -57,14 +57,17 @@
   "errors": {
     "generic": "Une erreur s'est produite. Réessayez.",
     "notFound": "Introuvable",
-    "invalid_credentials": "E-mail ou mot de passe incorrect.",
+    "invalid_credentials": "Nom d'utilisateur, e-mail ou mot de passe incorrect.",
     "disabled": "Ce compte est désactivé.",
     "rate_limited": "Trop de tentatives. Patientez quelques minutes.",
     "invalid_invite": "Cette invitation n'est plus valable.",
     "invalid_token": "Le lien a expiré ou a déjà été utilisé.",
     "wrong_password": "Le mot de passe actuel est incorrect.",
     "server_unreachable": "Le serveur est injoignable.",
-    "already_setup": "La plateforme est déjà configurée."
+    "already_setup": "La plateforme est déjà configurée.",
+    "username_taken": "Ce nom d'utilisateur est déjà pris : choisis-en un autre.",
+    "unavailable": "Le service n'est pas disponible pour le moment. Réessaie dans un instant.",
+    "ambiguous_identifier": "L'e-mail et le nom d'utilisateur désignent des comptes différents : n'en utilise qu'un."
   },
   "aiErrors": {
     "generic": "L'IA n'a pas répondu. Réessayez.",
@@ -87,6 +90,7 @@
     "loginTitle": "Bon retour",
     "loginSubtitle": "Connectez-vous avec le compte de votre école",
     "email": "E-mail",
+    "identifier": "E-mail ou nom d'utilisateur",
     "password": "Mot de passe",
     "name": "Nom complet",
     "newPassword": "Nouveau mot de passe (8 caractères min.)",
