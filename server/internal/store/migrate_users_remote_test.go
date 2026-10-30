@@ -2,8 +2,11 @@ package store
 
 import (
 	"database/sql"
+	"errors"
 	"os"
 	"testing"
+
+	"github.com/Hoppitbilbo/DebateAI/server/internal/domain"
 
 	"github.com/tursodatabase/libsql-client-go/libsql"
 )
@@ -30,6 +33,17 @@ func TestRemoteMakesEmailOptional(t *testing.T) {
 	}
 	defer db.Close()
 	checkMigratedUsers(t, db)
+	// A link is used once on libSQL too (user 5 is created by the check).
+	resets := NewPasswordResets(db)
+	if err := resets.Issue(domain.NewPasswordReset{TokenHash: "new", UserID: 5, ExpiresAt: inOneHour()}); err != nil {
+		t.Fatal(err)
+	}
+	if uid, err := resets.Consume("new", "h"); err != nil || uid != 5 {
+		t.Fatalf("consume on libSQL: %d %v", uid, err)
+	}
+	if _, err := resets.Consume("new", "x"); !errors.Is(err, domain.ErrResetLinkInvalid) {
+		t.Fatalf("reuse on libSQL: %v", err)
+	}
 	if db, err = OpenRemote(url, ""); err != nil {
 		t.Fatal(err)
 	}

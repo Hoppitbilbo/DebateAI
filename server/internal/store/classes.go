@@ -155,8 +155,9 @@ func (r *Classes) Delete(id int64) error {
 	defer tx.Rollback()
 	// Clear the references also on connections without foreign keys:
 	// imported work loses its class, accounts keep existing without the
-	// teacher who could reset their password.
+	// teacher who could reset their password, whose links stop working.
 	for _, q := range []string{
+		`DELETE FROM password_resets WHERE class_id = ?`,
 		`UPDATE activity_sessions SET class_id = NULL WHERE class_id = ?`,
 		`UPDATE users SET recovery_class_id = NULL WHERE recovery_class_id = ?`,
 	} {
@@ -232,6 +233,27 @@ func (r *Classes) CountMemberships() (map[int64]int, error) {
 func (r *Classes) AddMember(classID, userID int64, role string) error {
 	_, err := r.db.Exec(`INSERT OR IGNORE INTO class_members(class_id, user_id, role, joined_at) VALUES(?,?,?,?)`, classID, userID, role, domain.Now())
 	return err
+}
+
+// JoinByCode adds the user as a student of the active class with this
+// code and returns its id. The insert checks the code itself, so a code
+// replaced at the same moment never lets anyone in; an existing membership
+// is kept as is. It returns sql.ErrNoRows when no active class has the code.
+func (r *Classes) JoinByCode(code string, userID int64) (classID int64, err error) {
+	tx, err := r.db.Begin()
+	if err != nil {
+		return 0, err
+	}
+	defer tx.Rollback()
+	if _, err := tx.Exec(`INSERT OR IGNORE INTO class_members(class_id, user_id, role, joined_at)
+		SELECT id, ?, ?, ? FROM classes WHERE join_code = ? AND archived = 0`, userID, domain.RoleStudent, domain.Now(), code); err != nil {
+		return 0, err
+	}
+	// Read under the write lock the insert took: the same class it saw.
+	if err := tx.QueryRow(`SELECT id FROM classes WHERE join_code = ? AND archived = 0`, code).Scan(&classID); err != nil {
+		return 0, err
+	}
+	return classID, tx.Commit()
 }
 
 func (r *Classes) RemoveMember(classID, userID int64) error {

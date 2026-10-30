@@ -26,6 +26,9 @@ type User struct {
 	CreatedAt   string  `json:"createdAt"`
 	LastLoginAt *string `json:"lastLoginAt,omitempty"`
 	RoomID      *int64  `json:"roomId,omitempty"` // set for the guests of a room
+	// RecoveryClassID is the class whose owner may reset the password of
+	// an account without e-mail; never sent to the browser.
+	RecoveryClassID *int64 `json:"-"`
 }
 
 // IsGuest reports whether the account is a temporary room guest.
@@ -113,3 +116,23 @@ type NewInvite struct {
 	Locale    string
 	ExpiresAt string
 }
+
+// NewPasswordReset is a password reset link to store; TokenHash is the hash
+// of the secret token. IssuedBy and ClassID are set together for an
+// assisted reset (a teacher's link for an account without e-mail) and are
+// nil for a reset requested by e-mail.
+type NewPasswordReset struct {
+	TokenHash string
+	UserID    int64
+	ExpiresAt string
+	IssuedBy  *int64
+	ClassID   *int64
+}
+
+var (
+	// ErrResetLinkInvalid: the reset link is unknown, expired, used, replaced
+	// or (assisted) no longer allowed.
+	ErrResetLinkInvalid = errors.New("reset link expired, already used or no longer valid")
+	// ErrResetNotAllowed: the account may not get an assisted reset link now.
+	ErrResetNotAllowed = errors.New("this account cannot get an assisted reset link")
+)

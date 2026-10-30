@@ -200,6 +200,22 @@ CREATE TABLE IF NOT EXISTS auth_rate_limits (
 );
 CREATE INDEX IF NOT EXISTS idx_auth_rate_limits_expires ON auth_rate_limits(expires_at);
 
+-- Password reset links, found by user id; only the token hash is stored.
+-- issued_by and class_id are set together for an assisted reset; deleting
+-- the issuer or the class deletes the link, so it never reads as an
+-- e-mail reset.
+CREATE TABLE IF NOT EXISTS password_resets (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  token_hash TEXT NOT NULL UNIQUE,
+  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  created_at TEXT NOT NULL,
+  expires_at TEXT NOT NULL,
+  consumed_at TEXT,
+  issued_by INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  class_id INTEGER REFERENCES classes(id) ON DELETE CASCADE
+);
+CREATE INDEX IF NOT EXISTS idx_password_resets_user ON password_resets(user_id);
+
 CREATE TABLE IF NOT EXISTS settings (
   key TEXT PRIMARY KEY,
   value TEXT NOT NULL
