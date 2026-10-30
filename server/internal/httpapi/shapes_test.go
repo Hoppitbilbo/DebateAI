@@ -3,6 +3,7 @@ package httpapi
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -121,9 +122,10 @@ func TestResponseShapes(t *testing.T) {
 	ucls := call(admin, "create username class", "POST", "/api/classes", map[string]string{"name": "3B", "enrollmentMode": "username"})
 	ucode := ucls["joinCode"].(string)
 	call(guest, "class link info", "GET", "/api/auth/class-invite/"+ucode, nil)
-	call(newHandlerClient(t, handler), "register class", "POST", "/api/auth/register-class",
+	anna := call(newHandlerClient(t, handler), "register class", "POST", "/api/auth/register-class",
 		map[string]string{"code": ucode, "username": "anna", "password": "password123", "locale": "it"})
 	call(newHandlerClient(t, handler), "login by username", "POST", "/api/auth/login", map[string]string{"identifier": "anna", "password": "password123"})
+	call(admin, "member password reset", "POST", fmt.Sprintf("/api/classes/%v/members/%v/password-reset", ucls["id"], anna["id"]), nil)
 
 	a := call(admin, "create assignment", "POST", fmtPath("/api/classes/%d/assignments", classID), map[string]any{
 		"title": "T", "appType": "wiki-chatbot", "instructions": "I", "goals": []string{"g"}, "maxTurns": 5, "autoEnd": true,

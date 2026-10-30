@@ -50,7 +50,7 @@ func (s *Server) handleCreateClass(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleGetClass(w http.ResponseWriter, r *http.Request) {
-	_, id, ok := s.managedClass(w, r)
+	u, id, ok := s.managedClass(w, r)
 	if !ok {
 		return
 	}
@@ -59,7 +59,12 @@ func (s *Server) handleGetClass(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 404, "not_found", "class not found")
 		return
 	}
-	writeJSON(w, 200, classDetailResponse{Class: c, Members: s.Classes.Members(id), Invites: s.Invites.ListPendingForClass(id)})
+	members, err := s.ClassSvc.Members(u, c)
+	if err != nil {
+		writeErr(w, 500, "internal", err.Error())
+		return
+	}
+	writeJSON(w, 200, classDetailResponse{Class: c, Members: members, Invites: s.Invites.ListPendingForClass(id)})
 }
 
 func (s *Server) handleUpdateClass(w http.ResponseWriter, r *http.Request) {
@@ -139,6 +144,33 @@ func (s *Server) handleRemoveMember(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	writeOK(w)
+}
+
+// handleMemberPasswordReset gives the owner of the student's class of
+// origin, or an admin, a reset link valid 15 minutes for an account without
+// e-mail. The link is shown once and never stored in clear.
+func (s *Server) handleMemberPasswordReset(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Cache-Control", "no-store")
+	u, id, ok := s.managedClass(w, r)
+	if !ok {
+		return
+	}
+	link, err := s.Accounts.AssistedReset(u, id, pathID(r, "userId"), s.baseURL(r))
+	switch {
+	case errors.Is(err, app.ErrResetForbidden):
+		writeErr(w, 403, "forbidden", err.Error())
+		return
+	case errors.Is(err, app.ErrNotClassStudent):
+		writeErr(w, 404, "not_found", err.Error())
+		return
+	case errors.Is(err, domain.ErrResetNotAllowed):
+		writeErr(w, 409, "reset_not_allowed", err.Error())
+		return
+	case err != nil:
+		writeErr(w, 500, "internal", err.Error())
+		return
+	}
+	writeJSON(w, 200, link)
 }
 
 func (s *Server) handleTeacherInvites(w http.ResponseWriter, r *http.Request) {

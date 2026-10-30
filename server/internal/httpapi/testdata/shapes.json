@@ -22,6 +22,7 @@
   "login by username": "{active:bool,createdAt:string,email:string,id:number,lastLoginAt:string,locale:string,name:string,role:string,username:string}",
   "me": "{user:{active:bool,createdAt:string,email:string,id:number,lastLoginAt:string,locale:string,name:string,role:string}}",
   "me (guest)": "{user:null}",
+  "member password reset": "{expiresAt:string,url:string}",
   "public config": "{allowJoinByCode:bool,anonymousRooms:bool,defaultLocale:string,guestAccess:bool,guestLive:bool,liveEnabled:bool,mailConfigured:bool,roomMaxMinutes:number,roomsEnabled:bool,setupRequired:bool,siteName:string}",
   "register class": "{active:bool,createdAt:string,email:string,id:number,lastLoginAt:string,locale:string,name:string,role:string,username:string}",
   "test provider (jev)": "{latencyMs:number,ok:bool,output:string}",
