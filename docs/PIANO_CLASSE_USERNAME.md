@@ -1,7 +1,8 @@
 # Classe permanente con username e password
 
 Data: 29 ottobre 2026. Stato: **T1 e P1–P4 implementate sul branch `feat/classe-username`
-(non pushato, non unito a master); P5–P7 e T2–T4 da fare**. Vedi «Stato di avanzamento» qui sotto.
+(non pushato, non unito a master); P5 sul branch `feat/classe-username-p5` (non unito);
+P6–P7 e T2–T4 da fare**. Vedi «Stato di avanzamento» qui sotto.
 
 ## Stato di avanzamento (per chi riprende il lavoro)
 
@@ -162,6 +163,48 @@ commit `388e932`, `2759522`, `2e68c94`, `3452614`; non unito né pushato):
   e cancellando l'emittente); limite delle richieste di login in corso (§7) ancora assente; i
   punti di P6 elencati in P3. Test HTTP con socket reali da eseguire in CI/staging.
 
+**Fatto — P5, dashboard docente** (Claude Code, 30/10, branch `feat/classe-username-p5` da
+`feat/classe-username`, commit `c368d0c`, `1650908`; non unito né pushato):
+
+- Solo frontend: il backend aveva già tutto (`enrollmentMode` in creazione e dettaglio,
+  `joinCode` lungo per i gestori, `canResetPassword`, endpoint del recupero). Nessuna modifica Go,
+  `shapes.json` invariato.
+- «Nuova classe» (`ClassCreateDialog`, usato anche dall'admin): gruppo radio «Inviti via email»
+  (default) / «Username e password, senza email», una riga di spiegazione per ciascuna e, con la
+  seconda, la frase «lo username è uno pseudonimo, non anonimato». Invia `enrollmentMode`. Modulo
+  vero (Invio crea), pulsante disabilitato durante la richiesta, errore nel dialog (`role=alert`).
+- Pagina della classe username (`ClassEnrollLink`): link `origin + /iscriviti?code=…` in un campo
+  di sola lettura, «Copia link», QR (`qrcode.react`, già usato dall'aula lampo), «Rigenera link» con
+  conferma che spiega che il vecchio link non vale più per nuove iscrizioni e che gli account
+  restano. Il codice lungo non compare da solo. Classe standard invariata (codice breve, stesso
+  ordine dei pannelli). Il modulo degli inviti email resta anche nella classe username (co-docenti).
+- Membri: colonna «Email o username» (`memberLogin`); pulsante con chiave solo se
+  `canResetPassword`: dialog `MemberResetLink` che chiede il link, lo mostra una volta (sparisce
+  alla chiusura) con copia, ora di scadenza «(15 minuti)» e istruzione di consegnarlo di persona;
+  testi per 403 (solo proprietario della classe d'origine o admin), 404 (non più nella classe),
+  409 (`reset_not_allowed`) e rete.
+- Comune: `useBusyAction` ignora un secondo invio mentre il primo è in corso (doppio click) e con
+  `{ inline: true }` tiene l'errore per il modulo; `apiErrorText` traduce i codici (anche per
+  ambito) e distingue l'errore di rete; `ConfirmButton` ha `disabled`. Griglia dei membri a una
+  colonna con `min-w-0` sui telefoni: prima tabella e link allargavano la pagina oltre 390 px.
+- Test: `classEnrollment.test.tsx` (13: modalità di default e payload, scelta da tastiera ed Esc,
+  doppio click = una richiesta, errore di rete, link/QR/copia senza codice in chiaro, rigenera solo
+  dopo conferma, username in lista, recupero solo con `canResetPassword`, link mostrato una volta,
+  403/404/409/rete, classe standard invariata) e 2 nuovi in `useBusyAction.test.tsx`.
+  Verifiche: lint, TypeScript (`-p .` non controlla nulla perché ha `files: []`: eseguito anche
+  `-p tsconfig.app.json`), Vitest 268, `check:i18n` 986, build.
+- Prova nel browser (Chromium via Playwright, server Go con database SQLite temporaneo in una
+  cartella di lavoro, mai Turso): creazione classe username da tastiera, doppio click → una sola
+  `POST /api/classes`, link copiato negli appunti, iscrizione via `register-class` col codice del
+  link (201), rigenerazione → link nuovo e vecchio codice rifiutato (404), link di recupero creato
+  e mostrato, layout a 390 px senza pannelli fuori schermo, dialog aperto con Invio.
+- Non fatto in P5, da riprendere: la pagina `/iscriviti` non esiste ancora (P6), quindi il link
+  porta per ora alla pagina 404 del sito; su telefono la colonna delle azioni dei membri si
+  raggiunge scorrendo la tabella in orizzontale (comportamento esistente); l'elenco studenti di un
+  compito (`AssignmentProgressPage`) mostra l'email vuota per gli account senza email (il nome è
+  lo username, quindi resta leggibile; servirebbe `username` in `StudentProgress`); la scelta
+  della modalità non si può cambiare dopo la creazione (non previsto dal piano).
+
 **Fatto — database nuovo, niente migrazioni legacy** (Claude Code, 30/10, commit `784e429`):
 
 - Decisione dell'utente: il database esistente non ha dati da conservare. Tolti
@@ -175,7 +218,7 @@ commit `388e932`, `2759522`, `2e68c94`, `3452614`; non unito né pushato):
   del deploy; il server ricrea le tabelle al primo avvio e l'admin si ricrea da `/setup`.
   Operazione distruttiva: chiedere conferma all'utente in quel momento.
 
-**Da fare, in quest'ordine:** P5 → P6 → T2 → T3 → P7/T4.
+**Da fare, in quest'ordine:** P6 → T2 → T3 → P7/T4 (P5 fatta, da unire in `feat/classe-username`).
 Piccola miglioria possibile: il testo dell'email d'invito dice «completa la registrazione»
 anche a chi ha già un account; la pagina gestisce comunque il caso.
 
@@ -458,7 +501,7 @@ solo quando codice e prove della fase sono presenti; questo documento non le dic
 - [x] **P4 — Recupero e notifiche.** Recupero assistito, consumo una sola volta, revoca sessioni,
   cambio password atomico e nessun invio a indirizzi assenti. Provare docente estraneo,
   co-docente, cambio proprietario, studente rimosso, token scaduto e due consumi concorrenti.
-- [ ] **P5 — Dashboard docente.** Selettore modalità, copia/QR, rigenerazione, membri e recupero
+- [x] **P5 — Dashboard docente.** Selettore modalità, copia/QR, rigenerazione, membri e recupero
   autorizzato. Provare doppio invio, errore rete, navigazione da tastiera e schermo mobile.
 - [ ] **P6 — Studente e traduzioni.** Iscrizione, login, conferma credenziali, account esistente,
   ritorno alla classe dopo login e pagina Account. Test UI dei percorsi riusciti e degli errori.
