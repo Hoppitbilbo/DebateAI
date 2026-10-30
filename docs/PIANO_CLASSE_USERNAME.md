@@ -1,7 +1,8 @@
 # Classe permanente con username e password
 
 Data: 29 ottobre 2026. Stato: **T1, P1 e P2 implementate (branch `feat/classe-username`,
-non unito); P3–P7 e T2–T4 da fare**. Vedi «Stato di avanzamento» qui sotto.
+non unito); P3 implementata sul branch `feat/classe-username-p3` (da `feat/classe-username`,
+non unito); P4–P7 e T2–T4 da fare**. Vedi «Stato di avanzamento» qui sotto.
 
 ## Stato di avanzamento (per chi riprende il lavoro)
 
@@ -55,8 +56,48 @@ non unito); P3–P7 e T2–T4 da fare**. Vedi «Stato di avanzamento» qui sotto
 - Spostati: tabella `password_resets` e migrazione dei token reset → P4; contatori persistenti
   `auth_rate_limits` → P3, dove vengono usati.
 
-**Da fare, in quest'ordine:** P3 (registrazione via link + login con username + limiti) →
-P4 → P5 → P6 → T2 → T3 → P7/T4.
+**Fatto — P3, registrazione e login** (Claude Code, 30/10, branch `feat/classe-username-p3`,
+commit `b9dd945`, `e18820d`, `d5be42d`; non unito né pushato):
+
+- Limiti persistenti: tabella `auth_rate_limits` (chiave HMAC, conteggio, scadenza) e
+  `store.AuthRateLimits.Hit`, un solo upsert condizionale con pulizia delle righe scadute,
+  provato anche su libSQL in Docker. `app.authLimits` conta il login per IP+identificatore
+  (20/15 min), per identificatore (60) e per rete (1.200; IPv6 per /64), dal più specifico:
+  chi ripete un identificatore bloccato non consuma il tetto della rete. Iscrizioni: 120
+  tentativi/ora per link. Contatore non disponibile → 503, mai accesso. Il vecchio limite in
+  memoria di 20 login/15 min per IP è tolto (restano in memoria `forgot` e `join`).
+- `authService.RegisterClassStudent` (username normalizzato, password 8–72 byte, hash prima
+  della transazione, `CreateStudentInClass`, nome = username, nessun ruolo/email dal client) e
+  `ClassInvite` (solo nome e modalità). `hashPassword` rifiuta oltre 72 byte (prima: 500).
+- `Login(identifier)`: con `@` è email, altrimenti username; tempo uguale per account
+  inesistente (confronto con un hash fittizio); gli ospiti non entrano; «disattivato» solo con
+  la password giusta.
+- HTTP: `GET /api/auth/class-invite/{code}` (404 anche con `AllowJoinByCode` spento),
+  `POST /api/auth/register-class` (201 + cookie; 400, 403 iscrizioni disattivate o ospite di
+  aula lampo, 404, 409, 429, 503), entrambi `Cache-Control: no-store`. `/api/auth/login`
+  accetta `identifier`, tiene `email`, 400 `ambiguous_identifier` se diversi.
+  `POST /api/classes/join` funziona già col codice lungo (provato).
+- Posta: `recipientGuard` avvolge il mailer di tutti i service (mai destinatario vuoto:
+  `ErrNoRecipient` o log), la coda non accetta indirizzi vuoti, i notificatori saltano gli
+  account senza email.
+- Frontend minimo: `authApi.login` invia `identifier`, `classInvite`, `registerClass`; campo
+  «Email o username» (`type=text`, `autocomplete=username`) in 5 lingue; tipi `username?`,
+  `enrollmentMode`; testi d'errore `username_taken`, `unavailable`, `ambiguous_identifier`.
+- Test: `store/rate_limits_test.go` (anche atomicità e libSQL), `app/auth_limits_test.go`,
+  `app/class_enrollment_test.go` (doppio, concorrente, link standard/rigenerato/archiviato,
+  password, retry dopo risposta persa, disattivato, ospite), `app/mail_guard_test.go`,
+  `httpapi/class_enrollment_test.go` (handler in-process: ruolo forgiato, ospite, limiti per
+  link, 40 studenti dallo stesso IP con errori che entrano tutti e rientrano, codice lungo),
+  `authApi.test.ts`, test della pagina di login. Golden `shapes.json`: 4 risposte nuove.
+- Non fatto in P3, da riprendere: limite delle richieste di login *in corso* (§7) non
+  aggiunto; `ClassSvc.Join` legge la classe e poi aggiunge il membro in due istruzioni
+  (una rotazione concorrente può ancora iscrivere col codice appena sostituito); un utente
+  già loggato (non ospite) che usa `register-class` riceve la sessione del nuovo account:
+  la pagina P6 deve proporre «Ho già un account»; il testo `inviteOnly` del login va rivisto
+  in P6. Test HTTP con socket reali da eseguire in CI/staging.
+
+**Da fare, in quest'ordine:** P4 → P5 → P6 → T2 → T3 → P7/T4. Prima, unire
+`feat/classe-username-p3` in `feat/classe-username`.
 Piccola miglioria possibile: il testo dell'email d'invito dice «completa la registrazione»
 anche a chi ha già un account; la pagina gestisce comunque il caso.
 
@@ -333,7 +374,7 @@ solo quando codice e prove della fase sono presenti; questo documento non le dic
 - [x] **P2 — Schema e repository.** Migrazione, username univoci, modalità/link, creazione
   atomica account+appartenenza, query nullable, recupero per user ID e limiti persistenti.
   Provare migrazione da DB precedente e concorrenza su SQLite e libSQL.
-- [ ] **P3 — Registrazione e login.** Service, handler, cookie e compatibilità del campo `email`.
+- [x] **P3 — Registrazione e login.** Service, handler, cookie e compatibilità del campo `email`.
   Provare username normalizzato/doppio, password invalida, invito standard o revocato,
   classe archiviata, account disabilitato, ruolo forgiato, rollback e perdita della risposta.
 - [ ] **P4 — Recupero e notifiche.** Recupero assistito, consumo una sola volta, revoca sessioni,
