@@ -1,8 +1,8 @@
 # Classe permanente con username e password
 
-Data: 29 ottobre 2026. Stato: **T1 e P1–P4 implementate sul branch `feat/classe-username`
-(non pushato, non unito a master); P5 sul branch `feat/classe-username-p5` (non unito);
-P6–P7 e T2–T4 da fare**. Vedi «Stato di avanzamento» qui sotto.
+Data: 29 ottobre 2026. Stato: **T1 e P1–P5 implementate sul branch `feat/classe-username`
+(non pushato, non unito a master); P6 sul branch `feat/classe-username-p6` (non unito);
+P7 e T2–T4 da fare**. Vedi «Stato di avanzamento» qui sotto.
 
 ## Stato di avanzamento (per chi riprende il lavoro)
 
@@ -218,7 +218,70 @@ commit `388e932`, `2759522`, `2e68c94`, `3452614`; non unito né pushato):
   del deploy; il server ricrea le tabelle al primo avvio e l'admin si ricrea da `/setup`.
   Operazione distruttiva: chiedere conferma all'utente in quel momento.
 
-**Da fare, in quest'ordine:** P6 → T2 → T3 → P7/T4 (P5 fatta, da unire in `feat/classe-username`).
+**Fatto — P6, studente e traduzioni** (Claude Code, 30/10, branch `feat/classe-username-p6` da
+`feat/classe-username`, commit `96511f9`, `5b2b69f`, `b824136`, `715f3eb`, `56cc92c`; non unito né
+pushato):
+
+- Pagina `/iscriviti?code=…` (`src/pages/auth/EnrollPage.tsx`, rotta in `App.tsx`): carica
+  `classInvite`; codice assente o 404 → «Link non valido» (cambiato, scaduto o iscrizioni chiuse:
+  il server risponde 404 in tutti questi casi); errore di rete → messaggio e «Riprova». Nome della
+  classe, frase sullo pseudonimo (§1), campi username e password con indicazioni legate da
+  `aria-describedby`, mostra/nascondi, `autocomplete="username"`/`"new-password"`, nessun controllo
+  separato della disponibilità. Le regole (§2, password 8–72 byte) sono controllate anche nel
+  browser con il focus sul campo sbagliato; il server resta l'autorità. Errori: 400 dati, 404 link,
+  409 `username_taken` sotto il campo con focus, 403 iscrizioni disattivate (`disabled`) o ospite
+  (`forbidden`), 429, 503, rete. Doppio invio = una richiesta (`useBusyAction`).
+- Conferma: username, invito ad annotare le credenziali (la password non compare), indirizzo
+  `origin/login`, «Vai alla classe» → `/student`.
+- Utente già loggato: il link non crea un secondo account e non iscrive da solo. Studente →
+  «Usa il mio account» (`POST /api/classes/join` col codice lungo) oppure «Esci e crea un account
+  nuovo»; ospite di aula lampo → deve uscire dall'aula (pulsante); docente/admin → il link è per gli
+  studenti, pulsante per la dashboard. «Ho già un account» → `/login?next=/iscriviti?code=…` e
+  ritorno al link, dove l'iscrizione chiede un clic.
+- Login: `next` seguito solo se è un percorso interno (`lib/internalPath.ts`: rifiutati `//host`,
+  `/\host`, URL completi, caratteri di controllo; prima il login seguiva qualsiasi valore). Testo
+  `inviteOnly` aggiornato (invito o link del docente), mostra/nascondi password. Gli errori delle
+  pagine auth passano da `apiErrorText`: mai più il messaggio inglese grezzo del server, errore di
+  rete distinto (il test che fissava il vecchio comportamento è cambiato di proposito); testi per
+  `invalid`/`bad_request`. «Password dimenticata» dice a chi ha solo lo username di chiedere al
+  docente il link di recupero.
+- Account senza email: username al posto dell'email nel sottotitolo, «Nome visualizzato» con
+  l'indicazione che non serve il nome vero, campo username nascosto e `current-password`/
+  `new-password` per i password manager; il cambio password dava già una sessione nuova (P4).
+- Username dove manca l'email: helper `loginName` (`lib/format.ts`, sostituisce `memberLogin`)
+  nel menu utente, nella lista utenti dell'admin, nei membri della classe e nell'avanzamento del
+  compito. Unica modifica Go: `StudentProgress.username` (`omitempty`), così il docente vede lo
+  username anche se lo studente cambia il nome visualizzato (punto rimasto da P5); test
+  `TestProgressShowsTheUsernameOfAnAccountWithoutEmail`. `shapes.json` invariato (gli studenti del
+  golden hanno l'email).
+- Estratti `AuthLayout`, `Field` (con `hint`/`error`) e `PasswordField` in `authFields.tsx`, usati da
+  `AuthPages` e `EnrollPage` senza dipendenze circolari. Testi nelle 5 lingue, brevi e al «tu».
+- Test: `enrollPage.test.tsx` (21: campi e autocomplete, iscrizione e conferma, doppio invio,
+  mostra/nascondi, regole con focus, 409 con focus, 400/404/403 ×2/429/503/rete, link assente o
+  404, riprova dopo errore di rete, studente loggato che usa il suo account senza crearne un altro,
+  join fallito, esci e crea, ospite, docente, «Ho già un account» con ritorno), `authPages.test.tsx`
+  (login con username e `next`, `next` esterno rifiutato, mostra/nascondi, Account senza email e
+  con email, errori generico/rete, «Password dimenticata»), `internalPath.test.ts`. Prova di
+  mutazione: togliendo focus, validazione di `next` o ramo «già loggato», 9 test falliscono.
+  Verifiche su ogni commit: lint, TypeScript (`-p .` e `-p tsconfig.app.json`), Vitest 297 alla
+  fine, `check:i18n` 1021, build; Go: `gofmt`, `go vet`, `go test ./...`.
+- Prova nel browser (Chromium via Playwright, server Go con SQLite temporaneo nella cartella di
+  lavoro, Turso escluso): admin crea classe username → link dalla scheda Studenti → studente si
+  iscrive (doppio clic = una `register-class`, username normalizzato `Anna.B` → `anna.b`) →
+  conferma → dashboard con la classe → menu e Account con lo username → cambio password, sessione
+  mantenuta → link riaperto da loggato: nessun modulo, «Usa il mio account» → logout → vecchia
+  password rifiutata, login con username e nuova password. In un altro browser: stesso username →
+  409 con focus; «Ho già un account» da un secondo link → login → ritorno → iscrizione con un clic;
+  `next=//example.com` ignorato; docente sul link → testo per studenti; codice inventato → link
+  non valido; 390 px senza scorrimento orizzontale; il docente vede `anna.b` tra i membri.
+- Non fatto in P6, da riprendere: il pulsante dell'ospite esce dall'aula lampo (per rientrare
+  serve di nuovo codice o PIN); la pagina d'iscrizione usa la lingua corrente dell'interfaccia
+  (cambiabile dal menu lingue) senza un selettore proprio; restano i punti aperti di P4 (cambio
+  password dell'admin senza transazione né revoca sessioni, trasferimento del proprietario, limite
+  dei login in corso §7), la colonna azioni dei membri su telefono (P5) e i test HTTP con socket
+  reali in CI/staging (P7).
+
+**Da fare, in quest'ordine:** T2 → T3 → P7/T4 (P5 già unita in `feat/classe-username`; P6 da unire).
 Piccola miglioria possibile: il testo dell'email d'invito dice «completa la registrazione»
 anche a chi ha già un account; la pagina gestisce comunque il caso.
 
@@ -503,7 +566,7 @@ solo quando codice e prove della fase sono presenti; questo documento non le dic
   co-docente, cambio proprietario, studente rimosso, token scaduto e due consumi concorrenti.
 - [x] **P5 — Dashboard docente.** Selettore modalità, copia/QR, rigenerazione, membri e recupero
   autorizzato. Provare doppio invio, errore rete, navigazione da tastiera e schermo mobile.
-- [ ] **P6 — Studente e traduzioni.** Iscrizione, login, conferma credenziali, account esistente,
+- [x] **P6 — Studente e traduzioni.** Iscrizione, login, conferma credenziali, account esistente,
   ritorno alla classe dopo login e pagina Account. Test UI dei percorsi riusciti e degli errori.
 - [ ] **P7 — Prova completa e rilascio.** Browser docente → link → studente senza email →
   attività salvata → logout → altro browser → login username → stessi risultati → cambio password
