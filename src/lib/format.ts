@@ -6,3 +6,6 @@ export const formatDate = (iso?: string, locale?: string) => (iso ? new Date(iso
 /** A cost in US dollars, with more decimals for tiny amounts. */
 export const usd = (v: number | undefined) =>
   v === undefined ? "–" : v === 0 ? "$0" : v < 0.01 ? `$${v.toFixed(4)}` : `$${v.toFixed(2)}`;
+
+/** How an account logs in, for display: its e-mail, or the username of an account without one. */
+export const loginName = (u: { email: string; username?: string }) => u.email || u.username || "";

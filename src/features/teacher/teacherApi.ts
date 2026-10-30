@@ -9,7 +9,7 @@ export interface ClassDetail { class: ClassInfo; members: Member[]; invites: Inv
 /** The best attempt of a student on an assignment. */
 export interface ProgressCell { assignmentId: number; userId: number; status: SessionSummary["status"]; progress: number; sessionId: number; score?: number; teacherScore?: number; costUsd: number }
 
-export interface ProgressRow { userId: number; name: string; email: string; session?: SessionSummary; attemptCount: number }
+export interface ProgressRow { userId: number; name: string; email: string; username?: string; session?: SessionSummary; attemptCount: number }
 
 /** A one-time link to choose a new password, valid 15 minutes; shown once. */
 export interface ResetLink { url: string; expiresAt: string }
@@ -24,9 +24,6 @@ export const createClass = (c: NewClass) => api.post<ClassInfo>("/api/classes", 
 
 /** The sign-up link of a username class (page `/iscriviti`), built from the site's origin. */
 export const enrollLink = (code: string) => `${window.location.origin}/iscriviti?code=${encodeURIComponent(code)}`;
-
-/** How a member logs in, as the teacher sees it: the e-mail, or the username of an account without one. */
-export const memberLogin = (m: Pick<Member, "email" | "username">) => m.email || m.username || "";
 
 export const useMyClasses = () => {
   const qc = useQueryClient();

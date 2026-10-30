@@ -5,7 +5,7 @@ import { Progress } from "@/components/ui/progress";
 import { AlertTriangle, FileSpreadsheet } from "lucide-react";
 import { gradesUrl, useAssignmentProgress } from "@/features/teacher/teacherApi";
 import { DashboardLayout, EmptyState, Panel, Spinner, StatusBadge } from "../common";
-import { formatDate, usd } from "@/lib/format";
+import { formatDate, loginName, usd } from "@/lib/format";
 import { doneForAssignment } from "@/features/activity/attemptStatus";
 
 /** How each student is doing on one assignment. */
@@ -70,7 +70,7 @@ const AssignmentProgressPage = () => {
               <tbody>
                 {students.map((s) => (
                   <tr key={s.userId} className="border-t border-border">
-                    <td className="py-2 pr-3"><div className="font-medium">{s.name}</div><div className="text-xs text-muted-foreground">{s.email}</div></td>
+                    <td className="py-2 pr-3"><div className="font-medium">{s.name}</div><div className="text-xs text-muted-foreground">{loginName(s)}</div></td>
                     <td className="py-2 pr-3">
                       <span className="inline-flex items-center gap-1">
                         <StatusBadge status={s.session?.status ?? "todo"} />

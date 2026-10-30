@@ -12,7 +12,7 @@ import type { Role } from "@/lib/api";
 import { useAuth } from "@/context/auth";
 import { NewUser, useInviteActions, useUserActions, useUsers } from "@/features/admin/adminApi";
 import { EmptyState, Panel, Spinner } from "../../dashboard/common";
-import { formatDate, usd } from "@/lib/format";
+import { formatDate, loginName, usd } from "@/lib/format";
 import ConfirmButton from "../../dashboard/ConfirmButton";
 import InviteForm from "../../dashboard/InviteForm";
 import { inviteToPlatform } from "@/features/teacher/teacherApi";
@@ -108,7 +108,7 @@ const UsersTab = () => {
               <tbody>
                 {users.data!.map((u) => (
                   <tr key={u.id} className="border-t border-border">
-                    <td className="py-2 pr-3"><div className="font-medium">{u.name}</div><div className="text-xs text-muted-foreground">{u.email}</div></td>
+                    <td className="py-2 pr-3"><div className="font-medium">{u.name}</div><div className="text-xs text-muted-foreground">{loginName(u)}</div></td>
                     <td className="py-2 pr-3">
                       <Select value={u.role} onValueChange={(v) => void patch(u.id, { role: v as Role })} disabled={u.id === me?.id}>
                         <SelectTrigger className="h-8 w-32"><SelectValue /></SelectTrigger>

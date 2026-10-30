@@ -1,9 +1,9 @@
 import { useTranslation } from "react-i18next";
 import { Copy, RefreshCw, UserMinus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ClassDetail, inviteToClass, memberLogin } from "@/features/teacher/teacherApi";
+import { ClassDetail, inviteToClass } from "@/features/teacher/teacherApi";
 import { EmptyState, Panel } from "../common";
-import { formatDate } from "@/lib/format";
+import { formatDate, loginName } from "@/lib/format";
 import ConfirmButton from "../ConfirmButton";
 import InviteForm from "../InviteForm";
 import { copy } from "@/lib/clipboard";
@@ -44,7 +44,7 @@ const ClassMembers = ({ detail, onRemoveMember, onRegenerateCode, onInvited }: C
                 {members.map((m) => (
                   <tr key={m.userId} className="border-t border-border">
                     <td className="py-2 pr-3 font-medium">{m.name}</td>
-                    <td className="py-2 pr-3 text-muted-foreground">{memberLogin(m)}</td>
+                    <td className="py-2 pr-3 text-muted-foreground">{loginName(m)}</td>
                     <td className="py-2 pr-3">{t(`platform.roles.${m.role}`)}</td>
                     <td className="py-2 pr-3 text-muted-foreground">{formatDate(m.lastLoginAt, i18n.language)}</td>
                     <td className="whitespace-nowrap py-2 text-right">
