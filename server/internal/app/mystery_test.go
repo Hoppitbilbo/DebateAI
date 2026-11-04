@@ -85,6 +85,9 @@ func TestGradeMysteryRubric(t *testing.T) {
 	if g, _ := gradeMystery(answer, chat("Sei Marie Curie?"), MysteryResult{}); !strings.Contains(g.Fact, "first attempt") {
 		t.Errorf("the first attempt is named to the evaluator: %q", g.Fact)
 	}
+	if g, _ := gradeMystery(answer, chat("Sei italiana?"), MysteryResult{Guess: "Rita Levi-Montalcini"}); !strings.Contains(g.Fact, `final guess: "Rita Levi-Montalcini"`) || !strings.Contains(g.Fact, `"Marie Curie"`) {
+		t.Errorf("a wrong guess and the answer are named to the evaluator: %q", g.Fact)
+	}
 	if _, ok := gradeMystery("", chat("Sei Marie Curie?"), MysteryResult{}); ok {
 		t.Error("an unknown character is not graded")
 	}

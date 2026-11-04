@@ -118,6 +118,9 @@ type MysteryResult struct {
 // the student reads.
 const platformFactStyle = " Tell it in your own words, in the evaluation language: never quote this note, its English words or the word \"platform\"."
 
+// maxMysteryGuessChars bounds the final guess quoted to the evaluator.
+const maxMysteryGuessChars = 200
+
 // Rubric of the mystery game (score of the conversation, 0-10).
 const (
 	mysteryBestScore     = 10 // found at the first question
@@ -146,8 +149,13 @@ func gradeMystery(answer string, msgs []TranscriptMessage, r MysteryResult) (mys
 	at := namedAtTurn(msgs, answer)
 	guessed := at == 0 && namesCharacter(r.Guess, answer)
 	if at == 0 && !guessed {
+		guess := "none"
+		if g := strings.TrimSpace(r.Guess); g != "" {
+			guess = fmt.Sprintf("%q", truncate(g, maxMysteryGuessChars))
+		}
 		return mysteryGrade{Score: mysteryWrongScoreCap,
-			Fact: fmt.Sprintf("PLATFORM RESULT: the character was not found (questions asked: %d, hints: %d). The conversation score is at most %d/10.", turns, hints, mysteryWrongScoreCap) + platformFactStyle}, true
+			Fact: fmt.Sprintf("PLATFORM RESULT: WRONG, the student did not find the character (final guess: %s; the answer was %q; questions asked: %d, hints: %d). Do not say the student recognised the character. The conversation score is at most %d/10.",
+				guess, answer, turns, hints, mysteryWrongScoreCap) + platformFactStyle}, true
 	}
 	score := mysteryBestScore
 	how := fmt.Sprintf("named in the chat at question %d", at)
