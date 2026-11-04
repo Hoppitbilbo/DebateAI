@@ -18,6 +18,8 @@ Vercel functions keep nothing on disk between requests, so the SQLite file used 
 
 Without `TURSO_DATABASE_URL` the server uses the SQLite file in `DATA_DIR`, as before (Docker, local development).
 
+Two Turso databases from the same Marketplace installation (2026-11-03): `debateai` is connected to **Production** only; `debateai-test` to **Preview** and **Development**, so previews and `vercel env pull` never touch production data. Preview has its own `APP_SECRET` and `SENTRY_ENVIRONMENT=test`. The test database starts empty: create its administrator from the setup page of a preview.
+
 ## Environment variables (Vercel project settings)
 
 | Variable | Service | Required | Notes |
@@ -45,7 +47,7 @@ cd server && TURSO_DATABASE_URL=http://127.0.0.1:8089 APP_SECRET=dev go run .
 
 - A real Vercel deployment (2026-10-26): project `debateai`, Turso from the Marketplace, `https://debateai-steel.vercel.app`; the frontend and `/api/*` answer 200 and the server logs `database: remote libSQL`. The project's first deployment always goes to production.
 - Production deployment of 2026-10-28 (`dpl_7Se1juqP5GZaD3mnfon5ZJvQz9Hb`, branch `vercel` at `fa5f07a`, restyling and phase 11): pages, illustrations, `og-image.png` and `/api/public/config` answer 200 on `https://debateai-steel.vercel.app`.
-- Preview deployments start the server without `APP_SECRET` (set for Production only) while `TURSO_DATABASE_URL` is set for Preview too, so their `/api/*` answers 500 (`APP_SECRET is required with TURSO_DATABASE_URL`). The frontend of a preview works.
+- Preview deployments use the `debateai-test` database and their own `APP_SECRET` (2026-11-03): redeploy `debateai-ixa9a29os…` answers 200 on `/api/public/config` with `setupRequired: true`, while production stays `setupRequired: false`.
 
 ## Not verified yet
 

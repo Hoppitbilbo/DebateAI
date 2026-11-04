@@ -22,9 +22,13 @@ SENTRY_ENVIRONMENT=development npm run dev
 
 Startup initialization captures uncaught browser errors and Go HTTP panics. The React error boundary captures rendering errors and shows a localized error message. Expected API validation/authentication failures are not reported as crashes. Handled Go errors can be explicitly reported with `sentry.GetHubFromContext(r.Context()).CaptureException(err)` when needed.
 
-Both SDKs enable tracing: 100% locally, 10% in production. Browser trace headers are attached only to relative `/api/` requests, which Vite proxies to the Go server. No cross-origin CORS change is needed. Leave either DSN blank to disable that SDK.
+Both SDKs enable tracing: 100% in `development` and `test`, 10% of page traces in `production`. The Go server keeps every AI request (`POST /api/ai/generate`, `POST /api/sessions/{id}/evaluate`) even when the browser did not sample its trace, and otherwise follows the browser's decision. Browser trace headers are attached only to relative `/api/` requests, which Vite proxies to the Go server. No cross-origin CORS change is needed. Leave either DSN blank to disable that SDK.
 
 Automatic collection of user identity, cookies, headers, request/response bodies, and URL query values is disabled. Browser console and DOM breadcrumbs are disabled so conversations and typed input are not collected as breadcrumbs. Replay is not enabled. Sentry still derives a coarse location (`user.geo`) from the sender's IP at ingestion; to drop it, enable *Prevent Storing of IP Addresses* in each project's Security & Privacy settings. Explicitly captured exception messages may still contain application data; avoid putting personal data or credentials in exceptions.
+
+## Vercel
+
+On Vercel, `VERCEL_ENV` and `VERCEL_GIT_COMMIT_SHA` set the environment and release when `SENTRY_ENVIRONMENT`/`SENTRY_RELEASE` are not set, with the same rule in `vite.config.ts` and `server/sentry.go`: previews are `test`, production is `production`. Both SDKs then report the deployed commit as the release. The project needs `SENTRY_DSN` (runtime, server), `VITE_SENTRY_DSN` and `SENTRY_AUTH_TOKEN` (build) for Production and Preview; without `VITE_SENTRY_DSN` the browser bundle has Sentry turned off.
 
 ## Production images and source maps
 
