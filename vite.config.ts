@@ -10,7 +10,8 @@ const API_TARGET = process.env.API_TARGET || "http://127.0.0.1:8080";
 
 export default defineConfig(({ mode, command }) => {
   const env = loadEnv(mode, process.cwd(), "");
-  let release = env.SENTRY_RELEASE || env.VITE_SENTRY_RELEASE;
+  // Vercel builds have no .git: they name the deployed commit instead.
+  let release = env.SENTRY_RELEASE || env.VITE_SENTRY_RELEASE || env.VERCEL_GIT_COMMIT_SHA;
   if (!release) {
     try {
       release = execFileSync("git", ["rev-parse", "HEAD"], {
@@ -18,6 +19,9 @@ export default defineConfig(({ mode, command }) => {
       }).trim();
     } catch { /* Builds outside a checkout supply SENTRY_RELEASE instead. */ }
   }
+  // Same rule as the Go server (server/sentry.go): previews are test deployments.
+  const vercelEnvironment = { preview: "test", production: "production", development: "development" }[env.VERCEL_ENV ?? ""];
+  const environment = env.SENTRY_ENVIRONMENT || env.VITE_SENTRY_ENVIRONMENT || vercelEnvironment || "";
   const uploadSourceMaps = Boolean(env.SENTRY_AUTH_TOKEN && env.VITE_SENTRY_DSN);
   if (command === "build" && env.VITE_SENTRY_DSN && !uploadSourceMaps) {
     console.warn("Sentry source maps were not uploaded: set SENTRY_AUTH_TOKEN for readable production stack traces.");
@@ -53,6 +57,7 @@ export default defineConfig(({ mode, command }) => {
     ].filter(Boolean),
     define: {
       "import.meta.env.VITE_SENTRY_RELEASE": JSON.stringify(release || ""),
+      "import.meta.env.VITE_SENTRY_ENVIRONMENT": JSON.stringify(environment),
     },
     resolve: {
       alias: {
