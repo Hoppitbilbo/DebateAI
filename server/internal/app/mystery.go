@@ -114,6 +114,10 @@ type MysteryResult struct {
 	Hints int    `json:"hints"`
 }
 
+// platformFactStyle keeps the wording of the platform's notes out of what
+// the student reads.
+const platformFactStyle = " Tell it in your own words, in the evaluation language: never quote this note, its English words or the word \"platform\"."
+
 // Rubric of the mystery game (score of the conversation, 0-10).
 const (
 	mysteryBestScore     = 10 // found at the first question
@@ -143,7 +147,7 @@ func gradeMystery(answer string, msgs []TranscriptMessage, r MysteryResult) (mys
 	guessed := at == 0 && namesCharacter(r.Guess, answer)
 	if at == 0 && !guessed {
 		return mysteryGrade{Score: mysteryWrongScoreCap,
-			Fact: fmt.Sprintf("PLATFORM RESULT: the character was not found (questions asked: %d, hints: %d). The conversation score is at most %d/10.", turns, hints, mysteryWrongScoreCap)}, true
+			Fact: fmt.Sprintf("PLATFORM RESULT: the character was not found (questions asked: %d, hints: %d). The conversation score is at most %d/10.", turns, hints, mysteryWrongScoreCap) + platformFactStyle}, true
 	}
 	score := mysteryBestScore
 	how := fmt.Sprintf("named in the chat at question %d", at)
@@ -161,6 +165,7 @@ func gradeMystery(answer string, msgs []TranscriptMessage, r MysteryResult) (mys
 	if at == 1 {
 		fact += " The student found the answer at the first attempt without hints: say so and congratulate them for their autonomy (bonus). A quick right answer is excellent work, never short or superficial work."
 	}
+	fact += platformFactStyle
 	return mysteryGrade{Correct: true, Score: score, Fact: fact}, true
 }
 
