@@ -50,10 +50,47 @@ describe("useLiveAi", () => {
   it("shows that the character is thinking once the student's turn has arrived", async () => {
     const { result } = setup();
     await connect(result);
+    // Gemini Live sends the transcription when the turn ends, without marking it finished.
     act(() => mocks.options!.onUserTranscription!("Chi sei?", false));
-    expect(result.current.liveState).toBe("listening");
-    act(() => mocks.options!.onUserTranscription!("", true));
     expect(result.current.liveState).toBe("thinking");
+  });
+
+  it("keeps speaking through a gap between audio chunks, and listens once the turn is complete", async () => {
+    const sources: { onended: (() => void) | null }[] = [];
+    class FakeAudioContext {
+      state = "running";
+      currentTime = 0;
+      destination = {};
+      createBuffer = () => ({ duration: 0.1, getChannelData: () => new Float32Array(2) });
+      createBufferSource = () => {
+        const src = { buffer: null, onended: null, connect: vi.fn(), start: vi.fn(), stop: vi.fn() };
+        sources.push(src);
+        return src;
+      };
+      resume = vi.fn();
+      close = vi.fn(async () => undefined);
+    }
+    vi.stubGlobal("AudioContext", FakeAudioContext);
+    try {
+      const { result } = setup();
+      await connect(result);
+      act(() => mocks.options!.onAudioChunk!({ data: "AAAA", mimeType: "audio/pcm;rate=24000" }));
+      expect(result.current.liveState).toBe("speaking");
+      act(() => sources[0].onended!());
+      expect(result.current.liveState).toBe("speaking");
+      act(() => mocks.options!.onTurnComplete!());
+      expect(result.current.liveState).toBe("listening");
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+
+  it("listens again when the student speaks over the character", async () => {
+    const { result } = setup();
+    await connect(result);
+    act(() => mocks.options!.onUserTranscription!("Aspetta", false));
+    act(() => mocks.options!.onInterrupted!());
+    expect(result.current.liveState).toBe("listening");
   });
 
   it("shows that the character is thinking after a typed message", async () => {

@@ -56,6 +56,8 @@ export const useLiveAi = (opts: UseLiveAiOptions) => {
   const userBuffer = useRef("");
   /** finishLive was called: the session closes when the last audio ends. */
   const finishingRef = useRef(false);
+  /** The character's audio reply is still arriving: a gap between chunks is not its end. */
+  const replyOpen = useRef(false);
   const cbRef = useRef(opts);
   cbRef.current = opts;
 
@@ -78,6 +80,13 @@ export const useLiveAi = (opts: UseLiveAiOptions) => {
     });
     sourcesRef.current = [];
     nextTimeRef.current = 0;
+    replyOpen.current = false;
+  }, []);
+
+  /** The character has finished speaking: back to listening, or closed if finishLive asked. */
+  const afterReply = useCallback(() => {
+    if (finishingRef.current) setLiveMode(false);
+    else setLiveState("listening");
   }, []);
 
   const playChunk = useCallback((chunk: LiveAudioChunk) => {
@@ -100,12 +109,12 @@ export const useLiveAi = (opts: UseLiveAiOptions) => {
     sourcesRef.current.push(src);
     src.onended = () => {
       sourcesRef.current = sourcesRef.current.filter((s) => s !== src);
-      if (sourcesRef.current.length > 0 || !controllerRef.current) return;
-      if (finishingRef.current) setLiveMode(false);
-      else setLiveState("listening");
+      if (sourcesRef.current.length > 0 || replyOpen.current || !controllerRef.current) return;
+      afterReply();
     };
+    replyOpen.current = true;
     setLiveState("speaking");
-  }, []);
+  }, [afterReply]);
 
   const disconnect = useCallback(() => {
     controllerRef.current?.close();
@@ -158,7 +167,11 @@ export const useLiveAi = (opts: UseLiveAiOptions) => {
             cbRef.current.onAssistantText(text, isNew);
           },
           onAudioChunk: playChunk,
-          onInterrupted: stopPlayback,
+          onInterrupted: () => {
+            // the student spoke over the character
+            stopPlayback();
+            setLiveState("listening");
+          },
           onUserTranscription: (text, isFinal) => {
             if (assistantTurnOpen.current) {
               // the student started a new turn
@@ -166,12 +179,15 @@ export const useLiveAi = (opts: UseLiveAiOptions) => {
             }
             userBuffer.current += text;
             cbRef.current.onUserText?.(userBuffer.current.trim(), isFinal);
-            if (isFinal) setLiveState("thinking");
+            // Gemini sends the transcription when the student's turn ends, rarely marked as finished.
+            setLiveState("thinking");
           },
           onTurnComplete: () => {
             assistantTurnOpen.current = false;
             userBuffer.current = "";
+            replyOpen.current = false;
             cbRef.current.onTurnComplete?.();
+            if (sourcesRef.current.length === 0) afterReply();
           },
           onError: (msg) => {
             if (cancelled) return;
@@ -200,7 +216,7 @@ export const useLiveAi = (opts: UseLiveAiOptions) => {
       cancelled = true;
       disconnect();
     };
-  }, [liveMode, recipeKey, characterName, characterBio, sessionId, disconnect, playChunk, stopPlayback, fail]);
+  }, [liveMode, recipeKey, characterName, characterBio, sessionId, disconnect, playChunk, stopPlayback, afterReply, fail]);
 
   useEffect(() => () => disconnect(), [disconnect]);
 
@@ -221,7 +237,7 @@ export const useLiveAi = (opts: UseLiveAiOptions) => {
    */
   const finishLive = useCallback(() => {
     controllerRef.current?.setMicMuted(true);
-    if (sourcesRef.current.length === 0) setLiveMode(false);
+    if (sourcesRef.current.length === 0 && !replyOpen.current) setLiveMode(false);
     else finishingRef.current = true;
   }, []);
 
