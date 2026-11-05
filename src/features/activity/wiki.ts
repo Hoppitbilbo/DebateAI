@@ -74,12 +74,12 @@ export const fetchWikiSummary = async (title: string, maxChars = 4000, { from = 
 export const useWikiSummaries = (refs: (WikiRef | null | undefined)[], lang?: string) => {
   const ui = wikiLanguage(useTranslation().i18n.language);
   const to = lang || ui;
-  // One "from:title" entry per character (titles never contain "|").
-  const wanted = refs.filter((r): r is WikiRef => !!r?.title).map((r) => `${r.lang || ui}:${r.title}`).join("|");
+  // [from, title] per character, as a string so that the effect runs only when they change.
+  const wanted = JSON.stringify(refs.filter((r): r is WikiRef => !!r?.title).map((r) => [r.lang || ui, r.title]));
   const [state, setState] = useState<{ summaries: Record<string, string>; loading: boolean; error: boolean }>({ summaries: {}, loading: false, error: false });
 
   useEffect(() => {
-    const list = wanted ? wanted.split("|").map((entry) => [entry.slice(0, entry.indexOf(":")), entry.slice(entry.indexOf(":") + 1)]) : [];
+    const list: [string, string][] = JSON.parse(wanted);
     if (list.length === 0) {
       setState({ summaries: {}, loading: false, error: false });
       return;
