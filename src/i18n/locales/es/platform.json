@@ -162,7 +162,12 @@
     "resumed": "Has retomado la conversación donde la dejaste.",
     "notSaved": "Esta práctica no se está guardando: el servidor no responde. Puedes continuar y descargar la conversación al final.",
     "saveFailed": "Tu último mensaje no se guardó en el servidor.",
-    "stepOf": "Paso {{n}} de {{total}}: {{label}}"
+    "stepOf": "Paso {{n}} de {{total}}: {{label}}",
+    "dictating": "Te escucho… habla",
+    "dictationFailed": {
+      "denied": "Micrófono no disponible: revisa los permisos del navegador. Mientras tanto puedes escribir el mensaje.",
+      "failed": "El dictado se ha interrumpido: puedes escribir el mensaje."
+    }
   },
   "assignment": {
     "label": "Tarea",
@@ -185,11 +190,16 @@
       "off": "Apagado",
       "connecting": "Conectando…",
       "listening": "Escuchando – habla ahora",
+      "thinking": "Está pensando la respuesta…",
       "speaking": "Hablando…"
     },
     "typeWhileLive": "Habla o escribe un mensaje…",
-    "micError": "Micrófono no disponible: revisa los permisos del navegador.",
-    "error": "Error de conexión de voz: {{message}}"
+    "failed": {
+      "microphone": "Micrófono no disponible: revisa los permisos del navegador. La voz se ha apagado; sigue por escrito.",
+      "connection": "La conversación por voz se ha interrumpido. Sigue por escrito.",
+      "start": "No se ha podido iniciar la voz. Sigue por escrito."
+    },
+    "unsupported": "Este navegador no permite la conversación por voz: escribe tus mensajes."
   },
   "reflection": {
     "title": "Tu reflexión",

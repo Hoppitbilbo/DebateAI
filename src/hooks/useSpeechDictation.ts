@@ -28,15 +28,26 @@ const getCtor = (): (new () => SpeechRecognitionLike) | null => {
   return w.SpeechRecognition ?? w.webkitSpeechRecognition ?? null;
 };
 
+/** Why dictation stopped by itself: no microphone (or no permission), or another failure. */
+export type DictationFailure = "denied" | "failed";
+
+/** Web Speech errors that mean no access to the microphone. */
+const DENIED = new Set(["not-allowed", "service-not-allowed", "audio-capture"]);
+/** Web Speech errors that are not failures: silence, or a stop asked for. */
+const QUIET = new Set(["no-speech", "aborted"]);
+
 /**
  * Free, on-device dictation via the browser's Web Speech API (no AI cost).
- * `onText` receives the full text dictated in this session.
+ * `onText` receives the full text dictated in this session; `onFailure` is
+ * told when dictation stops because of an error.
  */
-export const useSpeechDictation = (language: string, onText: (text: string) => void) => {
+export const useSpeechDictation = (language: string, onText: (text: string) => void, onFailure?: (kind: DictationFailure) => void) => {
   const [listening, setListening] = useState(false);
   const recRef = useRef<SpeechRecognitionLike | null>(null);
   const cb = useRef(onText);
   cb.current = onText;
+  const failureCb = useRef(onFailure);
+  failureCb.current = onFailure;
   const supported = !!getCtor();
 
   const stop = useCallback(() => {
@@ -63,9 +74,18 @@ export const useSpeechDictation = (language: string, onText: (text: string) => v
       cb.current(`${prefix}${prefix && !prefix.endsWith(" ") ? " " : ""}${finalText}${interim}`.trimStart());
     };
     rec.onend = () => setListening(false);
-    rec.onerror = () => setListening(false);
+    rec.onerror = (e) => {
+      setListening(false);
+      if (!QUIET.has(e.error)) failureCb.current?.(DENIED.has(e.error) ? "denied" : "failed");
+    };
+    try {
+      rec.start();
+    } catch (e) {
+      console.error("Dictation could not start:", e);
+      failureCb.current?.("failed");
+      return;
+    }
     recRef.current = rec;
-    rec.start();
     setListening(true);
   }, [language]);
 

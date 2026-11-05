@@ -162,7 +162,12 @@
     "resumed": "You picked up the conversation where you left it.",
     "notSaved": "This practice is not being saved: the server is not responding. You can go on and download the conversation at the end.",
     "saveFailed": "Your last message was not saved on the server.",
-    "stepOf": "Step {{n}} of {{total}}: {{label}}"
+    "stepOf": "Step {{n}} of {{total}}: {{label}}",
+    "dictating": "Listening… speak now",
+    "dictationFailed": {
+      "denied": "Microphone not available: check the browser permissions. You can type your message meanwhile.",
+      "failed": "Dictation stopped: you can type your message."
+    }
   },
   "assignment": {
     "label": "Assignment",
@@ -185,11 +190,16 @@
       "off": "Off",
       "connecting": "Connecting…",
       "listening": "Listening – speak now",
+      "thinking": "Thinking of an answer…",
       "speaking": "Speaking…"
     },
     "typeWhileLive": "Speak, or type a message…",
-    "micError": "Microphone not available: check the browser permissions.",
-    "error": "Voice connection error: {{message}}"
+    "failed": {
+      "microphone": "Microphone not available: check the browser permissions. Voice was turned off; carry on in writing.",
+      "connection": "The voice conversation stopped. Carry on in writing.",
+      "start": "Voice could not start. Carry on in writing."
+    },
+    "unsupported": "This browser does not support voice conversations: type your messages."
   },
   "reflection": {
     "title": "Your reflection",

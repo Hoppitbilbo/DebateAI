@@ -8,10 +8,16 @@ import {
   startLiveConversation,
 } from "@/services/liveConversationService";
 import { getBestVoiceForCharacter } from "@/services/voiceSelectionService";
-import { getAiStatus, type PromptRecipe } from "@/services/aiService";
-import { formatAiError } from "@/services/aiService";
+import { formatAiError, getAiStatus, type PromptRecipe } from "@/services/aiService";
 
-export type LiveState = "off" | "connecting" | "listening" | "speaking";
+/** "thinking": the student's turn has arrived, the character's answer has not started yet. */
+export type LiveState = "off" | "connecting" | "listening" | "thinking" | "speaking";
+
+/** Why a voice session stopped by itself; the chat then goes on in text. */
+type LiveFailure = "microphone" | "connection" | "start";
+
+/** One toast at a time: a dropped connection reports an error and a close. */
+const FAILURE_TOAST_ID = "live-failure";
 
 export interface UseLiveAiOptions {
   /** The character; the server writes the voice instructions from it. */
@@ -57,7 +63,10 @@ export const useLiveAi = (opts: UseLiveAiOptions) => {
     void getAiStatus().then((s) => setServerLive(s.live));
   }, []);
 
-  const liveAvailable = serverLive && isLiveSupportedByBrowser() && !opts.disabled;
+  const browserSupport = isLiveSupportedByBrowser();
+  const liveAvailable = serverLive && browserSupport && !opts.disabled;
+  /** The server offers voice but this browser cannot use it: the student is told to write. */
+  const liveUnsupported = serverLive && !browserSupport && !opts.disabled;
 
   const stopPlayback = useCallback(() => {
     sourcesRef.current.forEach((s) => {
@@ -110,6 +119,22 @@ export const useLiveAi = (opts: UseLiveAiOptions) => {
     setLiveState("off");
   }, [stopPlayback]);
 
+  /**
+   * Voice stopped by itself: the student is told why and that the chat goes on
+   * in text; a turn left half done is closed and saved like a finished one.
+   */
+  const fail = useCallback((kind: LiveFailure, detail?: string) => {
+    const message = t(`platform.live.failed.${kind}`);
+    if (detail) toast.error(message, { id: FAILURE_TOAST_ID, description: detail });
+    else toast.error(message, { id: FAILURE_TOAST_ID });
+    if (assistantTurnOpen.current || userBuffer.current) {
+      assistantTurnOpen.current = false;
+      userBuffer.current = "";
+      cbRef.current.onTurnComplete?.();
+    }
+    setLiveMode(false);
+  }, [t]);
+
   const { characterName, characterBio, sessionId } = opts;
   // A recipe is a new object on every render: reconnect only when its content changes.
   const recipeKey = opts.recipe ? JSON.stringify(opts.recipe) : "";
@@ -143,6 +168,7 @@ export const useLiveAi = (opts: UseLiveAiOptions) => {
             }
             userBuffer.current += text;
             cbRef.current.onUserText?.(userBuffer.current.trim(), isFinal);
+            if (isFinal) setLiveState("thinking");
           },
           onTurnComplete: () => {
             assistantTurnOpen.current = false;
@@ -150,8 +176,10 @@ export const useLiveAi = (opts: UseLiveAiOptions) => {
             cbRef.current.onTurnComplete?.();
           },
           onError: (msg) => {
-            if (msg === "microphone") toast.error(t("platform.live.micError"));
-            else toast.error(t("platform.live.error", { message: msg }));
+            if (cancelled) return;
+            if (msg === "microphone") return fail("microphone");
+            console.error("Live conversation error:", msg);
+            fail("connection");
           },
           onClose: () => {
             if (!cancelled) setLiveMode(false);
@@ -165,9 +193,8 @@ export const useLiveAi = (opts: UseLiveAiOptions) => {
         setLiveState("listening");
       } catch (e) {
         if (!cancelled) {
-          toast.error(formatAiError(e));
-          setLiveMode(false);
-          setLiveState("off");
+          console.error("Live conversation could not start:", e);
+          fail("start", formatAiError(e));
         }
       }
     })();
@@ -175,7 +202,7 @@ export const useLiveAi = (opts: UseLiveAiOptions) => {
       cancelled = true;
       disconnect();
     };
-  }, [liveMode, recipeKey, characterName, characterBio, sessionId, disconnect, playChunk, stopPlayback, t]);
+  }, [liveMode, recipeKey, characterName, characterBio, sessionId, disconnect, playChunk, stopPlayback, fail]);
 
   useEffect(() => () => disconnect(), [disconnect]);
 
@@ -183,6 +210,7 @@ export const useLiveAi = (opts: UseLiveAiOptions) => {
     if (!controllerRef.current) return false;
     assistantTurnOpen.current = false;
     controllerRef.current.sendTextTurn(text);
+    setLiveState("thinking");
     return true;
   }, []);
 
@@ -199,7 +227,7 @@ export const useLiveAi = (opts: UseLiveAiOptions) => {
     else finishingRef.current = true;
   }, []);
 
-  return { liveMode, liveState, liveAvailable, toggleLive, stopLive, finishLive, sendLiveText };
+  return { liveMode, liveState, liveAvailable, liveUnsupported, toggleLive, stopLive, finishLive, sendLiveText };
 };
 
 export type LiveControls = ReturnType<typeof useLiveAi>;

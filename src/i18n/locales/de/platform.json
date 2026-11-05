@@ -162,7 +162,12 @@
     "resumed": "Du setzt das Gespräch dort fort, wo du aufgehört hast.",
     "notSaved": "Diese Übung wird nicht gespeichert: Der Server antwortet nicht. Du kannst weitermachen und das Gespräch am Ende herunterladen.",
     "saveFailed": "Deine letzte Nachricht wurde nicht auf dem Server gespeichert.",
-    "stepOf": "Schritt {{n}} von {{total}}: {{label}}"
+    "stepOf": "Schritt {{n}} von {{total}}: {{label}}",
+    "dictating": "Ich höre zu… sprich jetzt",
+    "dictationFailed": {
+      "denied": "Mikrofon nicht verfügbar: Prüfe die Berechtigungen des Browsers. Du kannst die Nachricht inzwischen schreiben.",
+      "failed": "Das Diktat wurde unterbrochen: Du kannst die Nachricht schreiben."
+    }
   },
   "assignment": {
     "label": "Aufgabe",
@@ -185,11 +190,16 @@
       "off": "Aus",
       "connecting": "Verbinde…",
       "listening": "Hört zu – sprich jetzt",
+      "thinking": "Denkt über die Antwort nach…",
       "speaking": "Spricht…"
     },
     "typeWhileLive": "Sprich oder schreibe eine Nachricht…",
-    "micError": "Mikrofon nicht verfügbar: prüfe die Browser-Berechtigungen.",
-    "error": "Fehler der Sprachverbindung: {{message}}"
+    "failed": {
+      "microphone": "Mikrofon nicht verfügbar: Prüfe die Berechtigungen des Browsers. Die Sprache wurde ausgeschaltet; schreib einfach weiter.",
+      "connection": "Das Sprachgespräch wurde unterbrochen. Schreib einfach weiter.",
+      "start": "Die Sprache konnte nicht gestartet werden. Schreib einfach weiter."
+    },
+    "unsupported": "Dieser Browser unterstützt keine Sprachgespräche: Schreib deine Nachrichten."
   },
   "reflection": {
     "title": "Deine Reflexion",

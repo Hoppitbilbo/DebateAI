@@ -162,7 +162,12 @@
     "resumed": "Vous avez repris la conversation là où vous l'aviez laissée.",
     "notSaved": "Cet exercice n'est pas enregistré : le serveur ne répond pas. Tu peux continuer et télécharger la conversation à la fin.",
     "saveFailed": "Ton dernier message n'a pas été enregistré sur le serveur.",
-    "stepOf": "Étape {{n}} sur {{total}} : {{label}}"
+    "stepOf": "Étape {{n}} sur {{total}} : {{label}}",
+    "dictating": "Je t'écoute… parle",
+    "dictationFailed": {
+      "denied": "Micro indisponible : vérifie les autorisations du navigateur. En attendant, tu peux écrire ton message.",
+      "failed": "La dictée s'est interrompue : tu peux écrire ton message."
+    }
   },
   "assignment": {
     "label": "Devoir",
@@ -185,11 +190,16 @@
       "off": "Désactivé",
       "connecting": "Connexion…",
       "listening": "À l'écoute – parlez",
+      "thinking": "Réfléchit à la réponse…",
       "speaking": "Parle…"
     },
     "typeWhileLive": "Parlez, ou écrivez un message…",
-    "micError": "Micro indisponible : vérifiez les autorisations du navigateur.",
-    "error": "Erreur de connexion vocale : {{message}}"
+    "failed": {
+      "microphone": "Micro indisponible : vérifie les autorisations du navigateur. La voix a été coupée ; continue par écrit.",
+      "connection": "La conversation vocale s'est interrompue. Continue par écrit.",
+      "start": "Impossible de lancer la voix. Continue par écrit."
+    },
+    "unsupported": "Ce navigateur ne permet pas la conversation vocale : écris tes messages."
   },
   "reflection": {
     "title": "Votre réflexion",
