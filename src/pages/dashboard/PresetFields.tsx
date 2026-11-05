@@ -44,7 +44,7 @@ const MysteryCharacters = ({ config, onChange }: { config: AssignmentConfig; onC
         </ol>
       )}
       {list.length < MAX_MYSTERY_CHARACTERS && (
-        <WikiSearchSelect onSelect={(r) => !list.some((c) => c.title === r.title) && set([...list, { title: r.title, snippet: r.snippet }])} />
+        <WikiSearchSelect onSelect={(r) => !list.some((c) => c.title === r.title) && set([...list, { title: r.title, snippet: r.snippet, lang: r.lang }])} />
       )}
       {list.length > 1 && (
         <label className="flex items-center justify-between gap-4 rounded-md border border-border p-3">

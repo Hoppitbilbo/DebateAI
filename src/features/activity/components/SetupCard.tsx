@@ -72,7 +72,7 @@ export const CharacterPicker = ({ label, value, onChange, locked, hint, conceal 
           )}
         </div>
       ) : (
-        <WikiSearchSelect onSelect={(r) => onChange({ title: r.title, snippet: r.snippet })} />
+        <WikiSearchSelect onSelect={(r) => onChange({ title: r.title, snippet: r.snippet, lang: r.lang })} />
       )}
       {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
     </div>

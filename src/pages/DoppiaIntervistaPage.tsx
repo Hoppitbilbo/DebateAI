@@ -4,9 +4,8 @@ import type { WikiRef } from "@/lib/api";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import ActivityRunner from "@/features/activity/components/ActivityRunner";
 import { CharacterPicker } from "@/features/activity/components/SetupCard";
-import { titleOf, useActivityFlow } from "@/features/activity/useActivityFlow";
+import { refOf, useActivityFlow } from "@/features/activity/useActivityFlow";
 import { toHistory } from "@/features/activity/useChatEngine";
-import { bioOf, useWikiSummaries } from "@/features/activity/wiki";
 import { recipeFor } from "@/features/activity/recipe";
 import { APPS } from "@/features/activity/types";
 
@@ -24,20 +23,21 @@ const DoppiaIntervistaPage = () => {
   const [chars, setChars] = useState<[WikiRef | null, WikiRef | null]>([null, null]);
   const [target, setTarget] = useState<Target>("both");
   const [a, b] = chars;
-  const { summaries, loading } = useWikiSummaries(chars);
 
   const flow = useActivityFlow(app.type, {
+    characters: chars,
     context: { characters: [a?.title, b?.title] },
     restore: (saved) => {
-      const [x, y] = Array.isArray(saved.characters) ? saved.characters.map(titleOf) : [];
-      if (x && y) setChars([{ title: x }, { title: y }]);
+      const [x, y] = Array.isArray(saved.characters) ? saved.characters.map(refOf) : [];
+      if (x && y) setChars([x, y]);
     },
   });
   const { preset, engine } = flow;
+  const loading = flow.loadingBios;
 
   /** The recipe of one character's answers; the server writes the instructions. */
   const recipeOf = (me: WikiRef, other: WikiRef) =>
-    recipeFor(app.type, { character: me.title, bio: bioOf(me, summaries), other: other.title });
+    recipeFor(app.type, { character: me.title, bio: flow.bio(me), other: other.title });
 
   useEffect(() => {
     if (preset.characters?.length === 2) setChars([preset.characters[0], preset.characters[1]]);

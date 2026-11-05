@@ -1,6 +1,6 @@
 import { act, renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { restoredMessages, titleOf, useActivityFlow } from "./useActivityFlow";
+import { refOf, restoredMessages, titleOf, useActivityFlow } from "./useActivityFlow";
 
 // Tests for the shared activity steps (refactoring task 5.1).
 
@@ -24,6 +24,7 @@ const mocks = vi.hoisted(() => ({
   engineOptions: [] as unknown[],
   evaluation: { run: vi.fn(), reset: vi.fn() },
   toast: vi.fn(),
+  wiki: vi.fn(),
 }));
 
 vi.mock("./useActivitySession", () => ({ useActivitySession: () => mocks.session }));
@@ -33,6 +34,14 @@ vi.mock("./useChatEngine", () => ({
     return mocks.engine;
   },
 }));
+vi.mock("./wiki", () => ({
+  useWikiSummaries: (...args: unknown[]) => {
+    mocks.wiki(...args);
+    return { summaries: { Colombo: "Navigatore." }, loading: false, error: false };
+  },
+  bioOf: (ref: { title: string } | null, summaries: Record<string, string>) => (ref && summaries[ref.title]) || "",
+}));
+vi.mock("./language", () => ({ practiceLanguage: (a: { config?: { language?: string } } | null) => ({ code: a?.config?.language ?? "it" }) }));
 vi.mock("./useEvaluationFlow", () => ({ useEvaluationFlow: () => mocks.evaluation }));
 vi.mock("sonner", () => ({ toast: { success: mocks.toast, error: mocks.toast, info: mocks.toast } }));
 
@@ -57,8 +66,23 @@ describe("useActivityFlow", () => {
   it("asks for live settings with the phase and the assignment", () => {
     const live = vi.fn().mockReturnValue(null);
     renderHook(() => useActivityFlow("convinci-tu", { live, context: { topic: "t" } }));
-    expect(live).toHaveBeenCalledWith("setup", mocks.session.assignment);
+    expect(live).toHaveBeenCalledWith("setup", mocks.session.assignment, expect.any(Function));
     expect(lastEngineOptions().context).toEqual({ topic: "t" });
+  });
+
+  it("loads the characters' biographies in the language the teacher fixed", () => {
+    mocks.session.assignment = { id: 3, config: { language: "es" } };
+    const characters = [{ title: "Colombo", lang: "it" }];
+    const { result } = renderHook(() => useActivityFlow("convinci-tu", { characters }));
+    expect(mocks.wiki).toHaveBeenCalledWith(characters, "es");
+    expect(result.current.bio(characters[0])).toBe("Navigatore.");
+    mocks.session.assignment = { id: 3, config: { topic: "guerra" } };
+  });
+
+  it("restores a saved character with the Wikipedia it was chosen on", () => {
+    expect(refOf({ title: "Colombo", lang: "it" })).toEqual({ title: "Colombo", lang: "it" });
+    expect(refOf("Colombo")).toEqual({ title: "Colombo" });
+    expect(refOf({ title: " " })).toBeUndefined();
   });
 
   it("goes setup → chat → reflection → feedback → setup", async () => {

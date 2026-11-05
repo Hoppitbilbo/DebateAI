@@ -21,6 +21,8 @@ interface WikiSearchResult {
   title: string;
   snippet: string;
   pageid: number;
+  /** The Wikipedia the result comes from. */
+  lang: string;
 }
 
 interface WikiSearchApiResponse {
@@ -58,6 +60,7 @@ const searchWikipedia = async (term: string, lang: string, signal: AbortSignal):
     title: item.title,
     snippet: htmlToText(item.snippet),
     pageid: item.pageid,
+    lang,
   }));
 };
 
