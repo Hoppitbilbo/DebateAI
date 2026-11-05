@@ -124,9 +124,7 @@ export const useLiveAi = (opts: UseLiveAiOptions) => {
    * in text; a turn left half done is closed and saved like a finished one.
    */
   const fail = useCallback((kind: LiveFailure, detail?: string) => {
-    const message = t(`platform.live.failed.${kind}`);
-    if (detail) toast.error(message, { id: FAILURE_TOAST_ID, description: detail });
-    else toast.error(message, { id: FAILURE_TOAST_ID });
+    toast.error(t(`platform.live.failed.${kind}`), { id: FAILURE_TOAST_ID, description: detail });
     if (assistantTurnOpen.current || userBuffer.current) {
       assistantTurnOpen.current = false;
       userBuffer.current = "";
