@@ -51,6 +51,7 @@ const useSuggestions = (theme: { appType: AppType; pages: string[] } | null, act
     try {
       setState({ status: "ready", items: await suggestActivities(ai, theme) });
     } catch (e) {
+      console.error("Activity suggestions failed:", e);
       setState({ status: "error", message: `${t("room.wizard.suggestionsError")} ${ai.formatError(e)}` });
     }
   };

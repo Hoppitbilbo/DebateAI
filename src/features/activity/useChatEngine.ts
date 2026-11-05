@@ -133,9 +133,11 @@ export const useChatEngine = ({ session, live, context, onEnded }: Options) => {
         patchMessage(msg.id, { ...args.fallback, streaming: false });
         return null;
       }
-      patchMessage(msg.id, { content: ai.formatError(e), streaming: false, error: true });
+      console.error("AI reply failed:", e);
+      const message = ai.formatError(e);
+      patchMessage(msg.id, { content: message, streaming: false, error: true });
       retries.current.set(msg.id, () => respondRef.current!(args));
-      toast.error(ai.formatError(e));
+      toast.error(message);
       return null;
     }
   }, [addMessage, patchMessage, setMessages, streamMessages, messagesRef, session, ai]);
