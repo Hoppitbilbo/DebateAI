@@ -16,6 +16,7 @@ import { htmlToText } from "@/lib/text";
 import { Button } from "@/components/ui/button";
 import { wikiLanguage } from "@/features/activity/wiki";
 import { useTranslation } from "react-i18next";
+import type { WikiRef } from "@/lib/api";
 
 interface WikiSearchResult {
   title: string;
@@ -36,7 +37,8 @@ interface WikiSearchApiResponse {
 }
 
 interface WikiSearchSelectProps {
-  onSelect: (result: WikiSearchResult) => void;
+  /** The chosen page, as the reference an activity or assignment saves. */
+  onSelect: (ref: WikiRef) => void;
 }
 
 /** Wait after the last keystroke before searching. */
@@ -143,7 +145,7 @@ const WikiSearchSelect = ({ onSelect }: WikiSearchSelectProps) => {
                     key={result.pageid}
                     value={String(result.pageid)}
                     onSelect={() => {
-                      onSelect(result);
+                      onSelect({ title: result.title, snippet: result.snippet, lang: result.lang });
                       setOpen(false);
                     }}
                   >
