@@ -70,6 +70,9 @@ export const startLiveConversation = async (options: StartLiveConversationOption
   const ai = new GoogleGenAI({ apiKey: tokenInfo.token, httpOptions: { apiVersion: "v1alpha" } });
   let session: Session | null = null;
   let manuallyClosed = false;
+  /** The connection is gone (closed by us or by the server): nothing more is sent on it. */
+  let closed = false;
+  let usageReported = false;
   let micMuted = false;
   const usage = { input: 0, output: 0 };
 
@@ -80,6 +83,9 @@ export const startLiveConversation = async (options: StartLiveConversationOption
   let source: MediaStreamAudioSourceNode | null = null;
 
   const reportUsage = () => {
+    // once per grant: the server refuses a second report
+    if (usageReported) return;
+    usageReported = true;
     // The server takes provider, model, attempt and duration from the grant.
     void api.post("/api/ai/live/usage", {
       grantId: tokenInfo.grantId,
@@ -117,6 +123,7 @@ export const startLiveConversation = async (options: StartLiveConversationOption
       },
       onerror: (event: ErrorEvent) => options.onError?.(event.message || "Live API error"),
       onclose: (event: CloseEvent) => {
+        closed = true;
         if (!manuallyClosed) {
           options.onError?.(event.reason || "Live connection closed");
           reportUsage();
@@ -136,7 +143,7 @@ export const startLiveConversation = async (options: StartLiveConversationOption
     gain = audioContext.createGain();
     gain.gain.value = 0; // keep the graph running without echoing the mic
     processor.onaudioprocess = (e) => {
-      if (!session || micMuted) return;
+      if (!session || closed || micMuted) return;
       try {
         session.sendRealtimeInput({ audio: { mimeType: "audio/pcm;rate=16000", data: floatTo16BitBase64(e.inputBuffer.getChannelData(0)) } });
       } catch {
@@ -167,12 +174,14 @@ export const startLiveConversation = async (options: StartLiveConversationOption
       source?.disconnect();
       void audioContext?.close();
       stream?.getTracks().forEach((t) => t.stop());
-      try {
-        session.sendRealtimeInput({ audioStreamEnd: true });
-      } catch {
-        /* ignore */
+      if (!closed) {
+        try {
+          session.sendRealtimeInput({ audioStreamEnd: true });
+        } catch {
+          /* ignore */
+        }
+        session.close();
       }
-      session.close();
       session = null;
       reportUsage();
     },
