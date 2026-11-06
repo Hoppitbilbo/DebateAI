@@ -7,6 +7,8 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import ChatMessages from "./ChatMessages";
 import Dictionary, { type DictionaryHandle } from "./Dictionary";
+import TargetWords from "./TargetWords";
+import { usedTargetWords } from "../vocabulary";
 import { dictionarySite } from "../wiktionary";
 import type { AvatarFallback } from "../speakerAvatar";
 import { useSpeechDictation } from "@/hooks/useSpeechDictation";
@@ -18,6 +20,8 @@ interface ChatPanelProps {
   messages: ActivityMessage[];
   /** The language the characters speak (practice language code): the dictionary looks words up in it. */
   dictionaryLang?: string;
+  /** The teacher's words to practise, ticked off as the student uses them. */
+  targetWords?: string[];
   /** Language of the dictation (BCP 47) when the teacher fixed one; the interface language otherwise. */
   speechLang?: string;
   onSend: (text: string) => void;
@@ -102,12 +106,17 @@ const ChatPanel = ({
   speechLang,
   draftKey,
   dictionaryLang,
+  targetWords = [],
 }: ChatPanelProps) => {
   const { t, i18n } = useTranslation();
   const uiCode = (i18n.language || "it").slice(0, 2);
   const site = useMemo(() => (dictionaryLang ? dictionarySite(dictionaryLang, uiCode) : null), [dictionaryLang, uiCode]);
   const dictionary = useRef<DictionaryHandle>(null);
   const onWordTap = useCallback((word: string, rect: DOMRect) => dictionary.current?.lookUp(word, rect), []);
+  const usedWords = useMemo(
+    () => usedTargetWords(targetWords, messages.filter((m) => m.role === "user").map((m) => m.content)),
+    [targetWords, messages],
+  );
   const [input, setInput] = useState(() => (draftKey ? loadDraft(draftKey) : ""));
   // A new attempt (another key) starts from its own draft.
   const [shownKey, setShownKey] = useState(draftKey);
@@ -166,9 +175,17 @@ const ChatPanel = ({
       />
 
       {toolbar && <div className="border-t border-border px-4 py-2">{toolbar}</div>}
-      {site && (
-        <div className="flex flex-wrap items-center gap-2 border-t border-border px-4 py-1.5">
-          <Dictionary ref={dictionary} site={site} />
+      {(site || targetWords.length > 0) && (
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 border-t border-border px-4 py-1.5">
+          {site && <Dictionary ref={dictionary} site={site} />}
+          {targetWords.length > 0 && (
+            <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
+              <span className="text-xs font-medium text-muted-foreground">
+                {t("platform.vocabulary.chatTitle")} · {t("platform.vocabulary.usedCount", { used: usedWords.size, total: targetWords.length })}
+              </span>
+              <TargetWords words={targetWords} used={usedWords} />
+            </div>
+          )}
         </div>
       )}
 
