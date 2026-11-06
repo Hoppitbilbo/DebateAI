@@ -192,3 +192,53 @@ func TestRecipeValidate(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+func TestVocabularyRules(t *testing.T) {
+	r := PromptRecipe{App: "convinci-tu", Character: "Galileo Galilei", Topic: "x"}
+	prompt := func(config string) string {
+		system, _, err := buildPrompt(r, assignmentWith("convinci-tu", config))
+		if err != nil {
+			t.Fatal(err)
+		}
+		return system
+	}
+	plain := prompt(`{}`)
+	if strings.Contains(plain, "Vocabulary:") || strings.Contains(plain, "practise these words") {
+		t.Fatal("no vocabulary lines without a teacher choice")
+	}
+	if prompt(`{"vocabulary":"standard"}`) != plain {
+		t.Fatal("standard adds nothing")
+	}
+	if !strings.Contains(prompt(`{"vocabulary":"advanced"}`), "Vocabulary: RICH.") || !strings.Contains(prompt(`{"vocabulary":"basic"}`), "Vocabulary: SIMPLE.") {
+		t.Fatal("level lines")
+	}
+	if strings.Contains(prompt(`{"vocabulary":"weird"}`), "Vocabulary:") {
+		t.Fatal("unknown level ignored")
+	}
+
+	words := prompt(`{"targetWords":["  fecondo ", "Fecondo", "", "inge\"gno", "pensiero\ncritico"]}`)
+	if !strings.Contains(words, `practise these words: "fecondo", "ingegno", "pensiero critico".`) {
+		t.Fatalf("words cleaned and deduplicated:\n%s", words)
+	}
+
+	// A fixed level replaces the foreign-language "common vocabulary".
+	foreign := prompt(`{"language":"en"}`)
+	if !strings.Contains(foreign, "clear, natural sentences with common vocabulary") {
+		t.Fatal("foreign practice default")
+	}
+	if strings.Contains(prompt(`{"language":"en","vocabulary":"advanced"}`), "common vocabulary") {
+		t.Fatal("advanced level must replace common vocabulary")
+	}
+}
+
+func TestTargetWordsLimits(t *testing.T) {
+	var list []string
+	for i := 0; i < maxTargetWords+5; i++ {
+		list = append(list, fmt.Sprintf("parola%d", i))
+	}
+	list[0] = strings.Repeat("a", maxTargetWordChars+10)
+	got := targetWords(assignmentConfig{TargetWords: list})
+	if len(got) != maxTargetWords || len([]rune(got[0])) != maxTargetWordChars {
+		t.Fatalf("limits: %d words, first %d chars", len(got), len([]rune(got[0])))
+	}
+}
