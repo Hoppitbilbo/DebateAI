@@ -24,6 +24,9 @@ const VocabularyFields = ({ config, onChange, idPrefix }: { config: AssignmentCo
   const { t } = useTranslation();
   // The text as typed: re-joining the list on every key would eat a trailing comma.
   const [words, setWords] = useState(() => (config.targetWords ?? []).join(", "));
+  // A list that changes from outside (the saved assignment arriving) replaces the text.
+  const saved = (config.targetWords ?? []).join("\n");
+  if (parseTargetWords(words).join("\n") !== saved) setWords((config.targetWords ?? []).join(", "));
   const setLevel = (v: string) => onChange({ ...config, vocabulary: v === "standard" ? undefined : (v as VocabularyLevel) });
   const setList = (text: string) => {
     setWords(text);

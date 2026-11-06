@@ -5,7 +5,8 @@ import { dictionarySite, fetchDefinition, parseExtract } from "./wiktionary";
 
 /** Real extracts saved from Wiktionary on 2026-11-06. */
 const fixture = (name: string) => readFileSync(join(process.cwd(), "src/features/activity/__fixtures__/wiktionary", `${name}.txt`), "utf8");
-const parse = (name: string, practice: string, ui = "it") => parseExtract(fixture(name), dictionarySite(practice, ui));
+/** Fixtures are named "<host>-<headword>". */
+const parse = (name: string, practice: string, ui = "it") => parseExtract(fixture(name), dictionarySite(practice, ui), name.slice(name.indexOf("-") + 1));
 const texts = (name: string, practice: string, ui?: string) => parse(name, practice, ui).map((s) => s.text);
 
 describe("dictionarySite", () => {
@@ -59,6 +60,19 @@ describe("parseExtract", () => {
     expect(parse("it-virtus", "la", "it")).toEqual([{ pos: "Sostantivo", text: "virtù" }]);
   });
 
+  it("skips examples, which use the word itself", () => {
+    expect(texts("it-affermazione", "it")).toEqual([
+      "estrinsecazione con cui si esprime e avvalora il proprio pensiero",
+      "(linguistica) (raro) frase o parola che afferma",
+      "buon risultato",
+    ]);
+  });
+
+  it("skips the notes of the page's templates", () => {
+    const extract = "== Italiano ==\n=== Aggettivo ===\nverissimo\nsuperlativo di vero\n→ Etimologia mancante. Se vuoi, aggiungila tu.";
+    expect(parseExtract(extract, dictionarySite("it", "it")).map((s) => s.text)).toEqual(["superlativo di vero"]);
+  });
+
   it("finds nothing outside the language section", () => {
     expect(parse("it-virtus", "it")).toEqual([]);
   });
@@ -69,16 +83,25 @@ describe("fetchDefinition", () => {
 
   const page = (title: string, extract?: string) => ({ ok: true, json: async () => ({ query: { pages: { "1": extract ? { title, extract } : { title, missing: "" } } } }) });
 
-  it("tries the lower-case form when the tapped one has no page", async () => {
-    const fetchMock = vi.fn()
-      .mockResolvedValueOnce(page("Fecondo"))
-      .mockResolvedValueOnce(page("fecondo", fixture("it-fecondo")));
+  it("looks up the lower-case form first: a capital starting a sentence is not a name", async () => {
+    const fetchMock = vi.fn().mockResolvedValueOnce(page("fecondo", fixture("it-fecondo")));
     vi.stubGlobal("fetch", fetchMock);
     const def = await fetchDefinition("Fecondo", dictionarySite("it", "it"));
     expect(def?.title).toBe("fecondo");
     expect(def?.url).toBe("https://it.wiktionary.org/wiki/fecondo");
     expect(def?.senses[0].pos).toBe("Aggettivo");
-    expect(fetchMock.mock.calls[1][0]).toContain("titles=fecondo");
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock.mock.calls[0][0]).toContain("titles=fecondo");
+  });
+
+  it("falls back to the form as tapped (German nouns, names)", async () => {
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce(page("verstand"))
+      .mockResolvedValueOnce(page("Verstand", fixture("de-Verstand")));
+    vi.stubGlobal("fetch", fetchMock);
+    const def = await fetchDefinition("Verstand", dictionarySite("de", "it"));
+    expect(def?.title).toBe("Verstand");
+    expect(fetchMock.mock.calls[1][0]).toContain("titles=Verstand");
   });
 
   it("answers null when no form has senses", async () => {

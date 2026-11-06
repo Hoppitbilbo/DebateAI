@@ -1,5 +1,5 @@
 import { createRef } from "react";
-import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import "@/i18n";
 import Dictionary, { type DictionaryHandle } from "./Dictionary";
@@ -28,7 +28,7 @@ describe("Dictionary", () => {
     fireEvent.click(screen.getByRole("button", { name: /Dizionario/ }));
     expect(screen.getByText(/Tocca una parola del personaggio/)).toBeTruthy();
     const box = screen.getByLabelText("Cerca una parola");
-    expect(document.activeElement).toBe(box);
+    await waitFor(() => expect(document.activeElement).toBe(box));
     fireEvent.change(box, { target: { value: " fecondo " } });
     fireEvent.submit(box.closest("form")!);
     expect(await screen.findByText("(biologia) idoneo alla riproduzione")).toBeTruthy();
@@ -44,6 +44,22 @@ describe("Dictionary", () => {
     expect(await screen.findByText("Nessuna definizione trovata per «zzyzx».")).toBeTruthy();
     expect(document.activeElement).not.toBe(screen.getByLabelText("Cerca una parola"));
     expect(screen.getByRole("link", { name: /Wikizionario/ }).getAttribute("href")).toBe("https://it.wiktionary.org/wiki/zzyzx");
+  });
+
+  it("after a tap, the button closes the popover and opens a search ready to type over", async () => {
+    mocks.fetchDefinition.mockResolvedValue(fecondo);
+    const ref = createRef<DictionaryHandle>();
+    render(<Dictionary ref={ref} site={site} />);
+    act(() => ref.current!.lookUp("fecondo", new DOMRect()));
+    await screen.findByText("(biologia) idoneo alla riproduzione");
+    const button = screen.getByRole("button", { name: /Dizionario/ });
+    expect(button.getAttribute("aria-expanded")).toBe("true");
+    fireEvent.click(button);
+    expect(button.getAttribute("aria-expanded")).toBe("false");
+    fireEvent.click(button);
+    const box = screen.getByLabelText("Cerca una parola") as HTMLInputElement;
+    await waitFor(() => expect(document.activeElement).toBe(box));
+    expect([box.selectionStart, box.selectionEnd]).toEqual([0, "fecondo".length]);
   });
 
   it("says when the dictionary does not answer", async () => {

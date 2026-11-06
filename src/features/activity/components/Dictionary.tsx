@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { BookOpen, ExternalLink, Loader2, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Popover, PopoverAnchor, PopoverContent } from "@/components/ui/popover";
+import { Popover, PopoverAnchor, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { fetchDefinition, wiktionaryUrl, type Definition, type DictionarySite } from "../wiktionary";
 
 export interface DictionaryHandle {
@@ -62,12 +62,6 @@ const Dictionary = forwardRef<DictionaryHandle, { site: DictionarySite }>(functi
     },
   }), []);
 
-  const openSearch = () => {
-    anchorRect.current = null;
-    fromTap.current = false;
-    setOpen(true);
-  };
-
   const submit = (e: FormEvent) => {
     e.preventDefault();
     setWord(query.trim());
@@ -78,17 +72,35 @@ const Dictionary = forwardRef<DictionaryHandle, { site: DictionarySite }>(functi
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverAnchor virtualRef={anchor} />
-      <Button ref={button} type="button" variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={openSearch} title={t("platform.dictionary.tapHint")}>
-        <BookOpen className="mr-1.5 h-3.5 w-3.5" />
-        {t("platform.dictionary.open")}
-      </Button>
+      <PopoverTrigger asChild>
+        {/* the trigger toggles the popover; opened from here it points at the button */}
+        <Button
+          ref={button}
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="h-7 px-2 text-xs"
+          onClick={() => {
+            anchorRect.current = null;
+            fromTap.current = false;
+          }}
+          title={t("platform.dictionary.tapHint")}
+        >
+          <BookOpen className="mr-1.5 h-3.5 w-3.5" />
+          {t("platform.dictionary.open")}
+        </Button>
+      </PopoverTrigger>
       <PopoverContent
         className="w-80 max-w-[90vw]"
         aria-label={t("platform.dictionary.open")}
         // After a tap the phone keyboard must not pop up: focus the popover, not the search box.
         onOpenAutoFocus={(e) => {
           e.preventDefault();
-          (fromTap.current ? (e.currentTarget as HTMLElement) : input.current)?.focus();
+          if (fromTap.current) (e.currentTarget as HTMLElement).focus();
+          else {
+            input.current?.focus();
+            input.current?.select(); // typing replaces the last word looked up
+          }
         }}
         tabIndex={-1}
       >

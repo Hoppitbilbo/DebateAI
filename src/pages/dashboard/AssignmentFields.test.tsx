@@ -38,6 +38,12 @@ describe("AssignmentFields vocabulary", () => {
     expect(last().config.targetWords).toBeUndefined();
   });
 
+  it("shows a list that arrives after the form (the saved assignment loading)", () => {
+    const { rerender } = render(<AssignmentFields draft={draftOf()} onChange={vi.fn()} />);
+    rerender(<AssignmentFields draft={{ ...draftOf(), config: { targetWords: ["ingegno", "fecondo"] } }} onChange={vi.fn()} />);
+    expect((screen.getByLabelText("Parole da far usare") as HTMLInputElement).value).toBe("ingegno, fecondo");
+  });
+
   it("shows the saved level and list", () => {
     renderFields({ ...draftOf(), config: { vocabulary: "advanced", targetWords: ["ingegno", "fecondo"] } });
     expect((screen.getByLabelText("Parole da far usare") as HTMLInputElement).value).toBe("ingegno, fecondo");
