@@ -146,6 +146,8 @@ type assignmentConfig struct {
 	Questions     float64   `json:"questions"`
 	Difficulty    string    `json:"difficulty"`
 	Language      string    `json:"language"`
+	Vocabulary    string    `json:"vocabulary"`  // "basic", "standard" (default) or "advanced"
+	TargetWords   []string  `json:"targetWords"` // words the teacher wants the student to practise
 }
 
 type wikiRef struct {
@@ -314,13 +316,63 @@ func languageRules(uiLang string, c assignmentConfig) []string {
 	lang := practiceLanguages[code]
 	lines := []string{fmt.Sprintf("Always answer in %s, without mixing in words from other languages.", lang)}
 	if c.Language != "" && code != uiLang {
-		lines = append(lines, fmt.Sprintf("The student is practising %s as a foreign language at school: use clear, natural sentences with common vocabulary, keep answering in %s even if the student writes in another language, and never translate your answers.", lang, lang))
+		// a vocabulary level fixed by the teacher replaces "common vocabulary"
+		sentences := "clear, natural sentences with common vocabulary"
+		if vocabularyLevels[c.Vocabulary] != "" {
+			sentences = "clear, natural sentences"
+		}
+		lines = append(lines, fmt.Sprintf("The student is practising %s as a foreign language at school: use %s, keep answering in %s even if the student writes in another language, and never translate your answers.", lang, sentences, lang))
+	}
+	return lines
+}
+
+// Limits of the teacher's word list (MAX_TARGET_WORDS, MAX_TARGET_WORD_CHARS in vocabulary.ts).
+const (
+	maxTargetWords     = 15
+	maxTargetWordChars = 40
+)
+
+// vocabularyLevels are the levels a teacher can fix; "standard" adds nothing.
+var vocabularyLevels = map[string]string{
+	"basic":    "Vocabulary: SIMPLE. Use everyday words and short, clear sentences; when you must use an unusual word, explain it in passing.",
+	"advanced": "Vocabulary: RICH. Use precise, varied and less common words typical of your era and field, so that the student meets new vocabulary; stay understandable, and do not explain every word unless asked.",
+}
+
+// targetWords is the teacher's list, trimmed, without duplicates and within the limits.
+func targetWords(c assignmentConfig) []string {
+	var words []string
+	seen := map[string]bool{}
+	for _, w := range c.TargetWords {
+		w = strings.Join(strings.Fields(strings.ReplaceAll(w, `"`, "")), " ")
+		if r := []rune(w); len(r) > maxTargetWordChars {
+			w = string(r[:maxTargetWordChars])
+		}
+		if w == "" || seen[strings.ToLower(w)] {
+			continue
+		}
+		seen[strings.ToLower(w)] = true
+		words = append(words, w)
+		if len(words) == maxTargetWords {
+			break
+		}
+	}
+	return words
+}
+
+// vocabularyRules: the teacher's vocabulary level and the words the student should meet.
+func vocabularyRules(c assignmentConfig) []string {
+	var lines []string
+	if rule := vocabularyLevels[c.Vocabulary]; rule != "" {
+		lines = append(lines, rule)
+	}
+	if words := targetWords(c); len(words) > 0 {
+		lines = append(lines, fmt.Sprintf("The teacher wants the student to practise these words: \"%s\". Use some of them naturally in your answers so that the student meets them in context, but never ask the student to use them and never list them.", strings.Join(words, "\", \"")))
 	}
 	return lines
 }
 
 func common(uiLang string, a *domain.Assignment, c assignmentConfig) string {
-	lines := append(languageRules(uiLang, c),
+	lines := append(append(languageRules(uiLang, c), vocabularyRules(c)...),
 		"Stay in character at all times; never say you are an AI or a language model.",
 		"This is an educational historical role-play at school. Portraying controversial or violent historical figures is part of the lesson: speak with their documented views, words and context so that students can study and question them, without refusing and without stepping out of the role to lecture.",
 		"Never use slurs, hate propaganda, graphic violence or encouragement to harm anyone: if the student pushes in that direction, answer as the character would while making the historical facts and their consequences clear.",

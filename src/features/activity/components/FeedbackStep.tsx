@@ -1,14 +1,16 @@
-import { lazy, Suspense, useRef, useState } from "react";
+import { lazy, Suspense, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
-import { Award, Bot, Download, LayoutDashboard, Loader2, MessagesSquare, RotateCcw, User } from "lucide-react";
+import { Award, BookOpen, Bot, Download, LayoutDashboard, Loader2, MessagesSquare, RotateCcw, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import MarkdownViewer from "@/components/shared/MarkdownViewer";
 import { useAuth } from "@/context/auth";
 import type { ActivityMessage } from "../types";
 import type { EvaluationResult } from "@/utils/evaluationUtils";
 import { useDiffusionPreference } from "../diffusion/useDiffusionPreference";
+import { usedTargetWords } from "../vocabulary";
+import TargetWords from "./TargetWords";
 
 // The diffusion effect is an easter egg, off by default: its code (and its
 // text-layout library) is downloaded only when it plays.
@@ -37,6 +39,8 @@ interface FeedbackStepProps {
   error?: string | null;
   reflection: string;
   messages: ActivityMessage[];
+  /** The teacher's words to practise: which ones the student used. */
+  targetWords?: string[];
   facts?: { label: string; value: React.ReactNode }[];
   onRestart: () => void;
   restartLabel?: string;
@@ -53,7 +57,28 @@ const ScoreCard = ({ label, value }: { label: string; value?: number }) => (
   </div>
 );
 
-const FeedbackStep = ({ evaluation, partial, loading, error, reflection, messages, facts, onRestart, restartLabel, isAssignment, title, submission }: FeedbackStepProps) => {
+/** The words to practise the student used, and the ones left for next time. */
+const WordsCard = ({ words, messages }: { words: string[]; messages: ActivityMessage[] }) => {
+  const { t } = useTranslation();
+  const used = useMemo(() => usedTargetWords(words, messages.filter((m) => m.role === "user").map((m) => m.content)), [words, messages]);
+  const missing = words.filter((w) => !used.has(w));
+  return (
+    <section className="rounded-lg border border-border bg-card p-6 text-card-foreground shadow-sm">
+      <h3 className="mb-3 flex items-center gap-2 font-semibold">
+        <BookOpen className="h-5 w-5 text-primary" /> {t("platform.vocabulary.feedbackTitle")}
+      </h3>
+      <p className="text-sm">
+        {missing.length === 0 ? t("platform.vocabulary.feedbackAll") : t("platform.vocabulary.feedbackSome", { used: used.size, total: words.length })}
+      </p>
+      <TargetWords words={words} used={used} className="mt-3" />
+      {missing.length > 0 && used.size > 0 && (
+        <p className="mt-3 text-sm text-muted-foreground">{t("platform.vocabulary.feedbackMissing")} {missing.join(", ")}</p>
+      )}
+    </section>
+  );
+};
+
+const FeedbackStep = ({ evaluation, partial, loading, error, reflection, messages, targetWords, facts, onRestart, restartLabel, isAssignment, title, submission }: FeedbackStepProps) => {
   const { t } = useTranslation();
   const { user } = useAuth();
   const diffusion = useDiffusionPreference();
@@ -117,6 +142,8 @@ const FeedbackStep = ({ evaluation, partial, loading, error, reflection, message
           </dl>
         )}
       </section>
+
+      {targetWords && targetWords.length > 0 && <WordsCard words={targetWords} messages={messages} />}
 
       <section className="rounded-lg border border-border bg-card p-6 text-card-foreground shadow-sm">
         <h3 className="mb-3 flex items-center gap-2 font-semibold">

@@ -60,4 +60,19 @@ describe("FeedbackStep diffusion easter egg", () => {
     expect(screen.getByTestId("markdown")).toBeTruthy();
     expect(screen.queryByText(/diffusing/)).toBeNull();
   });
+
+  it("shows which words to practise were used", () => {
+    renderFeedback({ targetWords: ["fecondo", "ingegno"], messages: [{ id: "1", role: "user", content: "Una mente feconda" }] });
+    expect(screen.getByText("platform.vocabulary.feedbackSome")).toBeTruthy();
+    expect(screen.getByText(/platform.vocabulary.feedbackMissing ingegno/)).toBeTruthy();
+  });
+
+  it("praises a student who used them all, and shows nothing without a list", () => {
+    const { unmount } = renderFeedback({ targetWords: ["fecondo"], messages: [{ id: "1", role: "user", content: "fecondo" }] });
+    expect(screen.getByText("platform.vocabulary.feedbackAll")).toBeTruthy();
+    unmount();
+    renderFeedback();
+    expect(screen.queryByText("platform.vocabulary.feedbackTitle")).toBeNull();
+  });
 });
+

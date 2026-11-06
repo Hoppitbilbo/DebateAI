@@ -1,4 +1,4 @@
-import type { ComponentProps, ReactNode } from "react";
+import { useMemo, type ComponentProps, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import type { ActivityPhase, AppMeta } from "../types";
 import type { ActivityFlow, EvaluationBrief } from "../useActivityFlow";
@@ -10,6 +10,7 @@ import ReflectionStep from "./ReflectionStep";
 import { SetupCard } from "./SetupCard";
 import { ChatSaveNotice, SubmitNotice } from "./SaveNotice";
 import { isForeignPractice, practiceLanguage } from "../language";
+import { targetWordsOf } from "../vocabulary";
 
 type ChatPanelProps = ComponentProps<typeof ChatPanel>;
 
@@ -58,6 +59,7 @@ interface ActivityRunnerProps {
 const ActivityRunner = ({ app, flow, onRestart, phaseLabels, setup, chat, reflection, feedback }: ActivityRunnerProps) => {
   const { t } = useTranslation();
   const { phase, session, engine, evaluation, minTurns } = flow;
+  const targetWords = useMemo(() => targetWordsOf(session.assignment?.config), [session.assignment]);
   const { ready, replacement, ...chatProps } = chat;
 
   return (
@@ -88,6 +90,8 @@ const ActivityRunner = ({ app, flow, onRestart, phaseLabels, setup, chat, reflec
             canEnd={session.turns >= minTurns}
             footerNote={session.turns < minTurns ? t("platform.activity.minTurnsNote", { count: minTurns - session.turns }) : null}
             speechLang={isForeignPractice(session.assignment) ? practiceLanguage(session.assignment).speech : undefined}
+            dictionaryLang={practiceLanguage(session.assignment).code}
+            targetWords={targetWords}
             onRetry={(id) => void engine.retry(id)}
             canRetry={engine.canRetry}
             ended={engine.ended && !engine.busy ? {
@@ -118,6 +122,7 @@ const ActivityRunner = ({ app, flow, onRestart, phaseLabels, setup, chat, reflec
             error={evaluation.error}
             reflection={evaluation.reflection}
             messages={engine.messages}
+            targetWords={targetWords}
             facts={feedback.facts}
             onRestart={onRestart}
             restartLabel={feedback.restartLabel}

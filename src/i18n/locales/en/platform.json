@@ -867,5 +867,36 @@
     "practiceBadge": "Speaking {{language}}",
     "assignmentLabel": "Which language the characters speak",
     "assignmentHint": "Pick a foreign language to let students practise: the characters will answer only in that language, the rest of the site stays in each student's language."
+  },
+  "vocabulary": {
+    "label": "Vocabulary level",
+    "levels": {
+      "basic": "Simple",
+      "standard": "Normal",
+      "advanced": "Rich"
+    },
+    "hint": "Simple: everyday words. Rich: precise, less common words, so students discover new ones.",
+    "targetLabel": "Words to practise",
+    "targetPlaceholder": "e.g. ingenuity, fruitful, critical thinking",
+    "targetHint": "Separated by commas, at most {{max}}. Students see them in the chat, which ticks off the ones already used; the character uses them naturally.",
+    "chatTitle": "Words to use",
+    "usedCount": "{{used}} of {{total}} used",
+    "used": "used",
+    "notUsed": "not used yet",
+    "feedbackTitle": "Words to use",
+    "feedbackAll": "You used them all: great work!",
+    "feedbackSome": "You used {{used}} of {{total}} words.",
+    "feedbackMissing": "To use next time:"
+  },
+  "dictionary": {
+    "open": "Dictionary",
+    "tapHint": "Tap a word in the character's messages to see what it means.",
+    "searchLabel": "Look up a word",
+    "search": "Search",
+    "loading": "Looking up…",
+    "notFound": "No definition found for “{{word}}”.",
+    "error": "The dictionary is not responding: try again shortly.",
+    "source": "Open on Wiktionary",
+    "close": "Close"
   }
 }

@@ -867,5 +867,36 @@
     "practiceBadge": "Si parla in {{language}}",
     "assignmentLabel": "In che lingua parlano i personaggi",
     "assignmentHint": "Scegli una lingua straniera per far esercitare gli studenti: i personaggi risponderanno solo in quella lingua, il resto del sito resta nella lingua di ciascuno."
+  },
+  "vocabulary": {
+    "label": "Livello del vocabolario",
+    "levels": {
+      "basic": "Semplice",
+      "standard": "Normale",
+      "advanced": "Ricco"
+    },
+    "hint": "Semplice: parole di tutti i giorni. Ricco: parole precise e meno comuni, per farne scoprire di nuove.",
+    "targetLabel": "Parole da far usare",
+    "targetPlaceholder": "es. ingegno, fecondo, pensiero critico",
+    "targetHint": "Separate da virgole, al massimo {{max}}. Gli studenti le vedono nella chat, che segna quelle già usate; il personaggio le usa con naturalezza.",
+    "chatTitle": "Parole da usare",
+    "usedCount": "{{used}} di {{total}} usate",
+    "used": "usata",
+    "notUsed": "non ancora usata",
+    "feedbackTitle": "Le parole da usare",
+    "feedbackAll": "Le hai usate tutte: ottimo lavoro!",
+    "feedbackSome": "Hai usato {{used}} parole su {{total}}.",
+    "feedbackMissing": "Da usare la prossima volta:"
+  },
+  "dictionary": {
+    "open": "Dizionario",
+    "tapHint": "Tocca una parola del personaggio per vederne il significato.",
+    "searchLabel": "Cerca una parola",
+    "search": "Cerca",
+    "loading": "Cerco…",
+    "notFound": "Nessuna definizione trovata per «{{word}}».",
+    "error": "Il dizionario non risponde: riprova tra poco.",
+    "source": "Apri su Wikizionario",
+    "close": "Chiudi"
   }
 }

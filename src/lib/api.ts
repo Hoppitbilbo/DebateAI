@@ -101,6 +101,8 @@ export interface AssignmentConfig {
   shuffle?: boolean; // personaggio-misterioso: each student plays the characters in their own order
   difficulty?: "easy" | "medium" | "hard"; // personaggio-misterioso, convinci-tu, impersona-tu
   language?: string; // the language the characters speak (see features/activity/language.ts)
+  vocabulary?: "basic" | "standard" | "advanced"; // the level the characters speak at (features/activity/vocabulary.ts)
+  targetWords?: string[]; // words the student should practise
 }
 
 export interface SessionSummary {

@@ -3,7 +3,14 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import ChatPanel from "./ChatPanel";
 import type { ActivityMessage } from "../types";
 
-const mocks = vi.hoisted(() => ({ markdown: vi.fn() }));
+const mocks = vi.hoisted(() => ({ markdown: vi.fn(), fetchDefinition: vi.fn(), wordAtPoint: vi.fn() }));
+vi.mock("../wiktionary", async (orig) => ({ ...(await orig<typeof import("../wiktionary")>()), fetchDefinition: mocks.fetchDefinition }));
+vi.mock("../wordAtPoint", () => ({ wordAtPoint: mocks.wordAtPoint }));
+globalThis.ResizeObserver ??= class {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+};
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key, i18n: { language: "it" } }),
 }));
@@ -160,5 +167,32 @@ describe("ChatPanel draft", () => {
     rerender(<ChatPanel messages={history} onSend={vi.fn()} live={{ ...live, liveMode: false, liveAvailable: false, liveUnsupported: true } as never} />);
     expect(screen.getByText("platform.live.unsupported")).toBeTruthy();
     expect(screen.queryByText("platform.live.start")).toBeNull();
+  });
+
+  it("ticks off the words to practise the student has used", () => {
+    const messages: ActivityMessage[] = [...history, { id: "m2", role: "user", content: "Una mente feconda" }];
+    render(<ChatPanel messages={messages} onSend={vi.fn()} targetWords={["fecondo", "ingegno"]} />);
+    expect(screen.getAllByRole("listitem").map((li) => li.textContent)).toEqual([
+      "fecondo(platform.vocabulary.used)",
+      "ingegno(platform.vocabulary.notUsed)",
+    ]);
+  });
+
+  it("opens the dictionary on a word tapped in a character's message, not in the student's", async () => {
+    mocks.fetchDefinition.mockResolvedValue({ title: "risposta", url: "u", senses: [{ pos: "Sostantivo", text: "il rispondere" }] });
+    mocks.wordAtPoint.mockReturnValue({ word: "risposta", rect: new DOMRect() });
+    render(<ChatPanel messages={history} onSend={vi.fn()} dictionaryLang="it" />);
+    fireEvent.click(screen.getByText("Una domanda"));
+    expect(mocks.wordAtPoint).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByText("Una risposta"));
+    expect(mocks.wordAtPoint).toHaveBeenCalledWith(expect.any(Number), expect.any(Number), "it");
+    expect(await screen.findByText("il rispondere")).toBeTruthy();
+    expect(mocks.fetchDefinition).toHaveBeenCalledWith("risposta", { host: "it", section: "Italiano" });
+  });
+
+  it("has no dictionary or word list when it has no language and no words", () => {
+    render(<ChatPanel messages={history} onSend={vi.fn()} />);
+    expect(screen.queryByText("platform.dictionary.open")).toBeNull();
+    expect(screen.queryByRole("list")).toBeNull();
   });
 });
