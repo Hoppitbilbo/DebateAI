@@ -2,7 +2,7 @@
 
 Data: 29 ottobre 2026. Stato: **T1 e P1–P5 implementate sul branch `feat/classe-username`
 (non pushato, non unito a master); P6 sul branch `feat/classe-username-p6` (non unito);
-P7 e T2–T4 da fare**. Vedi «Stato di avanzamento» qui sotto.
+P7 automatica fatta il 6/11 (restano la conversazione reale in staging e la prova su telefono); T2–T4 da fare**. Vedi «Stato di avanzamento» qui sotto.
 
 ## Stato di avanzamento (per chi riprende il lavoro)
 
@@ -281,7 +281,22 @@ pushato):
   dei login in corso §7), la colonna azioni dei membri su telefono (P5) e i test HTTP con socket
   reali in CI/staging (P7).
 
-**Da fare, in quest'ordine:** T2 → T3 → P7/T4 (P5 già unita in `feat/classe-username`; P6 da unire).
+- **P7, parte automatica (2026-11-06):** branch ribasato su `master` (`b162b39`); server Go reale
+  su database di prova, provider IA simulato compatibile OpenAI, Chromium con Playwright, porta 8799.
+  19 controlli verdi: docente crea la classe con username dal browser e legge il link → studente
+  senza email si iscrive dal link → conversazione WikiChat salvata sul server → logout → login con
+  username in un secondo browser, stesse sessioni → cambio password da Account: la seconda sessione
+  aperta è revocata, vecchia password rifiutata → link di recupero assistito creato dal docente:
+  nuova password valida, precedente rifiutata, link usabile una volta → 40 iscrizioni e login dallo
+  stesso IP tutti accettati → password sbagliate sullo stesso username bloccate (429) al 20º
+  tentativo senza bloccare un compagno → classe con email (invito, registrazione, login con email)
+  e aula lampo (apertura e ingresso ospite) senza regressioni. Nessun difetto trovato nel codice.
+  Nota: nell'altro browser la pagina dell'attività riparte dalla preparazione invece di mostrare la
+  conversazione finita (ripresa di un tentativo, punto aperto dell'audit, non di questo piano).
+- **P7, da fare:** una conversazione reale in staging fino al fornitore IA; una persona su telefono
+  (iscrizione dal QR, login, cambio password).
+
+**Da fare, in quest'ordine:** chiudere P7 (staging e telefono) → unire p6 → T2 → T3 → T4 (P5 già unita in `feat/classe-username`; P6 da unire).
 Piccola miglioria possibile: il testo dell'email d'invito dice «completa la registrazione»
 anche a chi ha già un account; la pagina gestisce comunque il caso.
 
