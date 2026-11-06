@@ -75,16 +75,21 @@ export const resetAiStatus = () => {
   statusCache = null;
 };
 
-/** Translates gateway errors into a message for the student. */
+/** The message for an error code the interface has no text for, from its HTTP status. */
+const keyForStatus = (status: number) =>
+  status === 429 ? "rate_limited" : status >= 500 ? "ai_error" : "generic";
+
+/**
+ * Translates gateway errors into a message for the student. The raw text
+ * (provider details, parse errors…) is never shown: callers log the error.
+ */
 export const formatAiError = (error: unknown): string => {
   if (error instanceof ApiError) {
     const key = `platform.aiErrors.${error.code}`;
-    if (i18n.exists(key)) return i18n.t(key);
-    return error.message;
+    return i18n.t(i18n.exists(key) ? key : `platform.aiErrors.${keyForStatus(error.status)}`);
   }
   // fetch() failing means the network or the server, never a useful message for students
   if (error instanceof TypeError) return i18n.t("platform.aiErrors.server_unreachable");
-  if (error instanceof Error) return error.message;
   return i18n.t("platform.aiErrors.generic");
 };
 

@@ -1,13 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import type { AppType, Assignment, TranscriptMessage } from "@/lib/api";
+import type { AppType, Assignment, TranscriptMessage, WikiRef } from "@/lib/api";
 import type { PromptRecipe } from "@/services/aiService";
 import type { EvaluationInput } from "@/utils/evaluationUtils";
 import { type ActivityMessage, type ActivityPhase, newId } from "./types";
 import { EndReason, useActivitySession } from "./useActivitySession";
 import { useChatEngine } from "./useChatEngine";
 import { useEvaluationFlow } from "./useEvaluationFlow";
+import { practiceLanguage } from "./language";
+import { bioOf, useWikiSummaries } from "./wiki";
 
 interface LiveConfig {
   recipe?: PromptRecipe;
@@ -15,9 +17,14 @@ interface LiveConfig {
   characterBio?: string;
 }
 
+/** A character's biography for the prompts, in the activity's language (see wiki.ts bioOf). */
+export type BioOf = (ref: WikiRef | null | undefined) => string;
+
 interface FlowOptions {
+  /** The characters whose Wikipedia biographies the app needs. */
+  characters?: (WikiRef | null | undefined)[];
   /** Gemini Live voice settings for the current phase, or null when voice is off. */
-  live?: (phase: ActivityPhase, assignment: Assignment | null) => LiveConfig | null;
+  live?: (phase: ActivityPhase, assignment: Assignment | null, bio: BioOf) => LiveConfig | null;
   /** Extra context saved with the transcript (characters, topic...), fixed or depending on the assignment. */
   context?: Record<string, unknown> | ((assignment: Assignment | null) => Record<string, unknown>);
   /**
@@ -37,6 +44,14 @@ interface FlowOptions {
 export const titleOf = (v: unknown): string | undefined => {
   const title = typeof v === "string" ? v : (v as { title?: unknown } | null)?.title;
   return typeof title === "string" && title.trim() ? title : undefined;
+};
+
+/** A character saved as text or as a Wikipedia reference, with the Wikipedia it was chosen on when known. */
+export const refOf = (v: unknown): WikiRef | undefined => {
+  const title = titleOf(v);
+  if (!title) return undefined;
+  const lang = (v as { lang?: unknown } | null)?.lang;
+  return typeof lang === "string" && lang ? { title, lang } : { title };
 };
 
 /**
@@ -59,10 +74,13 @@ export type EvaluationBrief = Omit<EvaluationInput, "messages" | "reflection" | 
  * It owns the phase, the server session, the chat engine and the evaluation,
  * so that an app only describes what is specific to it (see ActivityRunner).
  */
-export const useActivityFlow = (appType: AppType, { live, context, onEnded, restore }: FlowOptions = {}) => {
+export const useActivityFlow = (appType: AppType, { characters, live, context, onEnded, restore }: FlowOptions = {}) => {
   const { t } = useTranslation();
   const session = useActivitySession(appType);
   const [phase, setPhase] = useState<ActivityPhase>("setup");
+  // The biographies follow the language the characters speak (the teacher's choice, or the interface's).
+  const wiki = useWikiSummaries(characters ?? [], practiceLanguage(session.assignment).code);
+  const bio: BioOf = (ref) => bioOf(ref, wiki.summaries);
 
   const defaultOnEnded = useCallback((reason: EndReason) => {
     toast.success(reason === "goal_reached" ? t("platform.activity.goalReachedToast") : t("platform.activity.turnLimitToast"));
@@ -70,7 +88,7 @@ export const useActivityFlow = (appType: AppType, { live, context, onEnded, rest
 
   const engine = useChatEngine({
     session,
-    live: live?.(phase, session.assignment) ?? null,
+    live: live?.(phase, session.assignment, bio) ?? null,
     context: typeof context === "function" ? context(session.assignment) : context,
     onEnded: onEnded ?? defaultOnEnded,
   });
@@ -146,6 +164,9 @@ export const useActivityFlow = (appType: AppType, { live, context, onEnded, rest
     setPhase,
     engine,
     evaluation,
+    /** The characters' biographies; `loading` until they have arrived. */
+    bio,
+    loadingBios: wiki.loading,
     /** Turns the student must take before ending the chat. */
     minTurns: Math.max(2, session.minTurns),
     begin,

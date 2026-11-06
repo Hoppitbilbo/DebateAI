@@ -85,6 +85,8 @@ export type AppType =
 export interface WikiRef {
   title: string;
   snippet?: string;
+  /** The Wikipedia the title was chosen on ("it", "en"…); missing in older refs, read as the interface's. */
+  lang?: string;
 }
 
 /** App-specific presets a teacher can lock in an assignment. All optional. */

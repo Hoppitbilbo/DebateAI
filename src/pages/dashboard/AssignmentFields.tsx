@@ -52,6 +52,7 @@ export const GoalsEditor = ({ draft, onChange }: DraftProps) => {
       });
       if (res.goals?.length) set({ goals: res.goals.slice(0, 8) });
     } catch (e) {
+      console.error("Goal suggestions failed:", e);
       toast.error(ai.formatError(e));
     } finally {
       setSuggesting(false);

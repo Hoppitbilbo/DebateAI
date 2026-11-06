@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { ArrowRight, Flag, Mic, MicOff, Radio, Send, Square } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import ChatMessages from "./ChatMessages";
 import type { AvatarFallback } from "../speakerAvatar";
@@ -109,7 +110,8 @@ const ChatPanel = ({
     if (draftKey) saveDraft(draftKey, input);
   }, [draftKey, input]);
   useEffect(() => pruneDrafts(), []);
-  const dictation = useSpeechDictation(speechLang ?? i18n.language, setInput);
+  const dictation = useSpeechDictation(speechLang ?? i18n.language, setInput, (kind) =>
+    toast.error(t(`platform.activity.dictationFailed.${kind}`), { id: "dictation-failure" }));
 
   const submit = () => {
     const text = input.trim();
@@ -125,8 +127,8 @@ const ChatPanel = ({
     <section className="flex flex-col overflow-hidden rounded-lg border border-border bg-card text-card-foreground shadow-sm">
       {live?.liveAvailable && (
         <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-2">
-          <div className="flex items-center gap-2 text-sm">
-            <span className={cn("h-2.5 w-2.5 rounded-full", liveOn ? "animate-pulse bg-red-500" : "bg-muted-foreground/50")} />
+          <div className="flex items-center gap-2 text-sm" role="status">
+            <span aria-hidden="true" className={cn("h-2.5 w-2.5 rounded-full", liveOn ? "animate-pulse bg-red-500" : "bg-muted-foreground/50")} />
             <span className="text-muted-foreground">
               {liveOn ? t(`platform.live.state.${live.liveState}`) : t("platform.live.offHint")}
             </span>
@@ -136,6 +138,9 @@ const ChatPanel = ({
             {liveOn ? t("platform.live.stop") : t("platform.live.start")}
           </Button>
         </div>
+      )}
+      {live?.liveUnsupported && (
+        <p className="border-b border-border px-4 py-2 text-sm text-muted-foreground">{t("platform.live.unsupported")}</p>
       )}
 
       <ChatMessages
@@ -168,7 +173,9 @@ const ChatPanel = ({
                   submit();
                 }
               }}
-              placeholder={liveOn ? t("platform.live.typeWhileLive") : placeholder || t("platform.activity.placeholder")}
+              placeholder={
+                liveOn ? t("platform.live.typeWhileLive") : dictation.listening ? t("platform.activity.dictating") : placeholder || t("platform.activity.placeholder")
+              }
               disabled={disabled}
               rows={2}
               className="min-h-[44px] resize-none"

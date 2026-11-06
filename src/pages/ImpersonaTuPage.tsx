@@ -5,8 +5,7 @@ import { Label } from "@/components/ui/label";
 import type { Assignment, WikiRef } from "@/lib/api";
 import ActivityRunner from "@/features/activity/components/ActivityRunner";
 import { CharacterPicker } from "@/features/activity/components/SetupCard";
-import { titleOf, useActivityFlow } from "@/features/activity/useActivityFlow";
-import { bioOf, useWikiSummaries } from "@/features/activity/wiki";
+import { type BioOf, refOf, useActivityFlow } from "@/features/activity/useActivityFlow";
 import { MAX_TOPIC_CHARS, recipeFor } from "@/features/activity/recipe";
 import { APPS } from "@/features/activity/types";
 import { Difficulty, difficultyOf, isDifficulty } from "@/features/activity/difficulty";
@@ -22,37 +21,37 @@ const ImpersonaTuPage = () => {
   const [topic, setTopic] = useState("");
   const [chosenLevel, setChosenLevel] = useState<Difficulty>();
 
-  const { summaries, loading } = useWikiSummaries([aiChar, userChar]);
-  const aiBio = bioOf(aiChar, summaries);
   const levelFor = (assignment: Assignment | null) => difficultyOf(assignment?.config.difficulty, chosenLevel);
   // The server writes the character's instructions from this recipe.
-  const recipeOf = (assignment: Assignment | null) =>
+  const recipeOf = (assignment: Assignment | null, bio: BioOf) =>
     aiChar && userChar
       ? recipeFor(app.type, {
           character: aiChar.title,
-          bio: aiBio,
+          bio: bio(aiChar),
           userCharacter: userChar.title,
-          userBio: bioOf(userChar, summaries),
+          userBio: bio(userChar),
           topic,
           difficulty: levelFor(assignment),
         })
       : undefined;
 
   const flow = useActivityFlow(app.type, {
-    live: (phase, assignment) =>
-      phase === "chat" && aiChar ? { recipe: recipeOf(assignment), characterName: aiChar.title, characterBio: aiBio } : null,
+    characters: [aiChar, userChar],
+    live: (phase, assignment, bio) =>
+      phase === "chat" && aiChar ? { recipe: recipeOf(assignment, bio), characterName: aiChar.title, characterBio: bio(aiChar) } : null,
     context: (assignment) => ({ aiCharacter: aiChar?.title, userCharacter: userChar?.title, topic, difficulty: levelFor(assignment) }),
     restore: (saved) => {
-      const ai = titleOf(saved.aiCharacter);
-      const student = titleOf(saved.userCharacter);
-      if (ai) setAiChar({ title: ai });
-      if (student) setUserChar({ title: student });
+      const ai = refOf(saved.aiCharacter);
+      const student = refOf(saved.userCharacter);
+      if (ai) setAiChar(ai);
+      if (student) setUserChar(student);
       if (typeof saved.topic === "string") setTopic(saved.topic);
       if (isDifficulty(saved.difficulty)) setChosenLevel(saved.difficulty);
     },
   });
   const { preset, engine } = flow;
-  const recipe = recipeOf(flow.session.assignment);
+  const recipe = recipeOf(flow.session.assignment, flow.bio);
+  const loading = flow.loadingBios;
   const level = levelFor(flow.session.assignment);
 
   useEffect(() => {

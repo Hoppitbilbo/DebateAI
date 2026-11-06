@@ -10,9 +10,8 @@ import { Textarea } from "@/components/ui/textarea";
 import type { Assignment, WikiRef } from "@/lib/api";
 import ActivityRunner from "@/features/activity/components/ActivityRunner";
 import { CharacterPicker, SetupCard } from "@/features/activity/components/SetupCard";
-import { titleOf, useActivityFlow } from "@/features/activity/useActivityFlow";
+import { type BioOf, refOf, useActivityFlow } from "@/features/activity/useActivityFlow";
 import type { EndReason } from "@/features/activity/useActivitySession";
-import { bioOf, useWikiSummaries } from "@/features/activity/wiki";
 import { recipeFor } from "@/features/activity/recipe";
 import { APPS } from "@/features/activity/types";
 import { availableQuestions, isCorrectGuess, nextTeacherHint, QUESTIONS, RANDOM_CHARACTERS } from "@/features/activity/mystery";
@@ -45,15 +44,13 @@ const PersonaggioMisteriosoPage = () => {
   const [foundInChat, setFoundInChat] = useState(false);
   const [chosenLevel, setChosenLevel] = useState<Difficulty>();
 
-  const { summaries, loading } = useWikiSummaries([character]);
-  const bio = bioOf(character, summaries);
   const levelFor = (assignment: Assignment | null) => difficultyOf(assignment?.config.difficulty, chosenLevel);
   // The server writes the character's instructions from this recipe.
-  const recipeOf = (assignment: Assignment | null) =>
+  const recipeOf = (assignment: Assignment | null, bio: BioOf) =>
     character
       ? recipeFor(app.type, {
           character: character.title,
-          bio,
+          bio: bio(character),
           difficulty: levelFor(assignment),
           questions: availableQuestions(chosenQuestions, assignment?.maxTurns),
         })
@@ -79,15 +76,16 @@ const PersonaggioMisteriosoPage = () => {
   const lastQuestion = useRef("");
 
   const flow = useActivityFlow(app.type, {
-    live: (phase, assignment) =>
-      phase === "chat" && character && !guessing ? { recipe: recipeOf(assignment), characterName: character.title, characterBio: bio } : null,
+    characters: [character],
+    live: (phase, assignment, bio) =>
+      phase === "chat" && character && !guessing ? { recipe: recipeOf(assignment, bio), characterName: character.title, characterBio: bio(character) } : null,
     // The character is saved too, so that a reload can take the game up again.
     context: (assignment) => ({ character: character?.title, questions: availableQuestions(chosenQuestions, assignment?.maxTurns), difficulty: levelFor(assignment) }),
     onEnded,
     restore: (saved) => {
-      const title = titleOf(saved.character);
-      if (title) {
-        setCharacter({ title });
+      const ref = refOf(saved.character);
+      if (ref) {
+        setCharacter(ref);
         setConcealed(true);
       }
       if (typeof saved.questions === "number") setChosenQuestions(saved.questions);
@@ -107,7 +105,8 @@ const PersonaggioMisteriosoPage = () => {
   const [round, setRound] = useState(0);
   const roundCharacter = order.length ? order[round % order.length] : null;
   const moreRounds = order.length > 1 && round + 1 < order.length;
-  const recipe = recipeOf(session.assignment);
+  const recipe = recipeOf(session.assignment, flow.bio);
+  const loading = flow.loadingBios;
   // Never more questions than the assignment's turn limit, so the game ends when it says it does.
   const turnCap = session.assignment?.maxTurns ?? 0;
   const maxQuestions = availableQuestions(chosenQuestions, turnCap);

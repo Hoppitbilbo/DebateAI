@@ -162,7 +162,12 @@
     "resumed": "Hai ripreso la conversazione da dove l'avevi lasciata.",
     "notSaved": "Questa esercitazione non viene salvata: il server non risponde. Puoi continuare e scaricare la conversazione alla fine.",
     "saveFailed": "Ultimo messaggio non salvato sul server.",
-    "stepOf": "Passo {{n}} di {{total}}: {{label}}"
+    "stepOf": "Passo {{n}} di {{total}}: {{label}}",
+    "dictating": "Ti ascolto… parla pure",
+    "dictationFailed": {
+      "denied": "Microfono non disponibile: controlla i permessi del browser. Intanto puoi scrivere il messaggio.",
+      "failed": "La dettatura si è interrotta: puoi scrivere il messaggio."
+    }
   },
   "assignment": {
     "label": "Compito",
@@ -185,11 +190,16 @@
       "off": "Spenta",
       "connecting": "Connessione…",
       "listening": "In ascolto – parla pure",
+      "thinking": "Sta pensando alla risposta…",
       "speaking": "Sta parlando…"
     },
     "typeWhileLive": "Parla, oppure scrivi un messaggio…",
-    "micError": "Microfono non disponibile: controlla i permessi del browser.",
-    "error": "Errore nella connessione vocale: {{message}}"
+    "failed": {
+      "microphone": "Microfono non disponibile: controlla i permessi del browser. La voce è stata spenta, continua pure per iscritto.",
+      "connection": "La conversazione vocale si è interrotta. Continua pure per iscritto.",
+      "start": "Non è stato possibile avviare la voce. Continua pure per iscritto."
+    },
+    "unsupported": "Questo browser non permette la conversazione vocale: scrivi i tuoi messaggi."
   },
   "reflection": {
     "title": "La tua riflessione",

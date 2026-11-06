@@ -152,4 +152,13 @@ describe("ChatPanel draft", () => {
     expect(onSend).toHaveBeenCalledWith("half a question");
     expect(localStorage.getItem("debateai:draft:1:x")).toBeNull();
   });
+
+  it("shows the voice state, and tells the student to write when the browser cannot do voice", () => {
+    const live = { liveMode: true, liveState: "thinking", liveAvailable: true, liveUnsupported: false, toggleLive: vi.fn(), stopLive: vi.fn(), finishLive: vi.fn(), sendLiveText: vi.fn() };
+    const { rerender } = render(<ChatPanel messages={history} onSend={vi.fn()} live={live as never} />);
+    expect(screen.getByRole("status").textContent).toContain("platform.live.state.thinking");
+    rerender(<ChatPanel messages={history} onSend={vi.fn()} live={{ ...live, liveMode: false, liveAvailable: false, liveUnsupported: true } as never} />);
+    expect(screen.getByText("platform.live.unsupported")).toBeTruthy();
+    expect(screen.queryByText("platform.live.start")).toBeNull();
+  });
 });

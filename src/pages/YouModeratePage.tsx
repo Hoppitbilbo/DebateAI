@@ -9,8 +9,7 @@ import type { WikiRef } from "@/lib/api";
 import type { ChatMessage } from "@/services/aiService";
 import ActivityRunner from "@/features/activity/components/ActivityRunner";
 import { CharacterPicker } from "@/features/activity/components/SetupCard";
-import { titleOf, useActivityFlow } from "@/features/activity/useActivityFlow";
-import { bioOf, useWikiSummaries } from "@/features/activity/wiki";
+import { refOf, useActivityFlow } from "@/features/activity/useActivityFlow";
 import { MAX_TOPIC_CHARS, recipeFor } from "@/features/activity/recipe";
 import { APPS, ActivityMessage } from "@/features/activity/types";
 
@@ -36,14 +35,14 @@ const YouModeratePage = () => {
   const [target, setTarget] = useState<"next" | Key>("next");
   const [nextSpeaker, setNextSpeaker] = useState<Key>("a");
   const [a, b] = chars;
-  const { summaries, loading } = useWikiSummaries(chars);
   const moderator = t("platform.apps.youModerate.moderator");
 
   const flow = useActivityFlow(app.type, {
+    characters: chars,
     context: { characters: [a?.title, b?.title], theme },
     restore: (saved, messages) => {
-      const [x, y] = Array.isArray(saved.characters) ? saved.characters.map(titleOf) : [];
-      if (x && y) setChars([{ title: x }, { title: y }]);
+      const [x, y] = Array.isArray(saved.characters) ? saved.characters.map(refOf) : [];
+      if (x && y) setChars([x, y]);
       if (typeof saved.theme === "string") setTheme(saved.theme);
       // The floor passes to the debater who did not speak last.
       const last = [...messages].reverse().find((m) => m.speakerKey === "a" || m.speakerKey === "b");
@@ -51,6 +50,7 @@ const YouModeratePage = () => {
     },
   });
   const { preset, engine } = flow;
+  const loading = flow.loadingBios;
 
   useEffect(() => {
     if (preset.characters?.length === 2) setChars([preset.characters[0], preset.characters[1]]);
@@ -59,7 +59,7 @@ const YouModeratePage = () => {
 
   /** The recipe of one debater (its key is its speaking style); the server writes the instructions. */
   const recipeOf = (key: Key, me: WikiRef, other: WikiRef) =>
-    recipeFor(app.type, { character: me.title, bio: bioOf(me, summaries), other: other.title, topic: theme, style: key });
+    recipeFor(app.type, { character: me.title, bio: flow.bio(me), other: other.title, topic: theme, style: key });
 
   /** One debater speaks, then the floor passes to the other. */
   const speak = async (key: Key) => {

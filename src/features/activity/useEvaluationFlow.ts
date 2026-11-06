@@ -53,6 +53,7 @@ export const useEvaluationFlow = (session: ActivitySession) => {
       }
       setEvaluation(await evaluateActivity({ ...input, assignment: session.assignment, jev: session.jev, sessionId: null }, showPartial, ai));
     } catch (e) {
+      console.error("Evaluation failed:", e);
       setError(ai.formatError(e));
       await session.complete({ reflection: input.reflection });
     } finally {
