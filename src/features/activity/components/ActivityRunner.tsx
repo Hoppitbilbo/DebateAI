@@ -88,6 +88,7 @@ const ActivityRunner = ({ app, flow, onRestart, phaseLabels, setup, chat, reflec
             canEnd={session.turns >= minTurns}
             footerNote={session.turns < minTurns ? t("platform.activity.minTurnsNote", { count: minTurns - session.turns }) : null}
             speechLang={isForeignPractice(session.assignment) ? practiceLanguage(session.assignment).speech : undefined}
+            dictionaryLang={practiceLanguage(session.assignment).code}
             onRetry={(id) => void engine.retry(id)}
             canRetry={engine.canRetry}
             ended={engine.ended && !engine.busy ? {

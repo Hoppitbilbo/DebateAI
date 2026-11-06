@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ArrowRight, Flag, Mic, MicOff, Radio, Send, Square } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -6,6 +6,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import ChatMessages from "./ChatMessages";
+import Dictionary, { type DictionaryHandle } from "./Dictionary";
+import { dictionarySite } from "../wiktionary";
 import type { AvatarFallback } from "../speakerAvatar";
 import { useSpeechDictation } from "@/hooks/useSpeechDictation";
 import type { LiveControls } from "@/hooks/useLiveAi";
@@ -14,6 +16,8 @@ import { loadDraft, pruneDrafts, saveDraft } from "../draft";
 
 interface ChatPanelProps {
   messages: ActivityMessage[];
+  /** The language the characters speak (practice language code): the dictionary looks words up in it. */
+  dictionaryLang?: string;
   /** Language of the dictation (BCP 47) when the teacher fixed one; the interface language otherwise. */
   speechLang?: string;
   onSend: (text: string) => void;
@@ -97,8 +101,13 @@ const ChatPanel = ({
   ended,
   speechLang,
   draftKey,
+  dictionaryLang,
 }: ChatPanelProps) => {
   const { t, i18n } = useTranslation();
+  const uiCode = (i18n.language || "it").slice(0, 2);
+  const site = useMemo(() => (dictionaryLang ? dictionarySite(dictionaryLang, uiCode) : null), [dictionaryLang, uiCode]);
+  const dictionary = useRef<DictionaryHandle>(null);
+  const onWordTap = useCallback((word: string, rect: DOMRect) => dictionary.current?.lookUp(word, rect), []);
   const [input, setInput] = useState(() => (draftKey ? loadDraft(draftKey) : ""));
   // A new attempt (another key) starts from its own draft.
   const [shownKey, setShownKey] = useState(draftKey);
@@ -152,9 +161,16 @@ const ChatPanel = ({
         onRetry={onRetry}
         canRetry={canRetry}
         avatarFallback={avatarFallback}
+        onWordTap={site ? onWordTap : undefined}
+        wordLang={dictionaryLang}
       />
 
       {toolbar && <div className="border-t border-border px-4 py-2">{toolbar}</div>}
+      {site && (
+        <div className="flex flex-wrap items-center gap-2 border-t border-border px-4 py-1.5">
+          <Dictionary ref={dictionary} site={site} />
+        </div>
+      )}
 
       <div className="space-y-3 border-t border-border p-4">
         {ended ? (

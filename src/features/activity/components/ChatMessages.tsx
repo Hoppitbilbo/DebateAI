@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, type MouseEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,10 @@ import type { ActivityMessage } from "../types";
 import { useChatScroll } from "../useChatScroll";
 import { useWikiImage } from "../wikiImage";
 import { fallbackIcon, GENERIC_AI_NAME, wikiTitleOf, type AvatarFallback } from "../speakerAvatar";
+import { wordAtPoint } from "../wordAtPoint";
+
+/** A word tapped in a character's message, with its box on the page (for the dictionary). */
+export type WordTap = (word: string, rect: DOMRect) => void;
 
 /** Wikipedia portrait of the speaker when the page has one, otherwise an Icons8 picture. */
 const SpeakerAvatar = memo(function SpeakerAvatar({ name, role, fallback }: { name?: string; role: ActivityMessage["role"]; fallback: AvatarFallback }) {
@@ -30,10 +34,21 @@ interface MessageProps {
   onRetry?: (id: string) => void;
   retryDisabled?: boolean;
   avatarFallback: AvatarFallback;
+  onWordTap?: WordTap;
+  /** The language of the characters' words, to find word boundaries. */
+  wordLang?: string;
 }
 
-const ChatMessage = memo(function ChatMessage({ message, userLabel, speakerStyle, onRetry, retryDisabled, avatarFallback }: MessageProps) {
+const ChatMessage = memo(function ChatMessage({ message, userLabel, speakerStyle, onRetry, retryDisabled, avatarFallback, onWordTap, wordLang }: MessageProps) {
   const { t } = useTranslation();
+  const tapWord = onWordTap && !message.streaming && !message.error
+    ? (e: MouseEvent) => {
+        // links keep working, and a selection is the student copying text
+        if ((e.target as Element).closest("a, button") || !window.getSelection()?.isCollapsed) return;
+        const hit = wordAtPoint(e.clientX, e.clientY, wordLang);
+        if (hit) onWordTap(hit.word, hit.rect);
+      }
+    : undefined;
   return (
     message.role === "system" ? (
       <div className="chat-message mx-auto max-w-[90%] rounded-md bg-muted/60 px-3 py-2 text-center text-xs text-muted-foreground">
@@ -58,7 +73,9 @@ const ChatMessage = memo(function ChatMessage({ message, userLabel, speakerStyle
             message.role === "user" ? (
               <p className="whitespace-pre-wrap text-sm">{message.content}</p>
             ) : (
-              <MarkdownViewer content={message.content} className="prose-sm" />
+              <div onClick={tapWord}>
+                <MarkdownViewer content={message.content} className="prose-sm" />
+              </div>
             )
           ) : (
             <span className="flex gap-1 py-1" aria-label={t("platform.activity.typing")}>
@@ -89,10 +106,13 @@ interface ChatMessagesProps {
   onRetry?: (id: string) => void;
   canRetry?: (id: string) => boolean;
   avatarFallback?: AvatarFallback;
+  /** Called when the student taps a word in a character's message (the dictionary). */
+  onWordTap?: WordTap;
+  wordLang?: string;
 }
 
 /** Input changes never re-render the history; streaming only re-renders the changed row. */
-const ChatMessages = memo(function ChatMessages({ messages, heightClass, userLabel, speakerStyles, busy, onRetry, canRetry, avatarFallback = "person" }: ChatMessagesProps) {
+const ChatMessages = memo(function ChatMessages({ messages, heightClass, userLabel, speakerStyles, busy, onRetry, canRetry, avatarFallback = "person", onWordTap, wordLang }: ChatMessagesProps) {
   const { t } = useTranslation();
   const { viewportRef, contentRef } = useChatScroll(messages);
 
@@ -111,6 +131,8 @@ const ChatMessages = memo(function ChatMessages({ messages, heightClass, userLab
             onRetry={message.error && onRetry && canRetry?.(message.id) ? onRetry : undefined}
             retryDisabled={message.error ? busy : undefined}
             avatarFallback={avatarFallback}
+            onWordTap={message.role === "assistant" ? onWordTap : undefined}
+            wordLang={wordLang}
           />
         ))}
       </div>
