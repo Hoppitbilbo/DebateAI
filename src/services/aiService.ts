@@ -196,6 +196,13 @@ export interface EvaluationRequest {
   topic?: string;
   extraFacts?: string[];
   locale: string;
+  mystery?: MysteryResult;
+}
+
+/** How a mystery game ended: the final guess (empty when the name came up in the chat) and the hints asked. */
+export interface MysteryResult {
+  guess: string;
+  hints: number;
 }
 
 /** The server's evaluation of an attempt, stored with it. */

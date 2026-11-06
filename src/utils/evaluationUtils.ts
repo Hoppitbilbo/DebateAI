@@ -2,6 +2,7 @@ import i18n from "@/i18n";
 import type { Assignment, JudgeResult } from "@/lib/api";
 import { AiClient, httpAiClient } from "@/services/aiClient";
 import type { ActivityMessage } from "@/features/activity/types";
+import type { MysteryResult } from "@/services/aiService";
 
 export interface EvaluationInput {
   activity: string; // e.g. "Convince YOU: persuade Napoleon about ..."
@@ -11,6 +12,7 @@ export interface EvaluationInput {
   messages: ActivityMessage[];
   reflection: string;
   extraFacts?: string[]; // e.g. "Final guess: Cleopatra (correct)"
+  mystery?: MysteryResult; // the mystery game: the server grades it
   assignment?: Assignment | null;
   jev?: JudgeResult | null;
   sessionId?: number | null;

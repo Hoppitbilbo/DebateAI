@@ -150,6 +150,7 @@ const PersonaggioMisteriosoPage = () => {
     setQuestionsOver(false);
     setEndedByJudge(false);
     setFoundInChat(false);
+    wonRef.current = false;
     setResult(null);
     setGuess("");
     setReasoning("");
@@ -177,9 +178,14 @@ const PersonaggioMisteriosoPage = () => {
     });
   };
 
-  /** The game is won in the chat: the character confirmed the name the student said. */
+  // Set once the game is won: the server's verdict and the page's own name
+  // check may both report it for the same turn.
+  const wonRef = useRef(false);
+
+  /** The game is won in the chat: the student said the name (or the judge recognised it). */
   const found = () => {
-    if (!character || foundInChat) return;
+    if (!character || wonRef.current) return;
+    wonRef.current = true;
     setGuess(lastQuestion.current || character.title); // by voice there is no typed question
     setResult(true);
     setFoundInChat(true);
@@ -192,16 +198,15 @@ const PersonaggioMisteriosoPage = () => {
   foundRef.current = found;
 
   /**
-   * A question. One that names the character is judged at once: the judge
-   * (for an assignment) decides whether the game is won; without a judge the
-   * strict name match does.
+   * A question. One that names the character wins the game, whatever the
+   * character answered: the server decides it the same way when it saves the
+   * turn, and the page does not wait for it (the save may fail).
    */
   const ask = async (text: string) => {
     if (!character) return;
-    const named = isCorrectGuess(text, character.title);
     lastQuestion.current = text;
-    await engine.runTurn(text, () => engine.respond({ recipe, name: "???" }), undefined, undefined, named ? { judge: true } : {});
-    if (named && !session.judgedLastTurn()) found();
+    await engine.runTurn(text, () => engine.respond({ recipe, name: "???" }));
+    if (isCorrectGuess(text, character.title)) found();
   };
 
   const submitGuess = () => {
@@ -228,6 +233,7 @@ const PersonaggioMisteriosoPage = () => {
       setQuestionsOver(false);
       setEndedByJudge(false);
       setFoundInChat(false);
+      wonRef.current = false;
     });
 
   const guessForm = (
@@ -371,6 +377,8 @@ const PersonaggioMisteriosoPage = () => {
             ...(foundInChat ? [] : [`STUDENT REASONING: ${reasoning}`]),
             `QUESTIONS USED: ${session.turns}/${maxQuestions} (of which hints asked: ${hintsUsed})`,
           ],
+          // The server grades the game from the saved chat and this.
+          mystery: { guess: foundInChat ? "" : guess, hints: hintsUsed },
         }),
       }}
       feedback={{

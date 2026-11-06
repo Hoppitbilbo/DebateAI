@@ -28,6 +28,8 @@ type EvaluationRequest struct {
 	Topic       string   `json:"topic"`
 	ExtraFacts  []string `json:"extraFacts"` // e.g. "Final guess: Cleopatra"
 	Locale      string   `json:"locale"`     // language of the evaluation
+	// Mystery: how the mystery game ended; the platform grades it.
+	Mystery *MysteryResult `json:"mystery,omitempty"`
 }
 
 // Evaluation is the stored result of an evaluation.
@@ -71,6 +73,17 @@ func (svc *sessionService) Evaluate(ctx context.Context, u *domain.User, d *doma
 	if in.Locale == "" {
 		in.Locale = u.Locale
 	}
+	in.Locale = activityLocale(a, in.Locale)
+	grade, graded := mysteryGrade{}, false
+	if d.AppType == domain.AppMystery {
+		var r MysteryResult
+		if in.Mystery != nil {
+			r = *in.Mystery
+		}
+		if grade, graded = gradeMystery(mysteryAnswer(a, d.Context), msgs, r); graded {
+			in.ExtraFacts = append([]string{grade.Fact}, in.ExtraFacts...)
+		}
+	}
 	system, prompt := evaluationPrompt(in, a, &jev, checked.evidence)
 	res, err := svc.generator.Generate(ctx, TaskEvaluation, ai.Request{System: system, Messages: []ai.Message{{Role: ai.RoleUser, Content: prompt}},
 		MaxTokens: evaluationOutputTokens}, &u.ID, &d.ID, onDelta)
@@ -78,6 +91,9 @@ func (svc *sessionService) Evaluate(ctx context.Context, u *domain.User, d *doma
 		return nil, err
 	}
 	ev := parseEvaluation(res.Text)
+	if graded {
+		grade.apply(&ev)
+	}
 	ev.Markdown = truncate(ev.Markdown, maxEvaluationChars)
 	if err := svc.sessions.Complete(d.ID, domain.SessionCompletion{Reflection: in.Reflection, Evaluation: ev.Markdown,
 		ScoreConversation: ev.ScoreConversation, ScoreReflection: ev.ScoreReflection}); err != nil {
@@ -114,6 +130,19 @@ var evaluationLanguages = map[string]struct{ name, student string }{
 	"es": {"Spanish", "Estudiante"},
 	"fr": {"French", "Élève"},
 	"de": {"German", "Schüler/in"},
+}
+
+// activityLocale is the language of the texts about an attempt (judge hints,
+// evaluation): the one the teacher fixed for the assignment when it is an
+// interface language, otherwise fallback (the student's interface).
+func activityLocale(a *domain.Assignment, fallback string) string {
+	c, err := configOf(a)
+	if err == nil {
+		if _, ok := evaluationLanguages[c.Language]; ok {
+			return c.Language
+		}
+	}
+	return fallback
 }
 
 func evaluationLanguage(locale string) (name, student string) {
@@ -169,7 +198,8 @@ Optionally a small Markdown table summarising the criteria.
 Finish with EXACTLY these two lines (integers from 0 to 10, no other text on them):
 SCORE_CONVERSATION: <n>
 SCORE_REFLECTION: <n>
-Be fair: short or superficial work gets low scores; never invent things the student did not do.`
+Be fair: short or superficial work gets low scores; never invent things the student did not do.
+When a PLATFORM RESULT fixes the conversation score, write exactly that score and explain it; a right answer found quickly is never short or superficial work.`
 
 	parts := []string{"ACTIVITY: " + label(in.Activity), "AI CHARACTERS: " + label(in.Characters)}
 	if role != "" {

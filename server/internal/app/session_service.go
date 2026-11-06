@@ -214,6 +214,11 @@ func (svc *sessionService) SaveTranscript(ctx context.Context, u *domain.User, d
 		outcome.Identified = jr.Identified
 	}
 
+	// The platform, not the AI's reply, decides that the character was found.
+	if d.AppType == domain.AppMystery && namedAtTurn(msgs, mysteryAnswer(a, firstNonEmpty(in.Context, d.Context))) > 0 {
+		outcome.Identified = true
+	}
+
 	next, reason := state.Next(outcome)
 	if next.Status() != state.Status() {
 		moved, err := svc.sessions.SetStatus(d.ID, state.Status(), next.Status())
@@ -281,7 +286,7 @@ func (svc *sessionService) evaluate(ctx context.Context, u *domain.User, d *doma
 	return svc.judge.judge(ctx, judgeInput{
 		Instructions: a.Instructions, Goals: a.Goals, AppType: a.AppType,
 		Context:    truncate(string(activity), maxJudgeContextChars),
-		Transcript: msgs, Locale: u.Locale, MinTurns: a.MinTurns, Turns: turns,
+		Transcript: msgs, Locale: activityLocale(a, u.Locale), MinTurns: a.MinTurns, Turns: turns,
 	}, &u.ID, &d.ID)
 }
 

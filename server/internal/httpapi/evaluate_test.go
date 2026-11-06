@@ -126,3 +126,42 @@ func TestEvaluateHandsInEvenWhenTheBrowserGoesAway(t *testing.T) {
 	}
 	t.Fatal("the attempt was not handed in after the browser went away")
 }
+
+// A mystery game won at the first question gets the rubric's 10, whatever
+// the model wrote (test report 2026-10-29, §3), and the model is told why.
+func TestEvaluateGradesTheMysteryGameWithTheRubric(t *testing.T) {
+	s := newTestAPI(t)
+	srv := httptest.NewServer(s.Handler())
+	t.Cleanup(srv.Close)
+	c := newClient(t, srv.URL)
+	if code := c.do("POST", "/api/setup", map[string]string{"name": "Admin", "email": "admin@test.it", "password": "password123"}, nil); code != 201 {
+		t.Fatalf("setup %d", code)
+	}
+	var prompt string
+	id := s.addFake(t, "grader", ai.KindOpenAI, gradingProvider{prompt: &prompt})
+	if err := s.Settings.SaveRouting(app.RoutingSettings{Strategy: "ordered", Tasks: map[string][]app.RouteTarget{app.TaskEvaluation: {{ProviderID: id, Model: "m"}}}}); err != nil {
+		t.Fatal(err)
+	}
+	var sess domain.SessionSummary
+	if code := c.do("POST", "/api/sessions", map[string]any{"appType": "personaggio-misterioso"}, &sess); code != 201 {
+		t.Fatalf("create session %d", code)
+	}
+	c.do("PUT", fmtPath("/api/sessions/%d/transcript", sess.ID), map[string]any{
+		"messages": []map[string]string{{"role": "user", "content": "Sei Marie Curie?"}},
+		"context":  map[string]any{"character": "Marie Curie"},
+	}, nil)
+	body, _ := json.Marshal(map[string]any{"reflection": "facile", "activity": "Mystery", "characters": "Marie Curie", "locale": "it", "mystery": map[string]any{"hints": 0}})
+	resp, err := c.http.Post(srv.URL+fmtPath("/api/sessions/%d/evaluate", sess.ID), "application/json", bytes.NewReader(body))
+	if err != nil || resp.StatusCode != 200 {
+		t.Fatalf("evaluate: %v %v", err, resp.StatusCode)
+	}
+	_, _ = io.ReadAll(resp.Body)
+	resp.Body.Close()
+	if !strings.Contains(prompt, "PLATFORM RESULT: CORRECT") || !strings.Contains(prompt, "first attempt") {
+		t.Fatalf("the model is told the result: %s", prompt)
+	}
+	d, _ := s.Sessions.Detail(sess.ID)
+	if d.ScoreConversation == nil || *d.ScoreConversation != 10 || *d.ScoreReflection != 6 {
+		t.Fatalf("rubric score stored, reflection score from the model: %+v", d)
+	}
+}

@@ -279,19 +279,31 @@ func TestSaveTranscriptDoesNotJudgeTheSameConversationTwice(t *testing.T) {
 	}
 }
 
-// In the mystery game the judge may end the game once the character is
-// found, also without goals: reason "identified".
-func TestSaveTranscriptMysteryEndsWhenTheCharacterIsIdentified(t *testing.T) {
+// In the mystery game the platform ends the game as soon as the student
+// names the character, whatever the AI or the judge said (test report
+// 2026-10-29, §4): reason "identified", also without goals.
+func TestSaveTranscriptMysteryEndsWhenTheStudentNamesTheCharacter(t *testing.T) {
 	f := newTranscriptFixture(t, map[string]any{"appType": "personaggio-misterioso", "instructions": "", "goals": []string{}, "autoEnd": false}, 0)
-	msgs := []map[string]string{{"role": "user", "content": "Sei Napoleone?"}, {"role": "assistant", "content": "Esatto, sono io! Complimenti!"}}
 	ctx := map[string]any{"character": "Napoleone Bonaparte"}
+	msgs := []map[string]string{{"role": "user", "content": "Sei un pittore?"}, {"role": "assistant", "content": "No."}}
 	if out := f.save(t, map[string]any{"messages": msgs, "context": ctx}); out["ended"] == true {
-		t.Fatalf("not identified yet: %v", out)
+		t.Fatalf("not named yet: %v", out)
 	}
-	f.judge.scores["identified"] = 0.95
-	msgs = append(msgs, map[string]string{"role": "user", "content": "Sei Napoleone Bonaparte?"})
-	out := f.save(t, map[string]any{"messages": msgs, "context": ctx, "judge": true})
+	msgs = append(msgs, map[string]string{"role": "user", "content": "Sei Napoleone?"})
+	out := f.save(t, map[string]any{"messages": msgs, "context": ctx})
 	if out["ended"] != true || out["reason"] != "identified" || out["status"] != "goal_reached" {
-		t.Fatalf("identified: %v", out)
+		t.Fatalf("named, the judge did not confirm: %v", out)
+	}
+}
+
+// The judge can still end it when the name is not in the text (e.g. a
+// voice transcript that misspelt it).
+func TestSaveTranscriptMysteryEndsWhenTheJudgeIdentifiesTheCharacter(t *testing.T) {
+	f := newTranscriptFixture(t, map[string]any{"appType": "personaggio-misterioso", "instructions": "", "goals": []string{}, "autoEnd": false}, 0)
+	f.judge.scores["identified"] = 0.95
+	msgs := []map[string]string{{"role": "user", "content": "Sei Napolione?"}, {"role": "assistant", "content": "Esatto, sono io!"}}
+	out := f.save(t, map[string]any{"messages": msgs, "context": map[string]any{"character": "Napoleone Bonaparte"}, "judge": true})
+	if out["ended"] != true || out["reason"] != "identified" {
+		t.Fatalf("identified by the judge: %v", out)
 	}
 }
