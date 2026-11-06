@@ -867,5 +867,36 @@
     "practiceBadge": "Gesprochen wird {{language}}",
     "assignmentLabel": "In welcher Sprache die Figuren sprechen",
     "assignmentHint": "Wähle eine Fremdsprache zum Üben: Die Figuren antworten nur in dieser Sprache, der Rest der Seite bleibt in der Sprache der Schüler."
+  },
+  "vocabulary": {
+    "label": "Wortschatzniveau",
+    "levels": {
+      "basic": "Einfach",
+      "standard": "Normal",
+      "advanced": "Reich"
+    },
+    "hint": "Einfach: Wörter aus dem Alltag. Reich: genaue, seltenere Wörter, damit die Lernenden neue kennenlernen.",
+    "targetLabel": "Wörter zum Üben",
+    "targetPlaceholder": "z. B. Verstand, fruchtbar, kritisches Denken",
+    "targetHint": "Durch Kommas getrennt, höchstens {{max}}. Die Lernenden sehen sie im Chat, der die bereits verwendeten abhakt; die Figur verwendet sie ganz natürlich.",
+    "chatTitle": "Wörter zum Verwenden",
+    "usedCount": "{{used}} von {{total}} verwendet",
+    "used": "verwendet",
+    "notUsed": "noch nicht verwendet",
+    "feedbackTitle": "Die Wörter zum Verwenden",
+    "feedbackAll": "Du hast alle verwendet: großartig!",
+    "feedbackSome": "Du hast {{used}} von {{total}} Wörtern verwendet.",
+    "feedbackMissing": "Beim nächsten Mal verwenden:"
+  },
+  "dictionary": {
+    "open": "Wörterbuch",
+    "tapHint": "Tippe auf ein Wort der Figur, um seine Bedeutung zu sehen.",
+    "searchLabel": "Ein Wort nachschlagen",
+    "search": "Suchen",
+    "loading": "Suche…",
+    "notFound": "Keine Definition für „{{word}}“ gefunden.",
+    "error": "Das Wörterbuch antwortet nicht: versuche es gleich noch einmal.",
+    "source": "Im Wiktionary öffnen",
+    "close": "Schließen"
   }
 }

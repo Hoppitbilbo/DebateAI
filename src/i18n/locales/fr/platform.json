@@ -867,5 +867,36 @@
     "practiceBadge": "On parle {{language}}",
     "assignmentLabel": "Dans quelle langue parlent les personnages",
     "assignmentHint": "Choisis une langue étrangère pour faire pratiquer les élèves : les personnages répondront uniquement dans cette langue, le reste du site reste dans la langue de chacun."
+  },
+  "vocabulary": {
+    "label": "Niveau de vocabulaire",
+    "levels": {
+      "basic": "Simple",
+      "standard": "Normal",
+      "advanced": "Riche"
+    },
+    "hint": "Simple : des mots de tous les jours. Riche : des mots précis et moins courants, pour en découvrir de nouveaux.",
+    "targetLabel": "Mots à faire employer",
+    "targetPlaceholder": "ex. esprit, fécond, esprit critique",
+    "targetHint": "Séparés par des virgules, {{max}} au maximum. Les élèves les voient dans le chat, qui coche ceux déjà employés ; le personnage les emploie naturellement.",
+    "chatTitle": "Mots à employer",
+    "usedCount": "{{used}} sur {{total}} employés",
+    "used": "employé",
+    "notUsed": "pas encore employé",
+    "feedbackTitle": "Les mots à employer",
+    "feedbackAll": "Tu les as tous employés : bravo !",
+    "feedbackSome": "Tu as employé {{used}} mots sur {{total}}.",
+    "feedbackMissing": "À employer la prochaine fois :"
+  },
+  "dictionary": {
+    "open": "Dictionnaire",
+    "tapHint": "Touche un mot du personnage pour voir sa signification.",
+    "searchLabel": "Chercher un mot",
+    "search": "Chercher",
+    "loading": "Recherche…",
+    "notFound": "Aucune définition trouvée pour « {{word}} ».",
+    "error": "Le dictionnaire ne répond pas : réessaie dans un instant.",
+    "source": "Ouvrir sur le Wiktionnaire",
+    "close": "Fermer"
   }
 }

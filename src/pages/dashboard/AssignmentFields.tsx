@@ -8,15 +8,52 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import type { AppType } from "@/lib/api";
+import type { AppType, AssignmentConfig } from "@/lib/api";
 import { useAiClient } from "@/services/aiClient";
 import { uiLanguage } from "@/features/activity/language";
+import { MAX_TARGET_WORDS, parseTargetWords, VOCABULARY_LEVELS, type VocabularyLevel } from "@/features/activity/vocabulary";
 import { APP_TYPES } from "@/features/activity/appCatalog";
 import LanguagePicker from "@/features/activity/components/LanguagePicker";
 import { TURN_BOUNDS } from "@/features/teacher/assignmentLimits";
 import { AssignmentDraft, draftLimits } from "@/features/teacher/assignmentDraft";
 import { AppName } from "./common";
 import PresetFields from "./PresetFields";
+
+/** The level the characters speak at and the words the students should practise (P2). */
+const VocabularyFields = ({ config, onChange, idPrefix }: { config: AssignmentConfig; onChange: (c: AssignmentConfig) => void; idPrefix: string }) => {
+  const { t } = useTranslation();
+  // The text as typed: re-joining the list on every key would eat a trailing comma.
+  const [words, setWords] = useState(() => (config.targetWords ?? []).join(", "));
+  const setLevel = (v: string) => onChange({ ...config, vocabulary: v === "standard" ? undefined : (v as VocabularyLevel) });
+  const setList = (text: string) => {
+    setWords(text);
+    const list = parseTargetWords(text);
+    onChange({ ...config, targetWords: list.length ? list : undefined });
+  };
+  return (
+    <div className="mt-4 space-y-4 border-t border-border pt-4">
+      <div className="space-y-2">
+        <Label htmlFor={`${idPrefix}-vocabulary`}>{t("platform.vocabulary.label")}</Label>
+        <Select value={config.vocabulary ?? "standard"} onValueChange={setLevel}>
+          <SelectTrigger id={`${idPrefix}-vocabulary`}><SelectValue /></SelectTrigger>
+          <SelectContent>
+            {VOCABULARY_LEVELS.map((l) => <SelectItem key={l} value={l}>{t(`platform.vocabulary.levels.${l}`)}</SelectItem>)}
+          </SelectContent>
+        </Select>
+        <p className="text-xs text-muted-foreground">{t("platform.vocabulary.hint")}</p>
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor={`${idPrefix}-target-words`}>{t("platform.vocabulary.targetLabel")}</Label>
+        <Input id={`${idPrefix}-target-words`} value={words} onChange={(e) => setList(e.target.value)} placeholder={t("platform.vocabulary.targetPlaceholder")} />
+        <p className="text-xs text-muted-foreground">{t("platform.vocabulary.targetHint", { max: MAX_TARGET_WORDS })}</p>
+      </div>
+    </div>
+  );
+};
+
+/** What survives a change of app: the choices that do not depend on it. */
+const appFreeConfig = ({ language, vocabulary, targetWords }: AssignmentConfig): AssignmentConfig =>
+  Object.fromEntries(Object.entries({ language, vocabulary, targetWords }).filter(([, v]) => v !== undefined));
 
 /** Goals a judge can check at most (as on the server). */
 const MAX_GOALS = 12;
@@ -168,7 +205,7 @@ const AssignmentFields = ({ draft, onChange, showLive = true, idPrefix = "a" }: 
         </div>
         <div className="space-y-2">
           <Label>{t("platform.teacher.form.app")}</Label>
-          <Select value={appType} onValueChange={(v) => set({ appType: v as AppType, config: config.language ? { language: config.language } : {} })}>
+          <Select value={appType} onValueChange={(v) => set({ appType: v as AppType, config: appFreeConfig(config) })}>
             <SelectTrigger><SelectValue /></SelectTrigger>
             <SelectContent>
               {APP_TYPES.map((a) => <SelectItem key={a} value={a}><AppName type={a} /></SelectItem>)}
@@ -193,6 +230,7 @@ const AssignmentFields = ({ draft, onChange, showLive = true, idPrefix = "a" }: 
       <div className="rounded-md border border-border p-3">
         <LanguagePicker value={config.language} onChange={(language) => set({ config: { ...config, language } })} optional label={t("platform.language.assignmentLabel")} />
         <p className="mt-2 text-xs text-muted-foreground">{t("platform.language.assignmentHint")}</p>
+        <VocabularyFields config={config} onChange={(c) => set({ config: c })} idPrefix={idPrefix} />
       </div>
 
       <LimitFields draft={draft} onChange={onChange} idPrefix={idPrefix} />

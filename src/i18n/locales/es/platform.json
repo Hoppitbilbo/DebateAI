@@ -867,5 +867,36 @@
     "practiceBadge": "Se habla en {{language}}",
     "assignmentLabel": "En qué idioma hablan los personajes",
     "assignmentHint": "Elige un idioma extranjero para que los estudiantes practiquen: los personajes responderán solo en ese idioma, el resto del sitio sigue en el idioma de cada uno."
+  },
+  "vocabulary": {
+    "label": "Nivel de vocabulario",
+    "levels": {
+      "basic": "Sencillo",
+      "standard": "Normal",
+      "advanced": "Rico"
+    },
+    "hint": "Sencillo: palabras de todos los días. Rico: palabras precisas y menos comunes, para descubrir otras nuevas.",
+    "targetLabel": "Palabras para practicar",
+    "targetPlaceholder": "p. ej. ingenio, fecundo, pensamiento crítico",
+    "targetHint": "Separadas por comas, como máximo {{max}}. Los estudiantes las ven en el chat, que marca las que ya han usado; el personaje las usa con naturalidad.",
+    "chatTitle": "Palabras para usar",
+    "usedCount": "{{used}} de {{total}} usadas",
+    "used": "usada",
+    "notUsed": "todavía sin usar",
+    "feedbackTitle": "Las palabras para usar",
+    "feedbackAll": "Las has usado todas: ¡buen trabajo!",
+    "feedbackSome": "Has usado {{used}} de {{total}} palabras.",
+    "feedbackMissing": "Para usar la próxima vez:"
+  },
+  "dictionary": {
+    "open": "Diccionario",
+    "tapHint": "Toca una palabra del personaje para ver su significado.",
+    "searchLabel": "Buscar una palabra",
+    "search": "Buscar",
+    "loading": "Buscando…",
+    "notFound": "No se ha encontrado ninguna definición de «{{word}}».",
+    "error": "El diccionario no responde: inténtalo de nuevo en un momento.",
+    "source": "Abrir en Wikcionario",
+    "close": "Cerrar"
   }
 }
