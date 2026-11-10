@@ -160,6 +160,33 @@ func TestJudgeLLMCompletedIsBlockedByMinTurns(t *testing.T) {
 	}
 }
 
+// A conversation needs both sides: when every reply of the character failed
+// (provider down), the student's messages alone do not reach the goals.
+func TestJudgeNeverCompletesAConversationTheCharacterNeverAnswered(t *testing.T) {
+	s := newTestServer(t)
+	useProvider(s, 1, ai.KindOpenAI, &scriptedLLM{fakeProvider: &fakeProvider{}, text: `{"goals":[{"index":0,"score":1}],"completed":true}`})
+	setJudgeRoute(t, s, RouteTarget{1, "m"})
+
+	in := judgeIn("a")
+	in.Transcript = []TranscriptMessage{
+		{Role: "assistant", Name: "Napoleone", Content: "Bonjour."}, // the opening is not an answer
+		{Role: "user", Content: "Perché la Russia?"},
+		{Role: "assistant", Name: "Napoleone", Content: emptyAnswer},
+		{Role: "user", Content: "E cosa è andato storto?"},
+	}
+	r := s.Gateway.judge(context.Background(), in, nil, nil)
+	if r.Completed || r.Progress >= 100 {
+		t.Fatalf("completed with no answer from the character: %+v", r)
+	}
+	if !r.Goals[0].Met {
+		t.Fatalf("the judged goals stay as judged: %+v", r.Goals)
+	}
+	in.Transcript = append(in.Transcript, TranscriptMessage{Role: "assistant", Name: "Napoleone", Content: "L'inverno."})
+	if r := s.Gateway.judge(context.Background(), in, nil, nil); !r.Completed || r.Progress != 100 {
+		t.Fatalf("one answer is enough to complete: %+v", r)
+	}
+}
+
 func TestJudgeFallsBackToNextTarget(t *testing.T) {
 	s := newTestServer(t)
 	useProvider(s, 1, ai.KindOpenAI, &scriptedLLM{fakeProvider: &fakeProvider{}, text: "not json"})

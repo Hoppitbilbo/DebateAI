@@ -33,6 +33,9 @@ const (
 	defaultJudgeThreshold = 0.7
 	// offTopicThreshold flags off-topic or manipulative student messages.
 	offTopicThreshold = 0.8
+	// unansweredMaxProgress: the most a conversation shows while no
+	// character has answered the student yet.
+	unansweredMaxProgress = 90
 	// identifiedThreshold: the judge is sure the mystery character was found.
 	identifiedThreshold = 0.8
 )
