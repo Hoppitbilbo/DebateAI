@@ -293,10 +293,16 @@ pushato):
   e aula lampo (apertura e ingresso ospite) senza regressioni. Nessun difetto trovato nel codice.
   Nota: nell'altro browser la pagina dell'attività riparte dalla preparazione invece di mostrare la
   conversazione finita (ripresa di un tentativo, punto aperto dell'audit, non di questo piano).
-- **P7, da fare:** una conversazione reale in staging fino al fornitore IA; una persona su telefono
-  (iscrizione dal QR, login, cambio password).
+- **P7, conversazione reale (2026-11-09):** server Go reale su database nuovo con Gemini vero
+  (chiave di prova), stesso percorso via HTTP: classe username → iscrizione dal link → login con
+  username in un secondo client → compito WikiChat con obiettivo → due turni con risposte reali →
+  il giudice chiude l'attività (`goal_reached`) → valutazione reale in italiano → il docente vede
+  l'attività consegnata con voto 10. Trovato: `gemini-3.8-flash` e `gemini-3.5-flash-lite`
+  rispondono 503 e la rotta predefinita aveva un solo modello; corretto in `bb641fd` (ripiego su
+  `gemini-2.5-flash`; `gemini-2.5-flash-lite` è elencato ma rifiutato alle chiavi nuove, 404).
+- **P7, da fare dopo il rilascio:** una persona su telefono (iscrizione dal QR, login, cambio password).
 
-**Da fare, in quest'ordine:** chiudere P7 (staging e telefono) → unire p6 → T2 → T3 → T4 (P5 già unita in `feat/classe-username`; P6 da unire).
+**Da fare, in quest'ordine:** unire p6 (database Turso ricreato, confermato dall'utente il 9/11) → prova su telefono → T2 → T3 → T4 (P5 già unita in `feat/classe-username`; P6 da unire).
 Piccola miglioria possibile: il testo dell'email d'invito dice «completa la registrazione»
 anche a chi ha già un account; la pagina gestisce comunque il caso.
 
