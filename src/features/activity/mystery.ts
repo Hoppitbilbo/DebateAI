@@ -31,6 +31,13 @@ export const isCorrectGuess = (guess: string, answer: string) => {
   return nameWords(answer).some((w) => guessWords.has(w));
 };
 
+/**
+ * The question that won a saved game (the first that names the character), or
+ * null while the game is open: what a reload needs to show a won game as won.
+ */
+export const winningQuestion = (messages: readonly { role: string; content: string }[], answer: string): string | null =>
+  messages.find((m) => m.role === "user" && isCorrectGuess(m.content, answer))?.content ?? null;
+
 /** How many questions a game can have, and the default when nobody chooses. */
 export const QUESTIONS = { min: 3, max: 20, default: 7 } as const;
 
