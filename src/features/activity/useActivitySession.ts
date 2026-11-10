@@ -49,7 +49,6 @@ export const useActivitySession = (appType: AppType) => {
 
   const [assignment, setAssignment] = useState<Assignment | null>(null);
   const [assignmentError, setAssignmentError] = useState<string | null>(null);
-  const [loadingAssignment, setLoadingAssignment] = useState(assignmentId > 0);
   const [sessionId, setSessionId] = useState<number | null>(null);
   const [jev, setJev] = useState<JudgeResult | null>(null);
   const [judging, setJudging] = useState(false);
@@ -73,15 +72,11 @@ export const useActivitySession = (appType: AppType) => {
   useEffect(() => {
     if (!assignmentId) {
       setAssignment(null);
-      setLoadingAssignment(false);
       return;
     }
-    if (!user) {
-      setLoadingAssignment(false);
-      return;
-    }
+    if (!user) return;
     let cancelled = false;
-    setLoadingAssignment(true);
+    setAssignmentError(null);
     api.get<Assignment>(`/api/assignments/${assignmentId}`)
       .then((a) => {
         if (cancelled) return;
@@ -91,12 +86,16 @@ export const useActivitySession = (appType: AppType) => {
           setAssignment(a);
         }
       })
-      .catch((e: Error) => !cancelled && setAssignmentError(e.message))
-      .finally(() => !cancelled && setLoadingAssignment(false));
+      .catch((e: Error) => !cancelled && setAssignmentError(e.message));
     return () => {
       cancelled = true;
     };
   }, [assignmentId, appType, user]);
+
+  // Derived, not a state set by the effect above: on a reload the account
+  // arrives after the first render, and an effect of the page running in that
+  // same commit (the resume of ?session=ID) must already see "loading".
+  const loadingAssignment = assignmentId > 0 && !!user && assignment?.id !== assignmentId && !assignmentError;
 
   /** Starts a new attempt. Safe to call for guests (no server session). */
   const begin = useCallback(async (title: string, context: Record<string, unknown> = {}) => {
