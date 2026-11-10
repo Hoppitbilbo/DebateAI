@@ -49,7 +49,10 @@ export type Role = "admin" | "teacher" | "student";
 
 export interface User {
   id: number;
+  /** "" for accounts created from a username class link. */
   email: string;
+  /** Set for accounts that log in with a username instead of an e-mail. */
+  username?: string;
   name: string;
   role: Role;
   locale: string;
@@ -188,10 +191,14 @@ export interface Assignment {
   stats?: { students: number; started: number; completed: number };
 }
 
+/** How students enter a class: e-mail invitations or a link with username and password. */
+export type EnrollmentMode = "standard" | "username";
+
 export interface ClassInfo {
   id: number;
   name: string;
   description: string;
+  enrollmentMode: EnrollmentMode;
   joinCode?: string;
   ownerId?: number;
   ownerName?: string;
@@ -206,9 +213,12 @@ export interface Member {
   userId: number;
   name: string;
   email: string;
+  username?: string;
   role: "student" | "teacher";
   joinedAt: string;
   lastLoginAt?: string;
+  /** The viewer may give this member an assisted password reset link (decided by the server). */
+  canResetPassword: boolean;
 }
 
 export interface Invite {
@@ -227,7 +237,7 @@ export interface Invite {
 
 export interface InviteResult {
   email: string;
-  status: "added" | "invited" | "error";
+  status: "invited" | "error";
   emailSent?: boolean;
   link?: string;
   error?: string;

@@ -3,9 +3,9 @@ package httpapi
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
-	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -64,8 +64,7 @@ func shapeOf(v any) string {
 
 func TestResponseShapes(t *testing.T) {
 	s := newTestAPI(t)
-	srv := httptest.NewServer(s.Handler())
-	defer srv.Close()
+	handler := s.Handler()
 	chatID := s.addFake(t, "fake-chat", ai.KindOpenAI, fakeProvider{})
 	jevID := s.addFake(t, "fake-jev", ai.KindJev, &fakeDecider{scores: map[string]float64{"goal_0": 0.9}})
 	if err := s.Settings.SaveRouting(app.RoutingSettings{Strategy: "ordered", Tasks: map[string][]app.RouteTarget{
@@ -99,12 +98,12 @@ func TestResponseShapes(t *testing.T) {
 		return m
 	}
 
-	guest := newClient(t, srv.URL)
+	guest := newHandlerClient(t, handler)
 	call(guest, "health", "GET", "/api/health", nil)
 	call(guest, "public config", "GET", "/api/public/config", nil)
 	call(guest, "me (guest)", "GET", "/api/auth/me", nil)
 
-	admin := newClient(t, srv.URL)
+	admin := newHandlerClient(t, handler)
 	admin.do("POST", "/api/setup", map[string]string{"name": "Admin", "email": "admin@test.it", "password": "password123"}, nil)
 	call(admin, "me", "GET", "/api/auth/me", nil)
 	call(admin, "ai status", "GET", "/api/ai/status", nil)
@@ -120,12 +119,20 @@ func TestResponseShapes(t *testing.T) {
 	call(guest, "invite info", "GET", "/api/auth/invite/"+token, nil)
 	call(admin, "class detail", "GET", fmtPath("/api/classes/%d", classID), nil)
 
+	ucls := call(admin, "create username class", "POST", "/api/classes", map[string]string{"name": "3B", "enrollmentMode": "username"})
+	ucode := ucls["joinCode"].(string)
+	call(guest, "class link info", "GET", "/api/auth/class-invite/"+ucode, nil)
+	anna := call(newHandlerClient(t, handler), "register class", "POST", "/api/auth/register-class",
+		map[string]string{"code": ucode, "username": "anna", "password": "password123", "locale": "it"})
+	call(newHandlerClient(t, handler), "login by username", "POST", "/api/auth/login", map[string]string{"identifier": "anna", "password": "password123"})
+	call(admin, "member password reset", "POST", fmt.Sprintf("/api/classes/%v/members/%v/password-reset", ucls["id"], anna["id"]), nil)
+
 	a := call(admin, "create assignment", "POST", fmtPath("/api/classes/%d/assignments", classID), map[string]any{
 		"title": "T", "appType": "wiki-chatbot", "instructions": "I", "goals": []string{"g"}, "maxTurns": 5, "autoEnd": true,
 	})
 	assignmentID := int64(a["id"].(float64))
 
-	stud := newClient(t, srv.URL)
+	stud := newHandlerClient(t, handler)
 	stud.do("POST", "/api/auth/register", map[string]string{"token": token, "name": "Stud", "password": "password123"}, nil)
 	var code struct{ JoinCode string }
 	admin.do("GET", fmtPath("/api/classes/%d", classID), nil, &struct{ Class *struct{ JoinCode string } }{Class: &code})
@@ -156,11 +163,11 @@ func TestResponseShapes(t *testing.T) {
 	call(admin, "assignment progress", "GET", fmtPath("/api/assignments/%d/progress", assignmentID), nil)
 	call(admin, "class progress", "GET", fmtPath("/api/classes/%d/progress", classID), nil)
 	call(admin, "usage summary", "GET", "/api/admin/usage?days=1", nil)
-	upstream := mockAI(t)
-	defer upstream.Close()
+	s.fakes["Mock"] = fakeProvider{}
+	s.fakes["Jev"] = &fakeDecider{scores: map[string]float64{"goal_0": 0.1}}
 	var llm, jev app.ProviderView
-	admin.do("POST", "/api/admin/providers", map[string]string{"name": "Mock", "kind": "openai", "baseUrl": upstream.URL + "/v1", "apiKey": "k"}, &llm)
-	admin.do("POST", "/api/admin/providers", map[string]string{"name": "Jev", "kind": "jev", "baseUrl": upstream.URL + "/systemone", "apiKey": "k"}, &jev)
+	admin.do("POST", "/api/admin/providers", map[string]string{"name": "Mock", "kind": "openai", "apiKey": "k"}, &llm)
+	admin.do("POST", "/api/admin/providers", map[string]string{"name": "Jev", "kind": "jev", "apiKey": "k"}, &jev)
 	call(admin, "test provider (llm)", "POST", fmtPath("/api/admin/providers/%d/test", llm.ID), map[string]string{"model": "paid-model"})
 	call(admin, "test provider (jev)", "POST", fmtPath("/api/admin/providers/%d/test", jev.ID), map[string]string{"model": "jev"})
 	call(admin, "delete assignment", "DELETE", fmtPath("/api/assignments/%d", assignmentID), nil)

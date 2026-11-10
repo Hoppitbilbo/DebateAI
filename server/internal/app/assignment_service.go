@@ -55,6 +55,7 @@ type StudentProgress struct {
 	UserID       int64                  `json:"userId"`
 	Name         string                 `json:"name"`
 	Email        string                 `json:"email"`
+	Username     string                 `json:"username,omitempty"` // accounts without e-mail log in with it
 	Session      *domain.SessionSummary `json:"session,omitempty"`
 	AttemptCount int                    `json:"attemptCount"`
 }
@@ -210,7 +211,7 @@ func (svc *assignmentService) Progress(a *domain.Assignment) ([]StudentProgress,
 	out := []StudentProgress{}
 	for _, st := range students {
 		b := best[st.ID]
-		out = append(out, StudentProgress{UserID: st.ID, Name: st.Name, Email: st.Email, Session: b.Session, AttemptCount: b.Attempts})
+		out = append(out, StudentProgress{UserID: st.ID, Name: st.Name, Email: st.Email, Username: st.Username, Session: b.Session, AttemptCount: b.Attempts})
 	}
 	return out, nil
 }

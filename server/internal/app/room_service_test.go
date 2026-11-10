@@ -39,7 +39,7 @@ func TestRoomOpenRules(t *testing.T) {
 	s := newTestServer(t)
 	teacher := newRoomTestUser(t, s, "t@x.it", domain.RoleTeacher)
 	other := newRoomTestUser(t, s, "o@x.it", domain.RoleTeacher)
-	class, _ := s.ClassSvc.Create(teacher, "3A", "", nil)
+	class, _ := s.ClassSvc.Create(teacher, NewClass{Name: "3A"})
 	a, err := s.AssignmentSvc.Create(teacher, class.ID, AssignmentInput{Title: ptr("Dibattito"), AppType: ptr("convinci-tu")}, "")
 	if err != nil {
 		t.Fatal(err)
@@ -95,7 +95,7 @@ func TestRoomOpenRules(t *testing.T) {
 func TestRoomJoinRejoinAndAssignmentAccess(t *testing.T) {
 	s := newTestServer(t)
 	teacher := newRoomTestUser(t, s, "t@x.it", domain.RoleTeacher)
-	class, _ := s.ClassSvc.Create(teacher, "3A", "", nil)
+	class, _ := s.ClassSvc.Create(teacher, NewClass{Name: "3A"})
 	a, _ := s.AssignmentSvc.Create(teacher, class.ID, AssignmentInput{Title: ptr("Dibattito"), AppType: ptr("convinci-tu")}, "")
 	other, _ := s.AssignmentSvc.Create(teacher, class.ID, AssignmentInput{Title: ptr("Altro"), AppType: ptr("convinci-tu")}, "")
 	opened, _ := s.RoomSvc.Open(teacher, RoomRequest{AssignmentID: a.ID})
@@ -252,7 +252,7 @@ func TestRoomRoutingUsesTheRoomModels(t *testing.T) {
 func TestRoomExportAndImport(t *testing.T) {
 	s := newTestServer(t)
 	teacher := newRoomTestUser(t, s, "t@x.it", domain.RoleTeacher)
-	class, _ := s.ClassSvc.Create(teacher, "3A", "", nil)
+	class, _ := s.ClassSvc.Create(teacher, NewClass{Name: "3A"})
 	a, _ := s.AssignmentSvc.Create(teacher, class.ID, AssignmentInput{Title: ptr("Dibattito"), AppType: ptr("convinci-tu")}, "")
 	rossi := newRoomTestUser(t, s, "rossi@x.it", domain.RoleStudent)
 	s.Classes.AddMember(class.ID, rossi.ID, domain.RoleStudent)
@@ -386,7 +386,7 @@ func TestRoomWithAPath(t *testing.T) {
 	}
 
 	teacher := newRoomTestUser(t, s, "t@x.it", domain.RoleTeacher)
-	class, _ := s.ClassSvc.Create(teacher, "3A", "", nil)
+	class, _ := s.ClassSvc.Create(teacher, NewClass{Name: "3A"})
 	other, _ := s.AssignmentSvc.Create(teacher, class.ID, AssignmentInput{Title: ptr("Altro"), AppType: ptr("convinci-tu")}, "")
 	if _, err := s.SessionSvc.Start(guest, NewAttempt{AppType: "convinci-tu", AssignmentID: other.ID}); !errors.Is(err, ErrAssignmentForbidden) {
 		t.Fatalf("a guest never reaches assignments outside the room: %v", err)

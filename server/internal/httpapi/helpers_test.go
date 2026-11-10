@@ -2,12 +2,34 @@ package httpapi
 
 import (
 	"context"
+	"net/http"
+	"net/http/httptest"
 	"path/filepath"
 	"testing"
 
 	"github.com/Hoppitbilbo/DebateAI/server/internal/ai"
 	"github.com/Hoppitbilbo/DebateAI/server/internal/app"
 )
+
+// handlerTransport exercises routing, middleware and cookies without a socket.
+// Use the real network fixtures for tests of streaming and provider transports.
+type handlerTransport struct{ handler http.Handler }
+
+func (tr handlerTransport) RoundTrip(r *http.Request) (*http.Response, error) {
+	if r.Body != nil {
+		defer r.Body.Close()
+	}
+	w := httptest.NewRecorder()
+	tr.handler.ServeHTTP(w, r)
+	return w.Result(), nil
+}
+
+func newHandlerClient(t *testing.T, handler http.Handler) *client {
+	t.Helper()
+	c := newClient(t, "http://example.test")
+	c.http.Transport = handlerTransport{handler: handler}
+	return c
+}
 
 // testAPI is a server on a fresh database whose AI providers can be fakes:
 // a provider whose name is a key of fakes is served by that fake.

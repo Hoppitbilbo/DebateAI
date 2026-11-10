@@ -57,14 +57,21 @@
   "errors": {
     "generic": "Qualcosa è andato storto. Riprova.",
     "notFound": "Non trovato",
-    "invalid_credentials": "Email o password errate.",
+    "invalid_credentials": "Username, email o password errati.",
     "disabled": "Questo account è disattivato.",
     "rate_limited": "Troppi tentativi. Attendi qualche minuto.",
     "invalid_invite": "Questo invito non è più valido.",
     "invalid_token": "Il link è scaduto o è già stato usato.",
     "wrong_password": "La password attuale non è corretta.",
     "server_unreachable": "Il server non è raggiungibile.",
-    "already_setup": "La piattaforma è già configurata."
+    "already_setup": "La piattaforma è già configurata.",
+    "username_taken": "Questo username è già usato: scegline un altro.",
+    "unavailable": "Il servizio non è disponibile al momento. Riprova tra poco.",
+    "ambiguous_identifier": "L'email e lo username indicano account diversi: usane uno solo.",
+    "reset_not_allowed": "Per questo account non si può creare un link di recupero: serve uno studente senza email, ancora iscritto alla sua classe d'origine, non archiviata.",
+    "network": "Connessione assente o interrotta. Controlla la rete e riprova.",
+    "invalid": "Dati non validi: controlla i campi e riprova.",
+    "bad_request": "Dati non validi: controlla i campi e riprova."
   },
   "aiErrors": {
     "generic": "L'IA non ha risposto. Riprova.",
@@ -87,6 +94,7 @@
     "loginTitle": "Bentornato",
     "loginSubtitle": "Accedi con l'account della tua scuola",
     "email": "Email",
+    "identifier": "Email o username",
     "password": "Password",
     "name": "Nome e cognome",
     "newPassword": "Nuova password (min. 8 caratteri)",
@@ -94,7 +102,7 @@
     "language": "Lingua",
     "forgot": "Password dimenticata?",
     "continueAsGuest": "Continua come ospite",
-    "inviteOnly": "Gli account vengono creati su invito della tua scuola.",
+    "inviteOnly": "Non hai un account? Chiedilo al docente: ti manderà un invito o un link per iscriverti.",
     "registerTitle": "Crea il tuo account",
     "registerSubtitle": "{{inviter}} ti ha invitato come {{role}} (classe: {{className}}).",
     "existingAccount": "Hai già un account con questa email: inserisci la password per accettare l'invito.",
@@ -107,11 +115,14 @@
     "forgotTitle": "Reimposta la password",
     "forgotSubtitle": "Ti invieremo un link via email.",
     "forgotSent": "Se l'indirizzo appartiene a un account, riceverai un'email entro pochi minuti.",
+    "forgotNoEmail": "Entri con uno username, senza email? Chiedi al docente un link per scegliere una nuova password.",
     "sendLink": "Invia link",
     "backToLogin": "Torna all'accesso",
     "resetTitle": "Scegli una nuova password",
     "savePassword": "Salva password",
-    "passwordChanged": "Password aggiornata"
+    "passwordChanged": "Password aggiornata",
+    "showPassword": "Mostra password",
+    "hidePassword": "Nascondi password"
   },
   "setup": {
     "title": "Configura DebateAI",
@@ -121,7 +132,9 @@
   "account": {
     "title": "Il mio account",
     "currentPassword": "Password attuale",
-    "changePassword": "Cambia password"
+    "changePassword": "Cambia password",
+    "displayName": "Nome visualizzato",
+    "displayNameHint": "Lo vedono il docente e la classe. Non serve il nome vero."
   },
   "activity": {
     "tutorial": "Tutorial",
@@ -465,7 +478,40 @@
       "shuffleHint": "Ogni studente li incontra in un ordine diverso: in laboratorio i vicini di banco non hanno lo stesso personaggio."
     },
     "exportExcel": "Esporta voti (Excel)",
-    "teacherScore": "Voto docente"
+    "teacherScore": "Voto docente",
+    "loginColumn": "Email o username",
+    "enrollment": {
+      "label": "Come si iscrivono gli studenti",
+      "standard": "Inviti via email",
+      "standardHint": "Ogni studente riceve un invito all'indirizzo email e accede con email e password.",
+      "username": "Username e password, senza email",
+      "usernameHint": "Condividi un link: ogni studente sceglie username e password. Nessuna email richiesta.",
+      "pseudonym": "Lo username è uno pseudonimo, non anonimato: vedi attività, conversazioni e risultati associati a ciascuno username."
+    },
+    "enrollLink": {
+      "title": "Link di iscrizione",
+      "hint": "Condividi il link o mostra il QR: ogni studente sceglie username e password.",
+      "copy": "Copia link",
+      "qr": "QR del link di iscrizione",
+      "regenerate": "Rigenera link",
+      "regenerateTitle": "Rigenerare il link?",
+      "regenerateText": "Il vecchio link non funzionerà più per le nuove iscrizioni. Gli account già creati e gli studenti iscritti restano."
+    },
+    "resetLink": {
+      "action": "Link di recupero password per {{name}}",
+      "title": "Recupero password di {{name}}",
+      "inPerson": "Consegna il link di persona, dopo aver riconosciuto lo studente.",
+      "explain": "Lo studente sceglierà una nuova password. Il link vale 15 minuti e si usa una volta; un nuovo link annulla quelli precedenti.",
+      "create": "Crea link",
+      "linkLabel": "Link di recupero",
+      "expires": "Scade alle {{time}} (15 minuti).",
+      "once": "Il link è mostrato solo ora: chiudendo la finestra non potrai rivederlo.",
+      "done": "Fatto",
+      "errors": {
+        "forbidden": "Solo chi ha creato la classe d'origine dello studente, o un amministratore, può creare questo link.",
+        "not_found": "Questo studente non fa più parte della classe."
+      }
+    }
   },
   "invite": {
     "emails": "Indirizzi email",
@@ -477,7 +523,6 @@
     "done": "{{count}} inviti elaborati",
     "copyLink": "Copia link",
     "status": {
-      "added": "aggiunto alla classe",
       "invited": "invitato",
       "error": "errore"
     },
@@ -898,5 +943,36 @@
     "error": "Il dizionario non risponde: riprova tra poco.",
     "source": "Apri su Wikizionario",
     "close": "Chiudi"
+  },
+  "enroll": {
+    "title": "Iscriviti a {{className}}",
+    "subtitle": "Scegli uno username e una password.",
+    "pseudonym": "Lo username è il tuo nome qui: non serve il nome vero. Il docente vede le attività e le conversazioni legate al tuo username.",
+    "username": "Username",
+    "usernameHint": "Da 3 a 30 caratteri: lettere a-z, cifre, punto, trattino o trattino basso. Inizia con una lettera o una cifra.",
+    "passwordHint": "Da 8 a 72 caratteri.",
+    "submit": "Crea account",
+    "haveAccount": "Ho già un account",
+    "invalidTitle": "Link non valido",
+    "invalidText": "Questo link non funziona: forse è stato cambiato o le iscrizioni sono chiuse. Chiedi al docente il link nuovo.",
+    "failedTitle": "Classe non caricata",
+    "guestText": "Sei in un'aula lampo con un account temporaneo. Per creare il tuo account della classe, prima esci dall'aula.",
+    "guestLogout": "Esci dall'aula",
+    "staffText": "Questo link serve agli studenti per iscriversi alla classe. Sei connesso come docente o amministratore: condividilo con gli studenti.",
+    "loggedInText": "Sei già connesso come {{name}}. Vuoi entrare nella classe con questo account?",
+    "useMine": "Usa il mio account",
+    "logoutAndCreate": "Esci e crea un account nuovo",
+    "doneTitle": "Account creato!",
+    "doneUsername": "Il tuo username è",
+    "doneNote": "Scrivi username e password in un posto sicuro: ti servono per entrare le prossime volte. Se dimentichi la password, chiedi al docente.",
+    "doneLogin": "La prossima volta entra da",
+    "goToClass": "Vai alla classe",
+    "errors": {
+      "taken": "Questo username è già usato: scegline un altro.",
+      "invalid": "Controlla username e password: segui le indicazioni sotto i campi.",
+      "closed": "Le iscrizioni con link sono chiuse. Chiedi al docente.",
+      "guest": "Sei in un'aula lampo: esci dall'aula prima di creare un account.",
+      "link": "Questo link non vale più. Chiedi al docente il link nuovo."
+    }
   }
 }

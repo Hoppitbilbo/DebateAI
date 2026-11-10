@@ -40,6 +40,9 @@ type SessionSummary struct {
 
 type SessionDetail struct {
 	SessionSummary
+	// ClassID scopes work imported from a room to its destination class.
+	// It is server-owned, never accepted from a client or an exported file.
+	ClassID    *int64          `json:"-"`
 	Context    json.RawMessage `json:"context"`
 	Transcript json.RawMessage `json:"transcript"`
 	Jev        json.RawMessage `json:"jev"`

@@ -53,6 +53,8 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("PATCH /api/auth/me", s.auth(s.handleUpdateMe))
 	mux.HandleFunc("GET /api/auth/invite/{token}", s.handleInviteInfo)
 	mux.HandleFunc("POST /api/auth/register", s.handleRegister)
+	mux.HandleFunc("GET /api/auth/class-invite/{code}", s.handleClassLinkInfo)
+	mux.HandleFunc("POST /api/auth/register-class", s.handleRegisterClass)
 	mux.HandleFunc("POST /api/auth/forgot", s.handleForgot)
 	mux.HandleFunc("POST /api/auth/reset", s.handleReset)
 
@@ -88,6 +90,7 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("POST /api/classes/{id}/code", s.role("teacher", s.handleRegenerateCode))
 	mux.HandleFunc("POST /api/classes/{id}/invite", s.role("teacher", s.handleClassInvite))
 	mux.HandleFunc("DELETE /api/classes/{id}/members/{userId}", s.role("teacher", s.handleRemoveMember))
+	mux.HandleFunc("POST /api/classes/{id}/members/{userId}/password-reset", s.role("teacher", s.handleMemberPasswordReset))
 	mux.HandleFunc("GET /api/classes/{id}/assignments", s.role("teacher", s.handleListAssignments))
 	mux.HandleFunc("POST /api/classes/{id}/assignments", s.role("teacher", s.handleCreateAssignment))
 	mux.HandleFunc("GET /api/classes/{id}/progress", s.role("teacher", s.handleClassProgress))

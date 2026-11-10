@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { api, Assignment, ClassInfo, Invite, InviteResult, Member, Role, SessionDetail, SessionSummary } from "@/lib/api";
+import { api, Assignment, ClassInfo, EnrollmentMode, Invite, InviteResult, Member, Role, SessionDetail, SessionSummary } from "@/lib/api";
 
 // Data layer of the teacher pages: classes, their members and assignments,
 // and the students' progress.
@@ -9,9 +9,21 @@ export interface ClassDetail { class: ClassInfo; members: Member[]; invites: Inv
 /** The best attempt of a student on an assignment. */
 export interface ProgressCell { assignmentId: number; userId: number; status: SessionSummary["status"]; progress: number; sessionId: number; score?: number; teacherScore?: number; costUsd: number }
 
-export interface ProgressRow { userId: number; name: string; email: string; session?: SessionSummary; attemptCount: number }
+export interface ProgressRow { userId: number; name: string; email: string; username?: string; session?: SessionSummary; attemptCount: number }
 
-export const createClass = (c: { name: string; description: string; ownerId?: number }) => api.post<ClassInfo>("/api/classes", c);
+/** A one-time link to choose a new password, valid 15 minutes; shown once. */
+export interface ResetLink { url: string; expiresAt: string }
+
+/** Asks for an assisted reset link for a student without e-mail (owner of the class of origin or admin). */
+export const requestPasswordReset = (classId: number, userId: number) =>
+  api.post<ResetLink>(`/api/classes/${classId}/members/${userId}/password-reset`);
+
+export interface NewClass { name: string; description: string; enrollmentMode: EnrollmentMode; ownerId?: number }
+
+export const createClass = (c: NewClass) => api.post<ClassInfo>("/api/classes", c);
+
+/** The sign-up link of a username class (page `/iscriviti`), built from the site's origin. */
+export const enrollLink = (code: string) => `${window.location.origin}/iscriviti?code=${encodeURIComponent(code)}`;
 
 export const useMyClasses = () => {
   const qc = useQueryClient();
@@ -72,7 +84,7 @@ export type InviteSender = (req: InviteRequest) => Promise<InviteResult[]>;
 const sendInvites = (endpoint: string): InviteSender => async (req) =>
   (await api.post<{ results: InviteResult[] }>(endpoint, req)).results;
 
-/** Invites into a class (existing accounts are added at once). */
+/** Invites into a class; existing accounts join only after accepting with their password. */
 export const inviteToClass = (classId: number) => sendInvites(`/api/classes/${classId}/invite`);
 
 /** Invites new accounts to the platform (admin). */

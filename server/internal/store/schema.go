@@ -2,6 +2,7 @@ package store
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"strings"
 
@@ -10,16 +11,21 @@ import (
 )
 
 const schema = `
+-- An account has an e-mail, a username or both; recovery_class_id is the
+-- class whose owner may reset the password of an account without e-mail.
 CREATE TABLE IF NOT EXISTS users (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  email TEXT NOT NULL UNIQUE COLLATE NOCASE,
+  email TEXT UNIQUE COLLATE NOCASE,
+  username TEXT UNIQUE COLLATE NOCASE,
   name TEXT NOT NULL,
   password_hash TEXT NOT NULL DEFAULT '',
   role TEXT NOT NULL CHECK (role IN ('admin','teacher','student')),
   locale TEXT NOT NULL DEFAULT 'it',
   active INTEGER NOT NULL DEFAULT 1,
   created_at TEXT NOT NULL,
-  last_login_at TEXT
+  last_login_at TEXT,
+  recovery_class_id INTEGER REFERENCES classes(id) ON DELETE SET NULL,
+  CHECK (email IS NOT NULL OR username IS NOT NULL)
 );
 
 CREATE TABLE IF NOT EXISTS auth_sessions (
@@ -52,6 +58,7 @@ CREATE TABLE IF NOT EXISTS classes (
   join_code TEXT NOT NULL UNIQUE,
   owner_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
   archived INTEGER NOT NULL DEFAULT 0,
+  enrollment_mode TEXT NOT NULL DEFAULT 'standard',
   created_at TEXT NOT NULL
 );
 
@@ -89,6 +96,7 @@ CREATE TABLE IF NOT EXISTS activity_sessions (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
   assignment_id INTEGER REFERENCES assignments(id) ON DELETE SET NULL,
+  class_id INTEGER REFERENCES classes(id) ON DELETE SET NULL,
   app_type TEXT NOT NULL,
   title TEXT NOT NULL DEFAULT '',
   context_json TEXT NOT NULL DEFAULT '{}',
@@ -200,6 +208,31 @@ CREATE TABLE IF NOT EXISTS ai_inflight (
 );
 CREATE INDEX IF NOT EXISTS idx_inflight_scope ON ai_inflight(scope, expires_at);
 
+-- Login and enrollment attempts per window; key is an HMAC, never an
+-- e-mail, username or IP in clear.
+CREATE TABLE IF NOT EXISTS auth_rate_limits (
+  key TEXT PRIMARY KEY,
+  count INTEGER NOT NULL,
+  expires_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_auth_rate_limits_expires ON auth_rate_limits(expires_at);
+
+-- Password reset links, found by user id; only the token hash is stored.
+-- issued_by and class_id are set together for an assisted reset; deleting
+-- the issuer or the class deletes the link, so it never reads as an
+-- e-mail reset.
+CREATE TABLE IF NOT EXISTS password_resets (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  token_hash TEXT NOT NULL UNIQUE,
+  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  created_at TEXT NOT NULL,
+  expires_at TEXT NOT NULL,
+  consumed_at TEXT,
+  issued_by INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  class_id INTEGER REFERENCES classes(id) ON DELETE CASCADE
+);
+CREATE INDEX IF NOT EXISTS idx_password_resets_user ON password_resets(user_id);
+
 CREATE TABLE IF NOT EXISTS settings (
   key TEXT PRIMARY KEY,
   value TEXT NOT NULL
@@ -267,6 +300,10 @@ func prepare(db *sql.DB) (*sql.DB, error) {
 		db.Close()
 		return nil, fmt.Errorf("migrate: %w", err)
 	}
+	if err := requireCurrentSchema(db); err != nil {
+		db.Close()
+		return nil, err
+	}
 	if err := applyMigrations(db); err != nil {
 		db.Close()
 		return nil, err
@@ -274,22 +311,33 @@ func prepare(db *sql.DB) (*sql.DB, error) {
 	return db, nil
 }
 
-// migrations add columns to databases created by older versions; schema
-// above already has them for new databases. Append only, never edit.
-var migrations = []string{
-	`ALTER TABLE activity_sessions ADD COLUMN teacher_feedback TEXT NOT NULL DEFAULT ''`,
-	`ALTER TABLE activity_sessions ADD COLUMN teacher_score INTEGER`,
-	`ALTER TABLE activity_sessions ADD COLUMN teacher_feedback_at TEXT`,
-	`ALTER TABLE rooms ADD COLUMN own_class_id INTEGER REFERENCES classes(id) ON DELETE SET NULL`,
-	`ALTER TABLE activity_sessions ADD COLUMN revision INTEGER NOT NULL DEFAULT 0`,
-	`ALTER TABLE activity_sessions ADD COLUMN judged_revision INTEGER NOT NULL DEFAULT 0`,
-	`ALTER TABLE activity_sessions ADD COLUMN unverified_lines INTEGER NOT NULL DEFAULT 0`,
-	`ALTER TABLE usage_log ADD COLUMN estimated INTEGER NOT NULL DEFAULT 0`,
-	`ALTER TABLE usage_log ADD COLUMN unpriced INTEGER NOT NULL DEFAULT 0`,
-	`ALTER TABLE usage_log ADD COLUMN first_delta_ms INTEGER NOT NULL DEFAULT 0`,
-	`ALTER TABLE usage_log ADD COLUMN first_text_ms INTEGER NOT NULL DEFAULT 0`,
-	`ALTER TABLE live_grants ADD COLUMN reservation_id INTEGER NOT NULL DEFAULT 0`,
+// errOldDatabase: the database predates the username classes and must be
+// recreated (it is not migrated, by decision of 30/10/2026).
+var errOldDatabase = errors.New("database created by an older version: recreate it empty, the server creates the tables")
+
+// requireCurrentSchema refuses such a database at start: CREATE TABLE IF NOT
+// EXISTS keeps an old table as it is, and the first query using a new
+// column would fail far from the cause.
+func requireCurrentSchema(db *sql.DB) error {
+	for _, probe := range []string{
+		`SELECT username, recovery_class_id FROM users LIMIT 0`,
+		`SELECT enrollment_mode FROM classes LIMIT 0`,
+		`SELECT class_id FROM activity_sessions LIMIT 0`,
+	} {
+		rows, err := db.Query(probe)
+		if err != nil {
+			return fmt.Errorf("%w (%v)", errOldDatabase, err)
+		}
+		rows.Close()
+	}
+	return nil
 }
+
+// migrations change databases created by older versions; schema above
+// already has the change for new databases. Append only, never edit. The
+// database was recreated with the username classes (30/10/2026), so
+// everything before that lives in schema.
+var migrations = []string{}
 
 func applyMigrations(db *sql.DB) error {
 	for _, m := range migrations {

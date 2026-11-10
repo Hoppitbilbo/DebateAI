@@ -57,14 +57,21 @@
   "errors": {
     "generic": "Une erreur s'est produite. Réessayez.",
     "notFound": "Introuvable",
-    "invalid_credentials": "E-mail ou mot de passe incorrect.",
+    "invalid_credentials": "Nom d'utilisateur, e-mail ou mot de passe incorrect.",
     "disabled": "Ce compte est désactivé.",
     "rate_limited": "Trop de tentatives. Patientez quelques minutes.",
     "invalid_invite": "Cette invitation n'est plus valable.",
     "invalid_token": "Le lien a expiré ou a déjà été utilisé.",
     "wrong_password": "Le mot de passe actuel est incorrect.",
     "server_unreachable": "Le serveur est injoignable.",
-    "already_setup": "La plateforme est déjà configurée."
+    "already_setup": "La plateforme est déjà configurée.",
+    "username_taken": "Ce nom d'utilisateur est déjà pris : choisis-en un autre.",
+    "unavailable": "Le service n'est pas disponible pour le moment. Réessaie dans un instant.",
+    "ambiguous_identifier": "L'e-mail et le nom d'utilisateur désignent des comptes différents : n'en utilise qu'un.",
+    "reset_not_allowed": "Impossible de créer un lien de récupération pour ce compte : il doit s'agir d'un élève sans e-mail, encore inscrit dans sa classe d'origine active.",
+    "network": "Pas de connexion ou connexion interrompue. Vérifie le réseau et réessaie.",
+    "invalid": "Données non valides : vérifie les champs et réessaie.",
+    "bad_request": "Données non valides : vérifie les champs et réessaie."
   },
   "aiErrors": {
     "generic": "L'IA n'a pas répondu. Réessayez.",
@@ -87,6 +94,7 @@
     "loginTitle": "Bon retour",
     "loginSubtitle": "Connectez-vous avec le compte de votre école",
     "email": "E-mail",
+    "identifier": "E-mail ou nom d'utilisateur",
     "password": "Mot de passe",
     "name": "Nom complet",
     "newPassword": "Nouveau mot de passe (8 caractères min.)",
@@ -94,7 +102,7 @@
     "language": "Langue",
     "forgot": "Mot de passe oublié ?",
     "continueAsGuest": "Continuer en invité",
-    "inviteOnly": "Les comptes sont créés sur invitation de votre école.",
+    "inviteOnly": "Pas de compte ? Demande à ton enseignant : il t'enverra une invitation ou un lien d'inscription.",
     "registerTitle": "Créez votre compte",
     "registerSubtitle": "{{inviter}} vous a invité en tant que {{role}} (classe : {{className}}).",
     "existingAccount": "Vous avez déjà un compte avec cet e-mail : saisissez votre mot de passe pour accepter l'invitation.",
@@ -107,11 +115,14 @@
     "forgotTitle": "Réinitialiser le mot de passe",
     "forgotSubtitle": "Nous vous enverrons un lien par e-mail.",
     "forgotSent": "Si l'adresse correspond à un compte, vous recevrez un e-mail dans quelques minutes.",
+    "forgotNoEmail": "Tu te connectes avec un nom d'utilisateur, sans e-mail ? Demande à ton enseignant un lien pour choisir un nouveau mot de passe.",
     "sendLink": "Envoyer le lien",
     "backToLogin": "Retour à la connexion",
     "resetTitle": "Choisissez un nouveau mot de passe",
     "savePassword": "Enregistrer le mot de passe",
-    "passwordChanged": "Mot de passe mis à jour"
+    "passwordChanged": "Mot de passe mis à jour",
+    "showPassword": "Afficher le mot de passe",
+    "hidePassword": "Masquer le mot de passe"
   },
   "setup": {
     "title": "Configurer DebateAI",
@@ -121,7 +132,9 @@
   "account": {
     "title": "Mon compte",
     "currentPassword": "Mot de passe actuel",
-    "changePassword": "Changer le mot de passe"
+    "changePassword": "Changer le mot de passe",
+    "displayName": "Nom affiché",
+    "displayNameHint": "Ton enseignant et la classe le voient. Ton vrai nom n'est pas nécessaire."
   },
   "activity": {
     "tutorial": "Tutoriel",
@@ -465,7 +478,40 @@
       "shuffleHint": "Chaque élève les rencontre dans un ordre différent : en salle informatique, les voisins n'ont pas le même personnage."
     },
     "exportExcel": "Exporter les notes (Excel)",
-    "teacherScore": "Note enseignant"
+    "teacherScore": "Note enseignant",
+    "loginColumn": "E-mail ou nom d'utilisateur",
+    "enrollment": {
+      "label": "Comment les élèves s'inscrivent",
+      "standard": "Invitations par e-mail",
+      "standardHint": "Chaque élève reçoit une invitation par e-mail et se connecte avec e-mail et mot de passe.",
+      "username": "Nom d'utilisateur et mot de passe, sans e-mail",
+      "usernameHint": "Partage un lien : chaque élève choisit un nom d'utilisateur et un mot de passe. Aucun e-mail requis.",
+      "pseudonym": "Le nom d'utilisateur est un pseudonyme, pas l'anonymat : tu vois les activités, conversations et résultats de chaque nom d'utilisateur."
+    },
+    "enrollLink": {
+      "title": "Lien d'inscription",
+      "hint": "Partage le lien ou affiche le QR : chaque élève choisit un nom d'utilisateur et un mot de passe.",
+      "copy": "Copier le lien",
+      "qr": "QR du lien d'inscription",
+      "regenerate": "Régénérer le lien",
+      "regenerateTitle": "Régénérer le lien ?",
+      "regenerateText": "L'ancien lien ne fonctionnera plus pour les nouvelles inscriptions. Les comptes déjà créés et les élèves inscrits restent."
+    },
+    "resetLink": {
+      "action": "Lien de récupération du mot de passe pour {{name}}",
+      "title": "Récupération du mot de passe de {{name}}",
+      "inPerson": "Remets le lien en personne, après avoir reconnu l'élève.",
+      "explain": "L'élève choisira un nouveau mot de passe. Le lien vaut 15 minutes et ne sert qu'une fois ; un nouveau lien annule les précédents.",
+      "create": "Créer le lien",
+      "linkLabel": "Lien de récupération",
+      "expires": "Expire à {{time}} (15 minutes).",
+      "once": "Le lien n'est affiché que maintenant : une fois la fenêtre fermée, tu ne pourras plus le revoir.",
+      "done": "Terminé",
+      "errors": {
+        "forbidden": "Seul le propriétaire de la classe d'origine de l'élève, ou un administrateur, peut créer ce lien.",
+        "not_found": "Cet élève ne fait plus partie de la classe."
+      }
+    }
   },
   "invite": {
     "emails": "Adresses e-mail",
@@ -477,7 +523,6 @@
     "done": "{{count}} invitation(s) traitée(s)",
     "copyLink": "Copier le lien",
     "status": {
-      "added": "ajouté à la classe",
       "invited": "invité",
       "error": "erreur"
     },
@@ -898,5 +943,36 @@
     "error": "Le dictionnaire ne répond pas : réessaie dans un instant.",
     "source": "Ouvrir sur le Wiktionnaire",
     "close": "Fermer"
+  },
+  "enroll": {
+    "title": "Rejoindre {{className}}",
+    "subtitle": "Choisis un nom d'utilisateur et un mot de passe.",
+    "pseudonym": "Ton nom d'utilisateur est ton nom ici : pas besoin de ton vrai nom. L'enseignant voit les activités et les conversations liées à ton nom d'utilisateur.",
+    "username": "Nom d'utilisateur",
+    "usernameHint": "De 3 à 30 caractères : lettres a-z, chiffres, point, tiret ou tiret bas. Commence par une lettre ou un chiffre.",
+    "passwordHint": "De 8 à 72 caractères.",
+    "submit": "Créer le compte",
+    "haveAccount": "J'ai déjà un compte",
+    "invalidTitle": "Lien non valide",
+    "invalidText": "Ce lien ne fonctionne pas : il a peut-être changé ou les inscriptions sont fermées. Demande le nouveau lien à ton enseignant.",
+    "failedTitle": "Classe non chargée",
+    "guestText": "Tu es dans une salle éclair avec un compte temporaire. Pour créer ton compte de la classe, quitte d'abord la salle.",
+    "guestLogout": "Quitter la salle",
+    "staffText": "Ce lien permet aux élèves de s'inscrire à la classe. Tu es connecté comme enseignant ou administrateur : partage-le avec tes élèves.",
+    "loggedInText": "Tu es déjà connecté comme {{name}}. Veux-tu rejoindre la classe avec ce compte ?",
+    "useMine": "Utiliser mon compte",
+    "logoutAndCreate": "Me déconnecter et créer un nouveau compte",
+    "doneTitle": "Compte créé !",
+    "doneUsername": "Ton nom d'utilisateur est",
+    "doneNote": "Note ton nom d'utilisateur et ton mot de passe dans un endroit sûr : tu en as besoin pour te connecter la prochaine fois. Si tu oublies le mot de passe, demande à ton enseignant.",
+    "doneLogin": "La prochaine fois, connecte-toi sur",
+    "goToClass": "Aller à la classe",
+    "errors": {
+      "taken": "Ce nom d'utilisateur est déjà pris : choisis-en un autre.",
+      "invalid": "Vérifie le nom d'utilisateur et le mot de passe : suis les indications sous les champs.",
+      "closed": "Les inscriptions par lien sont fermées. Demande à ton enseignant.",
+      "guest": "Tu es dans une salle éclair : quitte-la avant de créer un compte.",
+      "link": "Ce lien n'est plus valable. Demande le nouveau lien à ton enseignant."
+    }
   }
 }

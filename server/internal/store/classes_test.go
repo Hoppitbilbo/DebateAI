@@ -14,7 +14,7 @@ func TestClassesLifecycle(t *testing.T) {
 	stud, _ := users.Create("s@x.it", "Sara", "", domain.RoleStudent, "it")
 	r := NewClasses(db)
 
-	id, err := r.Create("3A", "storia", teacher)
+	id, err := r.Create("3A", "storia", teacher, domain.EnrollStandard)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -29,7 +29,7 @@ func TestClassesLifecycle(t *testing.T) {
 	r.AddMember(id, co, domain.RoleTeacher)
 	r.AddMember(id, stud, domain.RoleStudent)
 	r.AddMember(id, stud, domain.RoleTeacher) // existing membership is kept
-	if !r.Teaches(id, co) || r.IsOwner(id, co) || !r.TeachesStudent(co, stud) || r.TeachesStudent(stud, co) {
+	if !r.Teaches(id, co) || r.IsOwner(id, co) {
 		t.Fatal("co-teacher rights")
 	}
 	if m, _ := r.CountMemberships(); r.CountStudents(id) != 1 || m[stud] != 1 {
@@ -74,5 +74,47 @@ func TestNewJoinCodeAlphabet(t *testing.T) {
 				t.Fatalf("ambiguous character %q", ch)
 			}
 		}
+	}
+}
+
+func TestDeletedClassRevokesImportAccessWithoutForeignKeys(t *testing.T) {
+	db := openTestDB(t)
+	if _, err := db.Exec(`PRAGMA foreign_keys = OFF`); err != nil {
+		t.Fatal(err)
+	}
+	users, classes, sessions := NewUsers(db), NewClasses(db), NewActivitySessions(db)
+	teacher, err := users.Create("teacher@x.it", "Teacher", "", domain.RoleTeacher, "it")
+	if err != nil {
+		t.Fatal(err)
+	}
+	student, err := users.Create("student@x.it", "Student", "", domain.RoleStudent, "it")
+	if err != nil {
+		t.Fatal(err)
+	}
+	classID, err := classes.Create("Class", "", teacher, domain.EnrollUsername)
+	if err != nil {
+		t.Fatal(err)
+	}
+	c, _ := classes.Get(classID)
+	pupil, _, err := users.CreateStudentInClass(domain.NewClassStudent{Code: c.JoinCode, Username: "pupil", Name: "pupil", PasswordHash: "h", Locale: "it"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	id, err := sessions.Import(student, classID, nil, domain.SessionDetail{SessionSummary: domain.SessionSummary{AppType: "wiki-chatbot", Status: domain.SessionCompleted}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := classes.Delete(classID); err != nil {
+		t.Fatal(err)
+	}
+	if classes.Teaches(classID, teacher) {
+		t.Fatal("an orphaned membership grants access to a deleted class")
+	}
+	if n := count(db, `SELECT COUNT(*) FROM users WHERE id = ? AND recovery_class_id IS NULL`, pupil); n != 1 {
+		t.Fatal("the account must survive without its recovery class")
+	}
+	d, err := sessions.Detail(id)
+	if err != nil || d.ClassID != nil || d.UserID == nil || *d.UserID != student {
+		t.Fatalf("student must keep the work without stale provenance: %v %+v", err, d)
 	}
 }

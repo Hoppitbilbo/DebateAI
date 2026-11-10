@@ -14,7 +14,7 @@ type Classes struct{ db *sql.DB }
 
 func NewClasses(db *sql.DB) *Classes { return &Classes{db: db} }
 
-const classSelect = `SELECT c.id, c.name, c.description, c.join_code, c.owner_id, COALESCE(u.name,''), c.archived, c.created_at,
+const classSelect = `SELECT c.id, c.name, c.description, c.join_code, c.owner_id, COALESCE(u.name,''), c.archived, c.enrollment_mode, c.created_at,
 	(SELECT COUNT(*) FROM class_members m WHERE m.class_id = c.id AND m.role = 'student'),
 	(SELECT COUNT(*) FROM class_members m WHERE m.class_id = c.id AND m.role = 'teacher'),
 	(SELECT COUNT(*) FROM assignments a WHERE a.class_id = c.id)
@@ -24,7 +24,7 @@ func scanClass(row interface{ Scan(...any) error }) (*domain.Class, error) {
 	var c domain.Class
 	var owner sql.NullInt64
 	var archived int
-	if err := row.Scan(&c.ID, &c.Name, &c.Description, &c.JoinCode, &owner, &c.OwnerName, &archived, &c.CreatedAt, &c.StudentCount, &c.TeacherCount, &c.Assignments); err != nil {
+	if err := row.Scan(&c.ID, &c.Name, &c.Description, &c.JoinCode, &owner, &c.OwnerName, &archived, &c.EnrollmentMode, &c.CreatedAt, &c.StudentCount, &c.TeacherCount, &c.Assignments); err != nil {
 		return nil, err
 	}
 	if owner.Valid {
@@ -87,14 +87,15 @@ func (r *Classes) FindByJoinCode(code string) (*domain.Class, error) {
 // errNoJoinCode means no free join code was found after several attempts.
 var errNoJoinCode = errors.New("could not create class")
 
-// Create inserts a class with a fresh join code and adds the owner as teacher.
-func (r *Classes) Create(name, description string, ownerID int64) (int64, error) {
+// Create inserts a class with a fresh code fitting its enrollment mode and
+// adds the owner as teacher.
+func (r *Classes) Create(name, description string, ownerID int64, mode string) (int64, error) {
 	tx, err := r.db.Begin()
 	if err != nil {
 		return 0, err
 	}
 	defer tx.Rollback()
-	id, err := insertClass(tx, name, description, &ownerID, false)
+	id, err := insertClass(tx, name, description, &ownerID, false, mode)
 	if err != nil {
 		return 0, err
 	}
@@ -105,10 +106,10 @@ func (r *Classes) Create(name, description string, ownerID int64) (int64, error)
 }
 
 // insertClass stores a class with a fresh join code (they are unique).
-func insertClass(db execer, name, description string, ownerID *int64, archived bool) (int64, error) {
+func insertClass(db execer, name, description string, ownerID *int64, archived bool, mode string) (int64, error) {
 	for attempt := 0; attempt < 5; attempt++ {
-		res, err := db.Exec(`INSERT INTO classes(name, description, join_code, owner_id, archived, created_at) VALUES(?,?,?,?,?,?)`,
-			name, description, domain.NewJoinCode(), ownerID, boolInt(archived), domain.Now())
+		res, err := db.Exec(`INSERT INTO classes(name, description, join_code, owner_id, archived, enrollment_mode, created_at) VALUES(?,?,?,?,?,?,?)`,
+			name, description, domain.NewClassCode(mode), ownerID, boolInt(archived), mode, domain.Now())
 		if err == nil {
 			return res.LastInsertId()
 		}
@@ -147,8 +148,27 @@ func (r *Classes) Update(id int64, p domain.ClassPatch) error {
 }
 
 func (r *Classes) Delete(id int64) error {
-	_, err := r.db.Exec(`DELETE FROM classes WHERE id = ?`, id)
-	return err
+	tx, err := r.db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	// Clear the references also on connections without foreign keys:
+	// imported work loses its class, accounts keep existing without the
+	// teacher who could reset their password, whose links stop working.
+	for _, q := range []string{
+		`DELETE FROM password_resets WHERE class_id = ?`,
+		`UPDATE activity_sessions SET class_id = NULL WHERE class_id = ?`,
+		`UPDATE users SET recovery_class_id = NULL WHERE recovery_class_id = ?`,
+	} {
+		if _, err := tx.Exec(q, id); err != nil {
+			return err
+		}
+	}
+	if _, err := tx.Exec(`DELETE FROM classes WHERE id = ?`, id); err != nil {
+		return err
+	}
+	return tx.Commit()
 }
 
 func (r *Classes) SetJoinCode(id int64, code string) error {
@@ -166,7 +186,7 @@ func (r *Classes) CountActive() int {
 // Members lists teachers first, then students, by name.
 func (r *Classes) Members(classID int64) []domain.Member {
 	out := []domain.Member{}
-	rows, err := r.db.Query(`SELECT u.id, u.name, u.email, m.role, m.joined_at, u.last_login_at FROM class_members m JOIN users u ON u.id = m.user_id WHERE m.class_id = ? ORDER BY m.role DESC, u.name`, classID)
+	rows, err := r.db.Query(`SELECT u.id, u.name, COALESCE(u.email, ''), COALESCE(u.username, ''), m.role, m.joined_at, u.last_login_at FROM class_members m JOIN users u ON u.id = m.user_id WHERE m.class_id = ? ORDER BY m.role DESC, u.name`, classID)
 	if err != nil {
 		return out
 	}
@@ -174,7 +194,7 @@ func (r *Classes) Members(classID int64) []domain.Member {
 	for rows.Next() {
 		var m domain.Member
 		var last sql.NullString
-		if rows.Scan(&m.UserID, &m.Name, &m.Email, &m.Role, &m.JoinedAt, &last) == nil {
+		if rows.Scan(&m.UserID, &m.Name, &m.Email, &m.Username, &m.Role, &m.JoinedAt, &last) == nil {
 			if last.Valid {
 				m.LastLoginAt = &last.String
 			}
@@ -186,7 +206,7 @@ func (r *Classes) Members(classID int64) []domain.Member {
 
 // Students returns the student accounts of a class, by name.
 func (r *Classes) Students(classID int64) ([]domain.User, error) {
-	rows, err := r.db.Query(`SELECT `+prefixed("u.", userCols)+`, `+userRoomCol("u")+` FROM class_members m JOIN users u ON u.id = m.user_id WHERE m.class_id = ? AND m.role = 'student' ORDER BY u.name`, classID)
+	rows, err := r.db.Query(`SELECT `+userCols("u")+` FROM class_members m JOIN users u ON u.id = m.user_id WHERE m.class_id = ? AND m.role = 'student' ORDER BY u.name`, classID)
 	if err != nil {
 		return nil, err
 	}
@@ -215,6 +235,27 @@ func (r *Classes) AddMember(classID, userID int64, role string) error {
 	return err
 }
 
+// JoinByCode adds the user as a student of the active class with this
+// code and returns its id. The insert checks the code itself, so a code
+// replaced at the same moment never lets anyone in; an existing membership
+// is kept as is. It returns sql.ErrNoRows when no active class has the code.
+func (r *Classes) JoinByCode(code string, userID int64) (classID int64, err error) {
+	tx, err := r.db.Begin()
+	if err != nil {
+		return 0, err
+	}
+	defer tx.Rollback()
+	if _, err := tx.Exec(`INSERT OR IGNORE INTO class_members(class_id, user_id, role, joined_at)
+		SELECT id, ?, ?, ? FROM classes WHERE join_code = ? AND archived = 0`, userID, domain.RoleStudent, domain.Now(), code); err != nil {
+		return 0, err
+	}
+	// Read under the write lock the insert took: the same class it saw.
+	if err := tx.QueryRow(`SELECT id FROM classes WHERE join_code = ? AND archived = 0`, code).Scan(&classID); err != nil {
+		return 0, err
+	}
+	return classID, tx.Commit()
+}
+
 func (r *Classes) RemoveMember(classID, userID int64) error {
 	_, err := r.db.Exec(`DELETE FROM class_members WHERE class_id = ? AND user_id = ?`, classID, userID)
 	return err
@@ -233,11 +274,6 @@ func (r *Classes) IsOwner(classID, userID int64) bool {
 // Teaches reports whether the user owns or co-teaches the class.
 func (r *Classes) Teaches(classID, userID int64) bool {
 	return r.IsOwner(classID, userID) ||
-		count(r.db, `SELECT COUNT(*) FROM class_members WHERE class_id = ? AND user_id = ? AND role = 'teacher'`, classID, userID) > 0
-}
-
-// TeachesStudent reports whether the teacher teaches a class the student is in.
-func (r *Classes) TeachesStudent(teacherID, studentID int64) bool {
-	return count(r.db, `SELECT COUNT(*) FROM class_members m1 JOIN class_members m2 ON m1.class_id = m2.class_id
-		WHERE m1.user_id = ? AND m1.role = 'teacher' AND m2.user_id = ?`, teacherID, studentID) > 0
+		count(r.db, `SELECT COUNT(*) FROM class_members m JOIN classes c ON c.id = m.class_id
+			WHERE m.class_id = ? AND m.user_id = ? AND m.role = 'teacher'`, classID, userID) > 0
 }

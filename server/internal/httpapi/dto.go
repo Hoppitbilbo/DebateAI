@@ -47,6 +47,12 @@ type inviteInfoResponse struct {
 	UserExists bool   `json:"userExists"`
 }
 
+// classInviteResponse is what a username class link shows before enrolling.
+type classInviteResponse struct {
+	ClassName      string `json:"className"`
+	EnrollmentMode string `json:"enrollmentMode"`
+}
+
 type inviteResultsResponse struct {
 	Results []app.InviteResult `json:"results"`
 }

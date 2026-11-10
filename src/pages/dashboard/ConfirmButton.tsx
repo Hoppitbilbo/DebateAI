@@ -3,14 +3,14 @@ import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
 /** A button that asks for confirmation before running onConfirm. */
-const ConfirmButton = ({ label, title, description, onConfirm, icon, variant = "ghost" }: {
-  label?: string; title: string; description?: string; onConfirm: () => void; icon?: React.ReactNode; variant?: "ghost" | "outline" | "destructive";
+const ConfirmButton = ({ label, title, description, onConfirm, icon, variant = "ghost", disabled }: {
+  label?: string; title: string; description?: string; onConfirm: () => void; icon?: React.ReactNode; variant?: "ghost" | "outline" | "destructive"; disabled?: boolean;
 }) => {
   const { t } = useTranslation();
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button size={label ? "sm" : "icon"} variant={variant} aria-label={title}>{icon}{label && <span className={icon ? "ml-2" : ""}>{label}</span>}</Button>
+        <Button size={label ? "sm" : "icon"} variant={variant} aria-label={label ? undefined : title} disabled={disabled}>{icon}{label && <span className={icon ? "ml-2" : ""}>{label}</span>}</Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>

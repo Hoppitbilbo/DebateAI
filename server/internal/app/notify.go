@@ -36,7 +36,7 @@ func (n mailNotifier) AssignmentPublished(a *domain.Assignment, baseURL string) 
 		return
 	}
 	for _, st := range students {
-		if !st.Active {
+		if !st.Active || st.Email == "" {
 			continue
 		}
 		subj, body := RenderMail("assignment", st.Locale, map[string]string{"site": n.siteName(), "name": st.Name, "class": a.ClassName,
@@ -57,7 +57,7 @@ func (n feedbackMailer) FeedbackGiven(d *domain.SessionDetail, teacher *domain.U
 		return
 	}
 	student, err := n.users.Get(*d.UserID)
-	if err != nil || !student.Active {
+	if err != nil || !student.Active || student.Email == "" {
 		return
 	}
 	title := d.AssignmentTitle

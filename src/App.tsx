@@ -40,6 +40,7 @@ const ForgotPasswordPage = named(authPages, "ForgotPasswordPage");
 const ResetPasswordPage = named(authPages, "ResetPasswordPage");
 const SetupPage = named(authPages, "SetupPage");
 const AccountPage = named(authPages, "AccountPage", ["/account"]);
+const EnrollPage = lazyPage(() => import("./pages/auth/EnrollPage"), ["/iscriviti"]);
 import { RequireRole, Spinner } from "./pages/dashboard/common";
 const StudentDashboard = lazyPage(() => import("./pages/dashboard/StudentDashboard"), ["/student"]);
 const SessionDetailPage = lazyPage(() => import("./pages/dashboard/SessionDetailPage"));
@@ -95,6 +96,8 @@ const App = () => (
 
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
+              {/* sign-up link of a username class, shared by the teacher */}
+              <Route path="/iscriviti" element={<EnrollPage />} />
               <Route path="/forgot-password" element={<ForgotPasswordPage />} />
               <Route path="/reset-password" element={<ResetPasswordPage />} />
               <Route path="/setup" element={<SetupPage />} />

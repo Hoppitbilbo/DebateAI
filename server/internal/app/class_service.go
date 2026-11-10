@@ -1,6 +1,7 @@
 package app
 
 import (
+	"database/sql"
 	"errors"
 	"strings"
 
@@ -12,11 +13,8 @@ import (
 type classService struct {
 	classes  classStore
 	rooms    roomStore
-	users    userStore
+	resets   resetStore
 	accounts *authService
-	mail     mailer
-	siteName func() string
-	mailOn   func() bool // whether SMTP is configured
 }
 
 var (
@@ -27,7 +25,7 @@ var (
 
 // CanManage: admins, the owner, or co-teachers.
 func (c *classService) CanManage(u *domain.User, classID int64) bool {
-	return u.Role == domain.RoleAdmin || c.classes.Teaches(classID, u.ID)
+	return u.Role == domain.RoleAdmin || (u.Role == domain.RoleTeacher && c.classes.Teaches(classID, u.ID))
 }
 
 // MayAttempt tells whether u may work on assignment a: its teachers, the
@@ -49,13 +47,29 @@ func (c *classService) List(u *domain.User, onlyMine bool) ([]*domain.Class, err
 	return c.classes.ListTaughtBy(u.ID)
 }
 
+// NewClass is what a teacher fills in to create a class. OwnerID is only
+// honoured for admins; EnrollmentMode defaults to EnrollStandard.
+type NewClass struct {
+	Name           string `json:"name"`
+	Description    string `json:"description"`
+	OwnerID        *int64 `json:"ownerId"`
+	EnrollmentMode string `json:"enrollmentMode"`
+}
+
 // Create makes a class owned by u; an admin may create it for another teacher.
-func (c *classService) Create(u *domain.User, name, description string, ownerID *int64) (*domain.Class, error) {
+func (c *classService) Create(u *domain.User, in NewClass) (*domain.Class, error) {
 	owner := u.ID
-	if u.Role == domain.RoleAdmin && ownerID != nil {
-		owner = *ownerID
+	if u.Role == domain.RoleAdmin && in.OwnerID != nil {
+		owner = *in.OwnerID
 	}
-	id, err := c.classes.Create(strings.TrimSpace(name), strings.TrimSpace(description), owner)
+	mode := in.EnrollmentMode
+	if mode == "" {
+		mode = domain.EnrollStandard
+	}
+	if !domain.ValidEnrollmentMode(mode) {
+		return nil, invalid(errors.New("invalid enrollment mode"))
+	}
+	id, err := c.classes.Create(strings.TrimSpace(in.Name), strings.TrimSpace(in.Description), owner, mode)
 	if err != nil {
 		return nil, err
 	}
@@ -85,7 +99,11 @@ func (c *classService) Update(id int64, ch ClassChange) (*domain.Class, error) {
 
 // RegenerateCode gives the class a new join code.
 func (c *classService) RegenerateCode(id int64) (string, error) {
-	code := domain.NewJoinCode()
+	cl, err := c.classes.Get(id)
+	if err != nil {
+		return "", err
+	}
+	code := domain.NewClassCode(cl.EnrollmentMode)
 	return code, c.classes.SetJoinCode(id, code)
 }
 
@@ -96,9 +114,9 @@ type MemberInvitation struct {
 	Locale string   `json:"locale"`
 }
 
-// Invite brings people into a class: existing accounts are added at once
-// (and notified), new addresses receive a registration link. Only the owner
-// (or an admin) may add co-teachers.
+// Invite sends a proposal to join a class. Existing accounts must accept
+// with their password; knowing an email never grants membership or access.
+// Only the owner (or an admin) may invite co-teachers.
 func (c *classService) Invite(u *domain.User, classID int64, in MemberInvitation, baseURL string) ([]InviteResult, error) {
 	role := in.Role
 	if role == "" {
@@ -117,10 +135,6 @@ func (c *classService) Invite(u *domain.User, classID int64, in MemberInvitation
 	className := c.classes.Name(classID)
 	results := []InviteResult{}
 	for _, email := range SplitEmails(in.Emails) {
-		if existing, err := c.users.GetByEmail(email); err == nil {
-			results = append(results, c.addExisting(u, existing, classID, className, role, baseURL))
-			continue
-		}
 		inv, err := c.accounts.CreateInvite(Invitation{Inviter: u, Email: email, Role: role, ClassID: &classID, ClassName: className, Locale: locale}, baseURL)
 		if err != nil {
 			results = append(results, InviteResult{Email: email, Status: "error", EmailSent: boolPtr(false), Error: err.Error()})
@@ -131,28 +145,35 @@ func (c *classService) Invite(u *domain.User, classID int64, in MemberInvitation
 	return results, nil
 }
 
-// addExisting adds an account to the class; students stay students even
-// when invited as teachers.
-func (c *classService) addExisting(inviter, existing *domain.User, classID int64, className, role, baseURL string) InviteResult {
-	memberRole := domain.RoleStudent
-	if existing.Role != domain.RoleStudent && role == domain.RoleTeacher {
-		memberRole = domain.RoleTeacher
-	}
-	if err := c.classes.AddMember(classID, existing.ID, memberRole); err != nil {
-		return InviteResult{Email: existing.Email, Status: "error", EmailSent: boolPtr(false), Error: err.Error()}
-	}
-	subj, body := RenderMail("added", existing.Locale, map[string]string{"site": c.siteName(), "name": existing.Name, "inviter": inviter.Name, "class": className, "link": baseURL + "/dashboard"})
-	c.mail.SendMailAsync(existing.Email, subj, body)
-	return InviteResult{Email: existing.Email, Status: "added", EmailSent: boolPtr(c.mailOn())}
-}
-
-// Join adds u as a student of the active class with this code.
+// Join adds u as a student of the active class with this code; the code
+// is checked in the same statement that adds the member.
 func (c *classService) Join(u *domain.User, code string) (*domain.Class, error) {
-	cl, err := c.classes.FindByJoinCode(domain.NormalizeJoinCode(code))
-	if err != nil {
+	id, err := c.classes.JoinByCode(domain.NormalizeJoinCode(code), u.ID)
+	if errors.Is(err, sql.ErrNoRows) {
 		return nil, ErrInvalidCode
 	}
-	return cl, c.classes.AddMember(cl.ID, u.ID, domain.RoleStudent)
+	if err != nil {
+		return nil, err
+	}
+	return c.classes.Get(id)
+}
+
+// Members lists the members of a class for u, who manages it. Each tells
+// whether u may give it an assisted reset link (canResetPassword); the
+// server checks again when the link is asked for and used.
+func (c *classService) Members(u *domain.User, cl *domain.Class) ([]domain.Member, error) {
+	members := c.classes.Members(cl.ID)
+	if !mayIssueAssistedReset(u, cl) {
+		return members, nil
+	}
+	resettable, err := c.resets.Resettable(cl.ID)
+	if err != nil {
+		return nil, err
+	}
+	for i := range members {
+		members[i].CanResetPassword = resettable[members[i].UserID]
+	}
+	return members, nil
 }
 
 // Joined lists the active classes of a student, without their join codes.

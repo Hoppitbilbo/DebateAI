@@ -12,7 +12,7 @@ func TestActivitySessionsLifecycle(t *testing.T) {
 	users := NewUsers(db)
 	teacher, _ := users.Create("t@x.it", "Prof", "", domain.RoleTeacher, "it")
 	stud, _ := users.Create("s@x.it", "Sara", "", domain.RoleStudent, "it")
-	classID, _ := NewClasses(db).Create("3A", "", teacher)
+	classID, _ := NewClasses(db).Create("3A", "", teacher, domain.EnrollStandard)
 	aid, _ := NewAssignments(db).Create(domain.NewAssignment{ClassID: classID, Title: "T", AppType: "wiki-chatbot", Config: "{}", CreatedBy: &teacher})
 	r := NewActivitySessions(db)
 

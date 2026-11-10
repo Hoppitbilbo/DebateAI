@@ -18,12 +18,15 @@ type settingsStore interface {
 type userStore interface {
 	Get(id int64) (*domain.User, error)
 	GetByEmail(email string) (*domain.User, error)
+	GetByUsername(username string) (*domain.User, error)
 	Search(q, role string, limit int) ([]domain.User, error)
 	Create(email, name, passwordHash, role, locale string) (int64, error)
+	CreateStudentInClass(n domain.NewClassStudent) (userID, classID int64, err error)
 	Update(id int64, p domain.UserPatch) error
 	Delete(id int64) error
 	PasswordHash(id int64) (string, error)
 	SetPasswordHash(id int64, hash string) error
+	ChangePassword(id int64, p domain.UserPatch, hash string) error
 	RecordLogin(id int64) error
 	Count(role string) int
 }
@@ -49,6 +52,14 @@ type inviteStore interface {
 	CountPending() int
 }
 
+// resetStore holds the password reset links: issued, used once, invalidated.
+type resetStore interface {
+	Issue(n domain.NewPasswordReset) error
+	Consume(tokenHash, passwordHash string) (userID int64, err error)
+	Invalidate(userID int64) error
+	Resettable(classID int64) (map[int64]bool, error)
+}
+
 type classStore interface {
 	Get(id int64) (*domain.Class, error)
 	Name(id int64) string
@@ -56,7 +67,7 @@ type classStore interface {
 	ListTaughtBy(userID int64) ([]*domain.Class, error)
 	ListJoinedBy(userID int64) ([]*domain.Class, error)
 	FindByJoinCode(code string) (*domain.Class, error)
-	Create(name, description string, ownerID int64) (int64, error)
+	Create(name, description string, ownerID int64, mode string) (int64, error)
 	Update(id int64, p domain.ClassPatch) error
 	Delete(id int64) error
 	SetJoinCode(id int64, code string) error
@@ -67,11 +78,11 @@ type classStore interface {
 	CountStudents(classID int64) int
 	CountMemberships() (map[int64]int, error)
 	AddMember(classID, userID int64, role string) error
+	JoinByCode(code string, userID int64) (classID int64, err error)
 	RemoveMember(classID, userID int64) error
 	IsMember(classID, userID int64) bool
 	IsOwner(classID, userID int64) bool
 	Teaches(classID, userID int64) bool
-	TeachesStudent(teacherID, studentID int64) bool
 }
 
 type assignmentStore interface {
@@ -105,7 +116,7 @@ type sessionStore interface {
 	BestPerUserIn(assignmentIDs []int64) (map[int64]map[int64]domain.BestAttempt, error)
 	LatestPerAssignment(userID int64) (map[int64]*domain.SessionSummary, error)
 	StatsForClass(classID int64) (map[int64]domain.AssignStats, error)
-	Import(userID int64, assignmentID *int64, d domain.SessionDetail) (int64, error)
+	Import(userID, classID int64, assignmentID *int64, d domain.SessionDetail) (int64, error)
 }
 
 // inflightStore holds the AI calls in progress: generation slots and budget
@@ -137,7 +148,7 @@ type roomStore interface {
 	GuestByNickname(roomID int64, nickname string) (*domain.RoomGuest, error)
 	SetRejoinPIN(userID int64, pinHash string, expiresAt *string) error
 	RejoinPIN(userID int64) (pinHash, expiresAt string, err error)
-	MoveGuestSessions(guestID, studentID int64) error
+	MoveGuestSessions(guestID, studentID, classID int64) error
 	DeleteGuest(roomID, userID int64) error
 	Delete(id int64) error
 	PurgeExpired(now string) error

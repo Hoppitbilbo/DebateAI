@@ -103,7 +103,7 @@ func TestPasswordResetFlow(t *testing.T) {
 	if _, err := a.ResetPassword(reset, "newpassword1"); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := a.ResetPassword(reset, "another-pass"); !errors.Is(err, ErrInvalidInvite) {
+	if _, err := a.ResetPassword(reset, "another-pass"); !errors.Is(err, domain.ErrResetLinkInvalid) {
 		t.Fatalf("link must be single use: %v", err)
 	}
 	if a.UserForToken(tok) != nil {
@@ -122,7 +122,10 @@ func TestUpdateProfilePassword(t *testing.T) {
 	if _, err := a.UpdateProfile(u, ProfileChange{Name: &name, CurrentPassword: "nope", NewPassword: "newpassword1"}); !errors.Is(err, ErrWrongPassword) {
 		t.Fatalf("wrong current password: %v", err)
 	}
-	got, err := a.UpdateProfile(u, ProfileChange{CurrentPassword: "password123", NewPassword: "newpassword1"})
+	if got, _ := a.users.Get(id); got.Name != "Anna" {
+		t.Fatalf("a refused change must save nothing, not even the name: %+v", got)
+	}
+	got, err := a.UpdateProfile(u, ProfileChange{Name: &name, CurrentPassword: "password123", NewPassword: "newpassword1"})
 	if err != nil || got.Name != "Anna B" {
 		t.Fatalf("update: %v %+v", err, got)
 	}
@@ -135,7 +138,7 @@ func TestRegisterExistingAccountNeedsPassword(t *testing.T) {
 	a, m := newAuthService(t)
 	teacherID, _ := a.CreateUser("t@x.it", "Prof", "", domain.RoleTeacher, "it")
 	teacher, _ := a.users.Get(teacherID)
-	classID, _ := a.classes.Create("3A", "", teacherID)
+	classID, _ := a.classes.Create("3A", "", teacherID, domain.EnrollStandard)
 	studID, _ := a.CreateUser("s@x.it", "Sara", "password123", domain.RoleStudent, "it")
 
 	if _, err := a.CreateInvite(Invitation{Inviter: teacher, Email: "s@x.it", Role: domain.RoleStudent, ClassID: &classID, ClassName: "3A", Locale: "it"}, "http://site"); err != nil {

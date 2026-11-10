@@ -3,7 +3,6 @@ package app
 import (
 	"errors"
 	"fmt"
-	"log"
 	"net/mail"
 	"strings"
 	"time"
@@ -12,13 +11,15 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// authService owns accounts, logins, invitations and password resets. It
+// authService owns accounts, logins, invitations and password resets
+// (password_reset.go). It
 // knows nothing about HTTP: handlers turn its errors into status codes and
 // its login tokens into cookies.
 type authService struct {
 	users    userStore
 	logins   authSessionStore
 	invites  inviteStore
+	resets   resetStore
 	classes  classStore
 	mail     mailer
 	siteName func() string
@@ -32,11 +33,13 @@ type mailer interface {
 
 // Errors the handlers map to HTTP statuses.
 var (
-	ErrInvalidCredentials = errors.New("invalid email or password")
+	ErrInvalidCredentials = errors.New("invalid username, e-mail or password")
 	ErrAccountDisabled    = errors.New("account disabled")
 	ErrWrongPassword      = errors.New("current password is wrong")
 	ErrInvalidInvite      = errors.New("invite not found, expired or already used")
 	ErrUserNotFound       = errors.New("user not found")
+	ErrResetForbidden     = errors.New("only the owner of the student's class or an admin can reset this password")
+	ErrNotClassStudent    = errors.New("not a student of this class")
 )
 
 // invalidInput wraps an error caused by the request data (HTTP 400).
@@ -58,23 +61,42 @@ func validEmail(e string) bool {
 
 func validRole(r string) bool { return domain.ValidRole(r) }
 
-const minPasswordLength = 8
+// Password policy: bcrypt reads only the first 72 bytes, so a longer
+// password is refused instead of being silently cut.
+const (
+	minPasswordLength = 8
+	maxPasswordBytes  = 72
+)
 
 // sessionTTL is how long a login lasts.
 const sessionTTL = 30 * 24 * time.Hour
 
 // hashPassword checks the password policy and returns the bcrypt hash.
 func hashPassword(password string) (string, error) {
-	if len(password) < minPasswordLength {
-		return "", invalid(fmt.Errorf("password must be at least %d characters", minPasswordLength))
+	if err := checkPassword(password); err != nil {
+		return "", err
 	}
 	h, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	return string(h), err
 }
 
+func checkPassword(password string) error {
+	if len(password) < minPasswordLength {
+		return invalid(fmt.Errorf("password must be at least %d characters", minPasswordLength))
+	}
+	if len(password) > maxPasswordBytes {
+		return invalid(fmt.Errorf("password must be at most %d bytes", maxPasswordBytes))
+	}
+	return nil
+}
+
 func passwordMatches(hash, password string) bool {
 	return hash != "" && bcrypt.CompareHashAndPassword([]byte(hash), []byte(password)) == nil
 }
+
+// timingHash is compared when the account is missing, so a login takes the
+// same time whether the account exists or not.
+var timingHash, _ = bcrypt.GenerateFromPassword([]byte("no account has this password"), bcrypt.DefaultCost)
 
 // CreateUser registers an account; an empty password leaves it without one
 // (it will be set through an invite).
@@ -103,12 +125,17 @@ func (a *authService) CreateUser(email, name, password, role, locale string) (in
 	return id, err
 }
 
+// SetPassword replaces the password (admin panel) and invalidates the
+// pending reset links of the account.
 func (a *authService) SetPassword(userID int64, password string) error {
 	hash, err := hashPassword(password)
 	if err != nil {
 		return err
 	}
-	return a.users.SetPasswordHash(userID, hash)
+	if err := a.users.SetPasswordHash(userID, hash); err != nil {
+		return err
+	}
+	return a.resets.Invalidate(userID)
 }
 
 // StartSession logs a user in and returns the secret token for the cookie.
@@ -147,19 +174,88 @@ func (a *authService) Logout(token string) {
 	logIfErr("logout", a.logins.Delete(hashToken(token)))
 }
 
-// Login checks the credentials; it returns ErrInvalidCredentials or ErrAccountDisabled.
-func (a *authService) Login(email, password string) (*domain.User, error) {
-	u, err := a.users.GetByEmail(email)
+// Login checks the credentials. identifier is an e-mail when it holds an
+// '@', a username otherwise. It returns ErrInvalidCredentials, without
+// telling whether the account exists, or ErrAccountDisabled once the
+// password is right. Room guests never log in this way.
+func (a *authService) Login(identifier, password string) (*domain.User, error) {
+	u, err := a.findByIdentifier(identifier)
 	if err != nil {
+		_ = bcrypt.CompareHashAndPassword(timingHash, []byte(password))
 		return nil, ErrInvalidCredentials
 	}
-	if hash, err := a.users.PasswordHash(u.ID); err != nil || !passwordMatches(hash, password) {
+	if hash, err := a.users.PasswordHash(u.ID); err != nil || !passwordMatches(hash, password) || u.IsGuest() {
 		return nil, ErrInvalidCredentials
 	}
 	if !u.Active {
 		return nil, ErrAccountDisabled
 	}
 	return u, nil
+}
+
+func (a *authService) findByIdentifier(identifier string) (*domain.User, error) {
+	identifier = strings.TrimSpace(identifier)
+	if strings.Contains(identifier, "@") {
+		return a.users.GetByEmail(strings.ToLower(identifier))
+	}
+	username, err := domain.NormalizeUsername(identifier)
+	if err != nil {
+		return nil, err
+	}
+	return a.users.GetByUsername(username)
+}
+
+// ClassInviteInfo is what anyone holding a class link may see.
+type ClassInviteInfo struct {
+	ClassName      string
+	EnrollmentMode string
+}
+
+// ClassInvite describes the active username class opened by a link code,
+// or returns domain.ErrEnrollmentClosed.
+func (a *authService) ClassInvite(code string) (*ClassInviteInfo, error) {
+	code = domain.NormalizeJoinCode(code)
+	if code == "" {
+		return nil, domain.ErrEnrollmentClosed
+	}
+	c, err := a.classes.FindByJoinCode(code)
+	if err != nil || c.EnrollmentMode != domain.EnrollUsername {
+		return nil, domain.ErrEnrollmentClosed
+	}
+	return &ClassInviteInfo{ClassName: c.Name, EnrollmentMode: c.EnrollmentMode}, nil
+}
+
+// ClassEnrollment is what a student sends from a class link. There is no
+// role, e-mail or name: the account is a student named by its username.
+type ClassEnrollment struct {
+	Code, Username, Password, Locale string
+}
+
+// RegisterClassStudent creates a student account without e-mail and its
+// membership of the class of the link, in one transaction that checks the
+// link again. The password is hashed before the transaction. It returns
+// invalid input, domain.ErrEnrollmentClosed or domain.ErrUsernameTaken.
+func (a *authService) RegisterClassStudent(in ClassEnrollment) (*domain.User, error) {
+	username, err := domain.NormalizeUsername(in.Username)
+	if err != nil {
+		return nil, invalid(err)
+	}
+	if err := checkPassword(in.Password); err != nil {
+		return nil, err
+	}
+	if _, err := a.ClassInvite(in.Code); err != nil {
+		return nil, err
+	}
+	hash, err := hashPassword(in.Password)
+	if err != nil {
+		return nil, err
+	}
+	uid, _, err := a.users.CreateStudentInClass(domain.NewClassStudent{Code: domain.NormalizeJoinCode(in.Code), Username: username,
+		Name: username, PasswordHash: hash, Locale: NormLocale(in.Locale)})
+	if err != nil {
+		return nil, err
+	}
+	return a.users.Get(uid)
 }
 
 // ProfileChange is what a user may change about their own account.
@@ -170,8 +266,11 @@ type ProfileChange struct {
 	NewPassword     string // empty keeps the password
 }
 
-// UpdateProfile applies a user's changes to their own account; a new
-// password requires the current one.
+// UpdateProfile applies a user's changes to their own account. A new
+// password requires the current one; everything is checked before writing,
+// then profile and password are saved in one transaction that also ends
+// every login and reset link of the account (the caller gives the current
+// browser a new session).
 func (a *authService) UpdateProfile(u *domain.User, c ProfileChange) (*domain.User, error) {
 	var p domain.UserPatch
 	if c.Name != nil && strings.TrimSpace(*c.Name) != "" {
@@ -180,17 +279,25 @@ func (a *authService) UpdateProfile(u *domain.User, c ProfileChange) (*domain.Us
 	if c.Locale != nil {
 		p.Locale = ptr(NormLocale(*c.Locale))
 	}
-	if err := a.users.Update(u.ID, p); err != nil {
-		return nil, err
-	}
-	if c.NewPassword != "" {
-		hash, _ := a.users.PasswordHash(u.ID)
-		if !passwordMatches(hash, c.CurrentPassword) {
-			return nil, ErrWrongPassword
-		}
-		if err := a.SetPassword(u.ID, c.NewPassword); err != nil {
+	if c.NewPassword == "" {
+		if err := a.users.Update(u.ID, p); err != nil {
 			return nil, err
 		}
+		return a.users.Get(u.ID)
+	}
+	current, err := a.users.PasswordHash(u.ID)
+	if err != nil {
+		return nil, err
+	}
+	if !passwordMatches(current, c.CurrentPassword) {
+		return nil, ErrWrongPassword
+	}
+	hash, err := hashPassword(c.NewPassword)
+	if err != nil {
+		return nil, err
+	}
+	if err := a.users.ChangePassword(u.ID, p, hash); err != nil {
+		return nil, err
 	}
 	return a.users.Get(u.ID)
 }
@@ -222,12 +329,19 @@ func (a *authService) Register(in Registration, baseURL string) (int64, error) {
 		locale = inv.Locale
 	}
 	var uid int64
+	memberRole := inv.Role
 	if existing, err := a.users.GetByEmail(inv.Email); err == nil {
 		// The invite only adds the class, but the owner must prove it is them.
 		if hash, _ := a.users.PasswordHash(existing.ID); !passwordMatches(hash, in.Password) {
 			return 0, ErrInvalidCredentials
 		}
+		if !existing.Active {
+			return 0, ErrAccountDisabled
+		}
 		uid = existing.ID
+		if existing.Role == domain.RoleStudent {
+			memberRole = domain.RoleStudent
+		}
 	} else {
 		if uid, err = a.CreateUser(inv.Email, in.Name, in.Password, inv.Role, locale); err != nil {
 			return 0, err
@@ -236,53 +350,14 @@ func (a *authService) Register(in Registration, baseURL string) (int64, error) {
 		a.mail.SendMailAsync(inv.Email, subj, body)
 	}
 	if inv.ClassID != nil {
-		memberRole := domain.RoleStudent
-		if inv.Role == domain.RoleTeacher {
-			memberRole = domain.RoleTeacher
+		if memberRole != domain.RoleTeacher {
+			memberRole = domain.RoleStudent
 		}
 		if err := a.classes.AddMember(*inv.ClassID, uid, memberRole); err != nil {
 			return 0, err
 		}
 	}
 	return uid, a.invites.MarkAccepted(inv.ID)
-}
-
-// RequestReset e-mails a password reset link to an active account. It never
-// reports whether the address exists, so it cannot be used to find accounts.
-func (a *authService) RequestReset(email, baseURL string) {
-	u, err := a.users.GetByEmail(email)
-	if err != nil || !u.Active {
-		return
-	}
-	tok := randomToken(24)
-	_, err = a.invites.Create(domain.NewInvite{TokenHash: hashToken(tok), Kind: domain.InviteKindReset, Email: u.Email, Role: u.Role,
-		Locale: u.Locale, ExpiresAt: time.Now().Add(resetLinkTTL).UTC().Format(time.RFC3339)})
-	if err != nil {
-		log.Printf("password reset for user %d: %v", u.ID, err)
-		return
-	}
-	subj, body := RenderMail("reset", u.Locale, map[string]string{"site": a.siteName(), "name": u.Name, "link": baseURL + "/reset-password?token=" + tok})
-	a.mail.SendMailAsync(u.Email, subj, body)
-}
-
-// ResetPassword sets a new password from a reset link, then makes the link
-// unusable and ends every existing login of the user.
-func (a *authService) ResetPassword(token, password string) (*domain.User, error) {
-	inv, err := a.FindInvite(token, domain.InviteKindReset)
-	if err != nil {
-		return nil, err
-	}
-	u, err := a.users.GetByEmail(inv.Email)
-	if err != nil {
-		return nil, ErrUserNotFound
-	}
-	if err := a.SetPassword(u.ID, password); err != nil {
-		return nil, err
-	}
-	if err := errors.Join(a.invites.MarkAccepted(inv.ID), a.logins.DeleteForUser(u.ID)); err != nil {
-		return nil, err
-	}
-	return u, nil
 }
 
 // Invitation is a request to invite someone, optionally into a class.

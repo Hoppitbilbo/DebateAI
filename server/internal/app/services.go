@@ -18,6 +18,7 @@ type Services struct {
 	Users         userStore
 	Logins        authSessionStore
 	Invites       inviteStore
+	Resets        resetStore
 	Classes       classStore
 	Assignments   assignmentStore
 	Sessions      sessionStore
@@ -27,6 +28,7 @@ type Services struct {
 	Rooms         roomStore
 	LiveGrants    liveGrantStore
 	Inflight      inflightStore
+	RateLimits    rateLimitStore
 
 	Crypto        *Crypto
 	Settings      *settingsService
@@ -34,6 +36,7 @@ type Services struct {
 	Outbox        *mailOutbox
 	Gateway       *aiGateway
 	Accounts      *authService
+	AuthLimits    *authLimits
 	ClassSvc      *classService
 	AssignmentSvc *assignmentService
 	SessionSvc    *sessionService
@@ -57,6 +60,7 @@ func NewServices(cfg Config, db *sql.DB, opts ...Option) *Services {
 		Users:         store.NewUsers(db),
 		Logins:        store.NewAuthSessions(db),
 		Invites:       store.NewInvites(db),
+		Resets:        store.NewPasswordResets(db),
 		Classes:       store.NewClasses(db),
 		Assignments:   store.NewAssignments(db),
 		Sessions:      store.NewActivitySessions(db),
@@ -66,19 +70,20 @@ func NewServices(cfg Config, db *sql.DB, opts ...Option) *Services {
 		Rooms:         store.NewRooms(db),
 		LiveGrants:    store.NewLiveGrants(db),
 		Inflight:      store.NewInflight(db),
+		RateLimits:    store.NewAuthRateLimits(db),
 		Crypto:        NewCrypto(cfg.Secret),
 	}
 	sv.Settings = &settingsService{store: newCachedSettings(sv.SettingsStore, settingsCacheTTL), crypto: sv.Crypto, smtpDefaults: cfg.SMTP}
 	direct := smtpMailer{settings: sv.Settings}
 	sv.Outbox = newMailOutbox(store.NewOutbox(db), direct.SendMail)
-	sv.Mailer = outboxMailer{smtpMailer: direct, outbox: sv.Outbox}
+	sv.Mailer = recipientGuard{outboxMailer{smtpMailer: direct, outbox: sv.Outbox}}
 	siteName := func() string { return sv.Settings.General().SiteName }
 	sv.Gateway = newAIGateway(sv.Providers, sv.Prices, sv.Usage, sv.Sessions, sv.Settings, sv.Crypto)
 	sv.Gateway.grants = sv.LiveGrants
 	sv.Gateway.inflight = sv.Inflight
-	sv.Accounts = &authService{users: sv.Users, logins: sv.Logins, invites: sv.Invites, classes: sv.Classes, mail: sv.Mailer, siteName: siteName}
-	sv.ClassSvc = &classService{classes: sv.Classes, rooms: sv.Rooms, users: sv.Users, accounts: sv.Accounts, mail: sv.Mailer,
-		siteName: siteName, mailOn: sv.Settings.MailConfigured}
+	sv.Accounts = &authService{users: sv.Users, logins: sv.Logins, invites: sv.Invites, resets: sv.Resets, classes: sv.Classes, mail: sv.Mailer, siteName: siteName}
+	sv.AuthLimits = newAuthLimits(sv.RateLimits, cfg.Secret)
+	sv.ClassSvc = &classService{classes: sv.Classes, rooms: sv.Rooms, resets: sv.Resets, accounts: sv.Accounts}
 	sv.AssignmentSvc = &assignmentService{assignments: sv.Assignments, classes: sv.Classes, sessions: sv.Sessions, classSvc: sv.ClassSvc,
 		listeners: []assignmentListener{mailNotifier{classes: sv.Classes, mail: sv.Mailer, siteName: siteName}}}
 	sv.SessionSvc = &sessionService{sessions: sv.Sessions, assignments: sv.Assignments, classes: sv.Classes, classSvc: sv.ClassSvc,

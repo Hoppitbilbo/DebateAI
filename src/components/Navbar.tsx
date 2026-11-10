@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import LanguageSwitcher from "@/components/shared/LanguageSwitcher";
 import { cn } from "@/lib/utils";
+import { loginName } from "@/lib/format";
 import { dashboardPath, useAuth } from "@/context/auth";
 import { useMorphClick } from "@/features/navigation/morph";
 import LogoMark from "@/components/LogoMark";
@@ -78,7 +79,7 @@ const Navbar = () => {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuLabel>
-                  <div className="truncate">{user.roomId ? user.name : user.email}</div>
+                  <div className="truncate">{user.roomId ? user.name : loginName(user)}</div>
                   <div className="text-xs font-normal text-muted-foreground">{user.roomId ? t("room.nav.guestRole") : t(`platform.roles.${user.role}`)}</div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />

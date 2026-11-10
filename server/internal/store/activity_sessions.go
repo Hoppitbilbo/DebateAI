@@ -66,8 +66,9 @@ func (r *ActivitySessions) Detail(id int64) (*domain.SessionDetail, error) {
 	var d domain.SessionDetail
 	var ctx, tr, jev string
 	var feedbackAt sql.NullString
-	ss, err := scanSummary(r.db.QueryRow(`SELECT `+sessionSummaryCols+`, s.context_json, s.transcript_json, s.jev_json, s.reflection, s.evaluation, s.teacher_feedback, s.teacher_feedback_at, s.revision`+sessionFrom+` WHERE s.id = ?`, id),
-		&ctx, &tr, &jev, &d.Reflection, &d.Evaluation, &d.TeacherFeedback, &feedbackAt, &d.Revision)
+	var classID sql.NullInt64
+	ss, err := scanSummary(r.db.QueryRow(`SELECT `+sessionSummaryCols+`, s.context_json, s.transcript_json, s.jev_json, s.reflection, s.evaluation, s.teacher_feedback, s.teacher_feedback_at, s.revision, s.class_id`+sessionFrom+` WHERE s.id = ?`, id),
+		&ctx, &tr, &jev, &d.Reflection, &d.Evaluation, &d.TeacherFeedback, &feedbackAt, &d.Revision, &classID)
 	if err != nil {
 		return nil, err
 	}
@@ -75,6 +76,7 @@ func (r *ActivitySessions) Detail(id int64) (*domain.SessionDetail, error) {
 		d.TeacherFeedbackAt = &feedbackAt.String
 	}
 	d.SessionSummary = *ss
+	d.ClassID = nullIntPtr64(classID)
 	d.Context, d.Transcript, d.Jev = json.RawMessage(ctx), json.RawMessage(tr), json.RawMessage(jev)
 	return &d, nil
 }
@@ -351,10 +353,10 @@ func (r *ActivitySessions) CountWithTurns() int {
 
 // Import stores a finished copy of an attempt (from a room export) for a
 // student; its timestamps and scores are kept as they were.
-func (r *ActivitySessions) Import(userID int64, assignmentID *int64, d domain.SessionDetail) (int64, error) {
-	res, err := r.db.Exec(`INSERT INTO activity_sessions(user_id, assignment_id, app_type, title, context_json, status, transcript_json, turns, progress, jev_json,
-		reflection, evaluation, score_conversation, score_reflection, cost_usd, started_at, updated_at, completed_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
-		userID, assignmentID, d.AppType, d.Title, jsonOr(d.Context, "{}"), d.Status, jsonOr(d.Transcript, "[]"), d.Turns, d.Progress, jsonOr(d.Jev, "{}"),
+func (r *ActivitySessions) Import(userID, classID int64, assignmentID *int64, d domain.SessionDetail) (int64, error) {
+	res, err := r.db.Exec(`INSERT INTO activity_sessions(user_id, class_id, assignment_id, app_type, title, context_json, status, transcript_json, turns, progress, jev_json,
+		reflection, evaluation, score_conversation, score_reflection, cost_usd, started_at, updated_at, completed_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+		userID, classID, assignmentID, d.AppType, d.Title, jsonOr(d.Context, "{}"), d.Status, jsonOr(d.Transcript, "[]"), d.Turns, d.Progress, jsonOr(d.Jev, "{}"),
 		d.Reflection, d.Evaluation, d.ScoreConversation, d.ScoreReflection, d.CostUSD, d.StartedAt, d.UpdatedAt, d.CompletedAt)
 	if err != nil {
 		return 0, err

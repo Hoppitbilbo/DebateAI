@@ -32,15 +32,16 @@ func (s *Server) handleListClasses(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleCreateClass(w http.ResponseWriter, r *http.Request) {
-	var in struct {
-		Name, Description string
-		OwnerID           *int64 `json:"ownerId"`
-	}
+	var in app.NewClass
 	if err := readJSON(r, &in); err != nil || strings.TrimSpace(in.Name) == "" {
 		writeErr(w, 400, "bad_request", "name required")
 		return
 	}
-	c, err := s.ClassSvc.Create(currentUser(r), in.Name, in.Description, in.OwnerID)
+	c, err := s.ClassSvc.Create(currentUser(r), in)
+	if app.IsInvalid(err) {
+		writeErr(w, 400, "bad_request", err.Error())
+		return
+	}
 	if err != nil {
 		writeErr(w, 500, "internal", err.Error())
 		return
@@ -49,7 +50,7 @@ func (s *Server) handleCreateClass(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleGetClass(w http.ResponseWriter, r *http.Request) {
-	_, id, ok := s.managedClass(w, r)
+	u, id, ok := s.managedClass(w, r)
 	if !ok {
 		return
 	}
@@ -58,7 +59,12 @@ func (s *Server) handleGetClass(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 404, "not_found", "class not found")
 		return
 	}
-	writeJSON(w, 200, classDetailResponse{Class: c, Members: s.Classes.Members(id), Invites: s.Invites.ListPendingForClass(id)})
+	members, err := s.ClassSvc.Members(u, c)
+	if err != nil {
+		writeErr(w, 500, "internal", err.Error())
+		return
+	}
+	writeJSON(w, 200, classDetailResponse{Class: c, Members: members, Invites: s.Invites.ListPendingForClass(id)})
 }
 
 func (s *Server) handleUpdateClass(w http.ResponseWriter, r *http.Request) {
@@ -104,8 +110,8 @@ func (s *Server) handleRegenerateCode(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, 200, joinCodeResponse{JoinCode: code})
 }
 
-// handleClassInvite invites a list of e-mails. Existing users are added to the
-// class immediately (and notified); new addresses receive a registration link.
+// handleClassInvite sends invitations; existing users must accept with their
+// password before joining the class.
 func (s *Server) handleClassInvite(w http.ResponseWriter, r *http.Request) {
 	u, id, ok := s.managedClass(w, r)
 	if !ok {
@@ -138,6 +144,33 @@ func (s *Server) handleRemoveMember(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	writeOK(w)
+}
+
+// handleMemberPasswordReset gives the owner of the student's class of
+// origin, or an admin, a reset link valid 15 minutes for an account without
+// e-mail. The link is shown once and never stored in clear.
+func (s *Server) handleMemberPasswordReset(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Cache-Control", "no-store")
+	u, id, ok := s.managedClass(w, r)
+	if !ok {
+		return
+	}
+	link, err := s.Accounts.AssistedReset(u, id, pathID(r, "userId"), s.baseURL(r))
+	switch {
+	case errors.Is(err, app.ErrResetForbidden):
+		writeErr(w, 403, "forbidden", err.Error())
+		return
+	case errors.Is(err, app.ErrNotClassStudent):
+		writeErr(w, 404, "not_found", err.Error())
+		return
+	case errors.Is(err, domain.ErrResetNotAllowed):
+		writeErr(w, 409, "reset_not_allowed", err.Error())
+		return
+	case err != nil:
+		writeErr(w, 500, "internal", err.Error())
+		return
+	}
+	writeJSON(w, 200, link)
 }
 
 func (s *Server) handleTeacherInvites(w http.ResponseWriter, r *http.Request) {

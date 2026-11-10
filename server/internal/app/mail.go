@@ -39,13 +39,6 @@ var mailTexts = map[string]map[string][2]string{
 		"fr": {"Réinitialisez votre mot de passe {site}", "Bonjour {name},\n\nouvrez ce lien pour choisir un nouveau mot de passe (valable 2 heures) :\n{link}\n\nSi vous n'êtes pas à l'origine de la demande, ignorez cet e-mail."},
 		"de": {"Passwort für {site} zurücksetzen", "Hallo {name},\n\nöffne diesen Link, um ein neues Passwort zu wählen (2 Stunden gültig):\n{link}\n\nWenn du das nicht angefordert hast, ignoriere diese E-Mail."},
 	},
-	"added": {
-		"it": {"Sei stato aggiunto alla classe {class}", "Ciao {name},\n\n{inviter} ti ha aggiunto alla classe \"{class}\" su {site}.\nApri la tua area: {link}"},
-		"en": {"You were added to the class {class}", "Hi {name},\n\n{inviter} added you to the class \"{class}\" on {site}.\nOpen your dashboard: {link}"},
-		"es": {"Te han añadido a la clase {class}", "Hola {name},\n\n{inviter} te ha añadido a la clase \"{class}\" en {site}.\nAbre tu panel: {link}"},
-		"fr": {"Vous avez été ajouté à la classe {class}", "Bonjour {name},\n\n{inviter} vous a ajouté à la classe « {class} » sur {site}.\nOuvrez votre espace : {link}"},
-		"de": {"Du wurdest der Klasse {class} hinzugefügt", "Hallo {name},\n\n{inviter} hat dich der Klasse „{class}“ auf {site} hinzugefügt.\nÖffne dein Dashboard: {link}"},
-	},
 	"assignment": {
 		"it": {"Nuovo compito: {title}", "Ciao {name},\n\nnella classe \"{class}\" è stato assegnato un nuovo compito: {title}{due}.\n\nAprilo qui: {link}"},
 		"en": {"New assignment: {title}", "Hi {name},\n\na new assignment was published in \"{class}\": {title}{due}.\n\nOpen it here: {link}"},
