@@ -14,7 +14,7 @@ import { type BioOf, refOf, useActivityFlow } from "@/features/activity/useActiv
 import type { EndReason } from "@/features/activity/useActivitySession";
 import { recipeFor } from "@/features/activity/recipe";
 import { APPS } from "@/features/activity/types";
-import { availableQuestions, isCorrectGuess, nextTeacherHint, QUESTIONS, RANDOM_CHARACTERS } from "@/features/activity/mystery";
+import { availableQuestions, isCorrectGuess, nextTeacherHint, QUESTIONS, RANDOM_CHARACTERS, winningQuestion } from "@/features/activity/mystery";
 import { characterOrder, mysteryCharacters, mysteryRounds } from "@/features/activity/characterOrder";
 import { Difficulty, difficultyOf, isDifficulty } from "@/features/activity/difficulty";
 import DifficultyPicker from "@/features/activity/components/DifficultyPicker";
@@ -82,11 +82,27 @@ const PersonaggioMisteriosoPage = () => {
     // The character is saved too, so that a reload can take the game up again.
     context: (assignment) => ({ character: character?.title, questions: availableQuestions(chosenQuestions, assignment?.maxTurns), difficulty: levelFor(assignment) }),
     onEnded,
-    restore: (saved) => {
+    restore: (saved, messages) => {
       const ref = refOf(saved.character);
       if (ref) {
         setCharacter(ref);
         setConcealed(true);
+        // Back on this character's round: a won game had already moved the
+        // stored round on, and "restart" must go to the next one, not skip it.
+        const at = order.findIndex((c) => c.title === ref.title);
+        if (at >= 0) setRound(at);
+        // A game already won comes back as won (the name was said in the chat).
+        const won = winningQuestion(messages, ref.title);
+        if (won) {
+          wonRef.current = true;
+          setGuess(won);
+          setResult(true);
+          setFoundInChat(true);
+          setQuestionsOver(true);
+          // As when it was won: the next visit starts from the following character
+          // (the stored round is lost with the browser's data or on another PC).
+          if (at >= 0 && order.length > 1 && assignmentId && user) mysteryRounds.set(assignmentId, user.id, Math.max(mysteryRounds.get(assignmentId, user.id), at + 1));
+        }
       }
       if (typeof saved.questions === "number") setChosenQuestions(saved.questions);
       if (isDifficulty(saved.difficulty)) setChosenLevel(saved.difficulty);
@@ -303,7 +319,8 @@ const PersonaggioMisteriosoPage = () => {
               }}
               locked={fixed.length > 0}
               conceal={concealed}
-              hint={t("platform.apps.personaggioMisterioso.characterHint")}
+              // "choose it for a classmate" is for free play: here the teacher chose
+              hint={fixed.length ? undefined : t("platform.apps.personaggioMisterioso.characterHint")}
             />
             {!fixed.length && (
               <Button variant="outline" onClick={pickRandom} className="w-full">

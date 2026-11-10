@@ -26,6 +26,7 @@ const mocks = vi.hoisted(() => ({
   begin: vi.fn().mockResolvedValue(7),
   generateStream: vi.fn(),
   sync: vi.fn(),
+  useWikiSummaries: vi.fn((..._args: unknown[]) => ({ summaries: {}, loading: false })),
 }));
 
 vi.mock("@/features/activity/useActivitySession", () => ({
@@ -51,7 +52,7 @@ vi.mock("@/features/activity/components/SetupCard", async (orig) => ({
     <button onClick={() => onChange({ title: `Person ${label}` })}>pick {label}</button>
   ),
 }));
-vi.mock("@/features/activity/wiki", () => ({ useWikiSummaries: () => ({ summaries: {}, loading: false }), bioOf: () => "bio" }));
+vi.mock("@/features/activity/wiki", () => ({ useWikiSummaries: mocks.useWikiSummaries, bioOf: () => "bio" }));
 vi.mock("@/hooks/useLiveAi", () => ({
   useLiveAi: () => ({ liveMode: false, liveState: "off", liveAvailable: false, toggleLive: vi.fn(), stopLive: vi.fn(), finishLive: vi.fn(), sendLiveText: vi.fn() }),
 }));
@@ -136,6 +137,15 @@ describe("WikiChatbotPage", () => {
     const [opening] = mocks.generateStream.mock.calls[0];
     expect(opening.system).toBeUndefined();
     expect(opening.recipe).toMatchObject({ app: "wiki-chatbot", kind: "opening", character: expect.stringMatching(/^Person /), uiLang: "en" });
+  });
+
+  it("reads the page on the Wikipedia of the activity's language, as the other apps do", () => {
+    mocks.useWikiSummaries.mockClear();
+    render(<WikiChatbotPage />);
+    pickAll();
+    // Every lookup goes through the flow, which names the language: never a bare list of pages.
+    expect(mocks.useWikiSummaries).toHaveBeenCalledWith([expect.objectContaining({ title: expect.stringMatching(/^Person /) })], "en");
+    expect(mocks.useWikiSummaries.mock.calls.every((call) => call.length === 2)).toBe(true);
   });
 });
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isCorrectGuess, nextTeacherHint } from "./mystery";
+import { isCorrectGuess, nextTeacherHint, winningQuestion } from "./mystery";
 
 describe("isCorrectGuess (strict)", () => {
   it("accepts the full name or a significant word of it, ignoring case and accents", () => {
@@ -19,6 +19,23 @@ describe("isCorrectGuess (strict)", () => {
     expect(isCorrectGuess("Galilei Galileo?", "Galileo Galilei")).toBe(true);
     expect(isCorrectGuess("Galile", "Galileo Galilei")).toBe(false);
     expect(isCorrectGuess("Newton", "Galileo Galilei")).toBe(false);
+  });
+});
+
+describe("winningQuestion", () => {
+  const chat = [
+    { role: "assistant", content: "Chi sono? Di certo non Marie Curie…" },
+    { role: "user", content: "Sei una donna?" },
+    { role: "assistant", content: "Sì." },
+  ];
+
+  it("is null while no question of the student names the character", () => {
+    expect(winningQuestion(chat, "Marie Curie")).toBeNull();
+  });
+
+  it("is the student's first question that names the character", () => {
+    const won = [...chat, { role: "user", content: "Sei Marie Curie!" }, { role: "assistant", content: "Esatto." }, { role: "user", content: "Curie, lo sapevo" }];
+    expect(winningQuestion(won, "Marie Curie")).toBe("Sei Marie Curie!");
   });
 });
 

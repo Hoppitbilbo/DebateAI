@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -62,6 +62,25 @@ describe("guest mode", () => {
 });
 
 describe("assignment loading", () => {
+  it("is loading from the render in which the user arrives (reload: the account loads after the page)", async () => {
+    mocks.api.get.mockResolvedValue(assignment);
+    // What an effect of the page sees (as the resume of useActivityFlow does) at each render.
+    const seen: string[] = [];
+    const { result, rerender } = renderHook(() => {
+      const s = useActivitySession("convinci-tu");
+      useEffect(() => {
+        seen.push(`${s.user ? "user" : "guest"}:${s.loadingAssignment ? "loading" : s.assignment ? "loaded" : "none"}`);
+      });
+      return s;
+    }, { wrapper: ({ children }: { children: ReactNode }) => <MemoryRouter initialEntries={["/apps/convinci-tu?assignment=5"]}>{children}</MemoryRouter> });
+    mocks.user = { id: 1 };
+    rerender();
+    await waitFor(() => expect(result.current.assignment).toEqual(assignment));
+    // Never "logged in, not loading, no assignment": a resume starting there would refuse the attempt.
+    expect(seen).not.toContain("user:none");
+    expect(seen).toContain("user:loading");
+  });
+
   it("loads ?assignment=ID for logged-in users", async () => {
     mocks.user = { id: 1 };
     mocks.api.get.mockResolvedValue(assignment);

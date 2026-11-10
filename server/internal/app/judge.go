@@ -200,7 +200,34 @@ func (g *aiGateway) judge(ctx context.Context, in judgeInput, userID, sessionID 
 	}
 	verdict.EvaluatedAt = now()
 	finalize(verdict, goals, threshold, in.MinTurns, in.Turns)
+	if !characterAnswered(in.Transcript) {
+		holdUnanswered(verdict)
+	}
 	return *verdict
+}
+
+// characterAnswered: a character replied to the student at least once. The
+// opening line and an answer without text are not replies.
+func characterAnswered(msgs []TranscriptMessage) bool {
+	asked := false
+	for _, m := range msgs {
+		text := strings.TrimSpace(m.Content)
+		switch {
+		case m.Role == ai.RoleUser && text != "":
+			asked = true
+		case m.Role == ai.RoleAssistant && asked && text != "" && text != emptyAnswer:
+			return true
+		}
+	}
+	return false
+}
+
+// holdUnanswered keeps an activity open while the student has had no answer
+// (every reply failed): the student's messages alone are not the conversation
+// the teacher assigned, whatever the judge made of them.
+func holdUnanswered(r *JudgeResult) {
+	r.Completed = false
+	r.Progress = min(r.Progress, unansweredMaxProgress)
 }
 
 func finalize(r *JudgeResult, goals []string, threshold float64, minTurns, turns int) {

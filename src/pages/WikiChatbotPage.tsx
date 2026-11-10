@@ -3,8 +3,7 @@ import { useTranslation } from "react-i18next";
 import type { WikiRef } from "@/lib/api";
 import ActivityRunner from "@/features/activity/components/ActivityRunner";
 import { CharacterPicker } from "@/features/activity/components/SetupCard";
-import { titleOf, useActivityFlow } from "@/features/activity/useActivityFlow";
-import { bioOf, useWikiSummaries } from "@/features/activity/wiki";
+import { type BioOf, refOf, useActivityFlow } from "@/features/activity/useActivityFlow";
 import { recipeFor } from "@/features/activity/recipe";
 import { APPS } from "@/features/activity/types";
 
@@ -15,20 +14,24 @@ const WikiChatbotPage = () => {
   const { t } = useTranslation();
   const [page, setPage] = useState<WikiRef | null>(null);
 
-  const { summaries, loading } = useWikiSummaries([page]);
-  const summary = bioOf(page, summaries);
   // The server writes the character's instructions from this recipe.
-  const recipe = page ? recipeFor(app.type, { character: page.title, bio: summary }) : undefined;
+  const recipeOf = (bio: BioOf) => (page ? recipeFor(app.type, { character: page.title, bio: bio(page) }) : undefined);
 
+  // The page is read by the flow, like the characters of the other apps: on
+  // the Wikipedia of the language the teacher fixed, when there is one.
   const flow = useActivityFlow(app.type, {
-    live: (phase) => (phase === "chat" && page ? { recipe, characterName: page.title, characterBio: summary } : null),
+    characters: [page],
+    live: (phase, _assignment, bio) => (phase === "chat" && page ? { recipe: recipeOf(bio), characterName: page.title, characterBio: bio(page) } : null),
     context: { page: page?.title },
     restore: (saved) => {
-      const title = titleOf(saved.page);
-      if (title) setPage({ title });
+      const ref = refOf(saved.page);
+      if (ref) setPage(ref);
     },
   });
   const { preset, engine } = flow;
+  const summary = flow.bio(page);
+  const recipe = recipeOf(flow.bio);
+  const loading = flow.loadingBios;
 
   useEffect(() => {
     if (preset.character) setPage(preset.character);

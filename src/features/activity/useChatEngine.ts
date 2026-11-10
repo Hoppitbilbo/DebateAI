@@ -233,8 +233,8 @@ export const useChatEngine = ({ session, live, context, onEnded }: Options) => {
     respond,
     open,
     retry,
-    /** Whether a failed reply can be asked again. */
-    canRetry: (id: string) => retries.current.has(id),
+    /** Whether a failed reply can be asked again (not once the activity ended: the server refuses new replies). */
+    canRetry: (id: string) => !ended && retries.current.has(id),
     runTurn,
     afterTurn,
     busy,

@@ -147,6 +147,7 @@ const WikiSearchSelect = ({ onSelect }: WikiSearchSelectProps) => {
                     onSelect={() => {
                       onSelect({ title: result.title, snippet: result.snippet, lang: result.lang });
                       setOpen(false);
+                      setInputValue(""); // a list of characters: the next search is for another one
                     }}
                   >
                     <div className="flex flex-col">

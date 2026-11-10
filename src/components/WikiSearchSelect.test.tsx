@@ -58,6 +58,19 @@ describe("WikiSearchSelect", () => {
     expect(screen.queryByText("Mario Rossi")).toBeNull();
   });
 
+  it("starts empty again after a choice: the next search is for another page", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(answer(["Marie Curie"])));
+    const onSelect = vi.fn();
+    render(<WikiSearchSelect onSelect={onSelect} />);
+    await openAndType("Marie");
+    fireEvent.click(await screen.findByText("Marie Curie", {}, { timeout: 2000 }));
+    expect(onSelect).toHaveBeenCalledWith(expect.objectContaining({ title: "Marie Curie" }));
+    fireEvent.click(screen.getByRole("combobox"));
+    const input = (await screen.findByPlaceholderText("common.searchOnWikipedia")) as HTMLInputElement;
+    expect(input.value).toBe("");
+    expect(screen.getByText("common.typeToSearch")).toBeTruthy();
+  });
+
   it("tells a failed search from no results, and retries", async () => {
     const fetchMock = vi.fn().mockRejectedValueOnce(new TypeError("offline")).mockResolvedValueOnce(answer([]));
     vi.stubGlobal("fetch", fetchMock);

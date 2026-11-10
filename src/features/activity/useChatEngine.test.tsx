@@ -226,6 +226,18 @@ describe("useChatEngine", () => {
     expect(session.sync).toHaveBeenCalledTimes(2);
   });
 
+  it("offers no retry once the activity has ended: the server would only refuse it", async () => {
+    const session = fakeSession();
+    const { result, rerender } = renderHook(() => useChatEngine({ session }), { wrapper: withAi });
+    mocks.generateStream.mockRejectedValueOnce(new Error("down"));
+    await act(() => result.current.runTurn("ciao", () => result.current.respond({ recipe, name: "N" })));
+    const failed = result.current.messages[1];
+    expect(result.current.canRetry(failed.id)).toBe(true);
+    session.endReason = "goal_reached";
+    rerender();
+    expect(result.current.canRetry(failed.id)).toBe(false);
+  });
+
   it("opens with the character's own words, from a stage direction the server writes", async () => {
     const { result } = renderHook(() => useChatEngine({ session: fakeSession() }), { wrapper: withAi });
     mocks.generateStream.mockResolvedValueOnce("Sono Napoleone!");
