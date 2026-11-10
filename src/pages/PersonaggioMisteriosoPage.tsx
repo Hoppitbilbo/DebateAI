@@ -319,7 +319,8 @@ const PersonaggioMisteriosoPage = () => {
               }}
               locked={fixed.length > 0}
               conceal={concealed}
-              hint={t("platform.apps.personaggioMisterioso.characterHint")}
+              // "choose it for a classmate" is for free play: here the teacher chose
+              hint={fixed.length ? undefined : t("platform.apps.personaggioMisterioso.characterHint")}
             />
             {!fixed.length && (
               <Button variant="outline" onClick={pickRandom} className="w-full">
