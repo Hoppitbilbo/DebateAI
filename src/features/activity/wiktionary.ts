@@ -27,7 +27,7 @@ const LAYOUTS: Record<string, HostLayout> = {
   es: { self: "Español", latin: "Latín", pos: ["Sustantivo", "Adjetivo", "Verbo", "Forma", "Adverbio", "Pronombre", "Preposición", "Conjunción", "Interjección", "Locución", "Artículo"] },
   fr: { self: "Français", latin: "Latin", pos: ["Nom", "Adjectif", "Verbe", "Forme", "Adverbe", "Pronom", "Préposition", "Conjonction", "Interjection", "Locution", "Article", "Participe"] },
   de: { self: "(Deutsch)", latin: "(Latein)", pos: ["Substantiv", "Adjektiv", "Verb", "Adverb", "Pronomen", "Personalpronomen", "Präposition", "Konjunktion", "Interjektion", "Konjugierte Form", "Deklinierte Form", "Partizip", "Artikel", "Eigenname", "Redewendung"] },
-  pt: { self: "Português", latin: "Latim", pos: ["Substantivo", "Adjetivo", "Verbo", "Forma verbal", "Advérbio", "Pronome", "Preposição", "Conjunção", "Interjeição", "Locução", "Artigo"] },
+  pt: { self: "Português", latin: "Latim", pos: ["Substantivo", "Adjetivo", "Verbo", "Forma", "Numeral", "Advérbio", "Pronome", "Preposição", "Conjunção", "Interjeição", "Locução", "Artigo"] },
 };
 
 /**
@@ -54,10 +54,20 @@ const HEADING = /^(=+)\s*(.+?)\s*\1$/;
 /** "Sinónimos: …", "Synonyms: …": lists, not definitions. */
 const LABEL = /^\p{Lu}[\p{L} ]{1,25}:/u;
 
-/** German pages list their senses as "[1] …" under "Bedeutungen:". */
+/**
+ * German pages list their senses as "[1] …" under "Bedeutungen:". An
+ * inflected form ("seinen", "gewidmet") has none: its grammar note
+ * ("Grammatische Merkmale:") says which form of which word it is.
+ */
 const germanSenses = (lines: string[]) => {
   const start = lines.findIndex((l) => l === "Bedeutungen:");
-  if (start < 0) return [];
+  if (start < 0) {
+    const note = lines.findIndex((l) => l === "Grammatische Merkmale:");
+    if (note < 0) return [];
+    const rest = lines.slice(note + 1);
+    const stop = rest.findIndex((l) => l.endsWith(":"));
+    return stop < 0 ? rest : rest.slice(0, stop);
+  }
   const out: string[] = [];
   for (const line of lines.slice(start + 1)) {
     if (!line.startsWith("[")) break;
@@ -71,12 +81,12 @@ const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 /**
  * The other layouts: the word's own line first, then one sense per line among
  * examples and lists. An example uses the word ("Ha fatto un'affermazione…"),
- * a definition hardly ever does: lines with the word itself are skipped.
+ * a definition hardly ever does: lines with the word itself are skipped,
+ * unless there is no other (a number is defined by its name: "o número quatro").
  */
 const plainSenses = (lines: string[], headword: string) => {
   const uses = headword ? new RegExp(`(?<![\\p{L}])${escapeRegExp(headword)}(?![\\p{L}])`, "iu") : null;
-  return lines.slice(1).filter((l) =>
-    !uses?.test(l) &&
+  const candidates = lines.slice(1).filter((l) =>
     !/^\d+$/.test(l) && // Spanish sense numbers
     !LABEL.test(l) &&
     !l.includes(" — (") && // French examples with their source
@@ -84,6 +94,8 @@ const plainSenses = (lines: string[], headword: string) => {
     !l.startsWith("→") && // notes of the page's templates ("→ Etimologia mancante")
     !/https?:|www\./.test(l), // a source credit
   );
+  const senses = candidates.filter((l) => !uses?.test(l));
+  return senses.length ? senses : candidates;
 };
 
 /** The first senses of a Wiktionary page's plain-text extract (of `headword`), in the site's language section. */
@@ -102,9 +114,13 @@ export const parseExtract = (extract: string, site: DictionarySite, headword = "
   for (let i = start + 1; i < end && senses.length < MAX_SENSES; i++) {
     const h = heading(i);
     if (!h || !layout.pos.some((p) => h[2].toLowerCase().startsWith(p.toLowerCase()))) continue;
-    let stop = i + 1;
+    // Nothing under the heading but a deeper one (Italian verbs: "Verbo" then
+    // "Transitivo"): the senses are in that sub-section.
+    let from = i + 1;
+    if (from < end && (heading(from)?.[1].length ?? 0) > h[1].length) from++;
+    let stop = from;
     while (stop < end && !heading(stop)) stop++;
-    const block = lines.slice(i + 1, stop);
+    const block = lines.slice(from, stop);
     const texts = site.host === "de" ? germanSenses(block) : plainSenses(block, headword);
     for (const text of texts.slice(0, SENSES_PER_POS)) {
       if (senses.length < MAX_SENSES) senses.push({ pos: h[2], text });
@@ -137,9 +153,15 @@ const fetchExtract = async (site: DictionarySite, title: string): Promise<{ titl
 /**
  * The forms to try: lower case first (a capital at the start of a sentence is
  * not a name: "Verissimo" is the adjective, not the first name), then as
- * tapped (names), then capitalised (German nouns typed in lower case).
+ * tapped (names), then capitalised (German nouns typed in lower case). In
+ * German the capital is the noun's: "Himmel" as tapped comes first, or the
+ * student would read a form of the verb "himmeln".
  */
-const candidates = (word: string) => [...new Set([word.toLowerCase(), word, word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()])];
+const candidates = (word: string, host: string) => {
+  const lower = word.toLowerCase();
+  const capitalised = word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+  return [...new Set(host === "de" ? [word, lower, capitalised] : [lower, word, capitalised])];
+};
 
 const cache = new Map<string, Promise<Definition | null>>();
 
@@ -152,7 +174,7 @@ export const fetchDefinition = (word: string, site: DictionarySite): Promise<Def
   let pending = cache.get(key);
   if (!pending) {
     pending = (async () => {
-      for (const form of candidates(word)) {
+      for (const form of candidates(word, site.host)) {
         const page = await fetchExtract(site, form);
         const senses = page ? parseExtract(page.extract, site, page.title) : [];
         if (page && senses.length) return { title: page.title, url: wiktionaryUrl(site, page.title), senses };

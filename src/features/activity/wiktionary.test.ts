@@ -73,6 +73,29 @@ describe("parseExtract", () => {
     expect(parseExtract(extract, dictionarySite("it", "it")).map((s) => s.text)).toEqual(["superlativo di vero"]);
   });
 
+  it("reads the senses under a sub-heading of the part of speech (Italian verbs: «Transitivo»)", () => {
+    expect(parse("it-scrutare", "it")).toEqual([
+      { pos: "Verbo", text: "esaminare, osservare con attenzione cercando di capire o di scoprire qualcosa" },
+      { pos: "Verbo", text: "(senso figurato) analizzare qualcosa" },
+    ]);
+  });
+
+  it("explains German inflected forms by their grammar note", () => {
+    expect(parse("de-seinen", "de")).toEqual([
+      { pos: "Deklinierte Form", text: "Akkusativ Singular Maskulinum des Possessivpronomens sein" },
+      { pos: "Deklinierte Form", text: "Dativ Plural des Possessivpronomens sein" },
+    ]);
+    expect(parse("de-gewidmet", "de")).toEqual([{ pos: "Partizip II", text: "Partizip Perfekt des Verbs widmen" }]);
+  });
+
+  it("reads Portuguese inflected forms", () => {
+    expect(parse("pt-leis", "pt")).toEqual([{ pos: "Forma de substantivo", text: "plural de lei" }]);
+  });
+
+  it("keeps the lines with the word itself when a part of speech has no other (a number is defined by its name)", () => {
+    expect(parse("pt-quatro", "pt")[0]).toEqual({ pos: "Substantivo", text: "o número quatro (4, IV)" });
+  });
+
   it("finds nothing outside the language section", () => {
     expect(parse("it-virtus", "it")).toEqual([]);
   });
@@ -94,14 +117,23 @@ describe("fetchDefinition", () => {
     expect(fetchMock.mock.calls[0][0]).toContain("titles=fecondo");
   });
 
-  it("falls back to the form as tapped (German nouns, names)", async () => {
+  it("falls back to the capitalised form (a German noun typed in lower case)", async () => {
     const fetchMock = vi.fn()
       .mockResolvedValueOnce(page("verstand"))
       .mockResolvedValueOnce(page("Verstand", fixture("de-Verstand")));
     vi.stubGlobal("fetch", fetchMock);
-    const def = await fetchDefinition("Verstand", dictionarySite("de", "it"));
+    const def = await fetchDefinition("verstand", dictionarySite("de", "it"));
     expect(def?.title).toBe("Verstand");
     expect(fetchMock.mock.calls[1][0]).toContain("titles=Verstand");
+  });
+
+  it("looks up a German word as tapped first: the capital is the noun's", async () => {
+    const fetchMock = vi.fn().mockResolvedValueOnce(page("Verstand", fixture("de-Verstand")));
+    vi.stubGlobal("fetch", fetchMock);
+    const found = await fetchDefinition("Verstand", dictionarySite("de", "it"));
+    expect(found?.title).toBe("Verstand");
+    expect(decodeURIComponent(fetchMock.mock.calls[0][0])).toContain("titles=Verstand");
+    expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
   it("answers null when no form has senses", async () => {
