@@ -52,6 +52,9 @@ func newTranscriptFixture(t *testing.T, assignment map[string]any, goalScore flo
 	if code := owner.do("POST", "/api/sessions", map[string]any{"appType": fields["appType"], "assignmentId": a.ID}, &sess); code != 201 {
 		t.Fatalf("create session %d", code)
 	}
+	// The answers of userTurns are replies the server sent: without one the
+	// judge keeps the activity open (the character never answered).
+	s.SessionSvc.RecordReply(sess.ID, "risposta")
 	return &transcriptFixture{s: s, owner: owner, session: sess.ID, judge: d}
 }
 

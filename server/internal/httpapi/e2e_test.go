@@ -116,7 +116,8 @@ func TestEndToEndAssignmentWithJev(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer db.Close()
-	srv := httptest.NewServer(NewServer(cfg, app.NewServices(cfg, db), nil).Handler())
+	services := app.NewServices(cfg, db)
+	srv := httptest.NewServer(NewServer(cfg, services, nil).Handler())
 	defer srv.Close()
 
 	admin := newClient(t, srv.URL)
@@ -193,6 +194,7 @@ func TestEndToEndAssignmentWithJev(t *testing.T) {
 		Progress int             `json:"progress"`
 		Jev      app.JudgeResult `json:"jev"`
 	}
+	services.SessionSvc.RecordReply(sess.ID, "Il blocco continentale") // the character's answer, as sent by the server
 	var s1 syncResp
 	stud.do("PUT", fmtPath("/api/sessions/%d/transcript", sess.ID), map[string]any{"messages": []map[string]string{
 		{"role": "user", "content": "Perché hai invaso la Russia?"}, {"role": "assistant", "content": "Il blocco continentale"},

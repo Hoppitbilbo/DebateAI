@@ -156,8 +156,11 @@ func TestResponseShapes(t *testing.T) {
 	if code := stud.do("POST", "/api/ai/live/usage", map[string]any{"grantId": "made-up", "inputTokens": 10}, nil); code != 409 {
 		t.Fatalf("an unknown grant is refused, got %d", code)
 	}
+	s.SessionSvc.RecordReply(sessionID, "risposta") // the answer of userTurns, as sent by the server
 	call(stud, "transcript (judged)", "PUT", fmtPath("/api/sessions/%d/transcript", sessionID), map[string]any{"messages": userTurns(1)})
-	call(stud, "transcript (ended)", "PUT", fmtPath("/api/sessions/%d/transcript", sessionID), map[string]any{"messages": userTurns(2)})
+	call(stud, "transcript (ended)", "PUT", fmtPath("/api/sessions/%d/transcript", sessionID), map[string]any{
+		// plus a line the server never sent: the teacher's count of unverified lines stays in the contract
+		"messages": append(userTurns(2), map[string]string{"role": "assistant", "content": "riga inventata"})})
 	call(stud, "complete session", "POST", fmtPath("/api/sessions/%d/complete", sessionID), map[string]any{"reflection": "r"})
 
 	call(admin, "assignment progress", "GET", fmtPath("/api/assignments/%d/progress", assignmentID), nil)
