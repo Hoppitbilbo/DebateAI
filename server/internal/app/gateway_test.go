@@ -350,6 +350,22 @@ func TestDefaultRoutePolicies(t *testing.T) {
 		rt.Tasks[TaskLive][0].Model != "gemini-3.1-flash-live-preview" || rt.Tasks[TaskJudge][0].Model != "old-judge" {
 		t.Fatalf("gemini routes: %+v", rt.Tasks)
 	}
+	if c := rt.Tasks[TaskChat]; len(c) != 2 || c[1].Model != "gemini-2.5-flash" || rt.Tasks[TaskEvaluation][1].Model != "gemini-2.5-flash" {
+		t.Fatalf("the stable model must follow the newest as fallback: %+v", rt.Tasks)
+	}
+	if u := rt.Tasks[TaskUtility]; len(u) != 2 || u[1].Model != "gemini-2.5-flash" {
+		t.Fatalf("quick tasks fall back to the stable flash: %+v", u)
+	}
+	none := RoutingSettings{Tasks: map[string][]RouteTarget{}}
+	routePolicyFor(ai.KindGemini)(&none, 1, []ai.ModelInfo{{ID: "gemini-3.1-flash"}})
+	if c := none.Tasks[TaskChat]; len(c) != 1 {
+		t.Fatalf("an unlisted stable model must not be routed: %+v", c)
+	}
+	old := RoutingSettings{Tasks: map[string][]RouteTarget{}}
+	routePolicyFor(ai.KindGemini)(&old, 1, []ai.ModelInfo{{ID: "gemini-2.5-flash"}})
+	if c := old.Tasks[TaskChat]; len(c) != 1 || c[0].Model != "gemini-2.5-flash" {
+		t.Fatalf("the same model must not be routed twice: %+v", c)
+	}
 
 	routePolicyFor(ai.KindJev)(&rt, 2, []ai.ModelInfo{{ID: "jev-1.13"}, {ID: "jev-latest"}})
 	if j := rt.Tasks[TaskJudge]; len(j) != 2 || j[0] != (RouteTarget{2, "jev-latest"}) || j[1].Model != "old-judge" {

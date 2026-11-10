@@ -2,6 +2,7 @@ package app
 
 import (
 	"log"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -43,11 +44,32 @@ func (g *aiGateway) autoRoute(providerID int64, kind string) {
 	}
 }
 
-// addIfEmpty routes task to model unless the admin already configured it.
-func addIfEmpty(rt *RoutingSettings, task string, providerID int64, model string) {
-	if model != "" && len(rt.Tasks[task]) == 0 {
-		rt.Tasks[task] = []RouteTarget{{providerID, model}}
+// addIfEmpty routes task to models, in order of preference, unless the admin
+// already configured it. Empty and repeated ids are skipped.
+func addIfEmpty(rt *RoutingSettings, task string, providerID int64, models ...string) {
+	if len(rt.Tasks[task]) > 0 {
+		return
 	}
+	var targets []RouteTarget
+	for _, m := range models {
+		if m != "" && !slices.Contains(targets, RouteTarget{providerID, m}) {
+			targets = append(targets, RouteTarget{providerID, m})
+		}
+	}
+	if len(targets) > 0 {
+		rt.Tasks[task] = targets
+	}
+}
+
+// listed returns id when the provider lists it (with or without the
+// "models/" prefix), else "".
+func listed(models []ai.ModelInfo, id string) string {
+	for _, m := range models {
+		if strings.TrimPrefix(m.ID, "models/") == id {
+			return id
+		}
+	}
+	return ""
 }
 
 // pickModel returns the first preferred id that is listed, else the first
@@ -90,12 +112,17 @@ func jevRoutes(rt *RoutingSettings, providerID int64, models []ai.ModelInfo) {
 
 // geminiRoutes follows Google's lineup: the newest Flash for chat and
 // evaluation, Flash Lite for quick tasks, the newest Live model for voice.
+// The newest models are often previews that answer 503 under load, so the
+// stable 2.5 Flash, when listed, follows as fallback for every text task
+// (2.5 Flash Lite is listed but refused to new keys).
 func geminiRoutes(rt *RoutingSettings, providerID int64, models []ai.ModelInfo) {
 	flash := newestFlash(models, false, false, "gemini-2.5-flash")
-	addIfEmpty(rt, TaskChat, providerID, flash)
-	addIfEmpty(rt, TaskEvaluation, providerID, flash)
-	addIfEmpty(rt, TaskUtility, providerID, newestFlash(models, false, true, flash))
-	addIfEmpty(rt, TaskJudge, providerID, newestFlash(models, false, true, flash))
+	stable := listed(models, "gemini-2.5-flash")
+	lite := newestFlash(models, false, true, flash)
+	addIfEmpty(rt, TaskChat, providerID, flash, stable)
+	addIfEmpty(rt, TaskEvaluation, providerID, flash, stable)
+	addIfEmpty(rt, TaskUtility, providerID, lite, stable)
+	addIfEmpty(rt, TaskJudge, providerID, lite, stable)
 	addIfEmpty(rt, TaskLive, providerID, newestFlash(models, true, false, "gemini-3.1-flash-live-preview"))
 }
 
