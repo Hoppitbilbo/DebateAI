@@ -28,9 +28,9 @@ jobs:
       - name: Go vet
         working-directory: server
         run: go vet ./...
-      - name: Go tests
+      - name: Go tests with race detector
         working-directory: server
-        run: go test ./...
+        run: go test -race ./...
 
   web:
     runs-on: ubuntu-latest
