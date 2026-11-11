@@ -430,8 +430,12 @@ func (svc *roomService) Rejoin(in RejoinRequest) (*GuestLogin, error) {
 	if err != nil || stored == "" || svc.now().After(domain.ParseTime(exp)) || subtle.ConstantTimeCompare([]byte(stored), []byte(want)) != 1 {
 		return nil, ErrBadRejoinPIN
 	}
-	if err := svc.rooms.SetRejoinPIN(g.UserID, "", nil); err != nil {
+	consumed, err := svc.rooms.ConsumeRejoinPIN(g.UserID, stored, svc.nowString())
+	if err != nil {
 		return nil, err
+	}
+	if !consumed {
+		return nil, ErrBadRejoinPIN
 	}
 	return svc.login(room, g.UserID)
 }

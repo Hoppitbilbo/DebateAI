@@ -249,6 +249,15 @@ func (r *Rooms) RejoinPIN(userID int64) (pinHash, expiresAt string, err error) {
 	return pinHash, exp.String, err
 }
 
+// ConsumeRejoinPIN clears only the still-valid PIN that was checked. The
+// conditional update lets one request win across all server instances and
+// cannot erase a newer PIN issued while an older request was in flight.
+func (r *Rooms) ConsumeRejoinPIN(userID int64, pinHash, now string) (bool, error) {
+	return affected(r.db.Exec(`UPDATE room_guests SET rejoin_pin_hash = '', rejoin_expires_at = NULL
+		WHERE user_id = ? AND rejoin_pin_hash = ? AND rejoin_pin_hash != '' AND rejoin_expires_at >= ?`,
+		userID, pinHash, now))
+}
+
 // MoveGuestSessions gives attempts to a student in the destination class.
 // Assignments from another class must not retain access to the moved work.
 func (r *Rooms) MoveGuestSessions(guestID, studentID, classID int64) error {

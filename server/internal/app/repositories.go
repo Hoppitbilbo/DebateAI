@@ -148,6 +148,7 @@ type roomStore interface {
 	GuestByNickname(roomID int64, nickname string) (*domain.RoomGuest, error)
 	SetRejoinPIN(userID int64, pinHash string, expiresAt *string) error
 	RejoinPIN(userID int64) (pinHash, expiresAt string, err error)
+	ConsumeRejoinPIN(userID int64, pinHash, now string) (bool, error)
 	MoveGuestSessions(guestID, studentID, classID int64) error
 	DeleteGuest(roomID, userID int64) error
 	Delete(id int64) error
