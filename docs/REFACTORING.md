@@ -283,7 +283,7 @@ C1–C2 sono correzioni funzionali concorrenti, registrate separatamente. I task
 
 - [x] **R12.1** (`cd9fadf`) Separare gestione ospiti e ciclo di vita della stanza, mantenendo `roomService` e i suoi contratti; test delle stanze con race detector prima e dopo.
 - [x] **R12.2** (`619291b`) Riutilizzato `newHandlerClient` nel fixture del transcript e nel controllo di proprietà: stessi handler e cookie, senza socket; prove di rete e streaming dedicate conservate. I 42 test HTTP eseguibili senza socket passano con `-race`, inclusi transcript, ricette, verifica delle risposte e snapshot API.
-- [x] **C3, rete di sicurezza multi-istanza** (questo commit) Test applicativi con quattro pool indipendenti: PIN, ammissione, budget e impostazioni; SQLite verificato con race detector, libSQL predisposto in CI ma ancora da eseguire. Nessuna modifica al comportamento applicativo; i gate di rilascio restano in [TODO_2026-11-11.md](TODO_2026-11-11.md).
+- [x] **C3, rete di sicurezza multi-istanza** (`5850c92`) Test applicativi con quattro pool indipendenti: PIN, ammissione, budget e impostazioni; SQLite verificato con race detector, libSQL predisposto in CI ma ancora da eseguire. Nessuna modifica al comportamento applicativo; i gate di rilascio restano in [TODO_2026-11-11.md](TODO_2026-11-11.md).
 
 ---
 
@@ -324,7 +324,8 @@ C1–C2 sono correzioni funzionali concorrenti, registrate separatamente. I task
 
 | Data | Task | Commit | Chi | Note |
 |---|---|---|---|---|
-| 2026-11-11 | C3 rete di sicurezza multi-istanza | questo commit | Codex | Quattro Services con pool separati, stessi scenari su SQLite e libSQL opzionale: PIN unico e sostituzione protetta, ammissione senza perdite, budget riservato/consumato, invalidazione locale e TTL remoto delle impostazioni. SQLite ripetuto 10 volte con -race; vet e 228 test Go verdi con le stesse 13 esclusioni locali. Servizio libSQL effimero aggiunto al job CI; esecuzione remota ancora da verificare. Nessuna modifica applicativa, nessun push/deploy. |
+| 2026-11-11 | Consegna dopo C3 | questo commit | Codex | TODO dell'11/11 aggiornato con 228 test Go, ripetizione del nuovo test, revisione completata e gate di rete/libSQL ancora aperti; comandi per il runner e hash C3 da git log. Solo documentazione. |
+| 2026-11-11 | C3 rete di sicurezza multi-istanza | `5850c92` | Codex | Quattro Services con pool separati, stessi scenari su SQLite e libSQL opzionale: PIN unico e sostituzione protetta, ammissione senza perdite, budget riservato/consumato, invalidazione locale e TTL remoto delle impostazioni. SQLite ripetuto 10 volte con -race; vet e 228 test Go verdi con le stesse 13 esclusioni locali. Servizio libSQL effimero aggiunto al job CI; esecuzione remota ancora da verificare. Nessuna modifica applicativa, nessun push/deploy. |
 | 2026-11-11 | Consegna con giorni, orari e TODO | questo commit | Codex | docs/TODO_2026-11-11.md con esiti verificati, limiti della sandbox, scenari di carico ancora da misurare, priorità e stime. Hash dei task precedenti copiati da git log. Solo documentazione. |
 | 2026-11-11 | R12.2 fixture HTTP senza socket | `619291b` | Codex | Riutilizzo del transport esistente nel fixture del transcript, senza cambiare applicazione o asserzioni; 42 test HTTP con race detector verdi. Gate finale: 227 Go con -race, 2 libSQL saltati, 13 di rete esclusi solo localmente; vet e baseline frontend verdi. |
 | 2026-11-11 | R12.1 separazione gestione ospiti | `cd9fadf` | Codex | Spostamento nel medesimo package/receiver in room_guests.go; API, controlli, errori e ordine invariati. Test room con race detector verdi prima e dopo C2 e prima/dopo lo spostamento. |
