@@ -2,7 +2,6 @@ package httpapi
 
 import (
 	"encoding/json"
-	"net/http/httptest"
 	"sort"
 	"strings"
 	"testing"
@@ -27,10 +26,7 @@ type transcriptFixture struct {
 func newTranscriptFixture(t *testing.T, assignment map[string]any, goalScore float64) *transcriptFixture {
 	t.Helper()
 	s := newTestAPI(t)
-	srv := httptest.NewServer(s.Handler())
-	t.Cleanup(srv.Close)
-
-	owner := newClient(t, srv.URL)
+	owner := newHandlerClient(t, s.Handler())
 	if code := owner.do("POST", "/api/setup", map[string]string{"name": "Admin", "email": "admin@test.it", "password": "password123"}, nil); code != 201 {
 		t.Fatalf("setup %d", code)
 	}
@@ -234,7 +230,7 @@ func TestSaveTranscriptOnlyOwner(t *testing.T) {
 	if _, err := f.s.Accounts.CreateUser("other@test.it", "Other", "password123", "student", "it"); err != nil {
 		t.Fatal(err)
 	}
-	other := newClient(t, f.owner.base)
+	other := newHandlerClient(t, f.s.Handler())
 	other.do("POST", "/api/auth/login", map[string]string{"email": "other@test.it", "password": "password123"}, nil)
 	if code := other.do("PUT", fmtPath("/api/sessions/%d/transcript", f.session), map[string]any{"messages": userTurns(1)}, nil); code != 404 {
 		t.Fatalf("non-owner must get 404, got %d", code)
