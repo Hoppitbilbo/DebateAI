@@ -37,6 +37,8 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto · `[-]` scartato (spieg
 
 ## Stato attuale
 
+- **Consegna aggiornata (2026-11-11, 00:48 America/Lima):** C1–C2 e R12.1–R12.2 completati in quattro commit locali (`5f6af1a`, `5f9f68b`, `cd9fadf`, `619291b`). Stato, prove, 13 esclusioni di rete, 2 test libSQL da eseguire e attività residue con giorno, ora ed effort stimato in [TODO_2026-11-11.md](TODO_2026-11-11.md). Prossimo passo: suite Go completa senza esclusioni su runner con socket, poi libSQL remoto e carico in staging. Nessuna capacità di produzione dichiarata sulla base del test con 40 studenti.
+
 - **Verifica finale e R12.2 (2026-11-11, 00:46 America/Lima):** riusato `newHandlerClient` nel fixture condiviso del transcript (anche cliente non proprietario). Gate finale: Go vet verde; **227 test Go di primo livello verdi con race detector**, 2 test libSQL saltati perché `LIBSQL_TEST_URL` assente, 13 test di rete esclusi da riga di comando perché la sandbox vieta i socket. Nessun test disabilitato nel codice o in CI: lì resta `go test -race ./...` senza esclusioni. `TestResponseShapes` verde, snapshot invariato. Frontend invariato: 368 test, lint, TypeScript, 1044 chiavi i18n e build verdi; lint applicativo senza avvisi (il comando globale riporta avvisi da vecchi worktree non toccati). Nessun push, merge o deploy.
 
 - **Refactoring R12.1, aula lampo (2026-11-11):** dopo C2, separati i metodi relativi a ingresso, rientro, limiti e sessioni degli ospiti in `app/room_guests.go`; `room_service.go` conserva creazione, configurazione e ciclo di vita della stanza. Stesso tipo e receiver, dipendenze, DTO e ordine delle operazioni: solo spostamento, nessuna nuova interfaccia. Stessa prova `go test -race ./internal/app -run '^TestRoom' -count=1` verde prima e dopo.
@@ -278,7 +280,7 @@ Il restyling (`5478a3d`) è stato scritto fuori dal piano. Controllato con le st
 C1–C2 sono correzioni funzionali concorrenti, registrate separatamente. I task R12 sono refactoring puro.
 
 - [x] **R12.1** (`cd9fadf`) Separare gestione ospiti e ciclo di vita della stanza, mantenendo `roomService` e i suoi contratti; test delle stanze con race detector prima e dopo.
-- [x] **R12.2** (questo commit) Riutilizzato `newHandlerClient` nel fixture del transcript e nel controllo di proprietà: stessi handler e cookie, senza socket; prove di rete e streaming dedicate conservate. I 42 test HTTP eseguibili senza socket passano con `-race`, inclusi transcript, ricette, verifica delle risposte e snapshot API.
+- [x] **R12.2** (`619291b`) Riutilizzato `newHandlerClient` nel fixture del transcript e nel controllo di proprietà: stessi handler e cookie, senza socket; prove di rete e streaming dedicate conservate. I 42 test HTTP eseguibili senza socket passano con `-race`, inclusi transcript, ricette, verifica delle risposte e snapshot API.
 
 ---
 
@@ -317,7 +319,8 @@ C1–C2 sono correzioni funzionali concorrenti, registrate separatamente. I task
 
 | Data | Task | Commit | Chi | Note |
 |---|---|---|---|---|
-| 2026-11-11 | R12.2 fixture HTTP senza socket | questo commit | Codex | Riutilizzo del transport esistente nel fixture del transcript, senza cambiare applicazione o asserzioni; 42 test HTTP con race detector verdi. Gate finale: 227 Go con -race, 2 libSQL saltati, 13 di rete esclusi solo localmente; vet e baseline frontend verdi. |
+| 2026-11-11 | Consegna con giorni, orari e TODO | questo commit | Codex | docs/TODO_2026-11-11.md con esiti verificati, limiti della sandbox, scenari di carico ancora da misurare, priorità e stime. Hash dei task precedenti copiati da git log. Solo documentazione. |
+| 2026-11-11 | R12.2 fixture HTTP senza socket | `619291b` | Codex | Riutilizzo del transport esistente nel fixture del transcript, senza cambiare applicazione o asserzioni; 42 test HTTP con race detector verdi. Gate finale: 227 Go con -race, 2 libSQL saltati, 13 di rete esclusi solo localmente; vet e baseline frontend verdi. |
 | 2026-11-11 | R12.1 separazione gestione ospiti | `cd9fadf` | Codex | Spostamento nel medesimo package/receiver in room_guests.go; API, controlli, errori e ordine invariati. Test room con race detector verdi prima e dopo C2 e prima/dopo lo spostamento. |
 | 2026-11-11 | C2 consumo atomico PIN di rientro | `5f9f68b` | Codex | Prima: 16 login da un solo PIN nel test forzato. Dopo: uno solo; consumo condizionale posseduto da store, nessun lock locale come garanzia tra istanze. Nessuna migrazione o modifica al contratto HTTP. Test room e store relativi con race detector verdi. |
 | 2026-11-11 | C1 cache impostazioni e prova classe concorrente | `5f6af1a` | Codex | Una sola lettura per chiave/cache vuota o scaduta; snapshot in corso staccati dalla cache quando Save invalida, nessuna ripubblicazione vecchia. Test deterministici con 100 lettori prima/dopo e prova HTTP con 40 account sullo stesso IP; CI con race detector. Prove e limiti in Stato attuale. |
