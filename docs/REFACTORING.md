@@ -37,6 +37,8 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto · `[-]` scartato (spieg
 
 ## Stato attuale
 
+- **Continuazione 11/11, C3 (2026-11-11):** rivisti i quattro commit C1–C2/R12 senza ulteriori modifiche applicative. Nuovo test `TestMultiInstanceConcurrency`: quattro `Services` con pool e cache indipendenti sullo stesso database; PIN unico e preservazione del sostituto, ammissione con rilascio dei permessi parziali, budget con cancellazione/consumo e cache con lettura lenta e TTL tra istanze. Stessi scenari su SQLite e, con `LIBSQL_TEST_URL`, libSQL usa e getta. SQLite verde dieci volte con `-race`; caso libSQL saltato localmente. Go vet e **228 test Go di primo livello con race detector** verdi, con le stesse 13 esclusioni di rete solo locali; 2 test remoti e il nuovo sottocaso libSQL saltati. CI predisposta con servizio libSQL effimero e URL locale, mantenendo `go test -race ./...` senza esclusioni. Suite completa riprovata: la sandbox vieta ancora i socket e l'accesso al daemon Docker; esecuzione CI/libSQL e carico in staging restano aperti. Nessun push o deploy.
+
 - **Consegna aggiornata (2026-11-11, 00:48 America/Lima):** C1–C2 e R12.1–R12.2 completati in quattro commit locali (`5f6af1a`, `5f9f68b`, `cd9fadf`, `619291b`). Stato, prove, 13 esclusioni di rete, 2 test libSQL da eseguire e attività residue con giorno, ora ed effort stimato in [TODO_2026-11-11.md](TODO_2026-11-11.md). Prossimo passo: suite Go completa senza esclusioni su runner con socket, poi libSQL remoto e carico in staging. Nessuna capacità di produzione dichiarata sulla base del test con 40 studenti.
 
 - **Verifica finale e R12.2 (2026-11-11, 00:46 America/Lima):** riusato `newHandlerClient` nel fixture condiviso del transcript (anche cliente non proprietario). Gate finale: Go vet verde; **227 test Go di primo livello verdi con race detector**, 2 test libSQL saltati perché `LIBSQL_TEST_URL` assente, 13 test di rete esclusi da riga di comando perché la sandbox vieta i socket. Nessun test disabilitato nel codice o in CI: lì resta `go test -race ./...` senza esclusioni. `TestResponseShapes` verde, snapshot invariato. Frontend invariato: 368 test, lint, TypeScript, 1044 chiavi i18n e build verdi; lint applicativo senza avvisi (il comando globale riporta avvisi da vecchi worktree non toccati). Nessun push, merge o deploy.
@@ -281,10 +283,13 @@ C1–C2 sono correzioni funzionali concorrenti, registrate separatamente. I task
 
 - [x] **R12.1** (`cd9fadf`) Separare gestione ospiti e ciclo di vita della stanza, mantenendo `roomService` e i suoi contratti; test delle stanze con race detector prima e dopo.
 - [x] **R12.2** (`619291b`) Riutilizzato `newHandlerClient` nel fixture del transcript e nel controllo di proprietà: stessi handler e cookie, senza socket; prove di rete e streaming dedicate conservate. I 42 test HTTP eseguibili senza socket passano con `-race`, inclusi transcript, ricette, verifica delle risposte e snapshot API.
+- [x] **C3, rete di sicurezza multi-istanza** (questo commit) Test applicativi con quattro pool indipendenti: PIN, ammissione, budget e impostazioni; SQLite verificato con race detector, libSQL predisposto in CI ma ancora da eseguire. Nessuna modifica al comportamento applicativo; i gate di rilascio restano in [TODO_2026-11-11.md](TODO_2026-11-11.md).
 
 ---
 
 ## Note e decisioni
+
+- **C3 (2026-11-11):** estensione dei test di concorrenza richiesta continuando il TODO dell'11/11, fuori dal refactoring puro. Il test locale usa quattro pool sullo stesso file SQLite, non quattro wrapper sullo stesso pool. Il servizio libSQL di CI è temporaneo, senza volumi o credenziali di produzione. L'URL opzionale dei test remoti deve sempre identificare un database sacrificabile: i test vi scrivono dati e impostazioni. Le prove sono di correttezza, non misure di capacità.
 
 - **Concorrenza C1–C2 (2026-11-11):** l'utente chiede di continuare test e refactoring e preparare il sistema per più utenti. Sono autorizzate correzioni dei difetti concorrenti riprodotti da test; si registrano separatamente dal refactoring puro. Nessuna modifica a contratti API, schema o quote, nessuna nuova dipendenza. Le prove in-process non misurano la capacità di Vercel/Turso né le quote dei fornitori IA. Nessun merge, push o deploy.
 
@@ -319,6 +324,7 @@ C1–C2 sono correzioni funzionali concorrenti, registrate separatamente. I task
 
 | Data | Task | Commit | Chi | Note |
 |---|---|---|---|---|
+| 2026-11-11 | C3 rete di sicurezza multi-istanza | questo commit | Codex | Quattro Services con pool separati, stessi scenari su SQLite e libSQL opzionale: PIN unico e sostituzione protetta, ammissione senza perdite, budget riservato/consumato, invalidazione locale e TTL remoto delle impostazioni. SQLite ripetuto 10 volte con -race; vet e 228 test Go verdi con le stesse 13 esclusioni locali. Servizio libSQL effimero aggiunto al job CI; esecuzione remota ancora da verificare. Nessuna modifica applicativa, nessun push/deploy. |
 | 2026-11-11 | Consegna con giorni, orari e TODO | questo commit | Codex | docs/TODO_2026-11-11.md con esiti verificati, limiti della sandbox, scenari di carico ancora da misurare, priorità e stime. Hash dei task precedenti copiati da git log. Solo documentazione. |
 | 2026-11-11 | R12.2 fixture HTTP senza socket | `619291b` | Codex | Riutilizzo del transport esistente nel fixture del transcript, senza cambiare applicazione o asserzioni; 42 test HTTP con race detector verdi. Gate finale: 227 Go con -race, 2 libSQL saltati, 13 di rete esclusi solo localmente; vet e baseline frontend verdi. |
 | 2026-11-11 | R12.1 separazione gestione ospiti | `cd9fadf` | Codex | Spostamento nel medesimo package/receiver in room_guests.go; API, controlli, errori e ordine invariati. Test room con race detector verdi prima e dopo C2 e prima/dopo lo spostamento. |
