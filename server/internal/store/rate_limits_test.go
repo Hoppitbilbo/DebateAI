@@ -39,8 +39,8 @@ func TestAuthRateLimitsRestartAfterExpiryAndPurge(t *testing.T) {
 	if _, err := db.Exec(`INSERT INTO auth_rate_limits(key, count, expires_at) VALUES('old', 5, '2000-01-01T00:00:00Z')`); err != nil {
 		t.Fatal(err)
 	}
-	if ok, _ := r.Hit("z", 1, time.Hour); !ok {
-		t.Fatal("hit")
+	if err := r.PurgeExpired(); err != nil {
+		t.Fatal(err)
 	}
 	var n int
 	if err := db.QueryRow(`SELECT COUNT(*) FROM auth_rate_limits WHERE key = 'old'`).Scan(&n); err != nil || n != 0 {

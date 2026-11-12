@@ -149,7 +149,18 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("/api/", func(w http.ResponseWriter, r *http.Request) { writeErr(w, 404, "not_found", "API route not found") })
 	mux.HandleFunc("/", s.serveStatic)
 
-	return s.securityHeaders(s.originCheck(mux))
+	return s.securityHeaders(s.originCheck(s.tidy(mux)))
+}
+
+// tidy purges expired rows now and then (app.housekeeping), instead of a
+// DELETE in front of every slot, counter or login.
+func (s *Server) tidy(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if strings.HasPrefix(r.URL.Path, "/api/") {
+			s.Housekeeping.Tidy()
+		}
+		next.ServeHTTP(w, r)
+	})
 }
 
 // ---------- static SPA ----------

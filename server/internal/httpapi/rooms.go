@@ -427,6 +427,7 @@ func (s *Server) handleCronPurgeRooms(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	s.RoomSvc.Purge()
+	s.Housekeeping.Force()
 	s.Outbox.Deliver(r.Context())
 	writeOK(w)
 }

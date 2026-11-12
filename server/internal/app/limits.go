@@ -116,6 +116,10 @@ const (
 	maxInvitesPerRequest = 100
 )
 
+// housekeepingInterval: expired rows are purged at most this often per
+// instance (housekeeping.go).
+const housekeepingInterval = time.Minute
+
 // Temporary rooms ("aula lampo").
 const (
 	// Wrong room codes per network and wrong rejoin PINs per room and

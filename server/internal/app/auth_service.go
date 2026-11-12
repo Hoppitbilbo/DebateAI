@@ -156,7 +156,6 @@ func (a *authService) StartSessionUntil(userID int64, expires time.Time) (string
 		return "", err
 	}
 	logIfErr("record last login", a.users.RecordLogin(userID))
-	logIfErr("purge expired sessions", a.logins.PurgeExpired())
 	return token, nil
 }
 
