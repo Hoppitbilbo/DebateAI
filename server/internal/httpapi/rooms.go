@@ -46,48 +46,45 @@ func writeRoomErr(w http.ResponseWriter, err error) {
 	case errors.Is(err, app.ErrTooManyRooms):
 		writeErr(w, 429, "rate_limited", err.Error())
 	default:
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 	}
 }
 
 // setGuestCookie logs a guest in until their room closes.
 func setGuestCookie(w http.ResponseWriter, r *http.Request, login *app.GuestLogin) {
-	http.SetCookie(w, &http.Cookie{
-		Name: sessionCookie, Value: login.Token, Path: "/", HttpOnly: true,
-		Secure:   r.TLS != nil || r.Header.Get("X-Forwarded-Proto") == "https",
-		SameSite: http.SameSiteLaxMode, Expires: login.Expires,
-	})
+	setSessionCookie(w, r, login.Token, login.Expires)
 }
 
-// codeGuard refuses the requests of a network that typed too many wrong
-// room codes or PINs; failed() counts one more.
-type codeGuard struct {
-	s   *Server
-	key string
-}
+const wrongCodesMsg = "too many wrong codes, wait a few minutes"
 
-func (s *Server) codeGuard(r *http.Request, scope string) codeGuard {
-	return codeGuard{s: s, key: "roomcode:" + scope + ":" + s.clientIP(r)}
+// roomGuess counts a typed room code or PIN before it is checked
+// (app.authLimits); false when the answer was already written. The caller
+// calls refund when the code or PIN was right.
+func (s *Server) roomGuess(w http.ResponseWriter, refund func(), err error, msg string) bool {
+	switch {
+	case err == nil:
+		return true
+	case errors.Is(err, app.ErrRateLimited):
+		writeErr(w, 429, "rate_limited", msg)
+	default:
+		writeErr(w, 503, "unavailable", "retry in a moment")
+	}
+	return false
 }
-
-func (g codeGuard) blocked() bool {
-	return g.s.limiter.exhausted(g.key, wrongRoomCodesLimit)
-}
-
-func (g codeGuard) failed() { g.s.limiter.allow(g.key, wrongRoomCodesLimit, wrongRoomCodesWindow) }
 
 // ---------- students ----------
 
 func (s *Server) handleRoomLookup(w http.ResponseWriter, r *http.Request) {
 	s.RoomSvc.Purge()
-	guard := s.codeGuard(r, "code")
-	if guard.blocked() {
-		writeErr(w, 429, "rate_limited", "too many wrong codes, wait a few minutes")
+	refund, err := s.AuthLimits.RoomCode(s.clientIP(r))
+	if !s.roomGuess(w, refund, err, wrongCodesMsg) {
 		return
 	}
 	info, err := s.RoomSvc.Lookup(r.PathValue("code"))
+	if !errors.Is(err, app.ErrRoomNotFound) {
+		refund()
+	}
 	if err != nil {
-		guard.failed()
 		writeRoomErr(w, err)
 		return
 	}
@@ -97,18 +94,16 @@ func (s *Server) handleRoomLookup(w http.ResponseWriter, r *http.Request) {
 func (s *Server) handleRoomJoin(w http.ResponseWriter, r *http.Request) {
 	s.RoomSvc.Purge()
 	var in app.JoinRequest
-	if err := readJSON(r, &in); err != nil {
-		writeErr(w, 400, "bad_request", err.Error())
+	if !decode(w, r, &in) {
 		return
 	}
-	guard := s.codeGuard(r, "code")
-	if guard.blocked() {
-		writeErr(w, 429, "rate_limited", "too many wrong codes, wait a few minutes")
+	refund, err := s.AuthLimits.RoomCode(s.clientIP(r))
+	if !s.roomGuess(w, refund, err, wrongCodesMsg) {
 		return
 	}
 	login, err := s.RoomSvc.Join(in)
-	if errors.Is(err, app.ErrRoomNotFound) {
-		guard.failed()
+	if !errors.Is(err, app.ErrRoomNotFound) {
+		refund()
 	}
 	if err != nil {
 		writeRoomErr(w, err)
@@ -119,21 +114,18 @@ func (s *Server) handleRoomJoin(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) handleRoomRejoin(w http.ResponseWriter, r *http.Request) {
 	var in app.RejoinRequest
-	if err := readJSON(r, &in); err != nil {
-		writeErr(w, 400, "bad_request", err.Error())
+	if !decode(w, r, &in) {
 		return
 	}
-	// PINs have 4 digits: few tries per room and nickname, whatever the network.
-	pinKey := "roompin:" + domain.NormalizeJoinCode(in.Code) + ":" + domain.NormalizeNickname(in.Nickname)
-	if s.limiter.exhausted(pinKey, wrongPINsLimit) {
-		writeErr(w, 429, "rate_limited", "too many wrong PINs, ask your teacher for a new one later")
+	refund, err := s.AuthLimits.RejoinPIN(domain.NormalizeJoinCode(in.Code), domain.NormalizeNickname(in.Nickname))
+	if !s.roomGuess(w, refund, err, "too many wrong PINs, ask your teacher for a new one later") {
 		return
 	}
 	login, err := s.RoomSvc.Rejoin(in)
+	if !errors.Is(err, app.ErrBadRejoinPIN) {
+		refund()
+	}
 	if err != nil {
-		if errors.Is(err, app.ErrBadRejoinPIN) {
-			s.limiter.allow(pinKey, wrongPINsLimit, wrongPINsWindow)
-		}
 		writeRoomErr(w, err)
 		return
 	}
@@ -144,7 +136,7 @@ func (s *Server) answerGuestLogin(w http.ResponseWriter, r *http.Request, login 
 	setGuestCookie(w, r, login)
 	u, err := s.Users.Get(login.UserID)
 	if err != nil {
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 		return
 	}
 	writeJSON(w, 200, u)
@@ -167,8 +159,7 @@ func (s *Server) handleGuestRoom(w http.ResponseWriter, r *http.Request) {
 func (s *Server) handleOpenRoom(w http.ResponseWriter, r *http.Request) {
 	s.RoomSvc.Purge()
 	var in app.RoomRequest
-	if err := readJSON(r, &in); err != nil {
-		writeErr(w, 400, "bad_request", err.Error())
+	if !decode(w, r, &in) {
 		return
 	}
 	u := s.userFromRequest(r)
@@ -192,7 +183,7 @@ func (s *Server) handleListRooms(w http.ResponseWriter, r *http.Request) {
 	s.RoomSvc.Purge()
 	out, err := s.RoomSvc.ListOpen(currentUser(r))
 	if err != nil {
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 		return
 	}
 	writeJSON(w, 200, out)
@@ -229,7 +220,7 @@ func (s *Server) handleGetRoom(w http.ResponseWriter, r *http.Request) {
 	}
 	view, err := s.RoomSvc.View(room)
 	if err != nil {
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 		return
 	}
 	writeJSON(w, 200, view)
@@ -243,13 +234,12 @@ func (s *Server) handleUpdateRoom(w http.ResponseWriter, r *http.Request) {
 	var in struct {
 		Locked *bool `json:"locked"`
 	}
-	if err := readJSON(r, &in); err != nil {
-		writeErr(w, 400, "bad_request", err.Error())
+	if !decode(w, r, &in) {
 		return
 	}
 	if in.Locked != nil {
 		if err := s.RoomSvc.SetLocked(room, *in.Locked); err != nil {
-			writeErr(w, 500, "internal", err.Error())
+			writeInternal(w, err)
 			return
 		}
 	}
@@ -262,7 +252,7 @@ func (s *Server) handleEndRoom(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err := s.RoomSvc.End(room); err != nil {
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 		return
 	}
 	writeOK(w)
@@ -327,7 +317,7 @@ func (s *Server) exportedRoom(w http.ResponseWriter, r *http.Request) (*domain.R
 	}
 	e, err := s.RoomTransfer.Export(room)
 	if err != nil {
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 		return nil, nil, false
 	}
 	return room, e, true
@@ -348,7 +338,7 @@ func (s *Server) handleRoomExportFile(w http.ResponseWriter, r *http.Request) {
 	}
 	file, err := s.RoomTransfer.SealExport(e)
 	if err != nil {
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 		return
 	}
 	name := safeFileName(fmt.Sprintf("aula-%s-%s", room.Title, fileDay(room.CreatedAt))) + ".aula"
@@ -382,8 +372,7 @@ func (s *Server) handleRoomImport(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var in roomImportIn
-	if err := readJSON(r, &in); err != nil {
-		writeErr(w, 400, "bad_request", err.Error())
+	if !decode(w, r, &in) {
 		return
 	}
 	var res *app.ImportResult
@@ -407,8 +396,7 @@ func (s *Server) handleRoomImportPreview(w http.ResponseWriter, r *http.Request)
 		return
 	}
 	var in roomImportIn
-	if err := readJSON(r, &in); err != nil {
-		writeErr(w, 400, "bad_request", err.Error())
+	if !decode(w, r, &in) {
 		return
 	}
 	p, err := s.RoomTransfer.PreviewFile(in.File)
@@ -429,6 +417,7 @@ func (s *Server) handleCronPurgeRooms(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	s.RoomSvc.Purge()
+	s.Housekeeping.Force()
 	s.Outbox.Deliver(r.Context())
 	writeOK(w)
 }

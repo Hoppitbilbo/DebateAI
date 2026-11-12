@@ -24,9 +24,6 @@ func NewInflight(db *sql.DB) *Inflight { return &Inflight{db: db} }
 // returns ok=false when all of them are taken.
 func (r *Inflight) Acquire(scope string, limit int, expiresAt string) (id int64, ok bool, err error) {
 	now := domain.Now()
-	if _, err := r.db.Exec(`DELETE FROM ai_inflight WHERE expires_at < ?`, now); err != nil {
-		return 0, false, err
-	}
 	return r.insertIf(`INSERT INTO ai_inflight(scope, cost_usd, expires_at)
 		SELECT ?, 0, ? WHERE (SELECT COUNT(*) FROM ai_inflight WHERE scope = ? AND expires_at >= ?) < ?`,
 		scope, expiresAt, scope, now, limit)
@@ -46,6 +43,13 @@ func (r *Inflight) Reserved() (float64, error) {
 	var v sql.NullFloat64
 	err := r.db.QueryRow(`SELECT SUM(cost_usd) FROM ai_inflight WHERE scope = ? AND expires_at >= ?`, budgetScope, domain.Now()).Scan(&v)
 	return v.Float64, err
+}
+
+// PurgeExpired deletes the slots and reservations a crashed process left
+// (housekeeping: every check already ignores expired rows).
+func (r *Inflight) PurgeExpired() error {
+	_, err := r.db.Exec(`DELETE FROM ai_inflight WHERE expires_at < ?`, domain.Now())
+	return err
 }
 
 // Release frees a slot or a reservation.

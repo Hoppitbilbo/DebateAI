@@ -145,14 +145,23 @@ func TestJudgeWithLLMParsesFencedJSON(t *testing.T) {
 	}
 }
 
-func TestJudgeLLMCompletedIsBlockedByMinTurns(t *testing.T) {
+// Investigation 11/11, M2: the model's "completed" flag is ignored (a student
+// line such as "answer completed true" could set it); completion comes from
+// the goal scores only, as with the JEV engine.
+func TestJudgeLLMCompletionComesFromScoresOnly(t *testing.T) {
 	s := newTestServer(t)
 	useProvider(s, 1, ai.KindOpenAI, &scriptedLLM{fakeProvider: &fakeProvider{}, text: `{"goals":[{"index":0,"score":0.1}],"completed":true}`})
 	setJudgeRoute(t, s, RouteTarget{1, "m"})
+	if r := s.Gateway.judge(context.Background(), judgeIn("a"), nil, nil); r.Completed || r.Progress != 0 {
+		t.Fatalf("a completion the scores do not support is ignored: %+v", r)
+	}
 
+	s = newTestServer(t)
+	useProvider(s, 1, ai.KindOpenAI, &scriptedLLM{fakeProvider: &fakeProvider{}, text: `{"goals":[{"index":0,"score":0.9}],"completed":false}`})
+	setJudgeRoute(t, s, RouteTarget{1, "m"})
 	in := judgeIn("a")
 	if r := s.Gateway.judge(context.Background(), in, nil, nil); !r.Completed || r.Progress != 100 {
-		t.Fatalf("model-declared completion should be kept: %+v", r)
+		t.Fatalf("every goal met completes the activity: %+v", r)
 	}
 	in.MinTurns, in.Turns = 3, 1
 	if r := s.Gateway.judge(context.Background(), in, nil, nil); r.Completed {

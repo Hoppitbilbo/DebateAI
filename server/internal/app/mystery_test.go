@@ -2,35 +2,31 @@ package app
 
 import (
 	"encoding/json"
+	"os"
 	"strings"
 	"testing"
 
 	"github.com/Hoppitbilbo/DebateAI/server/internal/domain"
 )
 
-// Same cases as isCorrectGuess in features/activity/mystery.test.ts.
+// The cases live in testdata/mystery_names.json, read by mystery.test.ts too,
+// so the server and the browser cannot drift apart.
 func TestNamesCharacterMatchesTheBrowserRule(t *testing.T) {
-	cases := []struct {
-		text, answer string
-		want         bool
-	}{
-		{"leonardo da vinci", "Leonardo da Vinci", true},
-		{"Vinci", "Leonardo da Vinci", true},
-		{"Napoleone", "Napoleone Bonaparte", true},
-		{"è Bonaparte!", "Napoleone Bonaparte", true},
-		{"Marie Curié", "Marie Curie", true},
-		{"Cleopatra VII", "Cleopatra (regina)", true},
-		{"Galilei Galileo?", "Galileo Galilei", true},
-		{"", "Galileo Galilei", false},
-		{"Da", "Leonardo da Vinci", false},
-		{"Leo", "Leonardo da Vinci", false},
-		{"van", "Vincent van Gogh", false},
-		{"Galile", "Galileo Galilei", false},
-		{"Newton", "Galileo Galilei", false},
+	raw, err := os.ReadFile("testdata/mystery_names.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	var cases []struct {
+		Message  string `json:"message"`
+		Answer   string `json:"answer"`
+		Expected bool   `json:"expected"`
+	}
+	if err := json.Unmarshal(raw, &cases); err != nil {
+		t.Fatal(err)
 	}
 	for _, c := range cases {
-		if got := namesCharacter(c.text, c.answer); got != c.want {
-			t.Errorf("namesCharacter(%q, %q) = %v, want %v", c.text, c.answer, got, c.want)
+		if got := namesCharacter(c.Message, c.Answer); got != c.Expected {
+			t.Errorf("namesCharacter(%q, %q) = %v, want %v", c.Message, c.Answer, got, c.Expected)
 		}
 	}
 }

@@ -165,3 +165,41 @@ func TestEvaluateGradesTheMysteryGameWithTheRubric(t *testing.T) {
 		t.Fatalf("rubric score stored, reflection score from the model: %+v", d)
 	}
 }
+
+// Investigation 11/11, M9: while one evaluation of an attempt runs (another
+// tab, another instance), a second one is refused before calling the model.
+func TestOneEvaluationPerAttemptAtATime(t *testing.T) {
+	s := newTestAPI(t)
+	srv := httptest.NewServer(s.Handler())
+	t.Cleanup(srv.Close)
+	c := newClient(t, srv.URL)
+	if code := c.do("POST", "/api/setup", map[string]string{"name": "Admin", "email": "admin@test.it", "password": "password123"}, nil); code != 201 {
+		t.Fatalf("setup %d", code)
+	}
+	var prompt string
+	id := s.addFake(t, "grader", ai.KindOpenAI, gradingProvider{prompt: &prompt})
+	if err := s.Settings.SaveRouting(app.RoutingSettings{Strategy: "ordered", Tasks: map[string][]app.RouteTarget{app.TaskEvaluation: {{ProviderID: id, Model: "m"}}}}); err != nil {
+		t.Fatal(err)
+	}
+	var sess domain.SessionSummary
+	if code := c.do("POST", "/api/sessions", map[string]any{"appType": "wiki-chatbot"}, &sess); code != 201 {
+		t.Fatalf("create session %d", code)
+	}
+	release, err := s.Gateway.Admit(evaluationClaim(sess.ID)) // the first tab's evaluation
+	if err != nil {
+		t.Fatal(err)
+	}
+	var out apiError
+	if code := c.do("POST", fmtPath("/api/sessions/%d/evaluate", sess.ID), map[string]any{"reflection": "x"}, &out); code != 429 || out.Error != "busy" {
+		t.Fatalf("second evaluation: %d %+v", code, out)
+	}
+	if prompt != "" {
+		t.Fatal("the model must not be called twice")
+	}
+	release()
+	resp, err := c.http.Post(srv.URL+fmtPath("/api/sessions/%d/evaluate", sess.ID), "application/json", strings.NewReader(`{"reflection":"r"}`))
+	if err != nil || resp.StatusCode != 200 {
+		t.Fatalf("after the first one: %v", err)
+	}
+	resp.Body.Close()
+}

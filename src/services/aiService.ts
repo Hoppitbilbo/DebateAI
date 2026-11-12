@@ -116,9 +116,8 @@ const mergeConsecutive = (messages: ChatMessage[]): ChatMessage[] => {
       out.push({ ...m });
     }
   }
-  if (out.length === 0 || out[0].role !== "user") {
-    out.unshift({ role: "user", content: "(start)" });
-  }
+  // A history opened by the character gets its first user turn from the
+  // server (userFirst in the gateway).
   return out;
 };
 

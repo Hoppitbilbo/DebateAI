@@ -33,7 +33,7 @@ type userStore interface {
 
 type authSessionStore interface {
 	Create(tokenHash string, userID int64, expiresAt string) error
-	Lookup(tokenHash string) (userID int64, expiresAt string, err error)
+	UserForSession(tokenHash string) (*domain.User, error)
 	Delete(tokenHash string) error
 	DeleteForUser(userID int64) error
 	PurgeExpired() error
@@ -102,8 +102,9 @@ type sessionStore interface {
 	Best(userID, assignmentID int64) *domain.SessionSummary
 	ListForUser(userID int64, limit int) ([]*domain.SessionSummary, error)
 	BestPerStudent(classID int64) ([]domain.ProgressCell, error)
-	Owner(id int64) (userID *int64, status string, err error)
+	Owner(id int64) (userID *int64, status string, assignmentID *int64, err error)
 	Create(n domain.NewSession) (int64, error)
+	CountStartedSince(userID int64, since string) (int, error)
 	AbandonEmpty(userID, assignmentID int64) error
 	SaveTranscript(id int64, s domain.TranscriptSave) (revision int64, err error)
 	SaveJudgement(id int64, judgementJSON string, progress int, revision int64) (bool, error)
@@ -148,6 +149,7 @@ type roomStore interface {
 	GuestByNickname(roomID int64, nickname string) (*domain.RoomGuest, error)
 	SetRejoinPIN(userID int64, pinHash string, expiresAt *string) error
 	RejoinPIN(userID int64) (pinHash, expiresAt string, err error)
+	ConsumeRejoinPIN(userID int64, pinHash, now string) (bool, error)
 	MoveGuestSessions(guestID, studentID, classID int64) error
 	DeleteGuest(roomID, userID int64) error
 	Delete(id int64) error

@@ -3,6 +3,7 @@ package app
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/url"
 	"testing"
 
@@ -242,5 +243,53 @@ func TestClassInviteRequiresExistingAccountAcceptance(t *testing.T) {
 	in.Password = "password123"
 	if got, err := s.Accounts.Register(in, "http://site"); err != nil || got != id || !s.Classes.IsMember(class.ID, id) {
 		t.Fatalf("acceptance: user=%d err=%v", got, err)
+	}
+}
+
+// Investigation 11/11, M6: one request invites at most maxInvitesPerRequest
+// addresses (each mail is sent in the request).
+func TestClassInviteIsCappedPerRequest(t *testing.T) {
+	s := newTestServer(t)
+	m := &captureMailer{}
+	s.Accounts.mail = m
+	teacher := newRoomTestUser(t, s, "teacher@x.it", domain.RoleTeacher)
+	class, _ := s.ClassSvc.Create(teacher, NewClass{Name: "Class"})
+	var emails []string
+	for i := range maxInvitesPerRequest + 1 {
+		emails = append(emails, fmt.Sprintf("s%d@x.it", i))
+	}
+	if _, err := s.ClassSvc.Invite(teacher, class.ID, MemberInvitation{Emails: emails}, "http://site"); !IsInvalid(err) {
+		t.Fatalf("over the cap: %v", err)
+	}
+	if len(m.bodies) != 0 {
+		t.Fatal("nothing is sent when the list is refused")
+	}
+	if res, err := s.ClassSvc.Invite(teacher, class.ID, MemberInvitation{Emails: emails[:maxInvitesPerRequest]}, "http://site"); err != nil || len(res) != maxInvitesPerRequest {
+		t.Fatalf("at the cap: %v %d", err, len(res))
+	}
+}
+
+// Investigation 11/11, M3: a co-teacher manages the students of a class but
+// may not delete it nor remove its teachers; the owner and admins may.
+func TestOnlyTheOwnerDeletesTheClassOrRemovesTeachers(t *testing.T) {
+	f := newRecoveryClass(t)
+	other := newRoomTestUser(t, f.s, "co2@x.it", domain.RoleTeacher)
+	if err := f.s.Classes.AddMember(f.class.ID, other.ID, domain.RoleTeacher); err != nil {
+		t.Fatal(err)
+	}
+	if err := f.s.ClassSvc.RemoveMember(f.coTeacher, f.class.ID, other.ID); !errors.Is(err, ErrOwnerOnly) {
+		t.Fatalf("a co-teacher removes another teacher: %v", err)
+	}
+	if err := f.s.ClassSvc.RemoveMember(f.coTeacher, f.class.ID, f.st.ID); err != nil {
+		t.Fatalf("a co-teacher removes a student: %v", err)
+	}
+	if err := f.s.ClassSvc.Delete(f.coTeacher, f.class.ID); !errors.Is(err, ErrOwnerOnly) {
+		t.Fatalf("a co-teacher deletes the class: %v", err)
+	}
+	if err := f.s.ClassSvc.RemoveMember(f.owner, f.class.ID, other.ID); err != nil {
+		t.Fatalf("the owner removes a teacher: %v", err)
+	}
+	if err := f.s.ClassSvc.Delete(f.admin, f.class.ID); err != nil {
+		t.Fatalf("an admin deletes the class: %v", err)
 	}
 }

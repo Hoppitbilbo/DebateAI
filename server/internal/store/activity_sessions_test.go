@@ -61,7 +61,7 @@ func TestActivitySessionsLifecycle(t *testing.T) {
 	if cells, _ := r.BestPerStudent(classID); len(cells) != 1 || cells[0].SessionID != id || *cells[0].Score != 8 {
 		t.Fatalf("best per student: %+v", cells)
 	}
-	if owner, status, err := r.Owner(id); err != nil || *owner != stud || status != domain.SessionCompleted {
+	if owner, status, _, err := r.Owner(id); err != nil || *owner != stud || status != domain.SessionCompleted {
 		t.Fatalf("owner: %v %v %s", err, owner, status)
 	}
 	other, _ := NewAssignments(db).Create(domain.NewAssignment{ClassID: classID, Title: "U", AppType: "convinci-tu", Config: "{}", CreatedBy: &teacher})
@@ -110,5 +110,48 @@ func TestActivitySessionsConditionalWrites(t *testing.T) {
 	}
 	if ss, _ := r.Summary(id); ss.Status != domain.SessionCompleted || ss.Turns != 2 {
 		t.Fatalf("summary: %+v", ss)
+	}
+}
+
+// Characterization of BestPerStudent before investigation 11/11, R4: one
+// cell per student and assignment, the best attempt, best cells first.
+func TestBestPerStudentKeepsTheBestAttemptOfEach(t *testing.T) {
+	db := openTestDB(t)
+	users, r := NewUsers(db), NewActivitySessions(db)
+	teacher, _ := users.Create("t@x.it", "Prof", "", domain.RoleTeacher, "it")
+	anna, _ := users.Create("a@x.it", "Anna", "", domain.RoleStudent, "it")
+	marco, _ := users.Create("m@x.it", "Marco", "", domain.RoleStudent, "it")
+	classID, _ := NewClasses(db).Create("3A", "", teacher, domain.EnrollStandard)
+	other, _ := NewClasses(db).Create("3B", "", teacher, domain.EnrollStandard)
+	a1, _ := NewAssignments(db).Create(domain.NewAssignment{ClassID: classID, Title: "A1", AppType: "wiki-chatbot", Config: "{}", CreatedBy: &teacher})
+	a2, _ := NewAssignments(db).Create(domain.NewAssignment{ClassID: classID, Title: "A2", AppType: "wiki-chatbot", Config: "{}", CreatedBy: &teacher})
+	elsewhere, _ := NewAssignments(db).Create(domain.NewAssignment{ClassID: other, Title: "B", AppType: "wiki-chatbot", Config: "{}", CreatedBy: &teacher})
+	start := func(u, a int64, progress int, complete bool) int64 {
+		id, _ := r.Create(domain.NewSession{UserID: u, AssignmentID: &a, AppType: "wiki-chatbot", Context: "{}"})
+		if _, err := db.Exec(`UPDATE activity_sessions SET progress = ? WHERE id = ?`, progress, id); err != nil {
+			t.Fatal(err)
+		}
+		if complete {
+			r.Complete(id, domain.SessionCompletion{})
+		}
+		return id
+	}
+	start(anna, a1, 90, false)
+	annaBest := start(anna, a1, 40, true) // completed beats more progress
+	start(marco, a1, 10, false)
+	marcoBest := start(marco, a1, 70, false)
+	annaA2 := start(anna, a2, 20, false)
+	start(anna, elsewhere, 100, true) // another class
+	cells, err := r.BestPerStudent(classID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	got := []int64{}
+	for _, c := range cells {
+		got = append(got, c.SessionID)
+	}
+	want := []int64{annaBest, marcoBest, annaA2}
+	if len(got) != len(want) || got[0] != want[0] || got[1] != want[1] || got[2] != want[2] {
+		t.Fatalf("cells %v, want %v (best first)", got, want)
 	}
 }

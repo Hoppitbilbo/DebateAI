@@ -15,20 +15,44 @@ const normalize = (s: string) =>
 /** Short words of names ("da", "van", "de", "von"...) never identify a person. */
 const MIN_NAME_WORD = 4;
 
-/** The words of a name that identify it: at least MIN_NAME_WORD letters. */
-const nameWords = (s: string) => normalize(s).split(" ").filter((w) => w.length >= MIN_NAME_WORD);
+// Mirrored in server/internal/app/mystery.go (cases in testdata/mystery_names.json).
+/**
+ * Words that start the part of a title telling where or what the person was
+ * ("Elisabetta I d'Inghilterra", "Alexander the Great"): ordinary words, not
+ * the name. Surname particles ("da Vinci", "van Gogh") are not here.
+ */
+const EPITHET_PARTICLES = new Set(["di", "d", "of", "the", "il"]);
+/** Titles and epithets, never the name itself. */
+const TITLE_WORDS = new Set([
+  "queen", "king", "pope", "papa", "regina", "saint", "santa", "santo", "great", "magno", "grande", "emperor",
+  "empress", "imperatore", "imperatrice", "prince", "princess", "principe", "principessa", "lady", "lord", "duke",
+  "duca", "duchessa", "tsar", "czar",
+]);
+const ROMAN_NUMERAL = /^[ivxl]+$/;
+
+/** The words of a name that identify the person on their own. */
+const identifyingWords = (normalized: string) => {
+  const out: string[] = [];
+  for (const [i, w] of normalized.split(" ").entries()) {
+    if (i > 0 && EPITHET_PARTICLES.has(w)) break;
+    if (w.length >= MIN_NAME_WORD && !TITLE_WORDS.has(w) && !ROMAN_NUMERAL.test(w)) out.push(w);
+  }
+  return out;
+};
 
 /**
- * Strict name match: the guess is right when it is the full name or contains,
- * as a whole word, one of the significant words of the answer ("Vinci",
- * "Leonardo"). Fragments ("Da", "Leo") and misspellings are wrong.
+ * Strict name match: the guess is right when it holds the full name as whole
+ * words, or one of the identifying words of the answer ("Vinci", "Leonardo";
+ * not "Inghilterra" or "great"). Fragments ("Da", "Leo") and misspellings are
+ * wrong.
  */
 export const isCorrectGuess = (guess: string, answer: string) => {
   const g = normalize(guess);
-  if (!g) return false;
-  if (g === normalize(answer)) return true;
+  const name = normalize(answer);
+  if (!g || !name) return false;
+  if (` ${g} `.includes(` ${name} `)) return true;
   const guessWords = new Set(g.split(" "));
-  return nameWords(answer).some((w) => guessWords.has(w));
+  return identifyingWords(name).some((w) => guessWords.has(w));
 };
 
 /**

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"io/fs"
+	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -148,7 +149,18 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("/api/", func(w http.ResponseWriter, r *http.Request) { writeErr(w, 404, "not_found", "API route not found") })
 	mux.HandleFunc("/", s.serveStatic)
 
-	return s.securityHeaders(s.originCheck(mux))
+	return s.securityHeaders(s.originCheck(s.tidy(mux)))
+}
+
+// tidy purges expired rows now and then (app.housekeeping), instead of a
+// DELETE in front of every slot, counter or login.
+func (s *Server) tidy(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if strings.HasPrefix(r.URL.Path, "/api/") {
+			s.Housekeeping.Tidy()
+		}
+		next.ServeHTTP(w, r)
+	})
 }
 
 // ---------- static SPA ----------
@@ -285,8 +297,29 @@ func writeErr(w http.ResponseWriter, status int, code, msg string) {
 	writeJSON(w, status, apiError{Error: code, Message: msg})
 }
 
+// writeInternal answers 500 for an unexpected error: the error is logged,
+// the browser gets a fixed message (database texts stay on the server).
+func writeInternal(w http.ResponseWriter, err error) {
+	log.Printf("internal error: %v", err)
+	writeErr(w, 500, "internal", "internal error, retry later")
+}
+
+// decode reads the JSON body into v, or answers 400 and returns false.
+func decode(w http.ResponseWriter, r *http.Request, v any) bool {
+	return decodeLimit(w, r, v, defaultBodyBytes)
+}
+
+// decodeLimit is decode with a body limit of maxBytes.
+func decodeLimit(w http.ResponseWriter, r *http.Request, v any, maxBytes int64) bool {
+	if err := readJSONLimit(r, v, maxBytes); err != nil {
+		writeErr(w, 400, "bad_request", err.Error())
+		return false
+	}
+	return true
+}
+
 func readJSON(r *http.Request, v any) error {
-	return readJSONLimit(r, v, 8<<20)
+	return readJSONLimit(r, v, defaultBodyBytes)
 }
 
 func readJSONLimit(r *http.Request, v any, maxBytes int64) error {
@@ -306,13 +339,20 @@ func (s *Server) clientIP(r *http.Request) string {
 	return s.proxies.clientIP(r)
 }
 
-// baseURL is used to build links in e-mails.
+// baseURL is used to build links in e-mails: the configured address. The
+// request's Host header, which a client can forge, is used only while mail
+// is not configured (development, where mails are just logged); otherwise
+// the links stay relative and a warning asks for the address.
 func (s *Server) baseURL(r *http.Request) string {
 	if g := s.Settings.General(); g.PublicURL != "" {
 		return strings.TrimRight(g.PublicURL, "/")
 	}
 	if s.cfg.PublicURL != "" {
 		return s.cfg.PublicURL
+	}
+	if s.Settings.MailConfigured() {
+		log.Print("mail links: set PUBLIC_URL or the public address in the admin settings")
+		return ""
 	}
 	scheme := "http"
 	if r.TLS != nil || r.Header.Get("X-Forwarded-Proto") == "https" {
@@ -347,14 +387,6 @@ func newRateLimiter() *rateLimiter {
 		}
 	}()
 	return rl
-}
-
-// exhausted reports, without counting a hit, whether key reached limit.
-func (rl *rateLimiter) exhausted(key string, limit int) bool {
-	rl.mu.Lock()
-	defer rl.mu.Unlock()
-	b := rl.buckets[key]
-	return b != nil && time.Now().Before(b.reset) && b.count >= limit
 }
 
 // allow returns false once `limit` hits happened within `window` for key.

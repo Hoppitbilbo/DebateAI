@@ -132,7 +132,7 @@ func TestRoomsDeleteLeavesNothingBehind(t *testing.T) {
 	if list, _ := sessions.ListForUser(gone, 10); len(list) != 0 {
 		t.Fatal("guest sessions must be deleted")
 	}
-	if _, _, err := logins.Lookup("tok-Anna"); err == nil {
+	if _, err := logins.UserForSession("tok-Anna"); err == nil {
 		t.Fatal("guest login must be deleted")
 	}
 	if n := mustCount(t)(usage.CountUserRequestsSince(gone, "", "")); n != 0 {

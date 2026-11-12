@@ -3,6 +3,7 @@ package app
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"strings"
 
 	"github.com/Hoppitbilbo/DebateAI/server/internal/domain"
@@ -21,11 +22,35 @@ var (
 	ErrBadMemberRole = errors.New("role must be student or teacher")
 	ErrOnlyOwner     = errors.New("only the class owner can add co-teachers")
 	ErrInvalidCode   = errors.New("class code not found")
+	ErrOwnerOnly     = errors.New("only the class owner can do this")
 )
 
 // CanManage: admins, the owner, or co-teachers.
 func (c *classService) CanManage(u *domain.User, classID int64) bool {
 	return u.Role == domain.RoleAdmin || (u.Role == domain.RoleTeacher && c.classes.Teaches(classID, u.ID))
+}
+
+// mayOwn: admins and the owner. Co-teachers manage the students and the
+// assignments, but may not delete the class nor remove its teachers.
+func (c *classService) mayOwn(u *domain.User, classID int64) bool {
+	return u.Role == domain.RoleAdmin || c.classes.IsOwner(classID, u.ID)
+}
+
+// Delete removes a class managed by u: only its owner or an admin.
+func (c *classService) Delete(u *domain.User, classID int64) error {
+	if !c.mayOwn(u, classID) {
+		return ErrOwnerOnly
+	}
+	return c.classes.Delete(classID)
+}
+
+// RemoveMember removes a member from a class managed by u; a teacher of the
+// class only the owner or an admin may remove.
+func (c *classService) RemoveMember(u *domain.User, classID, userID int64) error {
+	if c.classes.Teaches(classID, userID) && !c.mayOwn(u, classID) {
+		return ErrOwnerOnly
+	}
+	return c.classes.RemoveMember(classID, userID)
 }
 
 // MayAttempt tells whether u may work on assignment a: its teachers, the
@@ -132,9 +157,13 @@ func (c *classService) Invite(u *domain.User, classID int64, in MemberInvitation
 	if locale == "" {
 		locale = u.Locale
 	}
+	emails := SplitEmails(in.Emails)
+	if len(emails) > maxInvitesPerRequest {
+		return nil, invalid(fmt.Errorf("at most %d addresses per invitation", maxInvitesPerRequest))
+	}
 	className := c.classes.Name(classID)
 	results := []InviteResult{}
-	for _, email := range SplitEmails(in.Emails) {
+	for _, email := range emails {
 		inv, err := c.accounts.CreateInvite(Invitation{Inviter: u, Email: email, Role: role, ClassID: &classID, ClassName: className, Locale: locale}, baseURL)
 		if err != nil {
 			results = append(results, InviteResult{Email: email, Status: "error", EmailSent: boolPtr(false), Error: err.Error()})

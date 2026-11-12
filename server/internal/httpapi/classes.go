@@ -25,7 +25,7 @@ func (s *Server) managedClass(w http.ResponseWriter, r *http.Request) (u *domain
 func (s *Server) handleListClasses(w http.ResponseWriter, r *http.Request) {
 	out, err := s.ClassSvc.List(currentUser(r), r.URL.Query().Get("mine") == "1")
 	if err != nil {
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 		return
 	}
 	writeJSON(w, 200, out)
@@ -43,7 +43,7 @@ func (s *Server) handleCreateClass(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err != nil {
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 		return
 	}
 	writeJSON(w, 201, c)
@@ -61,7 +61,7 @@ func (s *Server) handleGetClass(w http.ResponseWriter, r *http.Request) {
 	}
 	members, err := s.ClassSvc.Members(u, c)
 	if err != nil {
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 		return
 	}
 	writeJSON(w, 200, classDetailResponse{Class: c, Members: members, Invites: s.Invites.ListPendingForClass(id)})
@@ -73,28 +73,35 @@ func (s *Server) handleUpdateClass(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var in app.ClassChange
-	if err := readJSON(r, &in); err != nil {
-		writeErr(w, 400, "bad_request", err.Error())
+	if !decode(w, r, &in) {
 		return
 	}
 	c, err := s.ClassSvc.Update(id, in)
 	if err != nil {
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 		return
 	}
 	writeJSON(w, 200, c)
 }
 
 func (s *Server) handleDeleteClass(w http.ResponseWriter, r *http.Request) {
-	_, id, ok := s.managedClass(w, r)
+	u, id, ok := s.managedClass(w, r)
 	if !ok {
 		return
 	}
-	if err := s.Classes.Delete(id); err != nil {
-		writeErr(w, 500, "internal", err.Error())
-		return
+	writeOwnerResult(w, s.ClassSvc.Delete(u, id))
+}
+
+// writeOwnerResult answers an action only the class owner (or an admin) may do.
+func writeOwnerResult(w http.ResponseWriter, err error) {
+	switch {
+	case errors.Is(err, app.ErrOwnerOnly):
+		writeErr(w, 403, "forbidden", err.Error())
+	case err != nil:
+		writeInternal(w, err)
+	default:
+		writeOK(w)
 	}
-	writeOK(w)
 }
 
 func (s *Server) handleRegenerateCode(w http.ResponseWriter, r *http.Request) {
@@ -104,7 +111,7 @@ func (s *Server) handleRegenerateCode(w http.ResponseWriter, r *http.Request) {
 	}
 	code, err := s.ClassSvc.RegenerateCode(id)
 	if err != nil {
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 		return
 	}
 	writeJSON(w, 200, joinCodeResponse{JoinCode: code})
@@ -118,8 +125,7 @@ func (s *Server) handleClassInvite(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var in app.MemberInvitation
-	if err := readJSON(r, &in); err != nil {
-		writeErr(w, 400, "bad_request", err.Error())
+	if !decode(w, r, &in) {
 		return
 	}
 	results, err := s.ClassSvc.Invite(u, id, in, s.baseURL(r))
@@ -130,20 +136,22 @@ func (s *Server) handleClassInvite(w http.ResponseWriter, r *http.Request) {
 	case errors.Is(err, app.ErrOnlyOwner):
 		writeErr(w, 403, "forbidden", err.Error())
 		return
+	case app.IsInvalid(err):
+		writeErr(w, 400, "bad_request", err.Error())
+		return
+	case err != nil:
+		writeInternal(w, err)
+		return
 	}
 	writeJSON(w, 200, inviteResultsResponse{Results: results})
 }
 
 func (s *Server) handleRemoveMember(w http.ResponseWriter, r *http.Request) {
-	_, id, ok := s.managedClass(w, r)
+	u, id, ok := s.managedClass(w, r)
 	if !ok {
 		return
 	}
-	if err := s.Classes.RemoveMember(id, pathID(r, "userId")); err != nil {
-		writeErr(w, 500, "internal", err.Error())
-		return
-	}
-	writeOK(w)
+	writeOwnerResult(w, s.ClassSvc.RemoveMember(u, id, pathID(r, "userId")))
 }
 
 // handleMemberPasswordReset gives the owner of the student's class of
@@ -167,7 +175,7 @@ func (s *Server) handleMemberPasswordReset(w http.ResponseWriter, r *http.Reques
 		writeErr(w, 409, "reset_not_allowed", err.Error())
 		return
 	case err != nil:
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 		return
 	}
 	writeJSON(w, 200, link)
@@ -194,8 +202,7 @@ func (s *Server) handleJoinClass(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var in struct{ Code string }
-	if err := readJSON(r, &in); err != nil {
-		writeErr(w, 400, "bad_request", err.Error())
+	if !decode(w, r, &in) {
 		return
 	}
 	c, err := s.ClassSvc.Join(u, in.Code)
@@ -204,7 +211,7 @@ func (s *Server) handleJoinClass(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 404, "invalid_code", err.Error())
 		return
 	case err != nil:
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 		return
 	}
 	writeJSON(w, 200, joinClassResponse{ClassID: c.ID, Name: c.Name})
@@ -213,7 +220,7 @@ func (s *Server) handleJoinClass(w http.ResponseWriter, r *http.Request) {
 func (s *Server) handleMyClasses(w http.ResponseWriter, r *http.Request) {
 	out, err := s.ClassSvc.Joined(currentUser(r))
 	if err != nil {
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 		return
 	}
 	writeJSON(w, 200, out)

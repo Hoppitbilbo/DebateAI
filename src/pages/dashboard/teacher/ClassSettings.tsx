@@ -13,7 +13,8 @@ import ConfirmButton from "../ConfirmButton";
 interface ClassSettingsProps {
   cls: ClassInfo;
   onUpdate: (change: Partial<Pick<ClassInfo, "name" | "description" | "archived">>) => Promise<void>;
-  onDelete: () => Promise<unknown>;
+  /** Missing for a co-teacher, who may not delete the class. */
+  onDelete?: () => Promise<unknown>;
 }
 
 /** Rename, archive or delete a class. */
@@ -31,13 +32,13 @@ const ClassSettings = ({ cls, onUpdate, onDelete }: ClassSettingsProps) => {
           <Button variant="outline" onClick={() => onUpdate({ archived: !cls.archived })}>
             <Archive className="mr-2 h-4 w-4" /> {cls.archived ? t("platform.teacher.unarchive") : t("platform.teacher.archive")}
           </Button>
-          <ConfirmButton
+          {onDelete && <ConfirmButton
             variant="destructive"
             label={t("platform.teacher.deleteClass")}
             title={t("platform.teacher.deleteClass")}
             description={t("platform.teacher.deleteClassText")}
             onConfirm={async () => { await onDelete(); window.location.href = "/teacher"; }}
-          />
+          />}
         </div>
       </div>
     </Panel>

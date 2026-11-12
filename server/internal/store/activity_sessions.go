@@ -3,7 +3,7 @@ package store
 import (
 	"database/sql"
 	"encoding/json"
-	"fmt"
+	"errors"
 	"strings"
 
 	"github.com/Hoppitbilbo/DebateAI/server/internal/domain"
@@ -201,27 +201,26 @@ func (r *ActivitySessions) ListForUser(userID int64, limit int) ([]*domain.Sessi
 	return out, rows.Err()
 }
 
-// BestPerStudent returns, for a class, the best attempt of each student on each assignment.
+// BestPerStudent returns, for a class, the best attempt of each student on
+// each assignment, best cells first. The database keeps one row per student
+// and assignment (window function, as rankedSessions).
 func (r *ActivitySessions) BestPerStudent(classID int64) ([]domain.ProgressCell, error) {
-	rows, err := r.db.Query(`SELECT s.assignment_id, s.user_id, s.status, s.progress, s.id, s.score_conversation, s.teacher_score, s.cost_usd FROM activity_sessions s
-		JOIN assignments a ON a.id = s.assignment_id WHERE a.class_id = ? ORDER BY `+bestFirst, classID)
+	rows, err := r.db.Query(`WITH ranked AS (SELECT s.assignment_id, s.user_id, s.status, s.progress, s.id, s.score_conversation, s.teacher_score, s.cost_usd,
+			ROW_NUMBER() OVER (PARTITION BY s.assignment_id, s.user_id ORDER BY `+bestFirst+`) AS rn,
+			ROW_NUMBER() OVER (ORDER BY `+bestFirst+`) AS overall
+		FROM activity_sessions s JOIN assignments a ON a.id = s.assignment_id WHERE a.class_id = ? AND s.user_id IS NOT NULL)
+		SELECT assignment_id, user_id, status, progress, id, score_conversation, teacher_score, cost_usd FROM ranked WHERE rn = 1 ORDER BY overall`, classID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	seen := map[string]bool{}
 	cells := []domain.ProgressCell{}
 	for rows.Next() {
 		var c domain.ProgressCell
 		var score, teacherScore sql.NullInt64
-		if rows.Scan(&c.AssignmentID, &c.UserID, &c.Status, &c.Progress, &c.SessionID, &score, &teacherScore, &c.CostUSD) != nil {
-			continue
+		if err := rows.Scan(&c.AssignmentID, &c.UserID, &c.Status, &c.Progress, &c.SessionID, &score, &teacherScore, &c.CostUSD); err != nil {
+			return nil, err
 		}
-		k := fmt.Sprintf("%d:%d", c.AssignmentID, c.UserID)
-		if seen[k] { // rows come best first
-			continue
-		}
-		seen[k] = true
 		c.Score = nullIntPtr(score)
 		c.TeacherScore = nullIntPtr(teacherScore)
 		cells = append(cells, c)
@@ -230,15 +229,18 @@ func (r *ActivitySessions) BestPerStudent(classID int64) ([]domain.ProgressCell,
 }
 
 // Owner returns who started a session and its status.
-func (r *ActivitySessions) Owner(id int64) (userID *int64, status string, err error) {
-	var owner sql.NullInt64
-	if err = r.db.QueryRow(`SELECT user_id, status FROM activity_sessions WHERE id = ?`, id).Scan(&owner, &status); err != nil {
-		return nil, "", err
+func (r *ActivitySessions) Owner(id int64) (userID *int64, status string, assignmentID *int64, err error) {
+	var owner, assignment sql.NullInt64
+	if err = r.db.QueryRow(`SELECT user_id, status, assignment_id FROM activity_sessions WHERE id = ?`, id).Scan(&owner, &status, &assignment); err != nil {
+		return nil, "", nil, err
 	}
 	if owner.Valid {
 		userID = &owner.Int64
 	}
-	return userID, status, nil
+	if assignment.Valid {
+		assignmentID = &assignment.Int64
+	}
+	return userID, status, assignmentID, nil
 }
 
 func (r *ActivitySessions) Create(n domain.NewSession) (int64, error) {
@@ -249,6 +251,14 @@ func (r *ActivitySessions) Create(n domain.NewSession) (int64, error) {
 		return 0, err
 	}
 	return res.LastInsertId()
+}
+
+// CountStartedSince counts the attempts the user started at or after since
+// (RFC 3339).
+func (r *ActivitySessions) CountStartedSince(userID int64, since string) (int, error) {
+	var n int
+	err := r.db.QueryRow(`SELECT COUNT(*) FROM activity_sessions WHERE user_id = ? AND started_at >= ?`, userID, since).Scan(&n)
+	return n, err
 }
 
 // AbandonEmpty closes the student's active attempts on an assignment that
@@ -264,35 +274,25 @@ func (r *ActivitySessions) AbandonEmpty(userID, assignmentID int64) error {
 // with s.BaseRevision set, a save that lost a race is refused
 // (domain.ErrStaleRevision).
 func (r *ActivitySessions) SaveTranscript(id int64, s domain.TranscriptSave) (int64, error) {
-	tx, err := r.db.Begin()
-	if err != nil {
-		return 0, err
-	}
-	defer tx.Rollback()
-	var status string
+	// One conditional statement: a transaction that read first and wrote
+	// later could be refused under concurrent writers (remote libSQL, or
+	// several instances), and cost four round trips.
 	var revision int64
-	if err := tx.QueryRow(`SELECT status, revision FROM activity_sessions WHERE id = ?`, id).Scan(&status, &revision); err != nil {
+	err := r.db.QueryRow(`UPDATE activity_sessions SET transcript_json = ?, turns = ?, unverified_lines = ?, updated_at = ?, revision = revision + 1, context_json = COALESCE(?, context_json)
+		WHERE id = ? AND status != ? AND (? IS NULL OR revision = ?) RETURNING revision`,
+		s.JSON, s.Turns, s.Unverified, domain.Now(), s.Context, id, domain.SessionCompleted, s.BaseRevision, s.BaseRevision).Scan(&revision)
+	if !errors.Is(err, sql.ErrNoRows) {
+		return revision, err
+	}
+	// Nothing written: tell a completed attempt from a lost race.
+	var status string
+	if err := r.db.QueryRow(`SELECT status, revision FROM activity_sessions WHERE id = ?`, id).Scan(&status, &revision); err != nil {
 		return 0, err
 	}
-	switch {
-	case status == domain.SessionCompleted:
+	if status == domain.SessionCompleted {
 		return revision, domain.ErrSessionCompleted
-	case s.BaseRevision != nil && *s.BaseRevision != revision:
-		return revision, domain.ErrStaleRevision
 	}
-	// The revision in WHERE keeps the write conditional on remote databases,
-	// where the read above does not lock the row.
-	res, err := tx.Exec(`UPDATE activity_sessions SET transcript_json = ?, turns = ?, unverified_lines = ?, updated_at = ?, revision = revision + 1, context_json = COALESCE(?, context_json)
-		WHERE id = ? AND revision = ? AND status != ?`, s.JSON, s.Turns, s.Unverified, domain.Now(), s.Context, id, revision, domain.SessionCompleted)
-	if err != nil {
-		return 0, err
-	}
-	if n, err := res.RowsAffected(); err != nil {
-		return 0, err
-	} else if n == 0 {
-		return revision, domain.ErrStaleRevision
-	}
-	return revision + 1, tx.Commit()
+	return revision, domain.ErrStaleRevision
 }
 
 // SaveJudgement stores the judge's verdict on a transcript revision and the

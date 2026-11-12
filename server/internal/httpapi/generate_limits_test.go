@@ -12,15 +12,15 @@ import (
 func TestBoundHistoryKeepsTheNewestMessagesWithinTheCharacterBudget(t *testing.T) {
 	big := strings.Repeat("x", maxChatInputChars/2)
 	msgs := []ai.Message{{Role: "user", Content: big}, {Role: "assistant", Content: big}, {Role: "user", Content: "last"}}
-	got := boundHistory("system", msgs)
+	got := boundHistory("system", msgs, maxChatInputChars)
 	if len(got) != 2 || got[1].Content != "last" {
 		t.Fatalf("oldest message should be dropped: %d", len(got))
 	}
-	if boundHistory(big, []ai.Message{{Role: "user", Content: big + "x"}}) != nil {
+	if boundHistory(big, []ai.Message{{Role: "user", Content: big + "x"}}, maxChatInputChars) != nil {
 		t.Fatal("a last message that does not fit must refuse the request")
 	}
 	many := make([]ai.Message, maxChatHistoryMessages+5)
-	if got := boundHistory("", many); len(got) != maxChatHistoryMessages {
+	if got := boundHistory("", many, maxChatInputChars); len(got) != maxChatHistoryMessages {
 		t.Fatalf("message count bound: %d", len(got))
 	}
 }

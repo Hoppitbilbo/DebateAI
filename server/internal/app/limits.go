@@ -11,6 +11,15 @@ const (
 	maxTranscriptMessages = 1000 // older messages are dropped when saving
 	maxReflectionChars    = 20000
 	maxEvaluationChars    = 40000
+	// What a client sends is bounded before it is stored, judged or
+	// evaluated (investigation 11/11, C4). One message can hold the longest
+	// chat answer (maxGenerateOutputTokens); the whole transcript keeps its
+	// newest messages; the context is the activity setup (titles, topic).
+	maxTranscriptMessageBytes    = 32 << 10
+	maxTranscriptBytes           = 400 << 10
+	maxSessionContextBytes       = 16 << 10
+	maxEvaluationTranscriptBytes = 120 << 10 // conversation quoted to the evaluator
+	maxAttemptsPerDay            = 200       // attempts one user may start in 24 hours
 )
 
 // Recipes of the characters' prompts (prompts.go). Longer bios are cut
@@ -74,7 +83,10 @@ const (
 // database when it expires.
 const (
 	settingsCacheTTL = 5 * time.Second
-	providerCacheTTL = 30 * time.Second
+	providerCacheTTL = 30 * time.Second // also the prices of the models
+	// budgetCheckTTL: how long a "budget exceeded?" answer is reused before
+	// each paid call reserves its share atomically anyway.
+	budgetCheckTTL = 5 * time.Second
 )
 
 // Admission and budget reservations (admission.go).
@@ -102,10 +114,24 @@ const (
 	// assistedResetTTL: a teacher hands the link over in person.
 	assistedResetTTL = 15 * time.Minute
 	inviteTTL        = 14 * 24 * time.Hour
+	// maxInvitesPerRequest bounds a class invitation: each mail is sent in
+	// the request (the page shows the link of a mail that failed).
+	maxInvitesPerRequest = 100
 )
+
+// housekeepingInterval: expired rows are purged at most this often per
+// instance (housekeeping.go).
+const housekeepingInterval = time.Minute
 
 // Temporary rooms ("aula lampo").
 const (
+	// Wrong room codes per network and wrong rejoin PINs per room and
+	// nickname, counted in the database (auth_limits.go).
+	wrongRoomCodesLimit  = 60
+	wrongRoomCodesWindow = 10 * time.Minute
+	wrongPINsLimit       = 5
+	wrongPINsWindow      = 10 * time.Minute
+
 	defaultRoomMinutes   = 60
 	roomHostKeyBytes     = 24 // entropy of the secret link that manages a room
 	rejoinPINTTL         = 10 * time.Minute

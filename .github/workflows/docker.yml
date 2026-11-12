@@ -19,6 +19,11 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
+    services:
+      libsql:
+        image: ghcr.io/tursodatabase/libsql-server:latest
+        ports:
+          - 8089:8080
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-go@v7
@@ -28,9 +33,13 @@ jobs:
       - name: Go vet
         working-directory: server
         run: go vet ./...
-      - name: Go tests
+      - name: Wait for disposable libSQL
+        run: curl --fail --silent --show-error --retry 15 --retry-connrefused --retry-delay 1 --max-time 2 http://127.0.0.1:8089/health
+      - name: Go tests with race detector
         working-directory: server
-        run: go test ./...
+        env:
+          LIBSQL_TEST_URL: http://127.0.0.1:8089
+        run: go test -race ./...
 
   web:
     runs-on: ubuntu-latest

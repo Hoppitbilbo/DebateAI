@@ -1,7 +1,9 @@
 package store
 
 import (
+	"crypto/sha256"
 	"database/sql"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"strings"
@@ -50,6 +52,8 @@ CREATE TABLE IF NOT EXISTS invites (
   accepted_at TEXT,
   email_sent INTEGER NOT NULL DEFAULT 0
 );
+CREATE INDEX IF NOT EXISTS idx_invites_class ON invites(class_id);
+CREATE INDEX IF NOT EXISTS idx_invites_inviter ON invites(invited_by, created_at);
 
 CREATE TABLE IF NOT EXISTS classes (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -122,6 +126,7 @@ CREATE TABLE IF NOT EXISTS activity_sessions (
 );
 DROP INDEX IF EXISTS idx_sessions_user; -- covered by idx_sessions_user_assignment
 CREATE INDEX IF NOT EXISTS idx_sessions_assignment ON activity_sessions(assignment_id);
+CREATE INDEX IF NOT EXISTS idx_sessions_class ON activity_sessions(class_id);
 CREATE INDEX IF NOT EXISTS idx_sessions_user_assignment ON activity_sessions(user_id, assignment_id, started_at DESC);
 
 CREATE TABLE IF NOT EXISTS ai_replies (
@@ -143,6 +148,7 @@ CREATE TABLE IF NOT EXISTS live_grants (
   used_at TEXT,
   reservation_id INTEGER NOT NULL DEFAULT 0
 );
+CREATE INDEX IF NOT EXISTS idx_live_grants_session ON live_grants(session_id);
 
 CREATE TABLE IF NOT EXISTS providers (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -183,7 +189,9 @@ CREATE TABLE IF NOT EXISTS usage_log (
   first_delta_ms INTEGER NOT NULL DEFAULT 0,
   first_text_ms INTEGER NOT NULL DEFAULT 0
 );
-CREATE INDEX IF NOT EXISTS idx_usage_created ON usage_log(created_at);
+DROP INDEX IF EXISTS idx_usage_created; -- covered by idx_usage_created_cost
+-- The month's spending, summed before every paid call, reads only this index.
+CREATE INDEX IF NOT EXISTS idx_usage_created_cost ON usage_log(created_at, cost_usd);
 DROP INDEX IF EXISTS idx_usage_user; -- covered by idx_usage_user_created
 CREATE INDEX IF NOT EXISTS idx_usage_user_created ON usage_log(user_id, created_at);
 
@@ -294,8 +302,31 @@ func OpenRemote(url, authToken string) (*sql.DB, error) {
 	return prepare(sql.OpenDB(connector))
 }
 
-// prepare applies the schema and the migrations to a freshly opened database.
+// schemaVersionKey is the settings row holding the version of the schema
+// last applied: a hash of schema and migrations, so any change to them
+// runs them again, without a number to remember to bump.
+const schemaVersionKey = "schema_version"
+
+func schemaVersion() string {
+	h := sha256.New()
+	h.Write([]byte(schema))
+	for _, m := range migrations {
+		h.Write([]byte{0})
+		h.Write([]byte(m))
+	}
+	return hex.EncodeToString(h.Sum(nil))
+}
+
+// prepare applies the schema and the migrations to a freshly opened
+// database. A database already at this version is used after one read: a
+// new serverless instance does not run the whole schema (investigation
+// 11/11, E2).
 func prepare(db *sql.DB) (*sql.DB, error) {
+	version := schemaVersion()
+	var applied string
+	if db.QueryRow(`SELECT value FROM settings WHERE key = ?`, schemaVersionKey).Scan(&applied) == nil && applied == version {
+		return db, nil
+	}
 	if _, err := db.Exec(schema); err != nil {
 		db.Close()
 		return nil, fmt.Errorf("migrate: %w", err)
@@ -307,6 +338,10 @@ func prepare(db *sql.DB) (*sql.DB, error) {
 	if err := applyMigrations(db); err != nil {
 		db.Close()
 		return nil, err
+	}
+	if _, err := db.Exec(`INSERT INTO settings(key, value) VALUES(?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value`, schemaVersionKey, version); err != nil {
+		db.Close()
+		return nil, fmt.Errorf("store schema version: %w", err)
 	}
 	return db, nil
 }

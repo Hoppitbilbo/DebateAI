@@ -3,6 +3,7 @@ package httpapi
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/Hoppitbilbo/DebateAI/server/internal/app"
@@ -23,20 +24,22 @@ func (s *Server) ownSession(w http.ResponseWriter, r *http.Request) (*domain.Use
 
 func (s *Server) handleCreateSession(w http.ResponseWriter, r *http.Request) {
 	var in app.NewAttempt
-	if err := readJSON(r, &in); err != nil {
-		writeErr(w, 400, "bad_request", err.Error())
+	if !decodeLimit(w, r, &in, maxSessionBodyBytes) {
 		return
 	}
 	ss, err := s.SessionSvc.Start(currentUser(r), in)
 	switch {
-	case errors.Is(err, app.ErrInvalidApp), errors.Is(err, app.ErrOtherApp):
+	case errors.Is(err, app.ErrInvalidApp), errors.Is(err, app.ErrOtherApp), app.IsInvalid(err):
 		writeErr(w, 400, "bad_request", err.Error())
+		return
+	case errors.Is(err, app.ErrTooManyAttempts):
+		writeErr(w, 429, "rate_limited", err.Error())
 		return
 	case errors.Is(err, app.ErrAssignmentForbidden):
 		writeErr(w, 403, "forbidden", err.Error())
 		return
 	case err != nil:
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 		return
 	}
 	writeJSON(w, 201, ss)
@@ -54,7 +57,7 @@ func (s *Server) handleGetSession(w http.ResponseWriter, r *http.Request) {
 func (s *Server) handleMySessions(w http.ResponseWriter, r *http.Request) {
 	out, err := s.Sessions.ListForUser(currentUser(r).ID, maxListedSessions)
 	if err != nil {
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 		return
 	}
 	writeJSON(w, 200, out)
@@ -69,8 +72,7 @@ func (s *Server) handleSaveTranscript(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var in app.TranscriptUpdate
-	if err := readJSON(r, &in); err != nil {
-		writeErr(w, 400, "bad_request", err.Error())
+	if !decodeLimit(w, r, &in, maxSessionBodyBytes) {
 		return
 	}
 	resp, err := s.SessionSvc.SaveTranscript(r.Context(), u, d, in)
@@ -81,8 +83,11 @@ func (s *Server) handleSaveTranscript(w http.ResponseWriter, r *http.Request) {
 	case errors.Is(err, domain.ErrSessionCompleted):
 		writeErr(w, 409, "session_completed", err.Error())
 		return
+	case app.IsInvalid(err):
+		writeErr(w, 400, "bad_request", err.Error())
+		return
 	case err != nil:
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 		return
 	}
 	writeJSON(w, 200, resp)
@@ -91,6 +96,18 @@ func (s *Server) handleSaveTranscript(w http.ResponseWriter, r *http.Request) {
 // handleEvaluateSession grades the attempt on the server, streaming the
 // evaluation as server-sent events, and hands it in with the result.
 func (s *Server) handleEvaluateSession(w http.ResponseWriter, r *http.Request) {
+	// One evaluation per attempt at a time (two tabs, two instances): the
+	// claim comes before the attempt is read, so a second request sees the
+	// attempt as the first one left it.
+	claim, err := s.Gateway.Admit(evaluationClaim(pathID(r, "id")))
+	if errors.Is(err, app.ErrTooManyGenerations) {
+		writeErr(w, 429, "busy", "this attempt is already being evaluated")
+		return
+	} else if err != nil {
+		writeErr(w, 503, "usage_unavailable", err.Error())
+		return
+	}
+	defer claim()
 	_, d, ok := s.ownSession(w, r)
 	if !ok {
 		return
@@ -100,8 +117,7 @@ func (s *Server) handleEvaluateSession(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var in app.EvaluationRequest
-	if err := readJSON(r, &in); err != nil {
-		writeErr(w, 400, "bad_request", err.Error())
+	if !decode(w, r, &in) {
 		return
 	}
 	u, release, ok := s.admit(w, r)
@@ -126,11 +142,16 @@ func (s *Server) handleEvaluateSession(w http.ResponseWriter, r *http.Request) {
 	_ = send(evaluationDone{Done: true, Evaluation: *ev})
 }
 
+// evaluationClaim is the single slot an attempt's evaluation holds while it
+// runs (released at the end, or after inflightTTL if the process dies).
+func evaluationClaim(sessionID int64) []app.Admission {
+	return []app.Admission{{Scope: fmt.Sprintf("evaluate:%d", sessionID), Limit: 1}}
+}
+
 // handleSessionFeedback stores the teacher's written feedback and score.
 func (s *Server) handleSessionFeedback(w http.ResponseWriter, r *http.Request) {
 	var in domain.TeacherFeedback
-	if err := readJSON(r, &in); err != nil {
-		writeErr(w, 400, "bad_request", err.Error())
+	if !decode(w, r, &in) {
 		return
 	}
 	d, err := s.SessionSvc.GiveFeedback(currentUser(r), pathID(r, "id"), in, s.baseURL(r))
@@ -154,8 +175,7 @@ func (s *Server) handleCompleteSession(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var in app.Completion
-	if err := readJSON(r, &in); err != nil {
-		writeErr(w, 400, "bad_request", err.Error())
+	if !decode(w, r, &in) {
 		return
 	}
 	if err := s.SessionSvc.Complete(d, in); errors.Is(err, domain.ErrSessionCompleted) {

@@ -297,6 +297,7 @@ func (g *aiGateway) storeModels(providerID int64, models []ai.ModelInfo) {
 			logIfErr("import price", g.prices.Import(providerID, m.ID, 0, 0))
 		}
 	}
+	g.InvalidatePrices()
 }
 
 func usageOr(r *ai.JevResult) ai.Usage {

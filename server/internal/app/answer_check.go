@@ -30,20 +30,23 @@ const refusalScanChars = 2 * refusalProbeChars
 
 // The phrases models use when they step out of the role, in the five
 // interface languages and in English (models often refuse in English).
+// "Cannot continue" or "cannot create" alone is a line of the story ("I
+// cannot continue this war"): continuing counts only with the role-play
+// itself as object (investigation 11/11, M8).
 var refusalRE = regexp.MustCompile(`(?i)` + strings.Join([]string{
 	`\bas an? (ai|artificial intelligence|language model|llm)\b`,
 	`\bi(?:'m| am) (?:just )?an? (ai|language model)\b`,
-	`\bi (?:can(?:'|no)t|cannot|won't|am unable to|am not able to) (?:help|assist|comply|fulfil|provide|create|generate|write|engage|role-?play|portray|impersonate|continue|answer this)`,
-	`\b(?:sorry|apologi[sz]e)\b[^.!?]{0,40}\b(?:can(?:'|no)t|cannot|unable to)\b[^.!?]{0,30}\b(?:help|assist|comply|provide|create|role-?play|portray|impersonate|continue)`,
+	`\bi (?:can(?:'|no)t|cannot|won't|am unable to|am not able to) (?:help|assist|comply|fulfil|engage in|role-?play|portray|impersonate|answer this|continue (?:with )?(?:this|the) (?:role-?play|conversation|request|scenario))`,
+	`\b(?:sorry|apologi[sz]e)\b[^.!?]{0,40}\b(?:can(?:'|no)t|cannot|unable to)\b[^.!?]{0,30}\b(?:help|assist|comply|role-?play|portray|impersonate|continue (?:with )?(?:this|the) (?:role-?play|conversation|request|scenario))`,
 	`\bcome (?:un'|una |un )?(?:intelligenza artificiale|ia|ai|modello (?:di )?linguistico|assistente virtuale)\b`,
 	`\bsono (?:solo )?(?:un'|una |un )?(?:intelligenza artificiale|ia|modello (?:di )?linguistico)\b`,
-	`\bnon posso (?:aiutarti|assisterti|soddisfare|fornire|creare|generare|impersonare|interpretare|continuare|rispondere a (?:questa|questo|tale))`,
+	`\bnon posso (?:aiutarti|assisterti|soddisfare|impersonare|interpretare|rispondere a (?:questa|questo|tale)|continuare (?:questa|la|questo|il) (?:conversazione|interpretazione|gioco di ruolo|simulazione|richiesta))`,
 	`\bcomo (?:una )?(?:inteligencia artificial|ia|modelo de lenguaje)\b`,
-	`\bno puedo (?:ayudar|cumplir|proporcionar|crear|generar|interpretar|continuar)`,
+	`\bno puedo (?:ayudar|cumplir|interpretar|continuar (?:con )?(?:esta|la|este|el) (?:conversación|interpretación|juego de rol|simulación))`,
 	`\ben tant qu'(?:ia|intelligence artificielle|assistant|modèle de langage)\b`,
-	`\bje ne peux pas (?:aider|répondre à cette|fournir|créer|générer|incarner|jouer|continuer)`,
+	`\bje ne peux pas (?:aider|répondre à cette|incarner|jouer|continuer (?:cette|la|ce) (?:conversation|interprétation|jeu de rôle|simulation))`,
 	`\bals (?:ki|künstliche intelligenz|sprachmodell)\b`,
-	`\bich kann (?:dir |ihnen )?(?:dabei )?(?:nicht|keine) (?:helfen|unterstützen|erstellen|spielen|verkörpern)`,
+	`\bich kann (?:dir |ihnen )?(?:dabei )?(?:nicht|keine) (?:helfen|unterstützen|spielen|verkörpern)`,
 }, "|"))
 
 // isRefusal checks only the opening of the answer, where refusals are.

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Assignment } from "@/lib/api";
 import { gradesUrl, useClass } from "@/features/teacher/teacherApi";
+import { useAuth } from "@/context/auth";
 import { DashboardLayout, EmptyState, Spinner } from "../common";
 import AssignmentForm from "../AssignmentForm";
 import ClassAssignments from "./ClassAssignments";
@@ -27,6 +28,7 @@ const ClassPage = () => {
   const [editing, setEditing] = useState<Assignment | null>(null);
   const [importing, setImporting] = useState(false);
 
+  const { user } = useAuth();
   const klass = useClass(classId, tab === "progress");
   usePageTour("classPage");
   const { detail, assignments, progress, refresh } = klass;
@@ -35,6 +37,9 @@ const ClassPage = () => {
   if (!detail.data) return <DashboardLayout title={t("platform.errors.notFound")}><EmptyState>{t("platform.errors.notFound")}</EmptyState></DashboardLayout>;
   const { class: cls, members } = detail.data;
   const students = members.filter((m) => m.role === "student");
+  // Co-teachers manage students and assignments; deleting the class and
+  // removing its teachers is for the owner and admins (the server checks it).
+  const owns = user?.role === "admin" || (cls.ownerId !== undefined && cls.ownerId === user?.id);
 
   return (
     <DashboardLayout
@@ -68,7 +73,7 @@ const ClassPage = () => {
         </TabsContent>
 
         <TabsContent value="students" className="mt-4">
-          <ClassMembers detail={detail.data} onRemoveMember={klass.removeMember} onRegenerateCode={klass.regenerateCode} onInvited={refresh} />
+          <ClassMembers detail={detail.data} owns={owns} onRemoveMember={klass.removeMember} onRegenerateCode={klass.regenerateCode} onInvited={refresh} />
         </TabsContent>
 
         <TabsContent value="progress" className="mt-4">
@@ -76,7 +81,7 @@ const ClassPage = () => {
         </TabsContent>
 
         <TabsContent value="settings" className="mt-4">
-          <ClassSettings cls={cls} onUpdate={klass.update} onDelete={klass.remove} />
+          <ClassSettings cls={cls} onUpdate={klass.update} onDelete={owns ? klass.remove : undefined} />
         </TabsContent>
       </Tabs>
 

@@ -55,18 +55,26 @@ func (s *Server) aiAllowed(w http.ResponseWriter, r *http.Request) (*domain.User
 }
 
 // sessionFor validates that sessionID belongs to user; returns nil if absent.
-func (s *Server) sessionFor(u *domain.User, sessionID int64) (*int64, string, error) {
+func (s *Server) sessionFor(u *domain.User, sessionID int64) (attemptRef, error) {
 	if sessionID == 0 || u == nil {
-		return nil, "", nil
+		return attemptRef{}, nil
 	}
-	owner, status, err := s.Sessions.Owner(sessionID)
+	owner, status, assignmentID, err := s.Sessions.Owner(sessionID)
 	if err != nil {
-		return nil, "", errors.New("session not found")
+		return attemptRef{}, errors.New("session not found")
 	}
 	if owner == nil || *owner != u.ID {
-		return nil, "", errors.New("session does not belong to you")
+		return attemptRef{}, errors.New("session does not belong to you")
 	}
-	return &sessionID, status, nil
+	return attemptRef{id: &sessionID, status: status, assignmentID: assignmentID}, nil
+}
+
+// attemptRef is what an AI request needs of its attempt, read in one query:
+// all empty without an attempt.
+type attemptRef struct {
+	id           *int64
+	status       string
+	assignmentID *int64
 }
 
 // ---------- handlers ----------
@@ -113,8 +121,7 @@ func (s *Server) handleGenerate(w http.ResponseWriter, r *http.Request) {
 	}
 	defer release()
 	var in generateIn
-	if err := readJSONLimit(r, &in, maxGenerateBodyBytes); err != nil {
-		writeErr(w, 400, "bad_request", err.Error())
+	if !decodeLimit(w, r, &in, maxGenerateBodyBytes) {
 		return
 	}
 	switch in.Task {
@@ -125,12 +132,13 @@ func (s *Server) handleGenerate(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 400, "bad_task", "unknown task")
 		return
 	}
-	sessionID, status, err := s.sessionFor(u, in.SessionID)
+	attempt, err := s.sessionFor(u, in.SessionID)
 	if err != nil {
 		writeErr(w, 403, "bad_session", err.Error())
 		return
 	}
-	if sessionID != nil && in.Task == app.TaskChat && status != domain.SessionActive {
+	sessionID := attempt.id
+	if sessionID != nil && in.Task == app.TaskChat && attempt.status != domain.SessionActive {
 		writeErr(w, 409, "session_ended", "this activity has ended")
 		return
 	}
@@ -144,7 +152,7 @@ func (s *Server) handleGenerate(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 400, "bad_recipe", "recipes are for chat")
 		return
 	case in.Recipe != nil:
-		system, opening, ok := s.promptFor(w, *in.Recipe, sessionID)
+		system, opening, ok := s.promptFor(w, *in.Recipe, attempt.assignmentID)
 		if !ok {
 			return
 		}
@@ -157,11 +165,14 @@ func (s *Server) handleGenerate(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 400, "bad_request", "messages required")
 		return
 	}
-	if in.Messages = boundHistory(in.System, in.Messages); in.Messages == nil {
+	if in.Messages = boundHistory(in.System, in.Messages, inputLimit(in.Task, u != nil)); in.Messages == nil {
 		writeErr(w, 413, "too_large", "the request is too long for the model")
 		return
 	}
 	in.MaxTokens = min(max(in.MaxTokens, 0), maxGenerateOutputTokens)
+	if in.Task == app.TaskUtility && (in.MaxTokens == 0 || in.MaxTokens > maxUtilityOutputTokens) {
+		in.MaxTokens = maxUtilityOutputTokens
+	}
 	var userID *int64
 	if u != nil {
 		userID = &u.ID
@@ -204,10 +215,10 @@ func (s *Server) handleGenerate(w http.ResponseWriter, r *http.Request) {
 // promptFor builds the instructions of a recipe for an attempt (nil for
 // free practice), checked against its assignment. It answers the refusal
 // itself.
-func (s *Server) promptFor(w http.ResponseWriter, rec app.PromptRecipe, sessionID *int64) (system, opening string, ok bool) {
-	a, err := s.SessionSvc.AssignmentOf(sessionID)
+func (s *Server) promptFor(w http.ResponseWriter, rec app.PromptRecipe, assignmentID *int64) (system, opening string, ok bool) {
+	a, err := s.SessionSvc.Assignment(assignmentID)
 	if err != nil {
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 		return "", "", false
 	}
 	system, opening, err = app.ComposePrompt(rec, a)
@@ -217,7 +228,7 @@ func (s *Server) promptFor(w http.ResponseWriter, rec app.PromptRecipe, sessionI
 	case app.IsInvalid(err):
 		writeErr(w, 400, "bad_recipe", err.Error())
 	case err != nil:
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 	default:
 		return system, opening, true
 	}
@@ -262,16 +273,28 @@ func (s *Server) admit(w http.ResponseWriter, r *http.Request) (u *domain.User, 
 	return u, release, true
 }
 
+// inputLimit is the most characters (system prompt and messages) a task
+// may send to the model.
+func inputLimit(task string, loggedIn bool) int {
+	switch {
+	case task == app.TaskUtility:
+		return maxUtilityInputChars
+	case task == app.TaskEvaluation && !loggedIn:
+		return maxAnonymousEvaluationChars
+	}
+	return maxChatInputChars
+}
+
 // boundHistory keeps the newest messages within maxChatHistoryMessages and
-// maxChatInputChars. It returns nil when even the last message does not fit.
-func boundHistory(system string, msgs []ai.Message) []ai.Message {
+// maxChars. It returns nil when even the last message does not fit.
+func boundHistory(system string, msgs []ai.Message, maxChars int) []ai.Message {
 	if len(msgs) > maxChatHistoryMessages {
 		msgs = msgs[len(msgs)-maxChatHistoryMessages:]
 	}
 	total := len(system)
 	for i := len(msgs) - 1; i >= 0; i-- {
 		total += len(msgs[i].Content)
-		if total > maxChatInputChars {
+		if total > maxChars {
 			if i == len(msgs)-1 {
 				return nil
 			}
@@ -313,15 +336,15 @@ func (s *Server) handleLiveToken(w http.ResponseWriter, r *http.Request) {
 		Recipe    *app.PromptRecipe `json:"recipe"`
 		VoiceName string            `json:"voiceName"`
 	}
-	if err := readJSON(r, &in); err != nil {
-		writeErr(w, 400, "bad_request", err.Error())
+	if !decode(w, r, &in) {
 		return
 	}
-	sessionID, status, err := s.sessionFor(u, in.SessionID)
+	attempt, err := s.sessionFor(u, in.SessionID)
+	sessionID := attempt.id
 	if err != nil {
 		writeErr(w, 403, "bad_session", err.Error())
 		return
-	} else if status != "" && status != domain.SessionActive {
+	} else if attempt.status != "" && attempt.status != domain.SessionActive {
 		writeErr(w, 409, "session_ended", "this activity has ended")
 		return
 	}
@@ -331,7 +354,7 @@ func (s *Server) handleLiveToken(w http.ResponseWriter, r *http.Request) {
 	}
 	rec := *in.Recipe
 	rec.Kind = "reply" // a voice conversation is opened by the student
-	system, _, ok := s.promptFor(w, rec, sessionID)
+	system, _, ok := s.promptFor(w, rec, attempt.assignmentID)
 	if !ok {
 		return
 	}
@@ -357,8 +380,7 @@ func (s *Server) handleLiveUsage(w http.ResponseWriter, r *http.Request) {
 		InputTokens  int    `json:"inputTokens"`
 		OutputTokens int    `json:"outputTokens"`
 	}
-	if err := readJSON(r, &in); err != nil {
-		writeErr(w, 400, "bad_request", err.Error())
+	if !decode(w, r, &in) {
 		return
 	}
 	// sanity bounds: ignore absurd client values

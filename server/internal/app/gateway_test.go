@@ -453,13 +453,21 @@ func TestIsRefusal(t *testing.T) {
 		"Lo siento, pero no puedo interpretar a este personaje.",
 		"Je ne peux pas incarner ce personnage.",
 		"Als KI kann ich das nicht tun.",
+		"I'm sorry, but I cannot continue this role-play.",
+		"Non posso continuare questa conversazione.",
+		"I can't help with that request.",
 	}
 	for _, r := range refusals {
 		if !isRefusal(r) {
 			t.Errorf("not recognised as a refusal: %q", r)
 		}
 	}
-	for _, ok := range []string{"Non posso permettere che l'Italia resti divisa!", "I can't believe you said that, young man.", "Come Imperatore, io decido."} {
+	// Investigation 11/11, M8: "cannot continue / create" alone is a line of
+	// the story, not a refusal.
+	for _, ok := range []string{"Non posso permettere che l'Italia resti divisa!", "I can't believe you said that, young man.", "Come Imperatore, io decido.",
+		"Non posso continuare questa guerra.", "I cannot continue, my men are exhausted.", "I cannot create an empire without soldiers.",
+		"Non posso creare un impero dal nulla.", "No puedo continuar esta batalla.", "Je ne peux pas continuer ce combat.",
+		"Sorry, I cannot provide more soldiers.", "Ich kann keine Brücke erstellen."} {
 		if isRefusal(ok) {
 			t.Errorf("in-character line taken for a refusal: %q", ok)
 		}

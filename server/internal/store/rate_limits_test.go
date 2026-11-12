@@ -39,8 +39,8 @@ func TestAuthRateLimitsRestartAfterExpiryAndPurge(t *testing.T) {
 	if _, err := db.Exec(`INSERT INTO auth_rate_limits(key, count, expires_at) VALUES('old', 5, '2000-01-01T00:00:00Z')`); err != nil {
 		t.Fatal(err)
 	}
-	if ok, _ := r.Hit("z", 1, time.Hour); !ok {
-		t.Fatal("hit")
+	if err := r.PurgeExpired(); err != nil {
+		t.Fatal(err)
 	}
 	var n int
 	if err := db.QueryRow(`SELECT COUNT(*) FROM auth_rate_limits WHERE key = 'old'`).Scan(&n); err != nil || n != 0 {
@@ -92,5 +92,24 @@ func TestRemoteAuthRateLimits(t *testing.T) {
 	}
 	if ok, err := r.Hit(key, 2, time.Hour); err != nil || ok {
 		t.Fatalf("third hit must be refused: %v %v", ok, err)
+	}
+}
+
+func TestAuthRateLimitsRefundGivesOneAttemptBack(t *testing.T) {
+	r := NewAuthRateLimits(openTestDB(t))
+	if err := r.Refund("none"); err != nil {
+		t.Fatal("refunding an unknown key does nothing")
+	}
+	for range 2 {
+		r.Hit("k", 2, time.Hour)
+	}
+	if ok, _ := r.Hit("k", 2, time.Hour); ok {
+		t.Fatal("full")
+	}
+	if err := r.Refund("k"); err != nil {
+		t.Fatal(err)
+	}
+	if ok, _ := r.Hit("k", 2, time.Hour); !ok {
+		t.Fatal("a refunded attempt can be used again")
 	}
 }

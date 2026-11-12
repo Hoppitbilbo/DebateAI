@@ -151,31 +151,29 @@ func (r *Rooms) AddGuest(roomID int64, nickname, avatar, locale string) (int64, 
 		return 0, err
 	}
 	defer tx.Rollback()
-	var guests, max int
-	if err := tx.QueryRow(`SELECT (SELECT COUNT(*) FROM room_guests WHERE room_id = ?), max_guests FROM rooms WHERE id = ?`, roomID, roomID).Scan(&guests, &max); err != nil {
-		return 0, err
-	}
-	if guests >= max {
-		return 0, domain.ErrRoomFull
-	}
-	var taken int
-	if err := tx.QueryRow(`SELECT COUNT(*) FROM room_guests WHERE room_id = ? AND nickname = ?`, roomID, nickname).Scan(&taken); err != nil {
-		return 0, err
-	}
-	if taken > 0 {
-		return 0, domain.ErrNicknameTaken
-	}
+	// Writes first, so the transaction holds the write lock before it reads:
+	// a read-then-write transaction can be refused under concurrent writers.
 	res, err := tx.Exec(`INSERT INTO users(email, name, password_hash, role, locale, created_at) VALUES(?,?,'',?,?,?)`,
 		guestEmail(), nickname, domain.RoleStudent, locale, domain.Now())
 	if err != nil {
 		return 0, err
 	}
 	userID, _ := res.LastInsertId()
-	if _, err := tx.Exec(`INSERT INTO room_guests(user_id, room_id, nickname, avatar) VALUES(?,?,?,?)`, userID, roomID, nickname, avatar); err != nil {
+	// The room's size is checked by the insert itself; the unique index on
+	// (room_id, nickname) refuses a taken nickname.
+	res, err = tx.Exec(`INSERT INTO room_guests(user_id, room_id, nickname, avatar)
+		SELECT ?, ?, ?, ? WHERE (SELECT COUNT(*) FROM room_guests WHERE room_id = ?) < (SELECT max_guests FROM rooms WHERE id = ?)`,
+		userID, roomID, nickname, avatar, roomID, roomID)
+	if err != nil {
 		if strings.Contains(err.Error(), "UNIQUE") {
 			return 0, domain.ErrNicknameTaken
 		}
 		return 0, err
+	}
+	if n, err := res.RowsAffected(); err != nil {
+		return 0, err
+	} else if n == 0 {
+		return 0, domain.ErrRoomFull
 	}
 	return userID, tx.Commit()
 }
@@ -247,6 +245,15 @@ func (r *Rooms) RejoinPIN(userID int64) (pinHash, expiresAt string, err error) {
 	var exp sql.NullString
 	err = r.db.QueryRow(`SELECT rejoin_pin_hash, rejoin_expires_at FROM room_guests WHERE user_id = ?`, userID).Scan(&pinHash, &exp)
 	return pinHash, exp.String, err
+}
+
+// ConsumeRejoinPIN clears only the still-valid PIN that was checked. The
+// conditional update lets one request win across all server instances and
+// cannot erase a newer PIN issued while an older request was in flight.
+func (r *Rooms) ConsumeRejoinPIN(userID int64, pinHash, now string) (bool, error) {
+	return affected(r.db.Exec(`UPDATE room_guests SET rejoin_pin_hash = '', rejoin_expires_at = NULL
+		WHERE user_id = ? AND rejoin_pin_hash = ? AND rejoin_pin_hash != '' AND rejoin_expires_at >= ?`,
+		userID, pinHash, now))
 }
 
 // MoveGuestSessions gives attempts to a student in the destination class.

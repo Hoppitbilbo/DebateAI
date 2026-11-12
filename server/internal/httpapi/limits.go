@@ -22,6 +22,17 @@ const (
 	maxChatInputChars      = 200_000
 )
 
+// The tasks that still take a prompt written by the caller (investigation
+// 11/11, C5, first step): teacher helpers and voice casting ("utility"),
+// and the evaluation of an attempt without an account. Room for the real
+// callers (a Wikipedia summary and a list of titles, a whole guest
+// conversation), not for a free chatbot.
+const (
+	maxUtilityInputChars        = 12_000
+	maxUtilityOutputTokens      = 4096
+	maxAnonymousEvaluationChars = 60_000
+)
+
 // evaluationDeadline bounds a final evaluation, which goes on after the
 // browser disconnects so that the hand-in is stored.
 const evaluationDeadline = 3 * time.Minute
@@ -42,6 +53,13 @@ const (
 	maxGenerateOutputTokens = 8192
 )
 
+// defaultBodyBytes bounds a JSON request body without a limit of its own.
+const defaultBodyBytes = 8 << 20
+
+// maxSessionBodyBytes bounds starting an attempt and saving its transcript;
+// the service bounds the content further (app/limits.go).
+const maxSessionBodyBytes = 1 << 20
+
 // Rate limits.
 const (
 	forgotRequestsLimit = 5  // per hour and IP
@@ -54,10 +72,6 @@ const (
 // Temporary rooms. A school lab shares one IP, so only failures are
 // counted per network, with room for a class of students mistyping.
 const (
-	wrongRoomCodesLimit    = 60
-	wrongRoomCodesWindow   = 10 * time.Minute
-	wrongPINsLimit         = 5 // per room and nickname
-	wrongPINsWindow        = 10 * time.Minute
 	anonymousRoomsPerIPDay = 30
 	roomPurgeEvery         = 5 * time.Minute // long-running servers; Vercel uses its cron
 )

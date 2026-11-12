@@ -6,6 +6,8 @@ import (
 	"errors"
 	"log"
 	"strings"
+	"time"
+	"unicode/utf8"
 
 	"github.com/Hoppitbilbo/DebateAI/server/internal/ai"
 	"github.com/Hoppitbilbo/DebateAI/server/internal/domain"
@@ -33,6 +35,8 @@ var (
 	ErrOtherApp            = errors.New("assignment is for another app")
 	ErrSessionNotFound     = errors.New("session not found")
 	ErrFeedbackForbidden   = errors.New("only the class teacher can give feedback")
+	ErrTooManyAttempts     = errors.New("too many attempts started today, retry tomorrow")
+	errContextTooLarge     = errors.New("activity context too large")
 )
 
 // maxTeacherFeedbackChars bounds the teacher's written feedback.
@@ -51,6 +55,16 @@ type NewAttempt struct {
 func (svc *sessionService) Start(u *domain.User, in NewAttempt) (*domain.SessionSummary, error) {
 	if !domain.AppTypes[in.AppType] {
 		return nil, ErrInvalidApp
+	}
+	if len(in.Context) > maxSessionContextBytes {
+		return nil, invalid(errContextTooLarge)
+	}
+	started, err := svc.sessions.CountStartedSince(u.ID, time.Now().Add(-24*time.Hour).UTC().Format(time.RFC3339))
+	if err != nil {
+		return nil, err
+	}
+	if started >= maxAttemptsPerDay {
+		return nil, ErrTooManyAttempts
 	}
 	n := domain.NewSession{UserID: u.ID, AppType: in.AppType, Title: truncate(in.Title, maxSessionTitleChars), Context: "{}"}
 	if in.AssignmentID > 0 {
@@ -161,8 +175,14 @@ type TranscriptUpdate struct {
 // SaveTranscript stores the conversation of session d, owned by u, and for
 // an active assignment judges it and applies the resulting state change.
 func (svc *sessionService) SaveTranscript(ctx context.Context, u *domain.User, d *domain.SessionDetail, in TranscriptUpdate) (TranscriptSync, error) {
+	if len(in.Context) > maxSessionContextBytes {
+		return TranscriptSync{}, invalid(errContextTooLarge)
+	}
 	msgs := lastMessages(in.Messages, maxTranscriptMessages)
 	turns := countStudentTurns(msgs)
+	// Counted before the oldest messages are dropped, so dropping them never
+	// gives back turns.
+	msgs = boundTranscript(msgs)
 	// The same conversation again (a retried save, a save without a new
 	// line) is not judged again unless the client asks for it.
 	unchanged := mustJSON(msgs) == string(d.Transcript)
@@ -297,6 +317,23 @@ func lastMessages(msgs []TranscriptMessage, n int) []TranscriptMessage {
 	return msgs
 }
 
+// boundTranscript cuts every message to maxTranscriptMessageBytes and keeps
+// the newest messages whose JSON fits in maxTranscriptBytes.
+func boundTranscript(msgs []TranscriptMessage) []TranscriptMessage {
+	out := make([]TranscriptMessage, len(msgs))
+	size := len("[]")
+	for i, m := range msgs {
+		m.Content = truncate(m.Content, maxTranscriptMessageBytes)
+		out[i] = m
+		size += len(mustJSON(m)) + 1 // and its comma
+	}
+	for len(out) > 0 && size > maxTranscriptBytes {
+		size -= len(mustJSON(out[0])) + 1
+		out = out[1:]
+	}
+	return out
+}
+
 // countStudentTurns counts the non-empty messages written by the student.
 func countStudentTurns(msgs []TranscriptMessage) int {
 	turns := 0
@@ -308,11 +345,27 @@ func countStudentTurns(msgs []TranscriptMessage) int {
 	return turns
 }
 
+// truncate keeps at most n bytes of s, never cutting inside a letter.
 func truncate(s string, n int) string {
 	if len(s) <= n {
 		return s
 	}
+	for n > 0 && !utf8.RuneStart(s[n]) {
+		n--
+	}
 	return s[:n]
+}
+
+// lastBytes keeps at most the last n bytes of s, never cutting inside a letter.
+func lastBytes(s string, n int) string {
+	if len(s) <= n {
+		return s
+	}
+	i := len(s) - n
+	for i < len(s) && !utf8.RuneStart(s[i]) {
+		i++
+	}
+	return s[i:]
 }
 
 func firstNonEmpty(a, b json.RawMessage) json.RawMessage {
@@ -322,19 +375,12 @@ func firstNonEmpty(a, b json.RawMessage) json.RawMessage {
 	return b
 }
 
-// AssignmentOf is the assignment of an attempt: nil without an attempt or
-// for free practice. A read error is returned, so locked settings are not
-// skipped when the database fails.
-func (svc *sessionService) AssignmentOf(sessionID *int64) (*domain.Assignment, error) {
-	if sessionID == nil {
+// Assignment is the assignment of an attempt (its id, from the attempt's
+// owner check): nil for free practice. A read error is returned, so locked
+// settings are not skipped when the database fails.
+func (svc *sessionService) Assignment(assignmentID *int64) (*domain.Assignment, error) {
+	if assignmentID == nil {
 		return nil, nil
 	}
-	ss, err := svc.sessions.Summary(*sessionID)
-	if err != nil {
-		return nil, err
-	}
-	if ss.AssignmentID == nil {
-		return nil, nil
-	}
-	return svc.assignments.Get(*ss.AssignmentID)
+	return svc.assignments.Get(*assignmentID)
 }

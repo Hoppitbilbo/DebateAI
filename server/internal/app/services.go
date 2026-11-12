@@ -37,6 +37,7 @@ type Services struct {
 	Gateway       *aiGateway
 	Accounts      *authService
 	AuthLimits    *authLimits
+	Housekeeping  *housekeeping
 	ClassSvc      *classService
 	AssignmentSvc *assignmentService
 	SessionSvc    *sessionService
@@ -83,6 +84,11 @@ func NewServices(cfg Config, db *sql.DB, opts ...Option) *Services {
 	sv.Gateway.inflight = sv.Inflight
 	sv.Accounts = &authService{users: sv.Users, logins: sv.Logins, invites: sv.Invites, resets: sv.Resets, classes: sv.Classes, mail: sv.Mailer, siteName: siteName}
 	sv.AuthLimits = newAuthLimits(sv.RateLimits, cfg.Secret)
+	sv.Housekeeping = &housekeeping{tasks: []housekeepingTask{
+		{"generation slots", store.NewInflight(db).PurgeExpired},
+		{"rate limits", store.NewAuthRateLimits(db).PurgeExpired},
+		{"sessions", sv.Logins.PurgeExpired},
+	}}
 	sv.ClassSvc = &classService{classes: sv.Classes, rooms: sv.Rooms, resets: sv.Resets, accounts: sv.Accounts}
 	sv.AssignmentSvc = &assignmentService{assignments: sv.Assignments, classes: sv.Classes, sessions: sv.Sessions, classSvc: sv.ClassSvc,
 		listeners: []assignmentListener{mailNotifier{classes: sv.Classes, mail: sv.Mailer, siteName: siteName}}}
