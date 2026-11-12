@@ -303,6 +303,7 @@ Piano in [investigation 11 11.md](investigation%2011%2011.md). Le voci C/M/E son
 - [x] **I11-M9** Una sola valutazione per tentativo alla volta, con uno slot `inflight` (vedi Registro).
 - [x] **I11-M6** Al massimo 100 indirizzi per invito di classe (vedi Registro). Mail ancora spedite nella richiesta, non in coda.
 - [x] **I11-M3** Scelta prudente del piano, da confermare: cancellare la classe e togliere un docente solo per il proprietario o un admin (vedi Registro).
+- [x] **I11-E3** Indici: somma del mese coperta dall'indice, `live_grants(session_id)`, `activity_sessions(class_id)`, `invites(class_id)` e `(invited_by, created_at)` (vedi Registro).
 
 ---
 
@@ -345,6 +346,7 @@ Piano in [investigation 11 11.md](investigation%2011%2011.md). Le voci C/M/E son
 
 | Data | Task | Commit | Chi | Note |
 |---|---|---|---|---|
+| 2026-11-12 | I11-M3 azioni del proprietario della classe | `61c67a5` | Claude Code | Modifica funzionale con la regola suggerita dal piano, **decisione dell'utente ancora da confermare**. `classService.Delete` e `RemoveMember` (togliere un docente) solo per proprietario o admin, 403 `forbidden`; i co-docenti tolgono ancora gli studenti. La pagina classe nasconde le due azioni ai co-docenti (`owns` da `ownerId`). Gli inviti come docente erano già solo del proprietario. Test Go e Vitest; gate completo verde (398 Vitest). |
 | 2026-11-12 | I11-M6 tetto agli inviti di classe | `6d21c88` | Claude Code | Modifica funzionale. Al massimo 100 indirizzi per richiesta (400 `bad_request`; il gestore rispondeva 200 vuoto su un errore inatteso, ora 500). Le mail restano nella richiesta invece che in coda, scostamento dal piano: in coda lo stato «mail spedita / mostra il link» non sarebbe più noto e su Vercel la coda aspetta il worker (C2). |
 | 2026-11-12 | I11-M9 una valutazione per tentativo | `1476a47` | Claude Code | Modifica funzionale. `handleEvaluateSession` prende uno slot `evaluate:<id>` (limite 1) nella tabella `inflight` prima di leggere il tentativo: condiviso tra istanze, scade dopo `inflightTTL` se il processo muore; la seconda richiesta riceve 429 `busy` senza chiamare il modello. Nessuna modifica allo schema (uno stato nuovo avrebbe richiesto una migrazione, che `requireCurrentSchema` rifiuta). |
 | 2026-11-12 | I11-M8 filtro dei rifiuti | `9e9e92b` | Claude Code | Modifica funzionale. «Continuare» conta solo con oggetto il gioco di ruolo stesso (questa conversazione, il gioco di ruolo…); tolti create/provide/generate/write e i corrispondenti in it/es/fr. Nove falsi positivi aggiunti a `TestIsRefusal` (sette rossi prima), tre rifiuti veri in più. Gate Go verde con -race. |

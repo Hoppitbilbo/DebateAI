@@ -50,6 +50,8 @@ CREATE TABLE IF NOT EXISTS invites (
   accepted_at TEXT,
   email_sent INTEGER NOT NULL DEFAULT 0
 );
+CREATE INDEX IF NOT EXISTS idx_invites_class ON invites(class_id);
+CREATE INDEX IF NOT EXISTS idx_invites_inviter ON invites(invited_by, created_at);
 
 CREATE TABLE IF NOT EXISTS classes (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -122,6 +124,7 @@ CREATE TABLE IF NOT EXISTS activity_sessions (
 );
 DROP INDEX IF EXISTS idx_sessions_user; -- covered by idx_sessions_user_assignment
 CREATE INDEX IF NOT EXISTS idx_sessions_assignment ON activity_sessions(assignment_id);
+CREATE INDEX IF NOT EXISTS idx_sessions_class ON activity_sessions(class_id);
 CREATE INDEX IF NOT EXISTS idx_sessions_user_assignment ON activity_sessions(user_id, assignment_id, started_at DESC);
 
 CREATE TABLE IF NOT EXISTS ai_replies (
@@ -143,6 +146,7 @@ CREATE TABLE IF NOT EXISTS live_grants (
   used_at TEXT,
   reservation_id INTEGER NOT NULL DEFAULT 0
 );
+CREATE INDEX IF NOT EXISTS idx_live_grants_session ON live_grants(session_id);
 
 CREATE TABLE IF NOT EXISTS providers (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -183,7 +187,9 @@ CREATE TABLE IF NOT EXISTS usage_log (
   first_delta_ms INTEGER NOT NULL DEFAULT 0,
   first_text_ms INTEGER NOT NULL DEFAULT 0
 );
-CREATE INDEX IF NOT EXISTS idx_usage_created ON usage_log(created_at);
+DROP INDEX IF EXISTS idx_usage_created; -- covered by idx_usage_created_cost
+-- The month's spending, summed before every paid call, reads only this index.
+CREATE INDEX IF NOT EXISTS idx_usage_created_cost ON usage_log(created_at, cost_usd);
 DROP INDEX IF EXISTS idx_usage_user; -- covered by idx_usage_user_created
 CREATE INDEX IF NOT EXISTS idx_usage_user_created ON usage_log(user_id, created_at);
 
