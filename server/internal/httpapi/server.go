@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"io/fs"
+	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -306,13 +307,20 @@ func (s *Server) clientIP(r *http.Request) string {
 	return s.proxies.clientIP(r)
 }
 
-// baseURL is used to build links in e-mails.
+// baseURL is used to build links in e-mails: the configured address. The
+// request's Host header, which a client can forge, is used only while mail
+// is not configured (development, where mails are just logged); otherwise
+// the links stay relative and a warning asks for the address.
 func (s *Server) baseURL(r *http.Request) string {
 	if g := s.Settings.General(); g.PublicURL != "" {
 		return strings.TrimRight(g.PublicURL, "/")
 	}
 	if s.cfg.PublicURL != "" {
 		return s.cfg.PublicURL
+	}
+	if s.Settings.MailConfigured() {
+		log.Print("mail links: set PUBLIC_URL or the public address in the admin settings")
+		return ""
 	}
 	scheme := "http"
 	if r.TLS != nil || r.Header.Get("X-Forwarded-Proto") == "https" {

@@ -298,6 +298,7 @@ Piano in [investigation 11 11.md](investigation%2011%2011.md). Le voci C/M/E son
 - [x] **I11-C5** Primo passo: limiti per `utility` e per la valutazione senza account su `/api/ai/generate` (vedi Registro). Job nominati non fatti.
 - [x] **I11-M1** La password impostata dall'admin chiude i login dell'account (vedi Registro).
 - [x] **I11-M2** Il giudice testuale non si fida più del flag `completed` del modello (vedi Registro).
+- [x] **I11-M4** Link nelle mail mai dall'header Host quando la posta è configurata; ripiego su `VERCEL_PROJECT_PRODUCTION_URL` (vedi Registro).
 
 ---
 
@@ -340,6 +341,7 @@ Piano in [investigation 11 11.md](investigation%2011%2011.md). Le voci C/M/E son
 
 | Data | Task | Commit | Chi | Note |
 |---|---|---|---|---|
+| 2026-11-12 | I11-M2 completamento dai soli punteggi | `9ceb96e` | Claude Code | Modifica funzionale. `finalize` completa solo quando tutti gli obiettivi superano la soglia; tolto `completed` dal prompt e dal parser del giudice testuale. Il vecchio `TestJudgeLLMCompletedIsBlockedByMinTurns` fissava il comportamento da correggere: sostituito da `TestJudgeLLMCompletionComesFromScoresOnly` (voluto). Gate Go verde con -race. |
 | 2026-11-12 | I11-M1 password dell'admin | `be97c85` | Claude Code | Modifica funzionale. `SetPassword` (pannello admin) chiude anche i login dell'account (`Logins.DeleteForUser`), come già il cambio fatto dall'utente. Test rosso prima. Gate Go verde con -race. |
 | 2026-11-12 | I11-C5 limiti di utility e valutazione anonima | `4ee1cf2` | Claude Code | Modifica funzionale, primo passo del piano. `utility` al massimo 12.000 caratteri in ingresso e 4.096 token in uscita, `evaluation` senza account al massimo 60.000 caratteri (413 `too_large`, già tradotto); `boundHistory` riceve il limite da `inputLimit`. Numeri più larghi del piano (4.000/512/20.000) perché quelli rompevano i chiamanti reali: scelta dei voci con biografia, suggerimenti con elenco di titoli, modelli che ragionano, valutazione di una conversazione ospite lunga. Job nominati lato server non fatti (decisione 2 del piano). |
 | 2026-11-12 | I11-C3 scritture concorrenti | `fbd8561` | Claude Code | Modifica funzionale. Riprodotto con quattro pool sullo stesso file: ingressi in aula e salvataggi falliti con `database is locked` (5 e 517), 4 salvataggi su 21 registrati. `SaveTranscript` ora è un solo `UPDATE … RETURNING` (più un SELECT solo quando non scrive, per distinguere completato da superato; un salvataggio senza revisione base non perde più contro uno concorrente); `AddGuest` scrive per primo e controlla la capienza nell'insert. `JoinByCode` scriveva già per primo. Nuovi sottotest `RoomJoins` (30 ingressi, capienza 25) e `TranscriptSaves` (40 + 20) in `TestMultiInstanceConcurrency`, 10 ripetizioni verdi. Il ritentativo su busy proposto dal piano non serve: nessun errore residuo. libSQL ancora da eseguire con `LIBSQL_TEST_URL`. |

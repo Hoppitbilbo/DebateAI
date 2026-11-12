@@ -42,11 +42,23 @@ func env(key, def string) string {
 	return def
 }
 
+// publicURL is the site's address for links in e-mails: PUBLIC_URL, or on
+// Vercel the production domain it sets for every deployment.
+func publicURL() string {
+	if u := strings.TrimRight(env("PUBLIC_URL", ""), "/"); u != "" {
+		return u
+	}
+	if host := env("VERCEL_PROJECT_PRODUCTION_URL", ""); host != "" {
+		return "https://" + strings.TrimRight(host, "/")
+	}
+	return ""
+}
+
 func LoadConfig() Config {
 	c := Config{
 		Port:           env("PORT", "8080"),
 		DataDir:        env("DATA_DIR", "./data"),
-		PublicURL:      strings.TrimRight(env("PUBLIC_URL", ""), "/"),
+		PublicURL:      publicURL(),
 		StaticDir:      env("STATIC_DIR", ""),
 		AdminEmail:     env("ADMIN_EMAIL", ""),
 		AdminPassword:  env("ADMIN_PASSWORD", ""),
