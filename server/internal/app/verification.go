@@ -115,17 +115,14 @@ func teacherHints(a *domain.Assignment) []string {
 	return cfg.Hints
 }
 
-// check verifies the conversation msgs of attempt d (with assignment a, if any).
+// check verifies the conversation msgs of attempt d (with assignment a, if
+// any). d comes from Load, which already read whether voice was used.
 func (svc *sessionService) check(d *domain.SessionDetail, a *domain.Assignment, msgs []TranscriptMessage) transcriptCheck {
 	replies, err := svc.replies.ForSession(d.ID)
 	if err != nil {
 		log.Printf("verify transcript %d: %v", d.ID, err)
 	}
-	voice, err := svc.voice.UsedBySession(d.ID)
-	if err != nil {
-		log.Printf("verify transcript %d: %v", d.ID, err)
-	}
-	return checkTranscript(msgs, replies, teacherHints(a), voice)
+	return checkTranscript(msgs, replies, teacherHints(a), d.Voice)
 }
 
 // voiceStore tells whether an attempt used voice (a live grant was issued for it).
