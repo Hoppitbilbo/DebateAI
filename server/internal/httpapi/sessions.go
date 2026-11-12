@@ -3,6 +3,7 @@ package httpapi
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/Hoppitbilbo/DebateAI/server/internal/app"
@@ -97,6 +98,18 @@ func (s *Server) handleSaveTranscript(w http.ResponseWriter, r *http.Request) {
 // handleEvaluateSession grades the attempt on the server, streaming the
 // evaluation as server-sent events, and hands it in with the result.
 func (s *Server) handleEvaluateSession(w http.ResponseWriter, r *http.Request) {
+	// One evaluation per attempt at a time (two tabs, two instances): the
+	// claim comes before the attempt is read, so a second request sees the
+	// attempt as the first one left it.
+	claim, err := s.Gateway.Admit(evaluationClaim(pathID(r, "id")))
+	if errors.Is(err, app.ErrTooManyGenerations) {
+		writeErr(w, 429, "busy", "this attempt is already being evaluated")
+		return
+	} else if err != nil {
+		writeErr(w, 503, "usage_unavailable", err.Error())
+		return
+	}
+	defer claim()
 	_, d, ok := s.ownSession(w, r)
 	if !ok {
 		return
@@ -130,6 +143,12 @@ func (s *Server) handleEvaluateSession(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	_ = send(evaluationDone{Done: true, Evaluation: *ev})
+}
+
+// evaluationClaim is the single slot an attempt's evaluation holds while it
+// runs (released at the end, or after inflightTTL if the process dies).
+func evaluationClaim(sessionID int64) []app.Admission {
+	return []app.Admission{{Scope: fmt.Sprintf("evaluate:%d", sessionID), Limit: 1}}
 }
 
 // handleSessionFeedback stores the teacher's written feedback and score.

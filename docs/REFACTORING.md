@@ -300,6 +300,7 @@ Piano in [investigation 11 11.md](investigation%2011%2011.md). Le voci C/M/E son
 - [x] **I11-M2** Il giudice testuale non si fida più del flag `completed` del modello (vedi Registro).
 - [x] **I11-M4** Link nelle mail mai dall'header Host quando la posta è configurata; ripiego su `VERCEL_PROJECT_PRODUCTION_URL` (vedi Registro).
 - [x] **I11-M8** Il filtro dei rifiuti non scarta più «non posso continuare questa guerra» e simili (vedi Registro).
+- [x] **I11-M9** Una sola valutazione per tentativo alla volta, con uno slot `inflight` (vedi Registro).
 
 ---
 
@@ -342,6 +343,7 @@ Piano in [investigation 11 11.md](investigation%2011%2011.md). Le voci C/M/E son
 
 | Data | Task | Commit | Chi | Note |
 |---|---|---|---|---|
+| 2026-11-12 | I11-M8 filtro dei rifiuti | `9e9e92b` | Claude Code | Modifica funzionale. «Continuare» conta solo con oggetto il gioco di ruolo stesso (questa conversazione, il gioco di ruolo…); tolti create/provide/generate/write e i corrispondenti in it/es/fr. Nove falsi positivi aggiunti a `TestIsRefusal` (sette rossi prima), tre rifiuti veri in più. Gate Go verde con -race. |
 | 2026-11-12 | I11-M4 link delle mail | `fc58b47` | Claude Code | Modifica funzionale. Con la posta configurata `baseURL` non usa mai l'header Host (falsificabile): impostazione admin, `PUBLIC_URL` o, su Vercel, `VERCEL_PROJECT_PRODUCTION_URL` (nuovo ripiego in `LoadConfig`, così i reset funzionano anche se `PUBLIC_URL` manca in produzione); altrimenti link relativi e un log. Senza posta (sviluppo) resta l'host della richiesta. Test rossi prima. |
 | 2026-11-12 | I11-M2 completamento dai soli punteggi | `9ceb96e` | Claude Code | Modifica funzionale. `finalize` completa solo quando tutti gli obiettivi superano la soglia; tolto `completed` dal prompt e dal parser del giudice testuale. Il vecchio `TestJudgeLLMCompletedIsBlockedByMinTurns` fissava il comportamento da correggere: sostituito da `TestJudgeLLMCompletionComesFromScoresOnly` (voluto). Gate Go verde con -race. |
 | 2026-11-12 | I11-M1 password dell'admin | `be97c85` | Claude Code | Modifica funzionale. `SetPassword` (pannello admin) chiude anche i login dell'account (`Logins.DeleteForUser`), come già il cambio fatto dall'utente. Test rosso prima. Gate Go verde con -race. |
