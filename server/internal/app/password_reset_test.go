@@ -323,3 +323,23 @@ func TestJoinWithAReplacedCode(t *testing.T) {
 		t.Fatalf("replaced code: %v", err)
 	}
 }
+
+// Investigation 11/11, C2: on Vercel a queued mail may wait for the daily
+// cron, after the two-hour link expired; the reset mail is sent in the
+// request, and queued only when sending failed.
+func TestResetMailIsSentInTheRequest(t *testing.T) {
+	a, m := newAuthService(t)
+	a.CreateUser("a@x.it", "Anna", "password123", domain.RoleStudent, "it")
+	a.RequestReset("a@x.it", "http://site")
+	if len(m.bodies) != 1 || m.queued != 0 {
+		t.Fatalf("sent %d, queued %d", len(m.bodies), m.queued)
+	}
+	m.sendErr = errors.New("smtp down")
+	a.RequestReset("a@x.it", "http://site")
+	if m.queued != 1 {
+		t.Fatalf("a failed send goes to the outbox for retries: queued %d", m.queued)
+	}
+	if _, err := a.ResetPassword(m.lastToken(t), "newpassword1"); err != nil {
+		t.Fatalf("the queued link works: %v", err)
+	}
+}

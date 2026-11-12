@@ -11,18 +11,28 @@ import (
 
 // captureMailer records the mails instead of sending them.
 type captureMailer struct {
-	mu     sync.Mutex
-	bodies []string
+	mu      sync.Mutex
+	bodies  []string
+	queued  int   // mails left to the outbox
+	sendErr error // SendMail fails with it (the mail is not recorded)
 }
 
 func (m *captureMailer) SendMail(to, subject, body string) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
+	if m.sendErr != nil {
+		return m.sendErr
+	}
 	m.bodies = append(m.bodies, body)
 	return nil
 }
 
-func (m *captureMailer) SendMailAsync(to, subject, body string) { _ = m.SendMail(to, subject, body) }
+func (m *captureMailer) SendMailAsync(to, subject, body string) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	m.queued++
+	m.bodies = append(m.bodies, body)
+}
 
 func (m *captureMailer) lastToken(t *testing.T) string {
 	t.Helper()

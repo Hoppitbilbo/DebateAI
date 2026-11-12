@@ -32,7 +32,13 @@ func (a *authService) RequestReset(email, baseURL string) {
 		return
 	}
 	subj, body := RenderMail("reset", u.Locale, map[string]string{"site": a.siteName(), "name": u.Name, "link": resetLink(baseURL, tok)})
-	a.mail.SendMailAsync(u.Email, subj, body)
+	// Sent in the request (bounded by the SMTP timeouts): a queued mail may
+	// wait, on a serverless host, longer than the link lives. A failed send
+	// is queued, so the outbox still retries it.
+	if err := a.mail.SendMail(u.Email, subj, body); err != nil {
+		log.Printf("password reset mail for user %d: %v, queued", u.ID, err)
+		a.mail.SendMailAsync(u.Email, subj, body)
+	}
 }
 
 func resetLink(baseURL, token string) string { return baseURL + "/reset-password?token=" + token }
