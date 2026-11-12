@@ -311,6 +311,7 @@ Piano in [investigation 11 11.md](investigation%2011%2011.md). Le voci C/M/E son
 - [x] **I11-F4** Scheda costi dell'admin caricata a richiesta (vedi Registro).
 - [x] **I11-R1/M7** `writeInternal` (53 risposte 500 senza testo interno, errore nel log) e `decode`/`decodeLimit` (33 blocchi «decodifica o 400») (vedi Registro).
 - [x] **I11-R2/R3** `setSessionCookie` unico e `loginAndAnswer` per i tre punti identici (vedi Registro).
+- [x] **I11-R4** `BestPerStudent` sceglie il miglior tentativo in SQL, come `rankedSessions` (vedi Registro).
 
 ---
 
@@ -353,6 +354,7 @@ Piano in [investigation 11 11.md](investigation%2011%2011.md). Le voci C/M/E son
 
 | Data | Task | Commit | Chi | Note |
 |---|---|---|---|---|
+| 2026-11-12 | I11-R2/R3 cookie e login | `b48f6b8` | Claude Code | Refactoring puro. `setSessionCookie` unico per utenti e ospiti; `loginAndAnswer` per login, registrazione da invito e iscrizione alla classe. Setup e reset restano com'erano: ignorano di proposito un errore di sessione, unirli avrebbe cambiato il comportamento. Test HTTP verdi prima e dopo. |
 | 2026-11-12 | I11-R1/M7 aiuti degli handler | `f74a327` | Claude Code | Refactoring con una modifica voluta (M7). `writeInternal` sostituisce 53 `writeErr(w, 500, "internal", err.Error())`: l'errore va nel log, il browser riceve un testo fisso (prima i messaggi del database). `decode`/`decodeLimit` sostituiscono 33 blocchi «decodifica o 400» con la stessa risposta; `defaultBodyBytes` nomina gli 8 MB. Non unite le mappe d'errore separate (`writeRoomErr`, `writeServiceErr`): guadagno piccolo, rischio più ampio. `TestResponseShapes` invariato. |
 | 2026-11-12 | I11-F4 costi admin a richiesta | `402a588` | Claude Code | Ottimizzazione del bundle. `AdminCosts` (con recharts) caricato con `React.lazy` dietro uno spinner: chunk `AdminPage` da 419.677 a 45.296 byte, `AdminCosts` 376.360 byte solo quando si apre la scheda. Test della pagina admin verdi. |
 | 2026-11-12 | I11-F2/F3 kit UI e dipendenze inutilizzati | `755c6ed` | Claude Code | Rimozione pura. 20 componenti del kit UI senza import (2.958 righe secondo il piano) e 20 pacchetti senza import in `src`, `scripts` e configurazioni (verificato con uno script Node): react-hook-form, @hookform/resolvers, zod, date-fns, react-day-picker, embla-carousel-react, vaul, input-otp, react-resizable-panels, file-saver e i suoi tipi, html2canvas e otto `@radix-ui/*`. `recharts` resta (costi admin). Gate completo verde. |

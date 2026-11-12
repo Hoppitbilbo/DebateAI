@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"strings"
 
 	"github.com/Hoppitbilbo/DebateAI/server/internal/domain"
@@ -202,27 +201,26 @@ func (r *ActivitySessions) ListForUser(userID int64, limit int) ([]*domain.Sessi
 	return out, rows.Err()
 }
 
-// BestPerStudent returns, for a class, the best attempt of each student on each assignment.
+// BestPerStudent returns, for a class, the best attempt of each student on
+// each assignment, best cells first. The database keeps one row per student
+// and assignment (window function, as rankedSessions).
 func (r *ActivitySessions) BestPerStudent(classID int64) ([]domain.ProgressCell, error) {
-	rows, err := r.db.Query(`SELECT s.assignment_id, s.user_id, s.status, s.progress, s.id, s.score_conversation, s.teacher_score, s.cost_usd FROM activity_sessions s
-		JOIN assignments a ON a.id = s.assignment_id WHERE a.class_id = ? ORDER BY `+bestFirst, classID)
+	rows, err := r.db.Query(`WITH ranked AS (SELECT s.assignment_id, s.user_id, s.status, s.progress, s.id, s.score_conversation, s.teacher_score, s.cost_usd,
+			ROW_NUMBER() OVER (PARTITION BY s.assignment_id, s.user_id ORDER BY `+bestFirst+`) AS rn,
+			ROW_NUMBER() OVER (ORDER BY `+bestFirst+`) AS overall
+		FROM activity_sessions s JOIN assignments a ON a.id = s.assignment_id WHERE a.class_id = ? AND s.user_id IS NOT NULL)
+		SELECT assignment_id, user_id, status, progress, id, score_conversation, teacher_score, cost_usd FROM ranked WHERE rn = 1 ORDER BY overall`, classID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	seen := map[string]bool{}
 	cells := []domain.ProgressCell{}
 	for rows.Next() {
 		var c domain.ProgressCell
 		var score, teacherScore sql.NullInt64
-		if rows.Scan(&c.AssignmentID, &c.UserID, &c.Status, &c.Progress, &c.SessionID, &score, &teacherScore, &c.CostUSD) != nil {
-			continue
+		if err := rows.Scan(&c.AssignmentID, &c.UserID, &c.Status, &c.Progress, &c.SessionID, &score, &teacherScore, &c.CostUSD); err != nil {
+			return nil, err
 		}
-		k := fmt.Sprintf("%d:%d", c.AssignmentID, c.UserID)
-		if seen[k] { // rows come best first
-			continue
-		}
-		seen[k] = true
 		c.Score = nullIntPtr(score)
 		c.TeacherScore = nullIntPtr(teacherScore)
 		cells = append(cells, c)
