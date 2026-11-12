@@ -26,6 +26,40 @@ var (
 // minNameWord: shorter words of a name ("da", "van", "de") identify nobody.
 const minNameWord = 4
 
+// Mirrored in features/activity/mystery.ts (cases in testdata/mystery_names.json).
+var (
+	// nameEpithetParticles start the part of a title that tells where or
+	// what the person was ("Elisabetta I d'Inghilterra", "Alexander the
+	// Great"): its words are ordinary words, not the name. Surname particles
+	// ("da Vinci", "van Gogh") are not here.
+	nameEpithetParticles = map[string]bool{"di": true, "d": true, "of": true, "the": true, "il": true}
+	// nameTitleWords are titles and epithets, never the name itself.
+	nameTitleWords = map[string]bool{
+		"queen": true, "king": true, "pope": true, "papa": true, "regina": true, "saint": true,
+		"santa": true, "santo": true, "great": true, "magno": true, "grande": true, "emperor": true,
+		"empress": true, "imperatore": true, "imperatrice": true, "prince": true, "princess": true,
+		"principe": true, "principessa": true, "lady": true, "lord": true, "duke": true, "duca": true,
+		"duchessa": true, "tsar": true, "czar": true,
+	}
+	nameRomanNumeral = regexp.MustCompile(`^[ivxl]+$`)
+)
+
+// identifyingWords are the words of a name that identify the person on
+// their own: before an epithet particle, no title, no roman numeral, at
+// least minNameWord letters.
+func identifyingWords(normalized string) []string {
+	var out []string
+	for i, w := range strings.Fields(normalized) {
+		if i > 0 && nameEpithetParticles[w] {
+			break
+		}
+		if len(w) >= minNameWord && !nameTitleWords[w] && !nameRomanNumeral.MatchString(w) {
+			out = append(out, w)
+		}
+	}
+	return out
+}
+
 // normalizeName is normalize in features/activity/mystery.ts.
 func normalizeName(s string) string {
 	s = norm.NFD.String(strings.ToLower(s))
@@ -41,21 +75,22 @@ func normalizeName(s string) string {
 }
 
 // namesCharacter is isCorrectGuess in features/activity/mystery.ts: the full
-// name, or a significant word of it as a whole word of the text.
+// name as whole words of the text, or one of its identifying words.
 func namesCharacter(text, answer string) bool {
 	t := normalizeName(text)
-	if t == "" {
+	name := normalizeName(answer)
+	if t == "" || name == "" {
 		return false
 	}
-	if t == normalizeName(answer) {
+	if strings.Contains(" "+t+" ", " "+name+" ") {
 		return true
 	}
 	words := map[string]bool{}
 	for _, w := range strings.Fields(t) {
 		words[w] = true
 	}
-	for _, w := range strings.Fields(normalizeName(answer)) {
-		if len(w) >= minNameWord && words[w] {
+	for _, w := range identifyingWords(name) {
+		if words[w] {
 			return true
 		}
 	}

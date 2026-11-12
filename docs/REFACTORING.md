@@ -285,9 +285,17 @@ C1–C2 sono correzioni funzionali concorrenti, registrate separatamente. I task
 - [x] **R12.2** (`619291b`) Riutilizzato `newHandlerClient` nel fixture del transcript e nel controllo di proprietà: stessi handler e cookie, senza socket; prove di rete e streaming dedicate conservate. I 42 test HTTP eseguibili senza socket passano con `-race`, inclusi transcript, ricette, verifica delle risposte e snapshot API.
 - [x] **C3, rete di sicurezza multi-istanza** (`5850c92`) Test applicativi con quattro pool indipendenti: PIN, ammissione, budget e impostazioni; SQLite verificato con race detector, libSQL predisposto in CI ma ancora da eseguire. Nessuna modifica al comportamento applicativo; i gate di rilascio restano in [TODO_2026-11-11.md](TODO_2026-11-11.md).
 
+### Fase 13: correzioni dell'indagine dell'11/11 (2026-11-12)
+
+Piano in [investigation 11 11.md](investigation%2011%2011.md). Le voci C/M/E sono modifiche funzionali (test prima, un commit per voce); F/R sono rimozioni e refactoring puri. Prefisso `I11-` per non confonderle con C1–C3 della fase 12. Branch locale `fix/investigation-2026-11-11` da `refactor/concurrent-settings-2026-11-11@cc34234`, non pushato.
+
+- [x] **I11-C1** Personaggio misterioso: vince solo il nome, non una parola comune del titolo (vedi Registro).
+
 ---
 
 ## Note e decisioni
+
+- **Indagine 11/11 (2026-11-12):** l'utente chiede di eseguire tutto il piano di `investigation 11 11.md` senza fermarsi. Le scelte che il piano lascia all'utente sono prese in modo prudente e annotate qui: M3 (co-docente) solo blocco di cancellazione classe e rimozione docenti, R8 (cancellazioni di worktree e file tracciati) non eseguito, C2 senza lettura dei dati di produzione, C5 solo limiti di dimensione (nessun job nominato). I11-C1: «Vinci» resta valido per Leonardo da Vinci (caso esistente da mantenere, come chiede il piano), quindi la parola dopo un particella di cognome (`da`, `van`, `de`) continua a identificare; solo le particelle di epiteto (`di`, `d'`, `of`, `the`, `il`) chiudono il nome.
 
 - **C3 (2026-11-11):** estensione dei test di concorrenza richiesta continuando il TODO dell'11/11, fuori dal refactoring puro. Il test locale usa quattro pool sullo stesso file SQLite, non quattro wrapper sullo stesso pool. Il servizio libSQL di CI è temporaneo, senza volumi o credenziali di produzione. L'URL opzionale dei test remoti deve sempre identificare un database sacrificabile: i test vi scrivono dati e impostazioni. Le prove sono di correttezza, non misure di capacità.
 
