@@ -22,6 +22,17 @@ const (
 	maxChatInputChars      = 200_000
 )
 
+// The tasks that still take a prompt written by the caller (investigation
+// 11/11, C5, first step): teacher helpers and voice casting ("utility"),
+// and the evaluation of an attempt without an account. Room for the real
+// callers (a Wikipedia summary and a list of titles, a whole guest
+// conversation), not for a free chatbot.
+const (
+	maxUtilityInputChars        = 12_000
+	maxUtilityOutputTokens      = 4096
+	maxAnonymousEvaluationChars = 60_000
+)
+
 // evaluationDeadline bounds a final evaluation, which goes on after the
 // browser disconnects so that the hand-in is stored.
 const evaluationDeadline = 3 * time.Minute

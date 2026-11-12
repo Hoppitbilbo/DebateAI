@@ -157,11 +157,14 @@ func (s *Server) handleGenerate(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 400, "bad_request", "messages required")
 		return
 	}
-	if in.Messages = boundHistory(in.System, in.Messages); in.Messages == nil {
+	if in.Messages = boundHistory(in.System, in.Messages, inputLimit(in.Task, u != nil)); in.Messages == nil {
 		writeErr(w, 413, "too_large", "the request is too long for the model")
 		return
 	}
 	in.MaxTokens = min(max(in.MaxTokens, 0), maxGenerateOutputTokens)
+	if in.Task == app.TaskUtility && (in.MaxTokens == 0 || in.MaxTokens > maxUtilityOutputTokens) {
+		in.MaxTokens = maxUtilityOutputTokens
+	}
 	var userID *int64
 	if u != nil {
 		userID = &u.ID
@@ -262,16 +265,28 @@ func (s *Server) admit(w http.ResponseWriter, r *http.Request) (u *domain.User, 
 	return u, release, true
 }
 
+// inputLimit is the most characters (system prompt and messages) a task
+// may send to the model.
+func inputLimit(task string, loggedIn bool) int {
+	switch {
+	case task == app.TaskUtility:
+		return maxUtilityInputChars
+	case task == app.TaskEvaluation && !loggedIn:
+		return maxAnonymousEvaluationChars
+	}
+	return maxChatInputChars
+}
+
 // boundHistory keeps the newest messages within maxChatHistoryMessages and
-// maxChatInputChars. It returns nil when even the last message does not fit.
-func boundHistory(system string, msgs []ai.Message) []ai.Message {
+// maxChars. It returns nil when even the last message does not fit.
+func boundHistory(system string, msgs []ai.Message, maxChars int) []ai.Message {
 	if len(msgs) > maxChatHistoryMessages {
 		msgs = msgs[len(msgs)-maxChatHistoryMessages:]
 	}
 	total := len(system)
 	for i := len(msgs) - 1; i >= 0; i-- {
 		total += len(msgs[i].Content)
-		if total > maxChatInputChars {
+		if total > maxChars {
 			if i == len(msgs)-1 {
 				return nil
 			}
