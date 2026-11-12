@@ -306,6 +306,7 @@ Piano in [investigation 11 11.md](investigation%2011%2011.md). Le voci C/M/E son
 - [x] **I11-E3** Indici: somma del mese coperta dall'indice, `live_grants(session_id)`, `activity_sessions(class_id)`, `invites(class_id)` e `(invited_by, created_at)` (vedi Registro).
 - [x] **I11-E2** Avvio a freddo: lo schema gira solo quando cambia (hash in `settings`) (vedi Registro).
 - [x] **I11-E1** Meno round trip: utente del cookie in una query; vedi le righe del Registro per i passi successivi.
+- [x] **I11-F1** Tolto il secondo sistema di toast mai usato e `@radix-ui/react-toast` (vedi Registro).
 
 ---
 
@@ -348,6 +349,7 @@ Piano in [investigation 11 11.md](investigation%2011%2011.md). Le voci C/M/E son
 
 | Data | Task | Commit | Chi | Note |
 |---|---|---|---|---|
+| 2026-11-12 | I11-E1 voce letta una volta | `39efa29` | Claude Code | Ottimizzazione. `check` usa `d.Voice`, già letto da `Load`, invece di rileggere `live_grants` a ogni salvataggio e valutazione (entrambi i chiamanti ricevono `d` da `Load`). **Scartati** dal piano E1: la query della schermata dell'host è già un solo round trip (le sottoquery sono ricerche su indice dentro SQLite); unire le scritture dopo la risposta tocca percorsi di rilascio diversi, rischio maggiore del guadagno. |
 | 2026-11-12 | I11-E1 tentativo in una query | `ef625c1` | Claude Code | Ottimizzazione. `Sessions.Owner` restituisce anche `assignment_id`; `promptFor` legge direttamente la consegna (`SessionSvc.Assignment`, al posto di `AssignmentOf` che caricava tutto il riepilogo): un round trip in meno per messaggio di chat e per token vocale. Nuovo tipo `attemptRef` in `httpapi/ai.go`. |
 | 2026-11-12 | I11-E1 cache di prezzi e stato del budget | `fdde8c2` | Claude Code | Ottimizzazione. Prezzi dei modelli tenuti 30 s come gli adapter dei fornitori (svuotati da modifica admin, import dei prezzi, modifica del fornitore); risposta «budget superato?» tenuta 5 s e svuotata quando questa istanza registra una chiamata a pagamento. La prenotazione di ogni chiamata a pagamento (`ReserveBudget`) controlla comunque il budget in modo atomico. Test `TestPricesAreCachedAndInvalidated`, `TestBudgetStateIsCachedBriefly`; test multi-istanza del budget verde. |
 | 2026-11-12 | I11-E1 pulizia delle righe scadute | `b773155` | Claude Code | Ottimizzazione. Tolti i DELETE delle righe scadute davanti a ogni slot di generazione (`Inflight.Acquire`), contatore (`AuthRateLimits.Hit`) e login (`StartSession`): ogni controllo ignorava già le righe scadute. Nuovo `app/housekeeping.go`: le tre pulizie al massimo una volta al minuto per istanza (prima richiesta `/api/` dopo l'intervallo) e sempre dal cron. Test aggiornato: `TestAuthRateLimitsRestartAfterExpiryAndPurge` chiama `PurgeExpired`. |
