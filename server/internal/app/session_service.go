@@ -6,6 +6,7 @@ import (
 	"errors"
 	"log"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/Hoppitbilbo/DebateAI/server/internal/ai"
 	"github.com/Hoppitbilbo/DebateAI/server/internal/domain"
@@ -308,11 +309,27 @@ func countStudentTurns(msgs []TranscriptMessage) int {
 	return turns
 }
 
+// truncate keeps at most n bytes of s, never cutting inside a letter.
 func truncate(s string, n int) string {
 	if len(s) <= n {
 		return s
 	}
+	for n > 0 && !utf8.RuneStart(s[n]) {
+		n--
+	}
 	return s[:n]
+}
+
+// lastBytes keeps at most the last n bytes of s, never cutting inside a letter.
+func lastBytes(s string, n int) string {
+	if len(s) <= n {
+		return s
+	}
+	i := len(s) - n
+	for i < len(s) && !utf8.RuneStart(s[i]) {
+		i++
+	}
+	return s[i:]
 }
 
 func firstNonEmpty(a, b json.RawMessage) json.RawMessage {

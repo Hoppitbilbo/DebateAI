@@ -95,7 +95,7 @@ func buildState(in judgeInput, maxChars int) string {
 			keep = 1000
 		}
 		if len(body) > keep {
-			body = "[...earlier messages omitted...]\n" + body[len(body)-keep:]
+			body = "[...earlier messages omitted...]\n" + lastBytes(body, keep)
 		}
 	}
 	return head.String() + body

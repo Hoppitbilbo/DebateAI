@@ -290,6 +290,7 @@ C1–C2 sono correzioni funzionali concorrenti, registrate separatamente. I task
 Piano in [investigation 11 11.md](investigation%2011%2011.md). Le voci C/M/E sono modifiche funzionali (test prima, un commit per voce); F/R sono rimozioni e refactoring puri. Prefisso `I11-` per non confonderle con C1–C3 della fase 12. Branch locale `fix/investigation-2026-11-11` da `refactor/concurrent-settings-2026-11-11@cc34234`, non pushato.
 
 - [x] **I11-C1** Personaggio misterioso: vince solo il nome, non una parola comune del titolo (vedi Registro).
+- [x] **I11-M5** `truncate` e il taglio della coda nel giudice non spezzano più una lettera (vedi Registro).
 
 ---
 
@@ -332,6 +333,7 @@ Piano in [investigation 11 11.md](investigation%2011%2011.md). Le voci C/M/E son
 
 | Data | Task | Commit | Chi | Note |
 |---|---|---|---|---|
+| 2026-11-12 | I11-C1 nome del personaggio misterioso | `d6f93b9` | Claude Code | Modifica funzionale. Prima: «great», «Inghilterra», «arco», «queen», «Russia» chiudevano la partita con voto 8–10. Ora particelle di epiteto (di, d', of, the, il), titoli e numeri romani non identificano; il nome intero vince come parole intere. Fixture unica `testdata/mystery_names.json` letta da Go e Vitest (9 casi rossi prima). Gate completo verde (Go -race, lint, tsc, 397 Vitest, build, i18n). |
 | 2026-11-11 | Consegna dopo C3 | questo commit | Codex | TODO dell'11/11 aggiornato con 228 test Go, ripetizione del nuovo test, revisione completata e gate di rete/libSQL ancora aperti; comandi per il runner e hash C3 da git log. Solo documentazione. |
 | 2026-11-11 | C3 rete di sicurezza multi-istanza | `5850c92` | Codex | Quattro Services con pool separati, stessi scenari su SQLite e libSQL opzionale: PIN unico e sostituzione protetta, ammissione senza perdite, budget riservato/consumato, invalidazione locale e TTL remoto delle impostazioni. SQLite ripetuto 10 volte con -race; vet e 228 test Go verdi con le stesse 13 esclusioni locali. Servizio libSQL effimero aggiunto al job CI; esecuzione remota ancora da verificare. Nessuna modifica applicativa, nessun push/deploy. |
 | 2026-11-11 | Consegna con giorni, orari e TODO | questo commit | Codex | docs/TODO_2026-11-11.md con esiti verificati, limiti della sandbox, scenari di carico ancora da misurare, priorità e stime. Hash dei task precedenti copiati da git log. Solo documentazione. |
