@@ -299,6 +299,7 @@ Piano in [investigation 11 11.md](investigation%2011%2011.md). Le voci C/M/E son
 - [x] **I11-M1** La password impostata dall'admin chiude i login dell'account (vedi Registro).
 - [x] **I11-M2** Il giudice testuale non si fida più del flag `completed` del modello (vedi Registro).
 - [x] **I11-M4** Link nelle mail mai dall'header Host quando la posta è configurata; ripiego su `VERCEL_PROJECT_PRODUCTION_URL` (vedi Registro).
+- [x] **I11-M8** Il filtro dei rifiuti non scarta più «non posso continuare questa guerra» e simili (vedi Registro).
 
 ---
 
@@ -341,6 +342,7 @@ Piano in [investigation 11 11.md](investigation%2011%2011.md). Le voci C/M/E son
 
 | Data | Task | Commit | Chi | Note |
 |---|---|---|---|---|
+| 2026-11-12 | I11-M4 link delle mail | `fc58b47` | Claude Code | Modifica funzionale. Con la posta configurata `baseURL` non usa mai l'header Host (falsificabile): impostazione admin, `PUBLIC_URL` o, su Vercel, `VERCEL_PROJECT_PRODUCTION_URL` (nuovo ripiego in `LoadConfig`, così i reset funzionano anche se `PUBLIC_URL` manca in produzione); altrimenti link relativi e un log. Senza posta (sviluppo) resta l'host della richiesta. Test rossi prima. |
 | 2026-11-12 | I11-M2 completamento dai soli punteggi | `9ceb96e` | Claude Code | Modifica funzionale. `finalize` completa solo quando tutti gli obiettivi superano la soglia; tolto `completed` dal prompt e dal parser del giudice testuale. Il vecchio `TestJudgeLLMCompletedIsBlockedByMinTurns` fissava il comportamento da correggere: sostituito da `TestJudgeLLMCompletionComesFromScoresOnly` (voluto). Gate Go verde con -race. |
 | 2026-11-12 | I11-M1 password dell'admin | `be97c85` | Claude Code | Modifica funzionale. `SetPassword` (pannello admin) chiude anche i login dell'account (`Logins.DeleteForUser`), come già il cambio fatto dall'utente. Test rosso prima. Gate Go verde con -race. |
 | 2026-11-12 | I11-C5 limiti di utility e valutazione anonima | `4ee1cf2` | Claude Code | Modifica funzionale, primo passo del piano. `utility` al massimo 12.000 caratteri in ingresso e 4.096 token in uscita, `evaluation` senza account al massimo 60.000 caratteri (413 `too_large`, già tradotto); `boundHistory` riceve il limite da `inputLimit`. Numeri più larghi del piano (4.000/512/20.000) perché quelli rompevano i chiamanti reali: scelta dei voci con biografia, suggerimenti con elenco di titoli, modelli che ragionano, valutazione di una conversazione ospite lunga. Job nominati lato server non fatti (decisione 2 del piano). |
