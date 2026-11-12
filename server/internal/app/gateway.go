@@ -38,11 +38,29 @@ type aiGateway struct {
 	provNow func() time.Time // clock of the provider cache, replaced in tests
 
 	health *targetHealth
+
+	// Prices and the budget state are read at most once per short interval
+	// (investigation 11/11, E1); a change made through this process clears
+	// them, one made on another instance is seen within the interval.
+	cacheMu    sync.Mutex
+	priceCache map[RouteTarget]cachedPrice
+	budgetSeen *cachedBudget
+}
+
+type cachedPrice struct {
+	p      price
+	loaded time.Time
+}
+
+type cachedBudget struct {
+	budget   float64
+	exceeded bool
+	loaded   time.Time
 }
 
 func newAIGateway(providers providerStore, prices priceStore, usage usageStore, sessions sessionStore, settings *settingsService, crypto *Crypto) *aiGateway {
 	return &aiGateway{providers: providers, prices: prices, usage: usage, sessions: sessions, settings: settings, crypto: crypto,
-		newProvider: ai.New, provs: map[int64]cachedProvider{}, provNow: time.Now, health: newTargetHealth()}
+		newProvider: ai.New, provs: map[int64]cachedProvider{}, provNow: time.Now, health: newTargetHealth(), priceCache: map[RouteTarget]cachedPrice{}}
 }
 
 type cachedProvider struct {
@@ -60,6 +78,7 @@ func (g *aiGateway) invalidateProvider(id int64) {
 	g.provMu.Lock()
 	delete(g.provs, id)
 	g.provMu.Unlock()
+	g.InvalidatePrices() // its address decides which models are free
 }
 
 // provider returns a ready adapter for an enabled provider. An admin change
@@ -102,6 +121,22 @@ type price struct {
 }
 
 func (g *aiGateway) priceFor(providerID int64, model string) price {
+	k := RouteTarget{ProviderID: providerID, Model: model}
+	now := g.provNow()
+	g.cacheMu.Lock()
+	c, ok := g.priceCache[k]
+	g.cacheMu.Unlock()
+	if ok && now.Sub(c.loaded) < providerCacheTTL {
+		return c.p
+	}
+	p := g.loadPrice(providerID, model)
+	g.cacheMu.Lock()
+	g.priceCache[k] = cachedPrice{p, now}
+	g.cacheMu.Unlock()
+	return p
+}
+
+func (g *aiGateway) loadPrice(providerID int64, model string) price {
 	if in, out, ok := g.prices.Get(providerID, model); ok {
 		return price{in, out, true}
 	}
@@ -109,6 +144,20 @@ func (g *aiGateway) priceFor(providerID int64, model string) price {
 		return price{0, 0, true}
 	}
 	return price{}
+}
+
+// InvalidatePrices forgets the cached prices after an admin change.
+func (g *aiGateway) InvalidatePrices() {
+	g.cacheMu.Lock()
+	clear(g.priceCache)
+	g.cacheMu.Unlock()
+}
+
+// forgetBudget makes the next BudgetExceeded read the database again.
+func (g *aiGateway) forgetBudget() {
+	g.cacheMu.Lock()
+	g.budgetSeen = nil
+	g.cacheMu.Unlock()
 }
 
 func MonthStart() string {
@@ -125,10 +174,19 @@ func (g *aiGateway) MonthSpend() float64 {
 // BudgetExceeded reports whether paid models are blocked: the month's
 // spending plus the reservations of the paid calls in flight reach the
 // budget. When either cannot be read it fails closed: only free models are used.
+// The state is kept for budgetCheckTTL: the reservation of each paid call
+// (ReserveBudget) checks the budget again in one atomic statement.
 func (g *aiGateway) BudgetExceeded() bool {
 	budget, on := g.budgetEnforced()
 	if !on {
 		return false
+	}
+	now := g.provNow()
+	g.cacheMu.Lock()
+	seen := g.budgetSeen
+	g.cacheMu.Unlock()
+	if seen != nil && seen.budget == budget && now.Sub(seen.loaded) < budgetCheckTTL {
+		return seen.exceeded
 	}
 	spent, err := g.usage.SpendSince(MonthStart())
 	if err != nil {
@@ -140,7 +198,11 @@ func (g *aiGateway) BudgetExceeded() bool {
 		log.Printf("budget: cannot read the reservations, blocking paid models: %v", err)
 		return true
 	}
-	return spent+reserved >= budget
+	exceeded := spent+reserved >= budget
+	g.cacheMu.Lock()
+	g.budgetSeen = &cachedBudget{budget: budget, exceeded: exceeded, loaded: now}
+	g.cacheMu.Unlock()
+	return exceeded
 }
 
 // ---------- usage log ----------
@@ -181,6 +243,9 @@ func (g *aiGateway) logUsage(e usageEntry) float64 {
 	}))
 	if e.SessionID != nil && cost > 0 {
 		logIfErr("add session cost", g.sessions.AddCost(*e.SessionID, cost))
+	}
+	if cost > 0 {
+		g.forgetBudget()
 	}
 	return cost
 }

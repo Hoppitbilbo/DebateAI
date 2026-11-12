@@ -83,7 +83,10 @@ const (
 // database when it expires.
 const (
 	settingsCacheTTL = 5 * time.Second
-	providerCacheTTL = 30 * time.Second
+	providerCacheTTL = 30 * time.Second // also the prices of the models
+	// budgetCheckTTL: how long a "budget exceeded?" answer is reused before
+	// each paid call reserves its share atomically anyway.
+	budgetCheckTTL = 5 * time.Second
 )
 
 // Admission and budget reservations (admission.go).

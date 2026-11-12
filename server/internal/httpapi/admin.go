@@ -436,6 +436,7 @@ func (s *Server) handlePutPrice(w http.ResponseWriter, r *http.Request) {
 	} else {
 		err = s.Prices.Put(in.ProviderID, in.Model, in.InputPerM, in.OutputPerM)
 	}
+	s.Gateway.InvalidatePrices()
 	if err != nil {
 		writeErr(w, 500, "internal", err.Error())
 		return
