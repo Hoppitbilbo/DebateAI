@@ -37,7 +37,7 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto · `[-]` scartato (spieg
 
 ## Stato attuale
 
-- **Indagine dell'11/11 eseguita (2026-11-12):** branch locale `fix/investigation-2026-11-11` (da `refactor/concurrent-settings-2026-11-11@cc34234`), non pushato né unito. Fatti C1–C6, M1–M9, E1 (sei riduzioni, due scartate), E2, E3, F1–F4, R1–R6; dettagli nella fase 13 e nel Registro. **Restano all'utente:** confermare la regola di M3; R8 (cancellare worktree e file tracciati); lettura di `mail_outbox`/`CRON_SECRET` in produzione (C2); job nominati per `utility` e valutazione ospite (C5); esecuzione libSQL di `TestMultiInstanceConcurrency` con `LIBSQL_TEST_URL` (C3). Gate completo verde a ogni commit (Go con -race, lint, tsc, 398 Vitest, build, i18n).
+- **Indagine dell'11/11 eseguita (2026-11-12):** branch locale `fix/investigation-2026-11-11` (da `refactor/concurrent-settings-2026-11-11@cc34234`), non pushato né unito. Fatti C1–C6, M1–M9, E1 (sei riduzioni, due scartate), E2, E3, F1–F4, R1–R6; dettagli nella fase 13 e nel Registro. **Decisioni dell'utente (2026-11-12):** M3 confermata (solo proprietario o admin); R8 eseguito; C5 resta così (valutazione ospite mantenuta, job nominati rinviati). **Restano:** lettura di `mail_outbox`/`CRON_SECRET` in produzione (C2). C3 su libSQL eseguito: `go test -race ./...` verde con `LIBSQL_TEST_URL` su un `libsql-server` locale usa e getta, nessun test saltato. Gate completo verde a ogni commit (Go con -race, lint, tsc, 398 Vitest, build, i18n).
 
 - **Continuazione 11/11, C3 (2026-11-11):** rivisti i quattro commit C1–C2/R12 senza ulteriori modifiche applicative. Nuovo test `TestMultiInstanceConcurrency`: quattro `Services` con pool e cache indipendenti sullo stesso database; PIN unico e preservazione del sostituto, ammissione con rilascio dei permessi parziali, budget con cancellazione/consumo e cache con lettura lenta e TTL tra istanze. Stessi scenari su SQLite e, con `LIBSQL_TEST_URL`, libSQL usa e getta. SQLite verde dieci volte con `-race`; caso libSQL saltato localmente. Go vet e **228 test Go di primo livello con race detector** verdi, con le stesse 13 esclusioni di rete solo locali; 2 test remoti e il nuovo sottocaso libSQL saltati. CI predisposta con servizio libSQL effimero e URL locale, mantenendo `go test -race ./...` senza esclusioni. Suite completa riprovata: la sandbox vieta ancora i socket e l'accesso al daemon Docker; esecuzione CI/libSQL e carico in staging restano aperti. Nessun push o deploy.
 
@@ -314,7 +314,8 @@ Piano in [investigation 11 11.md](investigation%2011%2011.md). Le voci C/M/E son
 - [x] **I11-R1/M7** `writeInternal` (53 risposte 500 senza testo interno, errore nel log) e `decode`/`decodeLimit` (33 blocchi «decodifica o 400») (vedi Registro).
 - [x] **I11-R2/R3** `setSessionCookie` unico e `loginAndAnswer` per i tre punti identici (vedi Registro).
 - [x] **I11-R4** `BestPerStudent` sceglie il miglior tentativo in SQL, come `rankedSessions` (vedi Registro).
-- [x] **I11-R5/R6** Nomi delle lingue in una sola mappa; «(start)» tolto dal browser, resta `userFirst` del gateway (vedi Registro). R7 fatto con C6; R8 non eseguito (serve conferma).
+- [x] **I11-R5/R6** Nomi delle lingue in una sola mappa; «(start)» tolto dal browser, resta `userFirst` del gateway (vedi Registro). R7 fatto con C6.
+- [x] **I11-R8** Rimossi i worktree `.claude/worktrees/` (branch conservati), `jules-scratch/` e `netlify.toml` (nessun riferimento nel codice), confermato dall'utente.
 
 ---
 
@@ -357,6 +358,8 @@ Piano in [investigation 11 11.md](investigation%2011%2011.md). Le voci C/M/E son
 
 | Data | Task | Commit | Chi | Note |
 |---|---|---|---|---|
+| 2026-11-12 | I11-C3 esecuzione su libSQL | (questo commit) | Claude Code | Solo test. `go test -race ./...` con `LIBSQL_TEST_URL` su `ghcr.io/tursodatabase/libsql-server` locale: tutto verde, nessun test saltato. Il sottotest `Budget` falliva alla seconda esecuzione sullo stesso server (spesa e provider lasciati nel DB): ora li toglie in `t.Cleanup`; quattro esecuzioni di fila verdi. `TestRemoteSchema` resta da eseguire su server vuoto, come dice il suo commento. |
+| 2026-11-12 | I11-R8 pulizia | (questo commit) | Claude Code | Pulizia confermata dall'utente: `git worktree remove` di p2, p6, sentry, t1110 (puliti, branch conservati), tolti `jules-scratch/` e `netlify.toml`. Nessun riferimento nel codice. |
 | 2026-11-12 | I11-R5/R6 lingue e primo turno | `ef81870` | Claude Code | Refactoring puro più una piccola differenza voluta: il modello vede «(The conversation begins.)» del gateway invece del «(start)» del browser quando la storia comincia dal personaggio. L'adapter Anthropic tiene il suo (decisione già annotata). Gate completo verde (398 Vitest). |
 | 2026-11-12 | I11-R4 miglior tentativo in SQL | `d47432a` | Claude Code | Refactoring puro. `BestPerStudent` usa `ROW_NUMBER()` per studente e consegna, con lo stesso ordine «migliori prima» (secondo numero di riga globale), invece di scartare i doppioni in Go. Test di caratterizzazione scritto prima (più studenti, tentativi, consegne e un'altra classe), verde prima e dopo. |
 | 2026-11-12 | I11-R2/R3 cookie e login | `b48f6b8` | Claude Code | Refactoring puro. `setSessionCookie` unico per utenti e ospiti; `loginAndAnswer` per login, registrazione da invito e iscrizione alla classe. Setup e reset restano com'erano: ignorano di proposito un errore di sessione, unirli avrebbe cambiato il comportamento. Test HTTP verdi prima e dopo. |

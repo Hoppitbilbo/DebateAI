@@ -27,6 +27,7 @@ func TestMultiInstanceConcurrency(t *testing.T) {
 			}
 			path := filepath.Join(t.TempDir(), "shared.db")
 			var peers []*Services
+			var first *sql.DB
 			for range 4 {
 				var db *sql.DB
 				var err error
@@ -39,11 +40,14 @@ func TestMultiInstanceConcurrency(t *testing.T) {
 					t.Fatal(err)
 				}
 				t.Cleanup(func() { db.Close() })
+				if first == nil {
+					first = db
+				}
 				peers = append(peers, NewServices(Config{Secret: "multi-instance-test"}, db))
 			}
 			t.Run("RejoinPIN", func(t *testing.T) { checkMultiInstancePIN(t, peers) })
 			t.Run("Admission", func(t *testing.T) { checkMultiInstanceAdmission(t, peers) })
-			t.Run("Budget", func(t *testing.T) { checkMultiInstanceBudget(t, peers) })
+			t.Run("Budget", func(t *testing.T) { checkMultiInstanceBudget(t, first, peers) })
 			t.Run("Settings", func(t *testing.T) { checkMultiInstanceSettings(t, peers) })
 			t.Run("RoomJoins", func(t *testing.T) { checkMultiInstanceJoins(t, peers) })
 			t.Run("TranscriptSaves", func(t *testing.T) { checkMultiInstanceSaves(t, peers) })
@@ -156,7 +160,9 @@ func checkMultiInstanceAdmission(t *testing.T, peers []*Services) {
 	}
 }
 
-func checkMultiInstanceBudget(t *testing.T, peers []*Services) {
+// The remote database outlives the test, so the spending and the provider it
+// adds are removed afterwards; otherwise a second run starts over budget.
+func checkMultiInstanceBudget(t *testing.T, db *sql.DB, peers []*Services) {
 	s := peers[0]
 	if err := s.Settings.SaveBudget(BudgetSettings{MonthlyUSD: 1, BlockPaidWhenExceeded: true}); err != nil {
 		t.Fatal(err)
@@ -165,6 +171,11 @@ func checkMultiInstanceBudget(t *testing.T, peers []*Services) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	t.Cleanup(func() {
+		db.Exec(`DELETE FROM usage_log WHERE model = 'paid' AND COALESCE(provider_id, 0) = 0`)
+		db.Exec(`DELETE FROM model_prices WHERE provider_id = ?`, id)
+		db.Exec(`DELETE FROM providers WHERE id = ?`, id)
+	})
 	if err := s.Prices.Put(id, "paid", 0, 250); err != nil {
 		t.Fatal(err)
 	}
