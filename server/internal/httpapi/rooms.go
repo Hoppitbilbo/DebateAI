@@ -52,11 +52,7 @@ func writeRoomErr(w http.ResponseWriter, err error) {
 
 // setGuestCookie logs a guest in until their room closes.
 func setGuestCookie(w http.ResponseWriter, r *http.Request, login *app.GuestLogin) {
-	http.SetCookie(w, &http.Cookie{
-		Name: sessionCookie, Value: login.Token, Path: "/", HttpOnly: true,
-		Secure:   r.TLS != nil || r.Header.Get("X-Forwarded-Proto") == "https",
-		SameSite: http.SameSiteLaxMode, Expires: login.Expires,
-	})
+	setSessionCookie(w, r, login.Token, login.Expires)
 }
 
 const wrongCodesMsg = "too many wrong codes, wait a few minutes"
