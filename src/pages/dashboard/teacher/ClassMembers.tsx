@@ -12,6 +12,8 @@ import MemberResetLink from "./MemberResetLink";
 
 interface ClassMembersProps {
   detail: ClassDetail;
+  /** The owner or an admin: may also remove the class's teachers. */
+  owns: boolean;
   onRemoveMember: (userId: number) => Promise<void>;
   onRegenerateCode: () => Promise<void>;
   onInvited: () => void;
@@ -21,7 +23,7 @@ interface ClassMembersProps {
  * Members, pending invites, the invite form and how students join: the short
  * code of a standard class, or the sign-up link and QR of a username class.
  */
-const ClassMembers = ({ detail, onRemoveMember, onRegenerateCode, onInvited }: ClassMembersProps) => {
+const ClassMembers = ({ detail, owns, onRemoveMember, onRegenerateCode, onInvited }: ClassMembersProps) => {
   const { t, i18n } = useTranslation();
   const { class: cls, members, invites } = detail;
   const classId = cls.id;
@@ -49,7 +51,7 @@ const ClassMembers = ({ detail, onRemoveMember, onRegenerateCode, onInvited }: C
                     <td className="py-2 pr-3 text-muted-foreground">{formatDate(m.lastLoginAt, i18n.language)}</td>
                     <td className="whitespace-nowrap py-2 text-right">
                       {m.canResetPassword && <MemberResetLink classId={classId} member={m} />}
-                      <ConfirmButton title={t("platform.teacher.removeMember", { name: m.name })} icon={<UserMinus className="h-4 w-4" />} onConfirm={() => onRemoveMember(m.userId)} />
+                      {(owns || m.role !== "teacher") && <ConfirmButton title={t("platform.teacher.removeMember", { name: m.name })} icon={<UserMinus className="h-4 w-4" />} onConfirm={() => onRemoveMember(m.userId)} />}
                     </td>
                   </tr>
                 ))}

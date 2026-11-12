@@ -16,7 +16,7 @@ globalThis.ResizeObserver ??= class {
 };
 
 const me = { id: 1, email: "prof@x.it", name: "Prof", role: "teacher", locale: "en", active: true, createdAt: "2026-01-01T00:00:00Z" };
-const cls = { id: 4, name: "3A Storia", description: "Classe", joinCode: "ABC234", archived: false, createdAt: "2026-10-01T00:00:00Z", studentCount: 1, teacherCount: 1, assignmentCount: 1 };
+const cls = { id: 4, ownerId: 1, name: "3A Storia", description: "Classe", joinCode: "ABC234", archived: false, createdAt: "2026-10-01T00:00:00Z", studentCount: 1, teacherCount: 1, assignmentCount: 1 };
 const assignment = {
   id: 7, classId: 4, className: "3A Storia", title: "Napoleone", instructions: "Intervista", appType: "wiki-chatbot", config: {}, goals: ["g1"],
   minTurns: 0, maxTurns: 10, autoEnd: true, requireReflection: true, allowLive: true, published: true, createdAt: "", updatedAt: "",
@@ -84,6 +84,22 @@ describe("teacher pages", () => {
     cleanup();
     renderAt("/teacher/classes/4?tab=settings");
     expect(((await screen.findByDisplayValue("Classe")) as HTMLTextAreaElement).value).toBe("Classe");
+  });
+
+  // Investigation 11/11, M3: a co-teacher sees no "Delete class" and cannot
+  // remove the other teachers (the server refuses both).
+  it("hides the owner's actions from a co-teacher", async () => {
+    renderAt("/teacher/classes/4?tab=settings");
+    expect(await screen.findByText("Delete class")).toBeTruthy();
+    cleanup();
+    cls.ownerId = 9;
+    try {
+      renderAt("/teacher/classes/4?tab=settings");
+      await screen.findByDisplayValue("Classe");
+      expect(screen.queryByText("Delete class")).toBeNull();
+    } finally {
+      cls.ownerId = 1;
+    }
   });
 
   it("shows how the students did on an assignment", async () => {

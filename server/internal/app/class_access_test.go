@@ -268,3 +268,28 @@ func TestClassInviteIsCappedPerRequest(t *testing.T) {
 		t.Fatalf("at the cap: %v %d", err, len(res))
 	}
 }
+
+// Investigation 11/11, M3: a co-teacher manages the students of a class but
+// may not delete it nor remove its teachers; the owner and admins may.
+func TestOnlyTheOwnerDeletesTheClassOrRemovesTeachers(t *testing.T) {
+	f := newRecoveryClass(t)
+	other := newRoomTestUser(t, f.s, "co2@x.it", domain.RoleTeacher)
+	if err := f.s.Classes.AddMember(f.class.ID, other.ID, domain.RoleTeacher); err != nil {
+		t.Fatal(err)
+	}
+	if err := f.s.ClassSvc.RemoveMember(f.coTeacher, f.class.ID, other.ID); !errors.Is(err, ErrOwnerOnly) {
+		t.Fatalf("a co-teacher removes another teacher: %v", err)
+	}
+	if err := f.s.ClassSvc.RemoveMember(f.coTeacher, f.class.ID, f.st.ID); err != nil {
+		t.Fatalf("a co-teacher removes a student: %v", err)
+	}
+	if err := f.s.ClassSvc.Delete(f.coTeacher, f.class.ID); !errors.Is(err, ErrOwnerOnly) {
+		t.Fatalf("a co-teacher deletes the class: %v", err)
+	}
+	if err := f.s.ClassSvc.RemoveMember(f.owner, f.class.ID, other.ID); err != nil {
+		t.Fatalf("the owner removes a teacher: %v", err)
+	}
+	if err := f.s.ClassSvc.Delete(f.admin, f.class.ID); err != nil {
+		t.Fatalf("an admin deletes the class: %v", err)
+	}
+}

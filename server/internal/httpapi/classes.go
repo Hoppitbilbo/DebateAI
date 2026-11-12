@@ -86,15 +86,23 @@ func (s *Server) handleUpdateClass(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleDeleteClass(w http.ResponseWriter, r *http.Request) {
-	_, id, ok := s.managedClass(w, r)
+	u, id, ok := s.managedClass(w, r)
 	if !ok {
 		return
 	}
-	if err := s.Classes.Delete(id); err != nil {
+	writeOwnerResult(w, s.ClassSvc.Delete(u, id))
+}
+
+// writeOwnerResult answers an action only the class owner (or an admin) may do.
+func writeOwnerResult(w http.ResponseWriter, err error) {
+	switch {
+	case errors.Is(err, app.ErrOwnerOnly):
+		writeErr(w, 403, "forbidden", err.Error())
+	case err != nil:
 		writeErr(w, 500, "internal", err.Error())
-		return
+	default:
+		writeOK(w)
 	}
-	writeOK(w)
 }
 
 func (s *Server) handleRegenerateCode(w http.ResponseWriter, r *http.Request) {
@@ -141,15 +149,11 @@ func (s *Server) handleClassInvite(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleRemoveMember(w http.ResponseWriter, r *http.Request) {
-	_, id, ok := s.managedClass(w, r)
+	u, id, ok := s.managedClass(w, r)
 	if !ok {
 		return
 	}
-	if err := s.Classes.RemoveMember(id, pathID(r, "userId")); err != nil {
-		writeErr(w, 500, "internal", err.Error())
-		return
-	}
-	writeOK(w)
+	writeOwnerResult(w, s.ClassSvc.RemoveMember(u, id, pathID(r, "userId")))
 }
 
 // handleMemberPasswordReset gives the owner of the student's class of

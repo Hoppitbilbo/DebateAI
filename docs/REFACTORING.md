@@ -302,6 +302,7 @@ Piano in [investigation 11 11.md](investigation%2011%2011.md). Le voci C/M/E son
 - [x] **I11-M8** Il filtro dei rifiuti non scarta più «non posso continuare questa guerra» e simili (vedi Registro).
 - [x] **I11-M9** Una sola valutazione per tentativo alla volta, con uno slot `inflight` (vedi Registro).
 - [x] **I11-M6** Al massimo 100 indirizzi per invito di classe (vedi Registro). Mail ancora spedite nella richiesta, non in coda.
+- [x] **I11-M3** Scelta prudente del piano, da confermare: cancellare la classe e togliere un docente solo per il proprietario o un admin (vedi Registro).
 
 ---
 
@@ -344,6 +345,7 @@ Piano in [investigation 11 11.md](investigation%2011%2011.md). Le voci C/M/E son
 
 | Data | Task | Commit | Chi | Note |
 |---|---|---|---|---|
+| 2026-11-12 | I11-M6 tetto agli inviti di classe | `6d21c88` | Claude Code | Modifica funzionale. Al massimo 100 indirizzi per richiesta (400 `bad_request`; il gestore rispondeva 200 vuoto su un errore inatteso, ora 500). Le mail restano nella richiesta invece che in coda, scostamento dal piano: in coda lo stato «mail spedita / mostra il link» non sarebbe più noto e su Vercel la coda aspetta il worker (C2). |
 | 2026-11-12 | I11-M9 una valutazione per tentativo | `1476a47` | Claude Code | Modifica funzionale. `handleEvaluateSession` prende uno slot `evaluate:<id>` (limite 1) nella tabella `inflight` prima di leggere il tentativo: condiviso tra istanze, scade dopo `inflightTTL` se il processo muore; la seconda richiesta riceve 429 `busy` senza chiamare il modello. Nessuna modifica allo schema (uno stato nuovo avrebbe richiesto una migrazione, che `requireCurrentSchema` rifiuta). |
 | 2026-11-12 | I11-M8 filtro dei rifiuti | `9e9e92b` | Claude Code | Modifica funzionale. «Continuare» conta solo con oggetto il gioco di ruolo stesso (questa conversazione, il gioco di ruolo…); tolti create/provide/generate/write e i corrispondenti in it/es/fr. Nove falsi positivi aggiunti a `TestIsRefusal` (sette rossi prima), tre rifiuti veri in più. Gate Go verde con -race. |
 | 2026-11-12 | I11-M4 link delle mail | `fc58b47` | Claude Code | Modifica funzionale. Con la posta configurata `baseURL` non usa mai l'header Host (falsificabile): impostazione admin, `PUBLIC_URL` o, su Vercel, `VERCEL_PROJECT_PRODUCTION_URL` (nuovo ripiego in `LoadConfig`, così i reset funzionano anche se `PUBLIC_URL` manca in produzione); altrimenti link relativi e un log. Senza posta (sviluppo) resta l'host della richiesta. Test rossi prima. |
