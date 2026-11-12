@@ -162,11 +162,7 @@ func (a *authService) StartSessionUntil(userID int64, expires time.Time) (string
 
 // UserForToken returns the active user of a login token, or nil.
 func (a *authService) UserForToken(token string) *domain.User {
-	uid, exp, err := a.logins.Lookup(hashToken(token))
-	if err != nil || time.Now().After(parseTime(exp)) {
-		return nil
-	}
-	u, err := a.users.Get(uid)
+	u, err := a.logins.UserForSession(hashToken(token))
 	if err != nil || !u.Active {
 		return nil
 	}

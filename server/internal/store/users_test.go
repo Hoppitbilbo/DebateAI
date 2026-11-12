@@ -69,14 +69,14 @@ func TestAuthSessions(t *testing.T) {
 	if err := r.PurgeExpired(); err != nil {
 		t.Fatal(err)
 	}
-	if _, _, err := r.Lookup("old"); err == nil {
+	if count(db, `SELECT COUNT(*) FROM auth_sessions WHERE token_hash = 'old'`) != 0 {
 		t.Fatal("expired session not purged")
 	}
-	if got, exp, err := r.Lookup("new"); err != nil || got != uid || exp != future {
-		t.Fatalf("lookup: %v %d %s", err, got, exp)
+	if u, err := r.UserForSession("new"); err != nil || u.ID != uid {
+		t.Fatalf("lookup: %v %+v", err, u)
 	}
 	r.DeleteForUser(uid)
-	if _, _, err := r.Lookup("new"); err == nil {
+	if _, err := r.UserForSession("new"); err == nil {
 		t.Fatal("sessions of the user not deleted")
 	}
 }
@@ -111,5 +111,24 @@ func TestInvites(t *testing.T) {
 	r.Delete(id)
 	if _, err := r.Get(id); err == nil {
 		t.Fatal("deleted invite still found")
+	}
+}
+
+// Investigation 11/11, E1: the cookie's account in one query, never for an
+// expired session.
+func TestUserForSessionSkipsExpiredSessions(t *testing.T) {
+	db := openTestDB(t)
+	users, logins := NewUsers(db), NewAuthSessions(db)
+	uid, err := users.Create("a@x.it", "Anna", "h", domain.RoleStudent, "it")
+	if err != nil {
+		t.Fatal(err)
+	}
+	logins.Create("live", uid, "2999-01-01T00:00:00Z")
+	logins.Create("old", uid, "2000-01-01T00:00:00Z")
+	if u, err := logins.UserForSession("live"); err != nil || u.ID != uid || u.Name != "Anna" {
+		t.Fatalf("live session: %+v %v", u, err)
+	}
+	if _, err := logins.UserForSession("old"); err == nil {
+		t.Fatal("an expired session has no user")
 	}
 }

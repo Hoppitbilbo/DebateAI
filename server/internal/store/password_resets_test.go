@@ -68,7 +68,7 @@ func TestEmailResetIsUsedOnceAndRevokesAccess(t *testing.T) {
 	if h, _ := users.PasswordHash(id); h != "new" {
 		t.Fatalf("hash %q", h)
 	}
-	if _, _, err := logins.Lookup("s1"); err == nil {
+	if _, err := logins.UserForSession("s1"); err == nil {
 		t.Fatal("logins must end")
 	}
 	if _, err := resets.Consume("t2", "again"); !errors.Is(err, domain.ErrResetLinkInvalid) {
@@ -217,7 +217,7 @@ func TestChangePasswordIsAtomic(t *testing.T) {
 	if u, _ := users.Get(id); u.Name != "Anna B" {
 		t.Fatal("name not saved")
 	}
-	if _, _, err := logins.Lookup("s1"); err == nil {
+	if _, err := logins.UserForSession("s1"); err == nil {
 		t.Fatal("logins must end")
 	}
 	if _, err := resets.Consume("t", "x"); !errors.Is(err, domain.ErrResetLinkInvalid) {

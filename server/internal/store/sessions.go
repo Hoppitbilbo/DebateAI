@@ -18,10 +18,11 @@ func (r *AuthSessions) Create(tokenHash string, userID int64, expiresAt string) 
 	return err
 }
 
-// Lookup returns the user and expiry of a session.
-func (r *AuthSessions) Lookup(tokenHash string) (userID int64, expiresAt string, err error) {
-	err = r.db.QueryRow(`SELECT user_id, expires_at FROM auth_sessions WHERE token_hash = ?`, tokenHash).Scan(&userID, &expiresAt)
-	return
+// UserForSession returns the account of an unexpired session in one query
+// (it runs on every authenticated request); sql.ErrNoRows otherwise.
+func (r *AuthSessions) UserForSession(tokenHash string) (*domain.User, error) {
+	return scanUser(r.db.QueryRow(`SELECT `+userCols("u")+` FROM auth_sessions s JOIN users u ON u.id = s.user_id
+		WHERE s.token_hash = ? AND s.expires_at > ?`, tokenHash, domain.Now()))
 }
 
 func (r *AuthSessions) Delete(tokenHash string) error {

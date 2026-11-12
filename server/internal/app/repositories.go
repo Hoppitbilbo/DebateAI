@@ -33,7 +33,7 @@ type userStore interface {
 
 type authSessionStore interface {
 	Create(tokenHash string, userID int64, expiresAt string) error
-	Lookup(tokenHash string) (userID int64, expiresAt string, err error)
+	UserForSession(tokenHash string) (*domain.User, error)
 	Delete(tokenHash string) error
 	DeleteForUser(userID int64) error
 	PurgeExpired() error
