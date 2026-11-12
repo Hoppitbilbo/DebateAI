@@ -294,6 +294,7 @@ Piano in [investigation 11 11.md](investigation%2011%2011.md). Le voci C/M/E son
 - [x] **I11-C4** Limiti di dimensione su messaggi, transcript, contesto, prompt di valutazione e tentativi al giorno; taglio lineare dello stato JEV (vedi Registro).
 - [x] **I11-C6** PIN di rientro e codici aula contati prima del controllo, nel limitatore condiviso del database (vedi Registro).
 - [x] **I11-C2** Mail di reset spedita nella richiesta, in coda solo se l'invio fallisce (vedi Registro). Verifica in produzione di `mail_outbox` e `CRON_SECRET` non eseguita: serve il permesso dell'utente.
+- [x] **I11-C3** Salvataggio del transcript in un solo UPDATE condizionale, ingresso ospite che scrive per primo; prova con 30 ingressi e 40 salvataggi concorrenti (vedi Registro).
 
 ---
 
@@ -336,6 +337,7 @@ Piano in [investigation 11 11.md](investigation%2011%2011.md). Le voci C/M/E son
 
 | Data | Task | Commit | Chi | Note |
 |---|---|---|---|---|
+| 2026-11-12 | I11-C2 mail di reset nella richiesta | `3bcfb98` | Claude Code | Modifica funzionale. `RequestReset` usa `SendMail` (timeout SMTP 15 s + 60 s) e mette in coda solo se l'invio fallisce; risposta sempre OK. Test rosso prima (la mail finiva in coda). Lettura di `mail_outbox` in produzione e controllo di `CRON_SECRET` non eseguiti (decisione 4 del piano, serve il permesso). Gate Go verde con -race. |
 | 2026-11-12 | I11-C6 PIN e codici aula | `f8f5648` | Claude Code | Modifica funzionale. Prima: 50 PIN sbagliati in parallelo su 50 arrivavano al confronto (controllo, poi conteggio, in memoria per istanza). Ora `authLimits.RoomCode/RejoinPIN` contano il tentativo in `auth_rate_limits` prima del controllo e lo restituiscono (`AuthRateLimits.Refund`) quando codice o PIN erano giusti: contano solo gli errori, come prima, e il laboratorio con un solo IP entra. Limiti spostati in `app/limits.go`; tolti `codeGuard` e `rateLimiter.exhausted`. Gate Go verde con -race. |
 | 2026-11-12 | I11-C4 limiti di dimensione | `6ceb83c` | Claude Code | Modifica funzionale. Un messaggio al massimo 32 kB (taglio sicuro), transcript salvato al massimo 400 kB tenendo i più recenti (turni contati prima del taglio), `context` al massimo 16 kB (400), corpo di avvio e salvataggio 1 MB, valutazione con al massimo 120 kB di conversazione e nota delle righe omesse, `jevState` lineare (prima un marshal per messaggio scartato), 200 tentativi per utente in 24 ore (429 `rate_limited`, nuovo `CountStartedSince`). Test in `size_limits_test.go`. Gate Go verde con -race. |
 | 2026-11-12 | I11-M5 tagli senza lettere spezzate | `7aa76ac` | Claude Code | Modifica funzionale. `truncate` tiene al massimo n byte ma arretra all'inizio della lettera; nuovo `lastBytes` per la coda del giudice (`buildState`). Test rossi prima su «èèè» e «ü€». Gate Go verde con -race. |

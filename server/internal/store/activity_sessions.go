@@ -3,6 +3,7 @@ package store
 import (
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"strings"
 
@@ -272,35 +273,25 @@ func (r *ActivitySessions) AbandonEmpty(userID, assignmentID int64) error {
 // with s.BaseRevision set, a save that lost a race is refused
 // (domain.ErrStaleRevision).
 func (r *ActivitySessions) SaveTranscript(id int64, s domain.TranscriptSave) (int64, error) {
-	tx, err := r.db.Begin()
-	if err != nil {
-		return 0, err
-	}
-	defer tx.Rollback()
-	var status string
+	// One conditional statement: a transaction that read first and wrote
+	// later could be refused under concurrent writers (remote libSQL, or
+	// several instances), and cost four round trips.
 	var revision int64
-	if err := tx.QueryRow(`SELECT status, revision FROM activity_sessions WHERE id = ?`, id).Scan(&status, &revision); err != nil {
+	err := r.db.QueryRow(`UPDATE activity_sessions SET transcript_json = ?, turns = ?, unverified_lines = ?, updated_at = ?, revision = revision + 1, context_json = COALESCE(?, context_json)
+		WHERE id = ? AND status != ? AND (? IS NULL OR revision = ?) RETURNING revision`,
+		s.JSON, s.Turns, s.Unverified, domain.Now(), s.Context, id, domain.SessionCompleted, s.BaseRevision, s.BaseRevision).Scan(&revision)
+	if !errors.Is(err, sql.ErrNoRows) {
+		return revision, err
+	}
+	// Nothing written: tell a completed attempt from a lost race.
+	var status string
+	if err := r.db.QueryRow(`SELECT status, revision FROM activity_sessions WHERE id = ?`, id).Scan(&status, &revision); err != nil {
 		return 0, err
 	}
-	switch {
-	case status == domain.SessionCompleted:
+	if status == domain.SessionCompleted {
 		return revision, domain.ErrSessionCompleted
-	case s.BaseRevision != nil && *s.BaseRevision != revision:
-		return revision, domain.ErrStaleRevision
 	}
-	// The revision in WHERE keeps the write conditional on remote databases,
-	// where the read above does not lock the row.
-	res, err := tx.Exec(`UPDATE activity_sessions SET transcript_json = ?, turns = ?, unverified_lines = ?, updated_at = ?, revision = revision + 1, context_json = COALESCE(?, context_json)
-		WHERE id = ? AND revision = ? AND status != ?`, s.JSON, s.Turns, s.Unverified, domain.Now(), s.Context, id, revision, domain.SessionCompleted)
-	if err != nil {
-		return 0, err
-	}
-	if n, err := res.RowsAffected(); err != nil {
-		return 0, err
-	} else if n == 0 {
-		return revision, domain.ErrStaleRevision
-	}
-	return revision + 1, tx.Commit()
+	return revision, domain.ErrStaleRevision
 }
 
 // SaveJudgement stores the judge's verdict on a transcript revision and the

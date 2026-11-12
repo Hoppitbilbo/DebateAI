@@ -45,6 +45,8 @@ func TestMultiInstanceConcurrency(t *testing.T) {
 			t.Run("Admission", func(t *testing.T) { checkMultiInstanceAdmission(t, peers) })
 			t.Run("Budget", func(t *testing.T) { checkMultiInstanceBudget(t, peers) })
 			t.Run("Settings", func(t *testing.T) { checkMultiInstanceSettings(t, peers) })
+			t.Run("RoomJoins", func(t *testing.T) { checkMultiInstanceJoins(t, peers) })
+			t.Run("TranscriptSaves", func(t *testing.T) { checkMultiInstanceSaves(t, peers) })
 		})
 	}
 }
@@ -278,6 +280,66 @@ func checkMultiInstanceSettings(t *testing.T, peers []*Services) {
 	assertValue(a, 2)
 	clockA = clockA.Add(settingsCacheTTL)
 	assertValue(a, 3)
+}
+
+// Investigation 11/11, C3: a class joining a room at once, from every
+// instance, gets in without errors and never past the room's size.
+func checkMultiInstanceJoins(t *testing.T, peers []*Services) {
+	s := peers[0]
+	opened, err := s.RoomSvc.Open(nil, RoomRequest{AppType: "wiki-chatbot", MaxGuests: 25})
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { _ = s.RoomSvc.End(opened.Room) })
+	results := make(chan error, 30)
+	runOnPeers(peers, 30, func(s *Services, i int) {
+		_, err := s.RoomSvc.Join(JoinRequest{Code: opened.Room.Code, Nickname: fmt.Sprintf("Studente %d", i), Avatar: "fox"})
+		results <- err
+	})
+	close(results)
+	joined, full := 0, 0
+	for err := range results {
+		switch {
+		case err == nil:
+			joined++
+		case errors.Is(err, domain.ErrRoomFull):
+			full++
+		default:
+			t.Errorf("join: %v", err)
+		}
+	}
+	if joined != 25 || full != 5 {
+		t.Fatalf("joined %d, refused as full %d; want 25 and 5", joined, full)
+	}
+}
+
+// Forty students saving at once, and many saves of one attempt without a
+// base revision: none fails, and every save of the attempt is counted.
+func checkMultiInstanceSaves(t *testing.T, peers []*Services) {
+	s := peers[0]
+	var ids []int64
+	for i := range 40 {
+		u := newRoomTestUser(t, s, fmt.Sprintf("save%d-%d@x.it", i, time.Now().UnixNano()), domain.RoleStudent)
+		ss, err := s.SessionSvc.Start(u, NewAttempt{AppType: "wiki-chatbot"})
+		if err != nil {
+			t.Fatal(err)
+		}
+		ids = append(ids, ss.ID)
+	}
+	save := domain.TranscriptSave{JSON: `[{"role":"user","content":"ciao"}]`, Turns: 1}
+	runOnPeers(peers, 40, func(s *Services, i int) {
+		if _, err := s.Sessions.SaveTranscript(ids[i], save); err != nil {
+			t.Errorf("save %d: %v", i, err)
+		}
+	})
+	runOnPeers(peers, 20, func(s *Services, i int) {
+		if _, err := s.Sessions.SaveTranscript(ids[0], save); err != nil {
+			t.Errorf("save of one attempt %d: %v", i, err)
+		}
+	})
+	if d, err := s.Sessions.Detail(ids[0]); err != nil || d.Revision != 21 {
+		t.Fatalf("revision after 21 saves: %v %v", d.Revision, err)
+	}
 }
 
 func runOnPeers(peers []*Services, n int, f func(*Services, int)) {
