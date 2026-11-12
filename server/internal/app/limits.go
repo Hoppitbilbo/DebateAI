@@ -115,6 +115,13 @@ const (
 
 // Temporary rooms ("aula lampo").
 const (
+	// Wrong room codes per network and wrong rejoin PINs per room and
+	// nickname, counted in the database (auth_limits.go).
+	wrongRoomCodesLimit  = 60
+	wrongRoomCodesWindow = 10 * time.Minute
+	wrongPINsLimit       = 5
+	wrongPINsWindow      = 10 * time.Minute
+
 	defaultRoomMinutes   = 60
 	roomHostKeyBytes     = 24 // entropy of the secret link that manages a room
 	rejoinPINTTL         = 10 * time.Minute

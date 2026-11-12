@@ -22,6 +22,7 @@ var (
 // shared by every instance of the server (store.AuthRateLimits).
 type rateLimitStore interface {
 	Hit(key string, limit int, window time.Duration) (bool, error)
+	Refund(key string) error
 }
 
 // authLimits throttles logins and enrollments with counters persisted in
@@ -54,6 +55,35 @@ func (l *authLimits) Login(ip, identifier string) error {
 // ClassEnrollment counts an account creation attempt through a class link.
 func (l *authLimits) ClassEnrollment(code string) error {
 	return l.hitAll(limitCheck{"enroll-link", code, enrollmentsPerLink, enrollmentsWindow})
+}
+
+// RoomCode counts a room code typed from ip, before it is checked; the
+// returned refund gives the attempt back when the code was right, so only
+// wrong codes use up the limit. A school lab shares one IP, which is why
+// right codes are not counted.
+func (l *authLimits) RoomCode(ip string) (refund func(), err error) {
+	return l.guess(limitCheck{"room-code", ip, wrongRoomCodesLimit, wrongRoomCodesWindow})
+}
+
+// RejoinPIN counts a PIN typed for a room and nickname, whatever the
+// network (PINs have four digits), before it is compared; refund when it
+// was right.
+func (l *authLimits) RejoinPIN(code, nickname string) (refund func(), err error) {
+	return l.guess(limitCheck{"room-pin", code + "\x00" + nickname, wrongPINsLimit, wrongPINsWindow})
+}
+
+// guess counts an attempt before the caller checks it, so a burst of
+// parallel requests cannot all pass a limit that only failures should use.
+func (l *authLimits) guess(c limitCheck) (func(), error) {
+	if err := l.hitAll(c); err != nil {
+		return nil, err
+	}
+	key := l.key(c.kind, c.subject)
+	return func() {
+		if err := l.store.Refund(key); err != nil {
+			log.Printf("auth rate limit %s refund: %v", c.kind, err)
+		}
+	}, nil
 }
 
 type limitCheck struct {

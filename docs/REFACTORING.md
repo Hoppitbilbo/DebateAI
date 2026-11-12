@@ -292,6 +292,7 @@ Piano in [investigation 11 11.md](investigation%2011%2011.md). Le voci C/M/E son
 - [x] **I11-C1** Personaggio misterioso: vince solo il nome, non una parola comune del titolo (vedi Registro).
 - [x] **I11-M5** `truncate` e il taglio della coda nel giudice non spezzano più una lettera (vedi Registro).
 - [x] **I11-C4** Limiti di dimensione su messaggi, transcript, contesto, prompt di valutazione e tentativi al giorno; taglio lineare dello stato JEV (vedi Registro).
+- [x] **I11-C6** PIN di rientro e codici aula contati prima del controllo, nel limitatore condiviso del database (vedi Registro).
 
 ---
 
@@ -334,6 +335,7 @@ Piano in [investigation 11 11.md](investigation%2011%2011.md). Le voci C/M/E son
 
 | Data | Task | Commit | Chi | Note |
 |---|---|---|---|---|
+| 2026-11-12 | I11-C4 limiti di dimensione | `6ceb83c` | Claude Code | Modifica funzionale. Un messaggio al massimo 32 kB (taglio sicuro), transcript salvato al massimo 400 kB tenendo i più recenti (turni contati prima del taglio), `context` al massimo 16 kB (400), corpo di avvio e salvataggio 1 MB, valutazione con al massimo 120 kB di conversazione e nota delle righe omesse, `jevState` lineare (prima un marshal per messaggio scartato), 200 tentativi per utente in 24 ore (429 `rate_limited`, nuovo `CountStartedSince`). Test in `size_limits_test.go`. Gate Go verde con -race. |
 | 2026-11-12 | I11-M5 tagli senza lettere spezzate | `7aa76ac` | Claude Code | Modifica funzionale. `truncate` tiene al massimo n byte ma arretra all'inizio della lettera; nuovo `lastBytes` per la coda del giudice (`buildState`). Test rossi prima su «èèè» e «ü€». Gate Go verde con -race. |
 | 2026-11-12 | I11-C1 nome del personaggio misterioso | `d6f93b9` | Claude Code | Modifica funzionale. Prima: «great», «Inghilterra», «arco», «queen», «Russia» chiudevano la partita con voto 8–10. Ora particelle di epiteto (di, d', of, the, il), titoli e numeri romani non identificano; il nome intero vince come parole intere. Fixture unica `testdata/mystery_names.json` letta da Go e Vitest (9 casi rossi prima). Gate completo verde (Go -race, lint, tsc, 397 Vitest, build, i18n). |
 | 2026-11-11 | Consegna dopo C3 | questo commit | Codex | TODO dell'11/11 aggiornato con 228 test Go, ripetizione del nuovo test, revisione completata e gate di rete/libSQL ancora aperti; comandi per il runner e hash C3 da git log. Solo documentazione. |

@@ -32,3 +32,11 @@ func (r *AuthRateLimits) Hit(key string, limit int, window time.Duration) (bool,
 		key, expires, now, now, now, limit)
 	return affected(res, err)
 }
+
+// Refund gives back one attempt counted by Hit, for an attempt that turned
+// out right: callers that count only failures hit first (so parallel
+// requests cannot all pass the check) and refund on success.
+func (r *AuthRateLimits) Refund(key string) error {
+	_, err := r.db.Exec(`UPDATE auth_rate_limits SET count = count - 1 WHERE key = ? AND count > 0`, key)
+	return err
+}

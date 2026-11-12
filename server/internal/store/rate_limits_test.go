@@ -94,3 +94,22 @@ func TestRemoteAuthRateLimits(t *testing.T) {
 		t.Fatalf("third hit must be refused: %v %v", ok, err)
 	}
 }
+
+func TestAuthRateLimitsRefundGivesOneAttemptBack(t *testing.T) {
+	r := NewAuthRateLimits(openTestDB(t))
+	if err := r.Refund("none"); err != nil {
+		t.Fatal("refunding an unknown key does nothing")
+	}
+	for range 2 {
+		r.Hit("k", 2, time.Hour)
+	}
+	if ok, _ := r.Hit("k", 2, time.Hour); ok {
+		t.Fatal("full")
+	}
+	if err := r.Refund("k"); err != nil {
+		t.Fatal(err)
+	}
+	if ok, _ := r.Hit("k", 2, time.Hour); !ok {
+		t.Fatal("a refunded attempt can be used again")
+	}
+}

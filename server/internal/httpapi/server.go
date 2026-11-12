@@ -349,14 +349,6 @@ func newRateLimiter() *rateLimiter {
 	return rl
 }
 
-// exhausted reports, without counting a hit, whether key reached limit.
-func (rl *rateLimiter) exhausted(key string, limit int) bool {
-	rl.mu.Lock()
-	defer rl.mu.Unlock()
-	b := rl.buckets[key]
-	return b != nil && time.Now().Before(b.reset) && b.count >= limit
-}
-
 // allow returns false once `limit` hits happened within `window` for key.
 func (rl *rateLimiter) allow(key string, limit int, window time.Duration) bool {
 	if limit <= 0 {

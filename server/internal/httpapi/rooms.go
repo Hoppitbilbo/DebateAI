@@ -59,35 +59,36 @@ func setGuestCookie(w http.ResponseWriter, r *http.Request, login *app.GuestLogi
 	})
 }
 
-// codeGuard refuses the requests of a network that typed too many wrong
-// room codes or PINs; failed() counts one more.
-type codeGuard struct {
-	s   *Server
-	key string
-}
+const wrongCodesMsg = "too many wrong codes, wait a few minutes"
 
-func (s *Server) codeGuard(r *http.Request, scope string) codeGuard {
-	return codeGuard{s: s, key: "roomcode:" + scope + ":" + s.clientIP(r)}
+// roomGuess counts a typed room code or PIN before it is checked
+// (app.authLimits); false when the answer was already written. The caller
+// calls refund when the code or PIN was right.
+func (s *Server) roomGuess(w http.ResponseWriter, refund func(), err error, msg string) bool {
+	switch {
+	case err == nil:
+		return true
+	case errors.Is(err, app.ErrRateLimited):
+		writeErr(w, 429, "rate_limited", msg)
+	default:
+		writeErr(w, 503, "unavailable", "retry in a moment")
+	}
+	return false
 }
-
-func (g codeGuard) blocked() bool {
-	return g.s.limiter.exhausted(g.key, wrongRoomCodesLimit)
-}
-
-func (g codeGuard) failed() { g.s.limiter.allow(g.key, wrongRoomCodesLimit, wrongRoomCodesWindow) }
 
 // ---------- students ----------
 
 func (s *Server) handleRoomLookup(w http.ResponseWriter, r *http.Request) {
 	s.RoomSvc.Purge()
-	guard := s.codeGuard(r, "code")
-	if guard.blocked() {
-		writeErr(w, 429, "rate_limited", "too many wrong codes, wait a few minutes")
+	refund, err := s.AuthLimits.RoomCode(s.clientIP(r))
+	if !s.roomGuess(w, refund, err, wrongCodesMsg) {
 		return
 	}
 	info, err := s.RoomSvc.Lookup(r.PathValue("code"))
+	if !errors.Is(err, app.ErrRoomNotFound) {
+		refund()
+	}
 	if err != nil {
-		guard.failed()
 		writeRoomErr(w, err)
 		return
 	}
@@ -101,14 +102,13 @@ func (s *Server) handleRoomJoin(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 400, "bad_request", err.Error())
 		return
 	}
-	guard := s.codeGuard(r, "code")
-	if guard.blocked() {
-		writeErr(w, 429, "rate_limited", "too many wrong codes, wait a few minutes")
+	refund, err := s.AuthLimits.RoomCode(s.clientIP(r))
+	if !s.roomGuess(w, refund, err, wrongCodesMsg) {
 		return
 	}
 	login, err := s.RoomSvc.Join(in)
-	if errors.Is(err, app.ErrRoomNotFound) {
-		guard.failed()
+	if !errors.Is(err, app.ErrRoomNotFound) {
+		refund()
 	}
 	if err != nil {
 		writeRoomErr(w, err)
@@ -123,17 +123,15 @@ func (s *Server) handleRoomRejoin(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 400, "bad_request", err.Error())
 		return
 	}
-	// PINs have 4 digits: few tries per room and nickname, whatever the network.
-	pinKey := "roompin:" + domain.NormalizeJoinCode(in.Code) + ":" + domain.NormalizeNickname(in.Nickname)
-	if s.limiter.exhausted(pinKey, wrongPINsLimit) {
-		writeErr(w, 429, "rate_limited", "too many wrong PINs, ask your teacher for a new one later")
+	refund, err := s.AuthLimits.RejoinPIN(domain.NormalizeJoinCode(in.Code), domain.NormalizeNickname(in.Nickname))
+	if !s.roomGuess(w, refund, err, "too many wrong PINs, ask your teacher for a new one later") {
 		return
 	}
 	login, err := s.RoomSvc.Rejoin(in)
+	if !errors.Is(err, app.ErrBadRejoinPIN) {
+		refund()
+	}
 	if err != nil {
-		if errors.Is(err, app.ErrBadRejoinPIN) {
-			s.limiter.allow(pinKey, wrongPINsLimit, wrongPINsWindow)
-		}
 		writeRoomErr(w, err)
 		return
 	}

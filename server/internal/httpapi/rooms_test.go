@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http/httptest"
 	"path/filepath"
+	"sync"
 	"testing"
 
 	"github.com/Hoppitbilbo/DebateAI/server/internal/app"
@@ -184,7 +185,7 @@ func TestWrongRoomCodesAreLimitedPerNetwork(t *testing.T) {
 	}
 	bot := newClient(t, srv.URL)
 	bot.headers = map[string]string{"X-Forwarded-For": "6.6.6.6"}
-	for i := 0; i < wrongRoomCodesLimit; i++ {
+	for i := 0; i < wrongCodesPerNetwork; i++ {
 		bot.do("GET", "/api/guest/rooms/AAAAAA", nil, nil)
 	}
 	if code := bot.do("GET", "/api/guest/rooms/"+opened.Room.Code, nil, nil); code != 429 {
@@ -196,3 +197,55 @@ func TestWrongRoomCodesAreLimitedPerNetwork(t *testing.T) {
 		t.Fatalf("other networks are not affected: %d", code)
 	}
 }
+
+// Investigation 11/11, C6: a burst of parallel wrong PINs is counted before
+// the comparison, so no more than the limit reach it.
+func TestParallelWrongPINsAreCountedBeforeTheCheck(t *testing.T) {
+	api := newTestAPI(t)
+	srv := httptest.NewServer(api.Handler())
+	defer srv.Close()
+	opened, err := api.RoomSvc.Open(nil, app.RoomRequest{AppType: "wiki-chatbot"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	login, err := api.RoomSvc.Join(app.JoinRequest{Code: opened.Room.Code, Nickname: "Anna", Avatar: "fox"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	room, _ := api.RoomSvc.ForHost(opened.HostKey)
+	pin, err := api.RoomSvc.IssueRejoinPIN(room, login.UserID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	wrong := "0000"
+	if pin == wrong {
+		wrong = "1111"
+	}
+	const tries = 50
+	var wg sync.WaitGroup
+	var mu sync.Mutex
+	reached := 0
+	for i := range tries {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			c := newClient(t, srv.URL)
+			c.headers = map[string]string{"X-Forwarded-For": fmt.Sprintf("10.0.%d.%d", i/250, i%250)}
+			if code := c.do("POST", "/api/guest/rejoin", map[string]string{"code": opened.Room.Code, "nickname": "anna", "pin": wrong}, nil); code != 429 {
+				mu.Lock()
+				reached++
+				mu.Unlock()
+			}
+		}()
+	}
+	wg.Wait()
+	if reached > wrongPINsPerName {
+		t.Fatalf("%d of %d parallel wrong PINs reached the comparison, limit %d", reached, tries, wrongPINsPerName)
+	}
+}
+
+// The limits of app/limits.go (wrongPINsLimit, wrongRoomCodesLimit).
+const (
+	wrongPINsPerName     = 5
+	wrongCodesPerNetwork = 60
+)

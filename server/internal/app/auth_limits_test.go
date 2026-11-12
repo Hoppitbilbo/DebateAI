@@ -15,6 +15,13 @@ type countingLimits struct {
 	err    error
 }
 
+func (c *countingLimits) Refund(key string) error {
+	if c.counts[key] > 0 {
+		c.counts[key]--
+	}
+	return nil
+}
+
 func (c *countingLimits) Hit(key string, limit int, _ time.Duration) (bool, error) {
 	if c.err != nil {
 		return false, c.err
@@ -122,3 +129,28 @@ func TestClassEnrollmentLimitPerLink(t *testing.T) {
 }
 
 func contains(s, sub string) bool { return strings.Contains(strings.ToLower(s), strings.ToLower(sub)) }
+
+func TestRoomGuessesCountOnlyWrongOnes(t *testing.T) {
+	l := &authLimits{store: &countingLimits{}, secret: []byte("s")}
+	for i := range wrongPINsLimit * 3 {
+		refund, err := l.RejoinPIN("ABC123", "anna")
+		if err != nil {
+			t.Fatalf("right PIN %d: %v", i, err)
+		}
+		refund() // the PIN was right
+	}
+	for range wrongPINsLimit {
+		if _, err := l.RejoinPIN("ABC123", "anna"); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if _, err := l.RejoinPIN("ABC123", "anna"); !errors.Is(err, ErrRateLimited) {
+		t.Fatalf("after %d wrong PINs: %v", wrongPINsLimit, err)
+	}
+	if _, err := l.RejoinPIN("ABC123", "marco"); err != nil {
+		t.Fatal("the PIN limit is per nickname")
+	}
+	if _, err := l.RoomCode("10.0.0.1"); err != nil {
+		t.Fatal("codes have their own counter")
+	}
+}
