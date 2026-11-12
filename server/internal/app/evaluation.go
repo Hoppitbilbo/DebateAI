@@ -156,6 +156,20 @@ func evaluationLanguage(locale string) (name, student string) {
 	return l.name, l.student
 }
 
+// newestLines keeps the newest lines that fit in maxBytes (with their line
+// breaks), and says how many older ones were left out.
+func newestLines(lines []string, maxBytes int) []string {
+	size, first := 0, len(lines)
+	for first > 0 && size+len(lines[first-1])+1 <= maxBytes {
+		first--
+		size += len(lines[first]) + 1
+	}
+	if first == 0 {
+		return lines
+	}
+	return append([]string{fmt.Sprintf("[%d earlier messages omitted]", first)}, lines[first:]...)
+}
+
 // evaluationPrompt builds the teacher-like instructions and the evidence.
 func evaluationPrompt(in EvaluationRequest, a *domain.Assignment, jev *JudgeResult, msgs []TranscriptMessage) (system, prompt string) {
 	lang, student := evaluationLanguage(in.Locale)
@@ -235,7 +249,7 @@ When a PLATFORM RESULT fixes the conversation score, write exactly that score an
 		}
 		parts = append(parts, label(f))
 	}
-	conversation := strings.Join(transcript, "\n")
+	conversation := strings.Join(newestLines(transcript, maxEvaluationTranscriptBytes), "\n")
 	if conversation == "" {
 		conversation = "(empty)"
 	}

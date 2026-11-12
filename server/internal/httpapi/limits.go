@@ -42,6 +42,10 @@ const (
 	maxGenerateOutputTokens = 8192
 )
 
+// maxSessionBodyBytes bounds starting an attempt and saving its transcript;
+// the service bounds the content further (app/limits.go).
+const maxSessionBodyBytes = 1 << 20
+
 // Rate limits.
 const (
 	forgotRequestsLimit = 5  // per hour and IP

@@ -104,6 +104,7 @@ type sessionStore interface {
 	BestPerStudent(classID int64) ([]domain.ProgressCell, error)
 	Owner(id int64) (userID *int64, status string, err error)
 	Create(n domain.NewSession) (int64, error)
+	CountStartedSince(userID int64, since string) (int, error)
 	AbandonEmpty(userID, assignmentID int64) error
 	SaveTranscript(id int64, s domain.TranscriptSave) (revision int64, err error)
 	SaveJudgement(id int64, judgementJSON string, progress int, revision int64) (bool, error)

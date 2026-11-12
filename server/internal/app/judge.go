@@ -125,13 +125,25 @@ func jevState(in judgeInput, goals []string, maxChars int) map[string]any {
 	if in.Context != "" {
 		state["activity"] = map[string]string{"app": in.AppType, "setup": in.Context}
 	}
+	// Each message's size is computed once; the oldest are dropped by
+	// subtraction (marshalling the whole state per dropped message was
+	// quadratic). The room for the omitted count is kept aside.
+	const omittedField = len(`,"earlier_messages_omitted":1000000`)
 	omitted := 0
-	for maxChars > 0 && len(conv) > 2 && len(mustJSON(state)) > maxChars {
-		conv = conv[1:]
-		omitted++
-		state["conversation"] = conv
+	if maxChars > 0 {
+		sizes := make([]int, len(conv))
+		total := len(mustJSON(state))
+		for i, m := range conv {
+			sizes[i] = len(mustJSON(m)) + 1
+		}
+		for len(conv) > 2 && total+omittedField > maxChars {
+			total -= sizes[omitted]
+			omitted++
+			conv = conv[1:]
+		}
 	}
 	if omitted > 0 {
+		state["conversation"] = conv
 		state["earlier_messages_omitted"] = omitted
 	}
 	return state

@@ -11,6 +11,15 @@ const (
 	maxTranscriptMessages = 1000 // older messages are dropped when saving
 	maxReflectionChars    = 20000
 	maxEvaluationChars    = 40000
+	// What a client sends is bounded before it is stored, judged or
+	// evaluated (investigation 11/11, C4). One message can hold the longest
+	// chat answer (maxGenerateOutputTokens); the whole transcript keeps its
+	// newest messages; the context is the activity setup (titles, topic).
+	maxTranscriptMessageBytes    = 32 << 10
+	maxTranscriptBytes           = 400 << 10
+	maxSessionContextBytes       = 16 << 10
+	maxEvaluationTranscriptBytes = 120 << 10 // conversation quoted to the evaluator
+	maxAttemptsPerDay            = 200       // attempts one user may start in 24 hours
 )
 
 // Recipes of the characters' prompts (prompts.go). Longer bios are cut

@@ -251,6 +251,14 @@ func (r *ActivitySessions) Create(n domain.NewSession) (int64, error) {
 	return res.LastInsertId()
 }
 
+// CountStartedSince counts the attempts the user started at or after since
+// (RFC 3339).
+func (r *ActivitySessions) CountStartedSince(userID int64, since string) (int, error) {
+	var n int
+	err := r.db.QueryRow(`SELECT COUNT(*) FROM activity_sessions WHERE user_id = ? AND started_at >= ?`, userID, since).Scan(&n)
+	return n, err
+}
+
 // AbandonEmpty closes the student's active attempts on an assignment that
 // never got a turn.
 func (r *ActivitySessions) AbandonEmpty(userID, assignmentID int64) error {

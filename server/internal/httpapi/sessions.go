@@ -23,14 +23,17 @@ func (s *Server) ownSession(w http.ResponseWriter, r *http.Request) (*domain.Use
 
 func (s *Server) handleCreateSession(w http.ResponseWriter, r *http.Request) {
 	var in app.NewAttempt
-	if err := readJSON(r, &in); err != nil {
+	if err := readJSONLimit(r, &in, maxSessionBodyBytes); err != nil {
 		writeErr(w, 400, "bad_request", err.Error())
 		return
 	}
 	ss, err := s.SessionSvc.Start(currentUser(r), in)
 	switch {
-	case errors.Is(err, app.ErrInvalidApp), errors.Is(err, app.ErrOtherApp):
+	case errors.Is(err, app.ErrInvalidApp), errors.Is(err, app.ErrOtherApp), app.IsInvalid(err):
 		writeErr(w, 400, "bad_request", err.Error())
+		return
+	case errors.Is(err, app.ErrTooManyAttempts):
+		writeErr(w, 429, "rate_limited", err.Error())
 		return
 	case errors.Is(err, app.ErrAssignmentForbidden):
 		writeErr(w, 403, "forbidden", err.Error())
@@ -69,7 +72,7 @@ func (s *Server) handleSaveTranscript(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var in app.TranscriptUpdate
-	if err := readJSON(r, &in); err != nil {
+	if err := readJSONLimit(r, &in, maxSessionBodyBytes); err != nil {
 		writeErr(w, 400, "bad_request", err.Error())
 		return
 	}
@@ -80,6 +83,9 @@ func (s *Server) handleSaveTranscript(w http.ResponseWriter, r *http.Request) {
 		return
 	case errors.Is(err, domain.ErrSessionCompleted):
 		writeErr(w, 409, "session_completed", err.Error())
+		return
+	case app.IsInvalid(err):
+		writeErr(w, 400, "bad_request", err.Error())
 		return
 	case err != nil:
 		writeErr(w, 500, "internal", err.Error())
