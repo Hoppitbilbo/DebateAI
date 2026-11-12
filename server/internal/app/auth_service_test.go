@@ -168,3 +168,17 @@ func TestRegisterExistingAccountNeedsPassword(t *testing.T) {
 		t.Fatalf("invite must be single use: %v", err)
 	}
 }
+
+// Investigation 11/11, M1: a password set by an admin ends the account's
+// logins, as the user's own change does, so a stolen session cannot survive.
+func TestAdminPasswordChangeEndsTheLogins(t *testing.T) {
+	a, _ := newAuthService(t)
+	id, _ := a.CreateUser("a@x.it", "Anna", "password123", domain.RoleStudent, "it")
+	tok, _, _ := a.StartSession(id)
+	if err := a.SetPassword(id, "newpassword1"); err != nil {
+		t.Fatal(err)
+	}
+	if a.UserForToken(tok) != nil {
+		t.Fatal("the old login must end")
+	}
+}

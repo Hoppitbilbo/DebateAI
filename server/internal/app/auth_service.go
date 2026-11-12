@@ -125,8 +125,8 @@ func (a *authService) CreateUser(email, name, password, role, locale string) (in
 	return id, err
 }
 
-// SetPassword replaces the password (admin panel) and invalidates the
-// pending reset links of the account.
+// SetPassword replaces the password (admin panel), invalidates the pending
+// reset links of the account and ends its logins, as a reset does.
 func (a *authService) SetPassword(userID int64, password string) error {
 	hash, err := hashPassword(password)
 	if err != nil {
@@ -135,7 +135,10 @@ func (a *authService) SetPassword(userID int64, password string) error {
 	if err := a.users.SetPasswordHash(userID, hash); err != nil {
 		return err
 	}
-	return a.resets.Invalidate(userID)
+	if err := a.resets.Invalidate(userID); err != nil {
+		return err
+	}
+	return a.logins.DeleteForUser(userID)
 }
 
 // StartSession logs a user in and returns the secret token for the cookie.
