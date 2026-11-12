@@ -130,6 +130,12 @@ func (s *Server) handleClassInvite(w http.ResponseWriter, r *http.Request) {
 	case errors.Is(err, app.ErrOnlyOwner):
 		writeErr(w, 403, "forbidden", err.Error())
 		return
+	case app.IsInvalid(err):
+		writeErr(w, 400, "bad_request", err.Error())
+		return
+	case err != nil:
+		writeErr(w, 500, "internal", err.Error())
+		return
 	}
 	writeJSON(w, 200, inviteResultsResponse{Results: results})
 }

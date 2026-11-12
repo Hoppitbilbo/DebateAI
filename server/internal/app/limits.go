@@ -111,6 +111,9 @@ const (
 	// assistedResetTTL: a teacher hands the link over in person.
 	assistedResetTTL = 15 * time.Minute
 	inviteTTL        = 14 * 24 * time.Hour
+	// maxInvitesPerRequest bounds a class invitation: each mail is sent in
+	// the request (the page shows the link of a mail that failed).
+	maxInvitesPerRequest = 100
 )
 
 // Temporary rooms ("aula lampo").

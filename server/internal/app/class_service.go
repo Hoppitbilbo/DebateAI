@@ -3,6 +3,7 @@ package app
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"strings"
 
 	"github.com/Hoppitbilbo/DebateAI/server/internal/domain"
@@ -132,9 +133,13 @@ func (c *classService) Invite(u *domain.User, classID int64, in MemberInvitation
 	if locale == "" {
 		locale = u.Locale
 	}
+	emails := SplitEmails(in.Emails)
+	if len(emails) > maxInvitesPerRequest {
+		return nil, invalid(fmt.Errorf("at most %d addresses per invitation", maxInvitesPerRequest))
+	}
 	className := c.classes.Name(classID)
 	results := []InviteResult{}
-	for _, email := range SplitEmails(in.Emails) {
+	for _, email := range emails {
 		inv, err := c.accounts.CreateInvite(Invitation{Inviter: u, Email: email, Role: role, ClassID: &classID, ClassName: className, Locale: locale}, baseURL)
 		if err != nil {
 			results = append(results, InviteResult{Email: email, Status: "error", EmailSent: boolPtr(false), Error: err.Error()})
