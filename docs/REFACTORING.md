@@ -309,6 +309,7 @@ Piano in [investigation 11 11.md](investigation%2011%2011.md). Le voci C/M/E son
 - [x] **I11-F1** Tolto il secondo sistema di toast mai usato e `@radix-ui/react-toast` (vedi Registro).
 - [x] **I11-F2/F3** Tolti 20 file del kit UI mai importati e 20 pacchetti senza import (vedi Registro).
 - [x] **I11-F4** Scheda costi dell'admin caricata a richiesta (vedi Registro).
+- [x] **I11-R1/M7** `writeInternal` (53 risposte 500 senza testo interno, errore nel log) e `decode`/`decodeLimit` (33 blocchi «decodifica o 400») (vedi Registro).
 
 ---
 
@@ -351,6 +352,7 @@ Piano in [investigation 11 11.md](investigation%2011%2011.md). Le voci C/M/E son
 
 | Data | Task | Commit | Chi | Note |
 |---|---|---|---|---|
+| 2026-11-12 | I11-F4 costi admin a richiesta | `402a588` | Claude Code | Ottimizzazione del bundle. `AdminCosts` (con recharts) caricato con `React.lazy` dietro uno spinner: chunk `AdminPage` da 419.677 a 45.296 byte, `AdminCosts` 376.360 byte solo quando si apre la scheda. Test della pagina admin verdi. |
 | 2026-11-12 | I11-F2/F3 kit UI e dipendenze inutilizzati | `755c6ed` | Claude Code | Rimozione pura. 20 componenti del kit UI senza import (2.958 righe secondo il piano) e 20 pacchetti senza import in `src`, `scripts` e configurazioni (verificato con uno script Node): react-hook-form, @hookform/resolvers, zod, date-fns, react-day-picker, embla-carousel-react, vaul, input-otp, react-resizable-panels, file-saver e i suoi tipi, html2canvas e otto `@radix-ui/*`. `recharts` resta (costi admin). Gate completo verde. |
 | 2026-11-12 | I11-F1 secondo sistema di toast | `24661de` | Claude Code | Rimozione pura. `App.tsx` montava il `Toaster` di shadcn ma tutti i 27 chiamanti usano `sonner` e nessuno chiamava `useToast`: tolti `toaster.tsx`, `toast.tsx`, i due `use-toast.ts` e `@radix-ui/react-toast`. Chunk principale da 726.438 a 711.638 byte. Gate completo verde. |
 | 2026-11-12 | I11-E1 voce letta una volta | `39efa29` | Claude Code | Ottimizzazione. `check` usa `d.Voice`, già letto da `Load`, invece di rileggere `live_grants` a ogni salvataggio e valutazione (entrambi i chiamanti ricevono `d` da `Load`). **Scartati** dal piano E1: la query della schermata dell'host è già un solo round trip (le sottoquery sono ricerche su indice dentro SQLite); unire le scritture dopo la risposta tocca percorsi di rilascio diversi, rischio maggiore del guadagno. |

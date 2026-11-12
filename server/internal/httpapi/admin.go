@@ -49,7 +49,7 @@ func (s *Server) handleListUsers(w http.ResponseWriter, r *http.Request) {
 	}
 	users, err := s.Users.Search(strings.TrimSpace(r.URL.Query().Get("q")), role, maxListedUsers)
 	if err != nil {
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 		return
 	}
 	type userOut struct {
@@ -63,12 +63,12 @@ func (s *Server) handleListUsers(w http.ResponseWriter, r *http.Request) {
 	}
 	classes, err := s.Classes.CountMemberships()
 	if err != nil {
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 		return
 	}
 	spend, err := s.Usage.SpendPerUserSince(app.MonthStart())
 	if err != nil {
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 		return
 	}
 	for i := range out {
@@ -83,8 +83,7 @@ func (s *Server) handleCreateUser(w http.ResponseWriter, r *http.Request) {
 		Email, Name, Password, Role, Locale string
 		ClassID                             *int64 `json:"classId"`
 	}
-	if err := readJSON(r, &in); err != nil {
-		writeErr(w, 400, "bad_request", err.Error())
+	if !decode(w, r, &in) {
 		return
 	}
 	if in.Password == "" {
@@ -102,7 +101,7 @@ func (s *Server) handleCreateUser(w http.ResponseWriter, r *http.Request) {
 			role = "teacher"
 		}
 		if err := s.Classes.AddMember(*in.ClassID, id, role); err != nil {
-			writeErr(w, 500, "internal", err.Error())
+			writeInternal(w, err)
 			return
 		}
 	}
@@ -120,8 +119,7 @@ func (s *Server) handleUpdateUser(w http.ResponseWriter, r *http.Request) {
 		Locale   *string `json:"locale"`
 		Password *string `json:"password"`
 	}
-	if err := readJSON(r, &in); err != nil {
-		writeErr(w, 400, "bad_request", err.Error())
+	if !decode(w, r, &in) {
 		return
 	}
 	if id == me.ID && ((in.Role != nil && *in.Role != "admin") || (in.Active != nil && !*in.Active)) {
@@ -143,7 +141,7 @@ func (s *Server) handleUpdateUser(w http.ResponseWriter, r *http.Request) {
 		err = s.Logins.DeleteForUser(id) // a disabled account is logged out everywhere
 	}
 	if err != nil {
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 		return
 	}
 	if in.Password != nil && *in.Password != "" {
@@ -166,7 +164,7 @@ func (s *Server) handleDeleteUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err := s.Users.Delete(pathID(r, "id")); err != nil {
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 		return
 	}
 	writeOK(w)
@@ -186,8 +184,7 @@ func (s *Server) handleCreateInvites(w http.ResponseWriter, r *http.Request) {
 		ClassID *int64   `json:"classId"`
 		Locale  string   `json:"locale"`
 	}
-	if err := readJSON(r, &in); err != nil {
-		writeErr(w, 400, "bad_request", err.Error())
+	if !decode(w, r, &in) {
 		return
 	}
 	className := ""
@@ -223,7 +220,7 @@ func (s *Server) handleResendInvite(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err := s.Invites.Delete(id); err != nil {
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 		return
 	}
 	inv, err := s.Accounts.CreateInvite(app.Invitation{Inviter: u, Email: old.Email, Role: old.Role, ClassID: old.ClassID, ClassName: old.ClassName, Locale: old.Locale}, s.baseURL(r))
@@ -236,7 +233,7 @@ func (s *Server) handleResendInvite(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) handleDeleteInvite(w http.ResponseWriter, r *http.Request) {
 	if err := s.Invites.Delete(pathID(r, "id")); err != nil {
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 		return
 	}
 	writeOK(w)
@@ -342,8 +339,7 @@ func (s *Server) handleListProviders(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) handleCreateProvider(w http.ResponseWriter, r *http.Request) {
 	var in app.NewProvider
-	if err := readJSON(r, &in); err != nil {
-		writeErr(w, 400, "bad_request", err.Error())
+	if !decode(w, r, &in) {
 		return
 	}
 	p, err := s.Gateway.AddProvider(r.Context(), in)
@@ -352,7 +348,7 @@ func (s *Server) handleCreateProvider(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 400, "bad_request", err.Error())
 		return
 	case err != nil:
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 		return
 	}
 	writeJSON(w, 201, p)
@@ -360,8 +356,7 @@ func (s *Server) handleCreateProvider(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) handleUpdateProvider(w http.ResponseWriter, r *http.Request) {
 	var in app.ProviderChange
-	if err := readJSON(r, &in); err != nil {
-		writeErr(w, 400, "bad_request", err.Error())
+	if !decode(w, r, &in) {
 		return
 	}
 	p, err := s.Gateway.UpdateProvider(pathID(r, "id"), in)
@@ -370,7 +365,7 @@ func (s *Server) handleUpdateProvider(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 404, "not_found", err.Error())
 		return
 	case err != nil:
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 		return
 	}
 	writeJSON(w, 200, p)
@@ -378,7 +373,7 @@ func (s *Server) handleUpdateProvider(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) handleDeleteProvider(w http.ResponseWriter, r *http.Request) {
 	if err := s.Gateway.DeleteProvider(pathID(r, "id")); err != nil {
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 		return
 	}
 	writeOK(w)
@@ -412,7 +407,7 @@ func (s *Server) handleTestProvider(w http.ResponseWriter, r *http.Request) {
 func (s *Server) handleListPrices(w http.ResponseWriter, r *http.Request) {
 	out, err := s.Prices.List()
 	if err != nil {
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 		return
 	}
 	writeJSON(w, 200, out)
@@ -438,7 +433,7 @@ func (s *Server) handlePutPrice(w http.ResponseWriter, r *http.Request) {
 	}
 	s.Gateway.InvalidatePrices()
 	if err != nil {
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 		return
 	}
 	s.handleListPrices(w, r)
@@ -476,7 +471,7 @@ func (s *Server) handleUsageLog(w http.ResponseWriter, r *http.Request) {
 	}
 	out, err := s.Usage.Recent(limit)
 	if err != nil {
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 		return
 	}
 	writeJSON(w, 200, out)

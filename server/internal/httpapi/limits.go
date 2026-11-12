@@ -53,6 +53,9 @@ const (
 	maxGenerateOutputTokens = 8192
 )
 
+// defaultBodyBytes bounds a JSON request body without a limit of its own.
+const defaultBodyBytes = 8 << 20
+
 // maxSessionBodyBytes bounds starting an attempt and saving its transcript;
 // the service bounds the content further (app/limits.go).
 const maxSessionBodyBytes = 1 << 20

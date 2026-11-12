@@ -46,7 +46,7 @@ func writeRoomErr(w http.ResponseWriter, err error) {
 	case errors.Is(err, app.ErrTooManyRooms):
 		writeErr(w, 429, "rate_limited", err.Error())
 	default:
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 	}
 }
 
@@ -98,8 +98,7 @@ func (s *Server) handleRoomLookup(w http.ResponseWriter, r *http.Request) {
 func (s *Server) handleRoomJoin(w http.ResponseWriter, r *http.Request) {
 	s.RoomSvc.Purge()
 	var in app.JoinRequest
-	if err := readJSON(r, &in); err != nil {
-		writeErr(w, 400, "bad_request", err.Error())
+	if !decode(w, r, &in) {
 		return
 	}
 	refund, err := s.AuthLimits.RoomCode(s.clientIP(r))
@@ -119,8 +118,7 @@ func (s *Server) handleRoomJoin(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) handleRoomRejoin(w http.ResponseWriter, r *http.Request) {
 	var in app.RejoinRequest
-	if err := readJSON(r, &in); err != nil {
-		writeErr(w, 400, "bad_request", err.Error())
+	if !decode(w, r, &in) {
 		return
 	}
 	refund, err := s.AuthLimits.RejoinPIN(domain.NormalizeJoinCode(in.Code), domain.NormalizeNickname(in.Nickname))
@@ -142,7 +140,7 @@ func (s *Server) answerGuestLogin(w http.ResponseWriter, r *http.Request, login 
 	setGuestCookie(w, r, login)
 	u, err := s.Users.Get(login.UserID)
 	if err != nil {
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 		return
 	}
 	writeJSON(w, 200, u)
@@ -165,8 +163,7 @@ func (s *Server) handleGuestRoom(w http.ResponseWriter, r *http.Request) {
 func (s *Server) handleOpenRoom(w http.ResponseWriter, r *http.Request) {
 	s.RoomSvc.Purge()
 	var in app.RoomRequest
-	if err := readJSON(r, &in); err != nil {
-		writeErr(w, 400, "bad_request", err.Error())
+	if !decode(w, r, &in) {
 		return
 	}
 	u := s.userFromRequest(r)
@@ -190,7 +187,7 @@ func (s *Server) handleListRooms(w http.ResponseWriter, r *http.Request) {
 	s.RoomSvc.Purge()
 	out, err := s.RoomSvc.ListOpen(currentUser(r))
 	if err != nil {
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 		return
 	}
 	writeJSON(w, 200, out)
@@ -227,7 +224,7 @@ func (s *Server) handleGetRoom(w http.ResponseWriter, r *http.Request) {
 	}
 	view, err := s.RoomSvc.View(room)
 	if err != nil {
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 		return
 	}
 	writeJSON(w, 200, view)
@@ -241,13 +238,12 @@ func (s *Server) handleUpdateRoom(w http.ResponseWriter, r *http.Request) {
 	var in struct {
 		Locked *bool `json:"locked"`
 	}
-	if err := readJSON(r, &in); err != nil {
-		writeErr(w, 400, "bad_request", err.Error())
+	if !decode(w, r, &in) {
 		return
 	}
 	if in.Locked != nil {
 		if err := s.RoomSvc.SetLocked(room, *in.Locked); err != nil {
-			writeErr(w, 500, "internal", err.Error())
+			writeInternal(w, err)
 			return
 		}
 	}
@@ -260,7 +256,7 @@ func (s *Server) handleEndRoom(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err := s.RoomSvc.End(room); err != nil {
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 		return
 	}
 	writeOK(w)
@@ -325,7 +321,7 @@ func (s *Server) exportedRoom(w http.ResponseWriter, r *http.Request) (*domain.R
 	}
 	e, err := s.RoomTransfer.Export(room)
 	if err != nil {
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 		return nil, nil, false
 	}
 	return room, e, true
@@ -346,7 +342,7 @@ func (s *Server) handleRoomExportFile(w http.ResponseWriter, r *http.Request) {
 	}
 	file, err := s.RoomTransfer.SealExport(e)
 	if err != nil {
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 		return
 	}
 	name := safeFileName(fmt.Sprintf("aula-%s-%s", room.Title, fileDay(room.CreatedAt))) + ".aula"
@@ -380,8 +376,7 @@ func (s *Server) handleRoomImport(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var in roomImportIn
-	if err := readJSON(r, &in); err != nil {
-		writeErr(w, 400, "bad_request", err.Error())
+	if !decode(w, r, &in) {
 		return
 	}
 	var res *app.ImportResult
@@ -405,8 +400,7 @@ func (s *Server) handleRoomImportPreview(w http.ResponseWriter, r *http.Request)
 		return
 	}
 	var in roomImportIn
-	if err := readJSON(r, &in); err != nil {
-		writeErr(w, 400, "bad_request", err.Error())
+	if !decode(w, r, &in) {
 		return
 	}
 	p, err := s.RoomTransfer.PreviewFile(in.File)

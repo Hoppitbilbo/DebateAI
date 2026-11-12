@@ -81,7 +81,7 @@ func (rs *resultSheet) addRow(values ...any) {
 func (rs *resultSheet) send(w http.ResponseWriter, fallback, name string) {
 	sendDownload(w, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fallback, name)
 	if err := rs.Write(w); err != nil {
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 	}
 }
 
@@ -123,12 +123,12 @@ func (s *Server) handleClassGrades(w http.ResponseWriter, r *http.Request) {
 	}
 	assignments, err := s.Assignments.ListForClass(classID)
 	if err != nil {
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 		return
 	}
 	rows, err := s.AssignmentSvc.Grades(assignments)
 	if err != nil {
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 		return
 	}
 	writeGradesXLSX(w, c.Name, u.Locale, rows)
@@ -142,7 +142,7 @@ func (s *Server) handleAssignmentGrades(w http.ResponseWriter, r *http.Request) 
 	}
 	rows, err := s.AssignmentSvc.Grades([]*domain.Assignment{a})
 	if err != nil {
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 		return
 	}
 	writeGradesXLSX(w, a.ClassName+" - "+a.Title, u.Locale, rows)

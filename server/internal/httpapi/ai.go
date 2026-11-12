@@ -121,8 +121,7 @@ func (s *Server) handleGenerate(w http.ResponseWriter, r *http.Request) {
 	}
 	defer release()
 	var in generateIn
-	if err := readJSONLimit(r, &in, maxGenerateBodyBytes); err != nil {
-		writeErr(w, 400, "bad_request", err.Error())
+	if !decodeLimit(w, r, &in, maxGenerateBodyBytes) {
 		return
 	}
 	switch in.Task {
@@ -219,7 +218,7 @@ func (s *Server) handleGenerate(w http.ResponseWriter, r *http.Request) {
 func (s *Server) promptFor(w http.ResponseWriter, rec app.PromptRecipe, assignmentID *int64) (system, opening string, ok bool) {
 	a, err := s.SessionSvc.Assignment(assignmentID)
 	if err != nil {
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 		return "", "", false
 	}
 	system, opening, err = app.ComposePrompt(rec, a)
@@ -229,7 +228,7 @@ func (s *Server) promptFor(w http.ResponseWriter, rec app.PromptRecipe, assignme
 	case app.IsInvalid(err):
 		writeErr(w, 400, "bad_recipe", err.Error())
 	case err != nil:
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 	default:
 		return system, opening, true
 	}
@@ -337,8 +336,7 @@ func (s *Server) handleLiveToken(w http.ResponseWriter, r *http.Request) {
 		Recipe    *app.PromptRecipe `json:"recipe"`
 		VoiceName string            `json:"voiceName"`
 	}
-	if err := readJSON(r, &in); err != nil {
-		writeErr(w, 400, "bad_request", err.Error())
+	if !decode(w, r, &in) {
 		return
 	}
 	attempt, err := s.sessionFor(u, in.SessionID)
@@ -382,8 +380,7 @@ func (s *Server) handleLiveUsage(w http.ResponseWriter, r *http.Request) {
 		InputTokens  int    `json:"inputTokens"`
 		OutputTokens int    `json:"outputTokens"`
 	}
-	if err := readJSON(r, &in); err != nil {
-		writeErr(w, 400, "bad_request", err.Error())
+	if !decode(w, r, &in) {
 		return
 	}
 	// sanity bounds: ignore absurd client values

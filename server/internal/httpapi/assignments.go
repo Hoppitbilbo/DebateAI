@@ -31,7 +31,7 @@ func (s *Server) handleListAssignments(w http.ResponseWriter, r *http.Request) {
 	}
 	out, err := s.AssignmentSvc.ListForClass(classID)
 	if err != nil {
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 		return
 	}
 	writeJSON(w, 200, out)
@@ -43,8 +43,7 @@ func (s *Server) handleCreateAssignment(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 	var in app.AssignmentInput
-	if err := readJSON(r, &in); err != nil {
-		writeErr(w, 400, "bad_request", err.Error())
+	if !decode(w, r, &in) {
 		return
 	}
 	a, err := s.AssignmentSvc.Create(u, classID, in, s.baseURL(r))
@@ -53,7 +52,7 @@ func (s *Server) handleCreateAssignment(w http.ResponseWriter, r *http.Request) 
 		writeErr(w, 400, "bad_request", err.Error())
 		return
 	case err != nil:
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 		return
 	}
 	writeJSON(w, 201, a)
@@ -65,13 +64,12 @@ func (s *Server) handleUpdateAssignment(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 	var in app.AssignmentInput
-	if err := readJSON(r, &in); err != nil {
-		writeErr(w, 400, "bad_request", err.Error())
+	if !decode(w, r, &in) {
 		return
 	}
 	a, err := s.AssignmentSvc.Update(a, in, s.baseURL(r))
 	if err != nil {
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 		return
 	}
 	writeJSON(w, 200, a)
@@ -83,7 +81,7 @@ func (s *Server) handleDeleteAssignment(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 	if err := s.Assignments.Delete(a.ID); err != nil {
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 		return
 	}
 	writeOK(w)
@@ -105,7 +103,7 @@ func (s *Server) handleGetAssignment(w http.ResponseWriter, r *http.Request) {
 func (s *Server) handleMyAssignments(w http.ResponseWriter, r *http.Request) {
 	out, err := s.AssignmentSvc.ListForStudent(currentUser(r))
 	if err != nil {
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 		return
 	}
 	writeJSON(w, 200, out)
@@ -120,7 +118,7 @@ func (s *Server) handleAssignmentProgress(w http.ResponseWriter, r *http.Request
 	}
 	students, err := s.AssignmentSvc.Progress(a)
 	if err != nil {
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 		return
 	}
 	writeJSON(w, 200, assignmentProgressResponse{Assignment: a, Students: students})
@@ -134,7 +132,7 @@ func (s *Server) handleClassProgress(w http.ResponseWriter, r *http.Request) {
 	}
 	cells, err := s.Sessions.BestPerStudent(classID)
 	if err != nil {
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 		return
 	}
 	writeJSON(w, 200, classProgressResponse{Cells: cells})

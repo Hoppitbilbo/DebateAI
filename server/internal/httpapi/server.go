@@ -297,8 +297,29 @@ func writeErr(w http.ResponseWriter, status int, code, msg string) {
 	writeJSON(w, status, apiError{Error: code, Message: msg})
 }
 
+// writeInternal answers 500 for an unexpected error: the error is logged,
+// the browser gets a fixed message (database texts stay on the server).
+func writeInternal(w http.ResponseWriter, err error) {
+	log.Printf("internal error: %v", err)
+	writeErr(w, 500, "internal", "internal error, retry later")
+}
+
+// decode reads the JSON body into v, or answers 400 and returns false.
+func decode(w http.ResponseWriter, r *http.Request, v any) bool {
+	return decodeLimit(w, r, v, defaultBodyBytes)
+}
+
+// decodeLimit is decode with a body limit of maxBytes.
+func decodeLimit(w http.ResponseWriter, r *http.Request, v any, maxBytes int64) bool {
+	if err := readJSONLimit(r, v, maxBytes); err != nil {
+		writeErr(w, 400, "bad_request", err.Error())
+		return false
+	}
+	return true
+}
+
 func readJSON(r *http.Request, v any) error {
-	return readJSONLimit(r, v, 8<<20)
+	return readJSONLimit(r, v, defaultBodyBytes)
 }
 
 func readJSONLimit(r *http.Request, v any, maxBytes int64) error {

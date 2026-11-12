@@ -24,8 +24,7 @@ func (s *Server) ownSession(w http.ResponseWriter, r *http.Request) (*domain.Use
 
 func (s *Server) handleCreateSession(w http.ResponseWriter, r *http.Request) {
 	var in app.NewAttempt
-	if err := readJSONLimit(r, &in, maxSessionBodyBytes); err != nil {
-		writeErr(w, 400, "bad_request", err.Error())
+	if !decodeLimit(w, r, &in, maxSessionBodyBytes) {
 		return
 	}
 	ss, err := s.SessionSvc.Start(currentUser(r), in)
@@ -40,7 +39,7 @@ func (s *Server) handleCreateSession(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 403, "forbidden", err.Error())
 		return
 	case err != nil:
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 		return
 	}
 	writeJSON(w, 201, ss)
@@ -58,7 +57,7 @@ func (s *Server) handleGetSession(w http.ResponseWriter, r *http.Request) {
 func (s *Server) handleMySessions(w http.ResponseWriter, r *http.Request) {
 	out, err := s.Sessions.ListForUser(currentUser(r).ID, maxListedSessions)
 	if err != nil {
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 		return
 	}
 	writeJSON(w, 200, out)
@@ -73,8 +72,7 @@ func (s *Server) handleSaveTranscript(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var in app.TranscriptUpdate
-	if err := readJSONLimit(r, &in, maxSessionBodyBytes); err != nil {
-		writeErr(w, 400, "bad_request", err.Error())
+	if !decodeLimit(w, r, &in, maxSessionBodyBytes) {
 		return
 	}
 	resp, err := s.SessionSvc.SaveTranscript(r.Context(), u, d, in)
@@ -89,7 +87,7 @@ func (s *Server) handleSaveTranscript(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 400, "bad_request", err.Error())
 		return
 	case err != nil:
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 		return
 	}
 	writeJSON(w, 200, resp)
@@ -119,8 +117,7 @@ func (s *Server) handleEvaluateSession(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var in app.EvaluationRequest
-	if err := readJSON(r, &in); err != nil {
-		writeErr(w, 400, "bad_request", err.Error())
+	if !decode(w, r, &in) {
 		return
 	}
 	u, release, ok := s.admit(w, r)
@@ -154,8 +151,7 @@ func evaluationClaim(sessionID int64) []app.Admission {
 // handleSessionFeedback stores the teacher's written feedback and score.
 func (s *Server) handleSessionFeedback(w http.ResponseWriter, r *http.Request) {
 	var in domain.TeacherFeedback
-	if err := readJSON(r, &in); err != nil {
-		writeErr(w, 400, "bad_request", err.Error())
+	if !decode(w, r, &in) {
 		return
 	}
 	d, err := s.SessionSvc.GiveFeedback(currentUser(r), pathID(r, "id"), in, s.baseURL(r))
@@ -179,8 +175,7 @@ func (s *Server) handleCompleteSession(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var in app.Completion
-	if err := readJSON(r, &in); err != nil {
-		writeErr(w, 400, "bad_request", err.Error())
+	if !decode(w, r, &in) {
 		return
 	}
 	if err := s.SessionSvc.Complete(d, in); errors.Is(err, domain.ErrSessionCompleted) {

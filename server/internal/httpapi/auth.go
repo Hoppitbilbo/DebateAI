@@ -46,7 +46,7 @@ func writeServiceErr(w http.ResponseWriter, err error) {
 		writeErr(w, 400, "invalid", err.Error())
 		return
 	}
-	writeErr(w, 500, "internal", err.Error())
+	writeInternal(w, err)
 }
 
 // ---------- handlers ----------
@@ -75,8 +75,7 @@ func (s *Server) handleSetup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var in struct{ Name, Email, Password, Locale string }
-	if err := readJSON(r, &in); err != nil {
-		writeErr(w, 400, "bad_request", err.Error())
+	if !decode(w, r, &in) {
 		return
 	}
 	id, err := s.Accounts.CreateUser(in.Email, in.Name, in.Password, domain.RoleAdmin, in.Locale)
@@ -120,8 +119,7 @@ func (in loginRequest) identifier() (id string, ok bool) {
 func (s *Server) handleLogin(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Cache-Control", "no-store")
 	var in loginRequest
-	if err := readJSON(r, &in); err != nil {
-		writeErr(w, 400, "bad_request", err.Error())
+	if !decode(w, r, &in) {
 		return
 	}
 	identifier, ok := in.identifier()
@@ -142,7 +140,7 @@ func (s *Server) handleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err := s.startSession(w, r, u.ID); err != nil {
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 		return
 	}
 	u, _ = s.getUser(u.ID) // reload: the login time just changed
@@ -186,8 +184,7 @@ func (s *Server) handleUpdateMe(w http.ResponseWriter, r *http.Request) {
 		CurrentPassword string  `json:"currentPassword"`
 		NewPassword     string  `json:"newPassword"`
 	}
-	if err := readJSON(r, &in); err != nil {
-		writeErr(w, 400, "bad_request", err.Error())
+	if !decode(w, r, &in) {
 		return
 	}
 	u, err := s.Accounts.UpdateProfile(currentUser(r), app.ProfileChange(in))
@@ -202,7 +199,7 @@ func (s *Server) handleUpdateMe(w http.ResponseWriter, r *http.Request) {
 	if in.NewPassword != "" {
 		// The new password ended every login: this browser gets a new one.
 		if err := s.startSession(w, r, u.ID); err != nil {
-			writeErr(w, 500, "internal", err.Error())
+			writeInternal(w, err)
 			return
 		}
 	}
@@ -224,8 +221,7 @@ func (s *Server) handleInviteInfo(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) handleRegister(w http.ResponseWriter, r *http.Request) {
 	var in app.Registration
-	if err := readJSON(r, &in); err != nil {
-		writeErr(w, 400, "bad_request", err.Error())
+	if !decode(w, r, &in) {
 		return
 	}
 	uid, err := s.Accounts.Register(in, s.baseURL(r))
@@ -244,7 +240,7 @@ func (s *Server) handleRegister(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err := s.startSession(w, r, uid); err != nil {
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 		return
 	}
 	u, _ := s.getUser(uid)
@@ -276,8 +272,7 @@ func (s *Server) handleRegisterClass(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var in struct{ Code, Username, Password, Locale string }
-	if err := readJSON(r, &in); err != nil {
-		writeErr(w, 400, "bad_request", err.Error())
+	if !decode(w, r, &in) {
 		return
 	}
 	if !s.checkLimit(w, s.AuthLimits.ClassEnrollment(domain.NormalizeJoinCode(in.Code))) {
@@ -296,7 +291,7 @@ func (s *Server) handleRegisterClass(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err := s.startSession(w, r, u.ID); err != nil {
-		writeErr(w, 500, "internal", err.Error())
+		writeInternal(w, err)
 		return
 	}
 	u, _ = s.getUser(u.ID)
@@ -317,8 +312,7 @@ func (s *Server) handleForgot(w http.ResponseWriter, r *http.Request) {
 func (s *Server) handleReset(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Cache-Control", "no-store")
 	var in struct{ Token, Password string }
-	if err := readJSON(r, &in); err != nil {
-		writeErr(w, 400, "bad_request", err.Error())
+	if !decode(w, r, &in) {
 		return
 	}
 	u, err := s.Accounts.ResetPassword(in.Token, in.Password)
