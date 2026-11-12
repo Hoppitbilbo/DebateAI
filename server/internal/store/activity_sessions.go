@@ -231,15 +231,18 @@ func (r *ActivitySessions) BestPerStudent(classID int64) ([]domain.ProgressCell,
 }
 
 // Owner returns who started a session and its status.
-func (r *ActivitySessions) Owner(id int64) (userID *int64, status string, err error) {
-	var owner sql.NullInt64
-	if err = r.db.QueryRow(`SELECT user_id, status FROM activity_sessions WHERE id = ?`, id).Scan(&owner, &status); err != nil {
-		return nil, "", err
+func (r *ActivitySessions) Owner(id int64) (userID *int64, status string, assignmentID *int64, err error) {
+	var owner, assignment sql.NullInt64
+	if err = r.db.QueryRow(`SELECT user_id, status, assignment_id FROM activity_sessions WHERE id = ?`, id).Scan(&owner, &status, &assignment); err != nil {
+		return nil, "", nil, err
 	}
 	if owner.Valid {
 		userID = &owner.Int64
 	}
-	return userID, status, nil
+	if assignment.Valid {
+		assignmentID = &assignment.Int64
+	}
+	return userID, status, assignmentID, nil
 }
 
 func (r *ActivitySessions) Create(n domain.NewSession) (int64, error) {

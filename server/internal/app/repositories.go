@@ -102,7 +102,7 @@ type sessionStore interface {
 	Best(userID, assignmentID int64) *domain.SessionSummary
 	ListForUser(userID int64, limit int) ([]*domain.SessionSummary, error)
 	BestPerStudent(classID int64) ([]domain.ProgressCell, error)
-	Owner(id int64) (userID *int64, status string, err error)
+	Owner(id int64) (userID *int64, status string, assignmentID *int64, err error)
 	Create(n domain.NewSession) (int64, error)
 	CountStartedSince(userID int64, since string) (int, error)
 	AbandonEmpty(userID, assignmentID int64) error

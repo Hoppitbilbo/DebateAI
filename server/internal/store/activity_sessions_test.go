@@ -61,7 +61,7 @@ func TestActivitySessionsLifecycle(t *testing.T) {
 	if cells, _ := r.BestPerStudent(classID); len(cells) != 1 || cells[0].SessionID != id || *cells[0].Score != 8 {
 		t.Fatalf("best per student: %+v", cells)
 	}
-	if owner, status, err := r.Owner(id); err != nil || *owner != stud || status != domain.SessionCompleted {
+	if owner, status, _, err := r.Owner(id); err != nil || *owner != stud || status != domain.SessionCompleted {
 		t.Fatalf("owner: %v %v %s", err, owner, status)
 	}
 	other, _ := NewAssignments(db).Create(domain.NewAssignment{ClassID: classID, Title: "U", AppType: "convinci-tu", Config: "{}", CreatedBy: &teacher})
