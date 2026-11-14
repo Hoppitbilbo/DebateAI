@@ -1,45 +1,55 @@
 {
-  "title": "À propos de AI-Debate.Tech",
-  "section1": {
-    "title": "Notre Objectif Social : Réinventer l'Apprentissage pour Tous",
-    "content": "Nous transformons les devoirs d'obligations en opportunités de croissance passionnantes. Notre mission est de rendre l'éducation plus accessible, efficace et, avouons-le, plus amusante, en exploitant le potentiel de l'Intelligence Artificielle."
+  "title": "Qui sommes-nous",
+  "lead": "AI-Debate est un projet de mémoire : des activités avec l'intelligence artificielle pour les devoirs à la maison, conçues pour faire réfléchir les élèves et pour aider concrètement les enseignants à évaluer. C'est gratuit, open source et peu coûteux, même pour les écoles qui n'ont pas d'argent à dépenser.",
+  "origin": {
+    "title": "D'où vient le projet",
+    "p1": "Je m'appelle Andres Moles et AI-Debate est le projet de mon mémoire. Tout est parti d'une question : si les élèves utilisent déjà l'IA pour faire leurs devoirs, peut-on créer un devoir où l'IA ne donne pas la réponse mais oblige à réfléchir ?",
+    "p2": "Les six activités du site sont ma tentative de réponse. L'élève doit convaincre un personnage historique, interviewer deux personnes qui pensent le contraire l'une de l'autre, deviner qui se cache derrière les réponses, se mettre à la place de quelqu'un d'autre ou animer un débat. Les personnages s'appuient sur Wikipédia : le sujet peut donc venir de l'histoire, de la littérature, des sciences ou de la géographie."
   },
-  "section2": {
-    "title": "Au-delà des Devoirs : Expériences Interactives avec l'IA",
-    "content": "Imaginez des exercices qui s'adaptent à votre rythme, des défis qui stimulent la curiosité et un soutien toujours présent. Nous ne parlons pas de remplacer l'enseignement, mais de l'améliorer. Nous créons de nouveaux exercices, pour la classe et pour la maison, conçus pour être interactifs et profondément engageants."
+  "homework": {
+    "title": "Pourquoi les devoirs à la maison",
+    "p1": "En classe, il y a l'enseignant. À la maison, l'élève est seul et, de plus en plus souvent, il a devant lui un chatbot capable d'écrire la rédaction à sa place. Les recherches récentes vont dans le même sens : un chatbot généraliste améliore le travail rendu mais pas ce qui est appris, et quand l'aide disparaît les résultats peuvent baisser (Bastani et al., 2025 ; OCDE, 2026). Les outils conçus dans un but pédagogique fonctionnent mieux.",
+    "p2": "AI-Debate essaie d'en faire partie. Le personnage ne fait pas l'exercice : il pose des questions, objecte, demande des preuves. L'élève apprend en faisant, dans une situation concrète, et non en lisant une réponse toute faite (Chi et Wylie, 2014 ; Lave et Wenger, 1991). Chaque activité se termine par une réflexion écrite où l'élève juge comment cela s'est passé."
   },
-  "section3": {
-    "title": "Le Rôle Central des Enseignants",
-    "content": "Nous croyons fermement que la technologie doit être un outil entre des mains expertes. Notre plateforme est conçue pour travailler avec les enseignants, et non à leur place. L'IA fournit un soutien personnalisé aux élèves, tandis que les enseignants supervisent et guident le parcours d'apprentissage, libérant un temps précieux pour se concentrer sur les besoins individuels et l'interaction humaine."
+  "assessment": {
+    "title": "Une aide pour qui évalue",
+    "p1": "Lire et corriger trente conversations prend des heures. C'est pourquoi, à la fin de chaque activité, l'IA propose une évaluation motivée et l'élève rédige son auto-évaluation. L'enseignant a sous les yeux la conversation complète, la réflexion et la proposition : il peut l'accepter, la modifier ou l'ignorer. La note reste sa décision.",
+    "p2": "L'idée vient de la recherche sur l'évaluation formative. Un retour aide s'il arrive tôt et indique quoi améliorer (Black et Wiliam, 1998 ; Hattie et Timperley, 2007), et juger son propre travail fait partie de l'apprentissage (Zimmerman, 2002)."
   },
-  "section4": {
-    "title": "Ancrés dans la Recherche, Axés sur l'Impact",
-    "content": "La nôtre n'est pas seulement une technologie pour la technologie. Chaque outil, chaque algorithme, chaque exercice est basé sur une recherche scientifique solide et des méthodologies d'enseignement validées. Notre engagement principal est de comprendre en profondeur quelles applications de l'IA ont un impact positif réel sur l'apprentissage des élèves. Nous investissons constamment dans la recherche pour garantir que nos solutions ne sont pas seulement innovantes, mais surtout, efficaces."
+  "cost": {
+    "title": "Pensé pour les écoles sans budget",
+    "p1": "Beaucoup d'écoles ne peuvent pas payer un abonnement par élève. AI-Debate n'a pas d'abonnement : il se connecte directement aux API des modèles et l'école ne paie que ce qu'elle utilise. Avec les modèles gratuits disponibles aujourd'hui, elle peut même ne rien payer.",
+    "p2": "L'administrateur fixe un plafond de dépenses mensuel. Une fois atteint, les modèles payants s'arrêtent et les modèles gratuits continuent de fonctionner. Chaque requête est enregistrée avec ses tokens et son coût : on sait toujours combien on dépense et pour quelle classe."
   },
-  "section5": {
-    "title": "IA Démocratique et Accessible : Un Engagement Concret",
-    "content": "Nous voulons qu'une éducation améliorée par l'IA soit à la portée de tous. C'est pourquoi nous nous engageons à maintenir notre technologie accessible et abordable. Notre choix d'utiliser des ressources comme Wikipédia, pour l'instant, n'est pas anodin : nous croyons au savoir partagé et à l'importance des outils universellement disponibles. Pour soutenir cette vision, nous reversons 1,5 % de nos revenus à Wikipédia, contribuant ainsi à soutenir la plus grande encyclopédie libre du monde et sa contribution inestimable à l'éducation mondiale."
+  "local": {
+    "title": "Et un jour, tout en local",
+    "p1": "Le serveur sait déjà utiliser Ollama et LM Studio, c'est-à-dire des modèles qui tournent sur un ordinateur de l'école sans rien envoyer à l'extérieur. Mais aujourd'hui, un modèle local capable de tenir un débat dans la langue des élèves demande un matériel que presque aucune école ne possède. Je ne sais pas combien de temps il faudra, mais les petits modèles progressent vite. Quand un PC ordinaire suffira, AI-Debate devra fonctionner ainsi aussi : sans frais et sans données qui sortent de l'établissement."
   },
-  "section6": {
-    "title": "Un Avenir d'Apprentissage Collaboratif et Inclusif",
-    "content": "Notre objectif social est de construire un avenir où l'IA est un allié puissant pour les élèves et les enseignants, faisant de l'apprentissage une aventure passionnante, personnalisée et, surtout, accessible à tous."
+  "limits": {
+    "title": "Ce que je ne sais pas encore",
+    "p1": "Je n'ai pas encore de données sur ce que les élèves apprennent réellement avec ces activités. Les essais en classe menés jusqu'ici servent à trouver des erreurs et à vérifier que les activités tiennent la route, pas à prouver qu'elles fonctionnent. L'évaluation proposée par l'IA peut aussi se tromper, et c'est pour cela que le dernier mot revient à l'enseignant."
   },
-  "section7": {
-    "title": "De la Théorie à la Pratique : Notre Cadre Éducatif",
-    "paragraph1": "La prolifération rapide de l'intelligence artificielle générative a positionné l'éducation à un moment charnière, présentant des opportunités mais aussi des défis significatifs. Bien que le potentiel de l'IA générative pour améliorer la conception de l'apprentissage et fournir des retours personnalisés soit largement reconnu, il existe une déconnexion critique entre les modèles théoriques et les outils pratiques et éthiquement conçus pour l'usage en classe.",
-    "paragraph2": "AIDebate.Tech représente un pas significatif vers la réduction de cet écart théorie-pratique. En opérationnalisant des théories d'apprentissage établies (comme l'apprentissage situé et le raisonnement à double processus) dans une boîte à outils transparente et guidée par les enseignants, notre plateforme offre un modèle convaincant pour exploiter l'IA générative non pas comme un simple distributeur d'informations, mais comme un catalyseur pour développer des compétences de pensée d'ordre supérieur.",
-    "paragraph3": "Nos applications comme 'Convince YOU' et 'You Impersonate' immergent les étudiants dans des pratiques authentiques, leur demandant d'appliquer des connaissances dans des contextes historiques et culturels spécifiques. Les étudiants ne sont plus des récepteurs passifs de faits mais des agents actifs qui doivent incarner différentes visions du monde pour construire des arguments persuasifs, transformant l'apprentissage de déclaratif à procédural.",
-    "paragraph4": "La plateforme est conçue pour favoriser des compétences de pensée critique complexe que l'usage non guidé de l'IA peut involontairement supprimer. Des activités comme 'You Moderate' et 'Double Interview' créent des scénarios de friction intellectuelle, obligeant les étudiants à médier des débats ou comparer des perspectives divergentes, caractéristiques de la pensée critique complexe qui activent le raisonnement délibéré et analytique.",
-    "paragraph5": "Chaque activité culmine dans une phase structurée de méta-réflexion critique, cruciale pour transformer l'expérience en connaissance durable. Les étudiants évaluent la performance de l'IA à travers des questions comme 'L'IA a-t-elle bien incarné le personnage ?' ou 'Quels aspects de son argument étaient peu convaincants ?' Cela déplace l'attention de l'achèvement de la tâche vers l'évaluation critique du processus.",
-    "paragraph6": "La flexibilité de la plateforme, basée sur l'intégration de l'API Wikipedia, la rend intrinsèquement domain-agnostique. Les étudiants peuvent incarner des personnages littéraires, comparer des perspectives géographiques ou modérer des débats scientifiques. Cette polyvalence interdisciplinaire démontre que notre valeur principale ne réside pas dans des contenus spécifiques mais dans le processus d'enquête critique que nous favorisons.",
-    "paragraph7": "En tant que projet open-source installable sur des serveurs scolaires locaux sans collecter d'historiques de chat, nous offrons une alternative sécurisée aux plateformes commerciales. En fournissant un forum pour que les éducateurs partagent expériences et critiques, AIDebate.Tech facilite la recherche collaborative et communautaire nécessaire pour construire une compréhension partagée de l'usage efficace et éthique de l'IA en éducation."
+  "code": {
+    "title": "Le code",
+    "p1": "Le code est public sur GitHub sous licence AGPL-3.0. Tout le monde peut le lire, l'installer sur le serveur de son école et le modifier, à condition de partager ses modifications sous la même licence.",
+    "p2": "Le serveur est un seul programme en Go avec une base de données SQLite et s'installe avec Docker. Le dépôt contient aussi l'article « From Theory to Practice », qui décrit les principes pédagogiques du projet.",
+    "button": "Le code sur GitHub"
   },
-  "helpDevelopment": {
-    "title": "Aidez-nous à Développer AIDebate.Tech",
-    "description": "Rejoignez notre communauté pour aider à développer le support Ollama, ajouter de nouvelles langues, améliorer la documentation et partager des expériences en classe. Votre contribution rend l'éducation IA plus accessible pour tous.",
-    "redditButton": "Rejoindre la Communauté Reddit",
-    "githubButton": "Contribuer sur GitHub",
-    "linkedinButton": "Se Connecter sur LinkedIn"
+  "cta": {
+    "title": "Essayez-la avec votre classe",
+    "p1": "Choisissez une activité, donnez-la en devoir à la maison, puis racontez-moi comment ça s'est passé : ce qui a marché, ce qui n'a pas marché, ce qu'ont dit les élèves. Les retours des enseignants sont la partie la plus utile de ce mémoire.",
+    "apps": "Choisir une activité",
+    "guide": "Guide pour les enseignants"
   },
-  "supportButton": "Soutenez-nous"
+  "references": {
+    "title": "Bibliographie",
+    "note": "Les sources sur lesquelles reposent les choix du projet. Les titres sont dans leur langue d'origine.",
+    "groups": {
+      "guidelines": "Lignes directrices et documents institutionnels",
+      "mit": "Rapports et études du MIT",
+      "interactive": "Apprentissage actif et interactif",
+      "assessment": "Évaluation formative et auto-évaluation",
+      "genai": "IA générative et apprentissage"
+    }
+  }
 }

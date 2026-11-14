@@ -1,45 +1,55 @@
 {
-  "title": "About AI-Debate.Tech",
-  "section1": {
-    "title": "Our Social Purpose: Redesigning Learning for All",
-    "content": "We transform homework from obligations into exciting growth opportunities. Our mission is to make education more accessible, effective, and, let's face it, more fun, by harnessing the potential of Artificial Intelligence."
+  "title": "About",
+  "lead": "AI-Debate is a thesis project: AI activities for homework, designed to make students think and to give teachers practical help with assessment. It is free, open source and cheap to run, even for schools with no money to spend.",
+  "origin": {
+    "title": "Where it comes from",
+    "p1": "My name is Andres Moles and AI-Debate is my thesis project. It started with one question: if students already use AI to do their homework, can we build an assignment where the AI doesn't give the answer but makes them think?",
+    "p2": "The six activities on this site are my attempt at an answer. Students have to convince a historical figure, interview two people who disagree, guess who is hiding behind the answers, step into someone else's shoes or moderate a debate. The characters are based on Wikipedia, so the topic can come from history, literature, science or geography."
   },
-  "section2": {
-    "title": "Beyond Homework: Interactive Experiences with AI",
-    "content": "Imagine exercises that adapt to your pace, challenges that stimulate curiosity, and ever-present support. We're not talking about replacing teaching, but enhancing it. We create new exercises, for both the classroom and home, designed to be interactive and deeply engaging."
+  "homework": {
+    "title": "Why homework",
+    "p1": "In class there is a teacher. At home students are on their own, and more and more often they have a chatbot that can write the essay for them. Recent research points the same way: a general-purpose chatbot improves the work handed in but not what is learned, and once the help is taken away results can get worse (Bastani et al., 2025; OECD, 2026). Tools built with a teaching purpose do better.",
+    "p2": "AI-Debate tries to be one of them. The character doesn't do the exercise: it asks questions, pushes back, asks for evidence. Students learn by doing, inside a concrete situation, not by reading a ready-made answer (Chi & Wylie, 2014; Lave & Wenger, 1991). Every activity ends with a written reflection where students judge how it went."
   },
-  "section3": {
-    "title": "The Central Role of Teachers",
-    "content": "We firmly believe that technology should be a tool in expert hands. Our platform is designed to work with teachers, not in their place. AI provides personalized support to students, while teachers maintain supervision and guide the learning path, freeing up valuable time to focus on individual needs and human interaction."
+  "assessment": {
+    "title": "Help for whoever grades",
+    "p1": "Reading and grading thirty conversations takes hours. So at the end of each activity the AI suggests a grade with its reasons, and the student writes a self-assessment. The teacher sees the full conversation, the reflection and the suggestion, and can accept it, change it or ignore it. The grade stays the teacher's decision.",
+    "p2": "The idea comes from research on formative assessment. Feedback helps when it comes early and says what to improve (Black & Wiliam, 1998; Hattie & Timperley, 2007), and judging your own work is part of learning (Zimmerman, 2002)."
   },
-  "section4": {
-    "title": "Rooted in Research, Focused on Impact",
-    "content": "Ours is not just technology for its own sake. Every tool, every algorithm, every exercise is based on solid scientific research and validated teaching methodologies. Our primary commitment is to deeply understand which AI applications have a real positive impact on student learning. We constantly invest in research to ensure that our solutions are not only innovative, but above all, effective."
+  "cost": {
+    "title": "Built for schools without a budget",
+    "p1": "Many schools can't pay a subscription for every student. AI-Debate has no subscriptions: it connects directly to the models' APIs and the school pays only for what it uses. With the free models available today, it may pay nothing at all.",
+    "p2": "The administrator sets a monthly spending cap. When it is reached, paid models stop and free ones keep working. Every request is logged with its tokens and cost, so you always know how much you are spending and for which class."
   },
-  "section5": {
-    "title": "Democratic and Accessible AI: A Concrete Commitment",
-    "content": "We want an AI-enhanced education to be within everyone's reach. For this reason, we are committed to keeping our technology accessible and affordable. Our choice to use resources like Wikipedia, for now, is not random: we believe in shared knowledge and the importance of universally available tools. To support this vision, we donate 1.5% of our earnings to Wikipedia, helping to sustain the world's largest free encyclopedia and its invaluable contribution to global education."
+  "local": {
+    "title": "And one day, fully local",
+    "p1": "The server can already use Ollama and LM Studio, models that run on a school computer without sending anything outside. Today, though, a local model good enough to hold a debate in the students' language needs hardware almost no school has. I don't know how long it will take, but small models are improving fast. When an ordinary PC is enough, AI-Debate should work that way too: no costs and no data leaving the school."
   },
-  "section6": {
-    "title": "A Future of Collaborative and Inclusive Learning",
-    "content": "Our social purpose is to build a future where AI is a powerful ally for students and teachers, making learning an exciting, personalized, and, above all, accessible adventure for everyone."
+  "limits": {
+    "title": "What I don't know yet",
+    "p1": "I don't yet have data on how much students actually learn with these activities. The classroom trials so far are for finding bugs and checking that the activities hold up, not for proving that they work. The grade suggested by the AI can be wrong too, which is why the teacher has the last word."
   },
-  "section7": {
-    "title": "From Theory to Practice: Our Educational Framework",
-    "paragraph1": "The rapid proliferation of generative artificial intelligence has positioned education at a pivotal juncture, presenting opportunities yet fraught with challenges. While the potential for GenAI to enhance learning design and provide personalized feedback is widely acknowledged, a critical disconnect exists between theoretical models and practical, ethically designed tools for classroom use.",
-    "paragraph2": "AIDebate.Tech represents a significant step toward bridging this theory-practice gap. By operationalizing established learning theories (such as situated learning and dual-process reasoning) into a transparent, teacher-guided toolkit, our platform offers a compelling model for leveraging GenAI not as a mere information dispenser, but as a catalyst for developing higher-order thinking skills.",
-    "paragraph3": "Our applications such as 'Convince YOU' and 'You Impersonate' immerse students in authentic practice, requiring them to apply knowledge within specific historical and cultural contexts. Students are no longer passive recipients of facts but active agents who must embody different worldviews to construct persuasive arguments, transforming learning from declarative to procedural.",
-    "paragraph4": "The platform is engineered to foster complex critical thinking skills that unguided AI use can inadvertently suppress. Activities like 'You Moderate' and 'Double Interview' create scenarios of intellectual friction, compelling students to mediate debates or compare divergent perspectives, hallmarks of complex critical thinking that activate deliberate, analytical reasoning.",
-    "paragraph5": "Each activity culminates in a structured critical meta-reflection phase, crucial for transforming experience into lasting knowledge. Students evaluate the AI's performance through prompts like 'Did the AI impersonate the character well?' or 'What aspects of its argument were unconvincing?' This shifts focus from task completion to critical process appraisal.",
-    "paragraph6": "The platform's flexibility, based on Wikipedia API integration, makes it inherently domain-agnostic. Students can impersonate literary characters, compare geographical perspectives, or moderate scientific debates. This interdisciplinary versatility demonstrates that our core value lies not in specific content but in the process of critical inquiry we foster.",
-    "paragraph7": "As an open-source project installable on local school servers without collecting chat history, we offer a secure alternative to commercial platforms. By providing a forum for educators to share experiments and critiques, AIDebate.Tech facilitates the collaborative, community-driven research required to build shared understanding of effective and ethical AI use in education."
+  "code": {
+    "title": "The code",
+    "p1": "The code is public on GitHub under the AGPL-3.0 license. Anyone can read it, install it on their school's server and change it, as long as they share their changes under the same license.",
+    "p2": "The server is a single Go program with an SQLite database and installs with Docker. The repository also contains the paper “From Theory to Practice”, which describes the teaching principles behind the project.",
+    "button": "The code on GitHub"
   },
-  "helpDevelopment": {
-    "title": "Help Us Develop AIDebate.Tech",
-    "description": "Join our community to help develop Ollama support, add new languages, improve documentation, and share classroom experiences. Your contribution makes AI education more accessible for everyone.",
-    "redditButton": "Join Reddit Community",
-    "githubButton": "Contribute on GitHub",
-    "linkedinButton": "Connect on LinkedIn"
+  "cta": {
+    "title": "Try it with your class",
+    "p1": "Pick an activity, set it as homework and then tell me how it went: what worked, what didn't, what the students said. Teachers' reports are the most useful part of this thesis.",
+    "apps": "Pick an activity",
+    "guide": "Teacher guide"
   },
-  "supportButton": "Support Us"
+  "references": {
+    "title": "References",
+    "note": "The sources behind the project's choices. Titles are in their original language.",
+    "groups": {
+      "guidelines": "Guidelines and institutional documents",
+      "mit": "MIT reports and studies",
+      "interactive": "Active and interactive learning",
+      "assessment": "Formative assessment and self-assessment",
+      "genai": "Generative AI and learning"
+    }
+  }
 }
