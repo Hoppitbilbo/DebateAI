@@ -316,7 +316,8 @@
       "teacherHint": "Pista: {{hint}}",
       "hintsUsed": "Pistas usadas",
       "roundOf": "Personaje {{n}} de {{total}}",
-      "nextCharacter": "Siguiente personaje ({{n}} de {{total}})"
+      "nextCharacter": "Siguiente personaje ({{n}} de {{total}})",
+      "identifiedByVoice": "El personaje ha confirmado el nombre por voz: has acertado."
     },
     "impersonaTu": {
       "setupTitle": "Elige los papeles",

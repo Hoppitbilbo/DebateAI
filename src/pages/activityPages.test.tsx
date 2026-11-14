@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { act, cleanup, fireEvent, render as renderPage, screen } from "@testing-library/react";
 import type { AiClient } from "@/services/aiClient";
+import type { UseLiveAiOptions } from "@/hooks/useLiveAi";
 import AiClientProvider from "@/services/AiClientProvider";
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import i18n from "@/i18n";
@@ -29,6 +30,7 @@ const mocks = vi.hoisted(() => ({
   sync: vi.fn(),
   useWikiSummaries: vi.fn((..._args: unknown[]) => ({ summaries: {}, loading: false })),
   session: {} as Record<string, unknown>,
+  live: null as UseLiveAiOptions | null,
 }));
 
 vi.mock("@/features/activity/useActivitySession", () => ({
@@ -57,7 +59,7 @@ vi.mock("@/features/activity/components/SetupCard", async (orig) => ({
 }));
 vi.mock("@/features/activity/wiki", () => ({ useWikiSummaries: mocks.useWikiSummaries, bioOf: () => "bio" }));
 vi.mock("@/hooks/useLiveAi", () => ({
-  useLiveAi: () => ({ liveMode: false, liveState: "off", liveAvailable: false, toggleLive: vi.fn(), stopLive: vi.fn(), finishLive: vi.fn(), sendLiveText: vi.fn() }),
+  useLiveAi: (o: UseLiveAiOptions) => (mocks.live = o, { liveMode: false, liveState: "off", liveAvailable: false, toggleLive: vi.fn(), stopLive: vi.fn(), finishLive: vi.fn(), sendLiveText: vi.fn() }),
 }));
 
 // The AI gateway is a fake AiClient given through the provider.
@@ -318,6 +320,28 @@ describe("PersonaggioMisteriosoPage found in the chat", () => {
     mocks.generateStream.mockResolvedValueOnce("Hmm, who knows?");
     await askName();
     expect(screen.getByText(/You got it: it's Person Secret character!/)).toBeTruthy();
+  });
+
+  it("by voice, the character's confirmation wins even when the transcription mangled the name", async () => {
+    render(<PersonaggioMisteriosoPage />);
+    pickAll();
+    await start();
+    act(() => mocks.live!.onUserText!("por ida, Carlo?", true));
+    await act(async () => mocks.live!.onFunctionCall!("character_identified"));
+    expect(screen.getByText(/You got it: it's Person Secret character!/)).toBeTruthy();
+    expect(screen.getByText(/confirmed by voice/)).toBeTruthy();
+    expect(mocks.sync).toHaveBeenLastCalledWith(expect.any(Array), expect.anything(), { voiceIdentified: true });
+  });
+
+  it("by voice, a turn that names the character wins like a written question", async () => {
+    render(<PersonaggioMisteriosoPage />);
+    pickAll();
+    await start();
+    act(() => mocks.live!.onUserText!("Are you Person Secret character?", true));
+    act(() => mocks.live!.onAssistantText("Yes!", true));
+    await act(async () => mocks.live!.onTurnComplete!());
+    expect(screen.getByText(/You got it: it's Person Secret character!/)).toBeTruthy();
+    expect(screen.queryByText(/confirmed by voice/)).toBeNull();
   });
 
   it("the server's verdict wins the game without the name in the text (e.g. by voice)", async () => {

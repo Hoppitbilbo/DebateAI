@@ -316,7 +316,8 @@
       "teacherHint": "Hint: {{hint}}",
       "hintsUsed": "Hints used",
       "roundOf": "Character {{n}} of {{total}}",
-      "nextCharacter": "Next character ({{n}} of {{total}})"
+      "nextCharacter": "Next character ({{n}} of {{total}})",
+      "identifiedByVoice": "Name confirmed by voice by the character: you guessed it."
     },
     "impersonaTu": {
       "setupTitle": "Choose the roles",

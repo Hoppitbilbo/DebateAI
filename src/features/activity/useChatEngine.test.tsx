@@ -136,6 +136,19 @@ describe("useChatEngine", () => {
     expect(result.current.messagesRef.current[0].name).toBe("???");
   });
 
+  it("hands the student's voice turn and the character's function calls to the page", async () => {
+    const onUserTurn = vi.fn();
+    const onFunctionCall = vi.fn();
+    renderHook(() => useChatEngine({ session: fakeSession(), live: { characterName: "Frida Kahlo", onUserTurn, onFunctionCall } }), { wrapper: withAi });
+    const live = (): UseLiveAiOptions => mocks.liveOptions.mock.lastCall![0];
+    act(() => live().onUserText!("Sei Frida Kahlo?", true));
+    act(() => live().onAssistantText("Sì!", true));
+    await act(async () => live().onTurnComplete!());
+    expect(onUserTurn).toHaveBeenCalledWith("Sei Frida Kahlo?");
+    act(() => live().onFunctionCall!("character_identified"));
+    expect(onFunctionCall).toHaveBeenCalledWith("character_identified");
+  });
+
   it("runs a turn: user message, reply, then sync with context", async () => {
     const session = fakeSession({ sync: vi.fn().mockResolvedValue("goal_reached") });
     const onEnded = vi.fn();

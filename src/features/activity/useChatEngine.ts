@@ -4,7 +4,7 @@ import i18n from "@/i18n";
 import type { ChatMessage, PromptRecipe } from "@/services/aiService";
 import { useAiClient } from "@/services/aiClient";
 import { useLiveAi } from "@/hooks/useLiveAi";
-import type { ActivitySession, EndReason } from "./useActivitySession";
+import type { ActivitySession, EndReason, SyncOptions } from "./useActivitySession";
 import { ActivityMessage, newId } from "./types";
 import { useMessageState } from "./useMessageState";
 
@@ -16,6 +16,10 @@ export interface LiveConfig {
   characterBio?: string;
   /** The name shown on the voice replies, when it must stay hidden (e.g. "???"); characterName otherwise. */
   shownName?: string;
+  /** Called with what the student said, when a voice turn ends. */
+  onUserTurn?: (text: string) => void;
+  /** The voice character called a function declared by the server. */
+  onFunctionCall?: (name: string) => void;
 }
 
 interface Options {
@@ -71,7 +75,7 @@ export const useChatEngine = ({ session, live, context, onEnded }: Options) => {
    * Saves the transcript after a turn. `judge: true` asks for a judgement even
    * when the attempt already ended; `judge: false` saves without one.
    */
-  const afterTurn = useCallback(async (opts: { judge?: boolean } = {}) => {
+  const afterTurn = useCallback(async (opts: SyncOptions = {}) => {
     const reason = await session.sync(messagesRef.current, contextRef.current, opts);
     if (reason) onEndedRef.current?.(reason);
   }, [session, messagesRef]);
@@ -169,6 +173,8 @@ export const useChatEngine = ({ session, live, context, onEnded }: Options) => {
   // ----- Live voice mode -----
   const liveAssistantId = useRef<string | null>(null);
   const liveUserId = useRef<string | null>(null);
+  /** What the student said in the voice turn under way, for onUserTurn. */
+  const liveUserText = useRef("");
 
   const liveCtl = useLiveAi({
     disabled: !live || !session.allowLive || ended,
@@ -186,6 +192,7 @@ export const useChatEngine = ({ session, live, context, onEnded }: Options) => {
       }
     },
     onUserText: (text) => {
+      liveUserText.current = text;
       if (!liveUserId.current) {
         liveUserId.current = addMessage({ role: "user", content: text }).id;
       } else {
@@ -195,10 +202,14 @@ export const useChatEngine = ({ session, live, context, onEnded }: Options) => {
     },
     onTurnComplete: () => {
       if (liveAssistantId.current) patchMessage(liveAssistantId.current, { streaming: false });
+      const said = liveUserText.current;
+      liveUserText.current = "";
       liveAssistantId.current = null;
       liveUserId.current = null;
+      if (said) live?.onUserTurn?.(said);
       void afterTurn();
     },
+    onFunctionCall: (name) => live?.onFunctionCall?.(name),
   });
 
   /**
@@ -206,7 +217,7 @@ export const useChatEngine = ({ session, live, context, onEnded }: Options) => {
    * answer(s), then syncs with the server (JEV; `save.judge` forces or skips
    * the judgement). In live mode the text is forwarded to the voice session instead.
    */
-  const runTurn = useCallback(async (text: string, reply: () => Promise<unknown>, userName?: string, target?: string, save: { judge?: boolean } = {}) => {
+  const runTurn = useCallback(async (text: string, reply: () => Promise<unknown>, userName?: string, target?: string, save: SyncOptions = {}) => {
     if (!text.trim() || busy || ended) return;
     addMessage({ role: "user", content: text.trim(), name: userName, speakerKey: target });
     if (liveCtl.liveMode && liveCtl.sendLiveText(text.trim())) return;

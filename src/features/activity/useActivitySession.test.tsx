@@ -126,6 +126,19 @@ describe("server session", () => {
     expect(result.current.getSessionId()).toBe(42);
   });
 
+  it("reports a mystery game won by voice with the save, and only when it was", async () => {
+    const { result } = await loggedIn();
+    mocks.api.put.mockResolvedValue({ status: "goal_reached", turns: 1, progress: 0, ended: true, reason: "identified" });
+    await act(async () => {
+      await result.current.sync([msg("user", "por ida, Carlo?")], undefined, { voiceIdentified: true });
+    });
+    expect(mocks.api.put.mock.calls[0][1]).toMatchObject({ voiceIdentified: true });
+    await act(async () => {
+      await result.current.sync([msg("user", "por ida, Carlo?")], undefined, {});
+    });
+    expect(mocks.api.put.mock.calls[1][1]).not.toHaveProperty("voiceIdentified");
+  });
+
   it("sends only finished, non-empty messages and reports the judge's end reason", async () => {
     const { result } = await loggedIn();
     const jev = { engine: "jev", progress: 100, completed: true, goals: [] };

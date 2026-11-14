@@ -20,6 +20,8 @@ export interface StartLiveConversationOptions {
   onAudioChunk?: (audio: LiveAudioChunk) => void;
   onUserTranscription?: (text: string, isFinal: boolean) => void;
   onTurnComplete?: () => void;
+  /** The character called one of the functions the server declared in the token. */
+  onFunctionCall?: (name: string) => void;
   onInterrupted?: () => void;
   onError?: (errorMessage: string) => void;
   onClose?: () => void;
@@ -120,6 +122,12 @@ export const startLiveConversation = async (options: StartLiveConversationOption
           usage.output += message.usageMetadata.responseTokenCount ?? 0;
         }
         if (sc?.turnComplete) options.onTurnComplete?.();
+        const calls = message.toolCall?.functionCalls ?? [];
+        for (const call of calls) if (call.name) options.onFunctionCall?.(call.name);
+        // The model waits for the answer before it goes on speaking.
+        if (calls.length && session && !closed) {
+          session.sendToolResponse({ functionResponses: calls.map((c) => ({ id: c.id, name: c.name, response: { result: "ok" } })) });
+        }
       },
       onerror: (event: ErrorEvent) => options.onError?.(event.message || "Live API error"),
       onclose: (event: CloseEvent) => {
