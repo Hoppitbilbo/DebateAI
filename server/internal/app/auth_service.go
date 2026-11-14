@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/mail"
+	"runtime"
 	"strings"
 	"time"
 
@@ -76,7 +77,9 @@ func hashPassword(password string) (string, error) {
 	if err := checkPassword(password); err != nil {
 		return "", err
 	}
-	h, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	var h []byte
+	var err error
+	withBcryptSlot(func() { h, err = bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost) })
 	return string(h), err
 }
 
@@ -91,7 +94,24 @@ func checkPassword(password string) error {
 }
 
 func passwordMatches(hash, password string) bool {
-	return hash != "" && bcrypt.CompareHashAndPassword([]byte(hash), []byte(password)) == nil
+	if hash == "" {
+		return false
+	}
+	var err error
+	withBcryptSlot(func() { err = bcrypt.CompareHashAndPassword([]byte(hash), []byte(password)) })
+	return err == nil
+}
+
+// bcryptSlots caps the bcrypt runs at one per CPU. bcrypt is pure CPU
+// work: past that a burst of logins only queues behind itself, and here it
+// queues on this channel instead of stealing the CPU from every other
+// request (loadtest/README.md).
+var bcryptSlots = make(chan struct{}, max(1, runtime.GOMAXPROCS(0)))
+
+func withBcryptSlot(f func()) {
+	bcryptSlots <- struct{}{}
+	defer func() { <-bcryptSlots }()
+	f()
 }
 
 // timingHash is compared when the account is missing, so a login takes the
@@ -179,7 +199,7 @@ func (a *authService) Logout(token string) {
 func (a *authService) Login(identifier, password string) (*domain.User, error) {
 	u, err := a.findByIdentifier(identifier)
 	if err != nil {
-		_ = bcrypt.CompareHashAndPassword(timingHash, []byte(password))
+		withBcryptSlot(func() { _ = bcrypt.CompareHashAndPassword(timingHash, []byte(password)) })
 		return nil, ErrInvalidCredentials
 	}
 	if hash, err := a.users.PasswordHash(u.ID); err != nil || !passwordMatches(hash, password) || u.IsGuest() {
