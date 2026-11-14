@@ -217,7 +217,7 @@ type LiveToken struct {
 
 // LiveToken returns a token from the first Gemini target of the live task,
 // and records the grant its usage will be reported against.
-func (g *aiGateway) LiveToken(ctx context.Context, systemInstruction, voice string, userID, sessionID *int64) (*LiveToken, error) {
+func (g *aiGateway) LiveToken(ctx context.Context, systemInstruction, voice string, functions []ai.LiveFunction, userID, sessionID *int64) (*LiveToken, error) {
 	if voice == "" {
 		voice = g.settings.Routing().DefaultVoice
 	}
@@ -235,7 +235,7 @@ func (g *aiGateway) LiveToken(ctx context.Context, systemInstruction, voice stri
 			continue
 		}
 		tctx, cancel := context.WithTimeout(ctx, liveTokenTimeout)
-		tok, exp, err := ai.CreateLiveToken(tctx, cp.cfg, ai.LiveTokenOptions{Model: t.Model, SystemInstruction: systemInstruction, VoiceName: voice})
+		tok, exp, err := ai.CreateLiveToken(tctx, cp.cfg, ai.LiveTokenOptions{Model: t.Model, SystemInstruction: systemInstruction, VoiceName: voice, Functions: functions})
 		cancel()
 		if err != nil {
 			g.releaseReservation(reservation)

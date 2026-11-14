@@ -358,11 +358,15 @@ func (s *Server) handleLiveToken(w http.ResponseWriter, r *http.Request) {
 	if !ok {
 		return
 	}
+	extra, functions := app.LiveSetup(rec)
+	if extra != "" {
+		system += "\n" + extra
+	}
 	var userID *int64
 	if u != nil {
 		userID = &u.ID
 	}
-	tok, err := s.Gateway.LiveToken(r.Context(), system, in.VoiceName, userID, sessionID)
+	tok, err := s.Gateway.LiveToken(r.Context(), system, in.VoiceName, functions, userID, sessionID)
 	if err != nil {
 		writeErr(w, 502, "live_unavailable", err.Error())
 		return

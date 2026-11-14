@@ -31,6 +31,14 @@ interface SyncResponse {
 }
 
 /** Attempts that can be taken up again after a reload: not handed in, not abandoned. */
+/** How a transcript save is judged. */
+export interface SyncOptions {
+  /** Force (true) or skip (false) the judgement. */
+  judge?: boolean;
+  /** The mystery game's voice character confirmed the name (the server checks the attempt used voice). */
+  voiceIdentified?: boolean;
+}
+
 const RESUMABLE: ReadonlySet<SessionSummary["status"]> = new Set(["active", "goal_reached", "turn_limit"]);
 
 /**
@@ -177,7 +185,7 @@ export const useActivitySession = (appType: AppType) => {
    * Saves the transcript and, for assignments, runs the JEV judge.
    * Returns the end reason when the server decided the activity is over.
    */
-  const sync = useCallback(async (messages: ActivityMessage[], context?: Record<string, unknown>, opts: { judge?: boolean } = {}): Promise<EndReason> => {
+  const sync = useCallback(async (messages: ActivityMessage[], context?: Record<string, unknown>, opts: SyncOptions = {}): Promise<EndReason> => {
     const userTurns = messages.filter((m) => m.role === "user" && m.content.trim()).length;
     setTurns(userTurns);
     const id = sessionRef.current;
@@ -199,6 +207,7 @@ export const useActivitySession = (appType: AppType) => {
       const base = sessionRef.current === id ? revisionRef.current : null;
       const res = await api.put<SyncResponse>(`/api/sessions/${id}/transcript`, {
         messages: transcript, context, ...(opts.judge !== undefined ? { judge: opts.judge } : {}), ...(base !== null ? { baseRevision: base } : {}),
+        ...(opts.voiceIdentified ? { voiceIdentified: true } : {}),
       });
       if (sessionRef.current === id && typeof res.revision === "number") revisionRef.current = res.revision;
       return res;

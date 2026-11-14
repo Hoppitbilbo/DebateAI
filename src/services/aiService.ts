@@ -203,10 +203,15 @@ export interface EvaluationRequest {
   mystery?: MysteryResult;
 }
 
-/** How a mystery game ended: the final guess (empty when the name came up in the chat) and the hints asked. */
+/**
+ * How a mystery game ended: the final guess (empty when the name came up in
+ * the chat), the hints asked, and the question at which the voice character
+ * confirmed the name (0 if it did not).
+ */
 export interface MysteryResult {
   guess: string;
   hints: number;
+  voiceTurn?: number;
 }
 
 /** The server's evaluation of an attempt, stored with it. */

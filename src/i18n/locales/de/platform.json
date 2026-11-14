@@ -316,7 +316,8 @@
       "teacherHint": "Hinweis: {{hint}}",
       "hintsUsed": "Benutzte Hinweise",
       "roundOf": "Figur {{n}} von {{total}}",
-      "nextCharacter": "Nächste Figur ({{n}} von {{total}})"
+      "nextCharacter": "Nächste Figur ({{n}} von {{total}})",
+      "identifiedByVoice": "Die Figur hat den Namen per Stimme bestätigt: Du hast es erraten."
     },
     "impersonaTu": {
       "setupTitle": "Rollen wählen",

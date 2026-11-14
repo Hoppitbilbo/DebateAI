@@ -316,7 +316,8 @@
       "teacherHint": "Indizio: {{hint}}",
       "hintsUsed": "Indizi usati",
       "roundOf": "Personaggio {{n}} di {{total}}",
-      "nextCharacter": "Prossimo personaggio ({{n}} di {{total}})"
+      "nextCharacter": "Prossimo personaggio ({{n}} di {{total}})",
+      "identifiedByVoice": "Nome confermato a voce dal personaggio: hai indovinato."
     },
     "impersonaTu": {
       "setupTitle": "Scegli i ruoli",

@@ -30,6 +30,8 @@ export interface UseLiveAiOptions {
   onAssistantText: (text: string, isNewTurn: boolean) => void;
   onUserText?: (text: string, isFinal: boolean) => void;
   onTurnComplete?: () => void;
+  /** The character called a function declared by the server (e.g. the mystery game is won). */
+  onFunctionCall?: (name: string) => void;
 }
 
 const sampleRateOf = (mime: string) => {
@@ -167,6 +169,7 @@ export const useLiveAi = (opts: UseLiveAiOptions) => {
             cbRef.current.onAssistantText(text, isNew);
           },
           onAudioChunk: playChunk,
+          onFunctionCall: (name) => cbRef.current.onFunctionCall?.(name),
           onInterrupted: () => {
             // the student spoke over the character
             stopPlayback();

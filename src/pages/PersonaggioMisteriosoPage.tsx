@@ -20,6 +20,9 @@ import { Difficulty, difficultyOf, isDifficulty } from "@/features/activity/diff
 import DifficultyPicker from "@/features/activity/components/DifficultyPicker";
 import RoundDots from "@/features/activity/components/RoundDots";
 
+/** The function the voice character calls when the student names it (server: app.MysteryIdentifiedFunction). */
+const VOICE_IDENTIFIED = "character_identified";
+
 const app = APPS["personaggio-misterioso"];
 
 /** Largest number of questions the student can pick on the slider. */
@@ -72,13 +75,31 @@ const PersonaggioMisteriosoPage = () => {
 
   // Set below, once the round is known; called when the judge says the
   // character was found.
-  const foundRef = useRef<(() => void) | null>(null);
+  const foundRef = useRef<((how?: { byVoice?: boolean }) => void) | null>(null);
+  /** The question at which the voice character confirmed the name (0 if it did not). */
+  const voiceTurn = useRef(0);
   const lastQuestion = useRef("");
 
   const flow = useActivityFlow(app.type, {
     characters: [character],
     live: (phase, assignment, bio) =>
-      phase === "chat" && character && !guessing ? { recipe: recipeOf(assignment, bio), characterName: character.title, characterBio: bio(character), shownName: "???" } : null,
+      phase === "chat" && character && !guessing
+        ? {
+          recipe: recipeOf(assignment, bio),
+          characterName: character.title,
+          characterBio: bio(character),
+          shownName: "???",
+          // The transcription may have the name, like a written question...
+          onUserTurn: (text: string) => {
+            lastQuestion.current = text;
+            if (isCorrectGuess(text, character.title)) foundRef.current?.();
+          },
+          // ...or mangle it: the character, who heard it, says so with a function call.
+          onFunctionCall: (name: string) => {
+            if (name === VOICE_IDENTIFIED) foundRef.current?.({ byVoice: true });
+          },
+        }
+        : null,
     // The character is saved too, so that a reload can take the game up again.
     context: (assignment) => ({ character: character?.title, questions: availableQuestions(chosenQuestions, assignment?.maxTurns), difficulty: levelFor(assignment) }),
     onEnded,
@@ -182,6 +203,7 @@ const PersonaggioMisteriosoPage = () => {
     setEndedByJudge(false);
     setFoundInChat(false);
     wonRef.current = false;
+    voiceTurn.current = 0;
     setResult(null);
     setGuess("");
     setReasoning("");
@@ -213,10 +235,19 @@ const PersonaggioMisteriosoPage = () => {
   // check may both report it for the same turn.
   const wonRef = useRef(false);
 
-  /** The game is won in the chat: the student said the name (or the judge recognised it). */
-  const found = () => {
+  /**
+   * The game is won in the chat: the student said the name (or the judge
+   * recognised it), or by voice the character confirmed it (byVoice): the
+   * server, which never hears the voice, is told so with the save.
+   */
+  const found = ({ byVoice = false }: { byVoice?: boolean } = {}) => {
     if (!character || wonRef.current) return;
     wonRef.current = true;
+    if (byVoice) {
+      voiceTurn.current = Math.max(1, engine.messagesRef.current.filter((m) => m.role === "user" && m.content.trim()).length);
+      engine.addMessage({ role: "system", content: t("platform.apps.personaggioMisterioso.identifiedByVoice") });
+      void engine.afterTurn({ voiceIdentified: true });
+    }
     setGuess(lastQuestion.current || character.title); // by voice there is no typed question
     setResult(true);
     setFoundInChat(true);
@@ -410,7 +441,7 @@ const PersonaggioMisteriosoPage = () => {
             `QUESTIONS USED: ${session.turns}/${maxQuestions} (of which hints asked: ${hintsUsed})`,
           ],
           // The server grades the game from the saved chat and this.
-          mystery: { guess: foundInChat ? "" : guess, hints: hintsUsed },
+          mystery: { guess: foundInChat ? "" : guess, hints: hintsUsed, voiceTurn: voiceTurn.current },
         }),
       }}
       feedback={{

@@ -148,7 +148,42 @@ type LiveTokenOptions struct {
 	Model             string
 	SystemInstruction string
 	VoiceName         string
-	TTL               time.Duration
+	// Functions the voice character may call (e.g. to say the game is won).
+	Functions []LiveFunction
+	TTL       time.Duration
+}
+
+// LiveFunction is a function without arguments that a voice character may
+// call; the browser acts on the call.
+type LiveFunction struct {
+	Name        string
+	Description string
+}
+
+// liveConfig is the setup locked into a Live token: audio answers with both
+// transcriptions, the instructions, the voice and the functions.
+func liveConfig(opts LiveTokenOptions) *genai.LiveConnectConfig {
+	live := &genai.LiveConnectConfig{
+		ResponseModalities:       []genai.Modality{genai.ModalityAudio},
+		InputAudioTranscription:  &genai.AudioTranscriptionConfig{},
+		OutputAudioTranscription: &genai.AudioTranscriptionConfig{},
+	}
+	if opts.SystemInstruction != "" {
+		live.SystemInstruction = genai.NewContentFromText(opts.SystemInstruction, genai.RoleUser)
+	}
+	if opts.VoiceName != "" {
+		live.SpeechConfig = &genai.SpeechConfig{VoiceConfig: &genai.VoiceConfig{
+			PrebuiltVoiceConfig: &genai.PrebuiltVoiceConfig{VoiceName: opts.VoiceName},
+		}}
+	}
+	if len(opts.Functions) > 0 {
+		decls := make([]*genai.FunctionDeclaration, 0, len(opts.Functions))
+		for _, f := range opts.Functions {
+			decls = append(decls, &genai.FunctionDeclaration{Name: f.Name, Description: f.Description})
+		}
+		live.Tools = []*genai.Tool{{FunctionDeclarations: decls}}
+	}
+	return live
 }
 
 // CreateLiveToken mints a single-use ephemeral token for the Gemini Live API,
@@ -170,19 +205,6 @@ func CreateLiveToken(ctx context.Context, cfg Config, opts LiveTokenOptions) (st
 	expire := time.Now().Add(opts.TTL)
 	uses := int32(1)
 
-	live := &genai.LiveConnectConfig{
-		ResponseModalities:       []genai.Modality{genai.ModalityAudio},
-		InputAudioTranscription:  &genai.AudioTranscriptionConfig{},
-		OutputAudioTranscription: &genai.AudioTranscriptionConfig{},
-	}
-	if opts.SystemInstruction != "" {
-		live.SystemInstruction = genai.NewContentFromText(opts.SystemInstruction, genai.RoleUser)
-	}
-	if opts.VoiceName != "" {
-		live.SpeechConfig = &genai.SpeechConfig{VoiceConfig: &genai.VoiceConfig{
-			PrebuiltVoiceConfig: &genai.PrebuiltVoiceConfig{VoiceName: opts.VoiceName},
-		}}
-	}
 	tok, err := client.AuthTokens.Create(ctx, &genai.CreateAuthTokenConfig{
 		HTTPOptions:          &genai.HTTPOptions{APIVersion: "v1alpha"},
 		ExpireTime:           expire,
@@ -190,7 +212,7 @@ func CreateLiveToken(ctx context.Context, cfg Config, opts LiveTokenOptions) (st
 		Uses:                 &uses,
 		LiveConnectConstraints: &genai.LiveConnectConstraints{
 			Model:  normalizeModelName(opts.Model),
-			Config: live,
+			Config: liveConfig(opts),
 		},
 	})
 	if err != nil {
