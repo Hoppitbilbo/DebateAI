@@ -57,6 +57,18 @@ La CPU cresce di circa il 3,5% per ogni login al secondo e arriva al 100% intorn
 Oltre quella soglia si accumula una coda: i login aspettano diversi secondi e rallenta tutto il sito, anche le pagine che non c'entrano.
 La RAM non supera i 25 MB.
 
+**Dopo il limite ai bcrypt contemporanei.** Ora gira al massimo un bcrypt per CPU (`withBcryptSlot` in `server/internal/app/auth_service.go`) e gli altri login aspettano in coda senza togliere CPU al resto.
+Il tetto dei login non cambia: bcrypt costa quello che costa.
+Cambia chi paga il sovraccarico: prima rallentava tutto il sito, ora aspettano solo i login.
+
+| login/s richiesti | login mediana | login p95 | resto del sito mediana | resto del sito p95 |
+|---:|---:|---:|---:|---:|
+| 20 | 46 ms | 60 ms | 0,2 ms | 0,6 ms |
+| 30 | 3,3 s | 8,8 s | 4 ms | **17 ms** (prima 1,9 s) |
+| 40 (per 30 s, dopo 10-30) | 0,9 s | 18,7 s | 0,3 ms | **53 ms** |
+
+Sopra i 20 login/s la coda dei login cresce finché il picco non passa: in un minuto da 30 login/s si accumulano circa 600 persone, smaltite in circa 30 secondi dopo il picco.
+
 ### Chat (studenti loggati): non è un problema
 
 Fino a 600 studenti che fanno attività contemporaneamente (circa 45 risposte AI al secondo più i salvataggi):
@@ -76,7 +88,7 @@ I pochi `generate: 0` stampati alla fine dello scenario sono richieste interrott
 
 ## Come leggere questi numeri
 
-- **Il collo di bottiglia è il login con password.** Con questa CPU il tetto è intorno ai 20 login al secondo. Trenta classi da 30 studenti che entrano tutte nello stesso minuto fanno 15 login al secondo: sotto il tetto, ma vicino.
+- **Il collo di bottiglia è il login con password.** Con questa CPU il tetto è intorno ai 20 login al secondo. Oltre, con il limite ai bcrypt, aspettano solo i login e il resto del sito resta veloce. Trenta classi da 30 studenti che entrano tutte nello stesso minuto fanno 15 login al secondo: sotto il tetto, ma vicino.
 - **Il login capita di rado.** La sessione dura 30 giorni, quindi uno studente rifà il login solo su un nuovo dispositivo o dopo il logout. Il picco vero è la prima lezione, o un'aula di informatica dove i PC si resettano ogni volta.
 - **Un core di un M5 è molto più veloce di una vCPU da VPS economica.** bcrypt usa solo la CPU, quindi su un server da 1 vCPU condivisa il tetto potrebbe scendere a una frazione di questi 20 login/s. È una stima: va misurato rilanciando lo stesso test sul server vero.
 - **La produzione su Vercel è un'altra architettura.** Lì girano funzioni Vercel con Turso (libSQL remoto), non un solo processo con SQLite. Questo test riguarda l'installazione self-hosted con Docker.
