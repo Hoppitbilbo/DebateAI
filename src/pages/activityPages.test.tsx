@@ -4,6 +4,7 @@ import type { AiClient } from "@/services/aiClient";
 import AiClientProvider from "@/services/AiClientProvider";
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import i18n from "@/i18n";
+import { api } from "@/lib/api";
 import ConvinciTuPage from "./ConvinciTuPage";
 import ImpersonaTuPage from "./ImpersonaTuPage";
 import WikiChatbotPage from "./WikiChatbotPage";
@@ -27,6 +28,7 @@ const mocks = vi.hoisted(() => ({
   generateStream: vi.fn(),
   sync: vi.fn(),
   useWikiSummaries: vi.fn((..._args: unknown[]) => ({ summaries: {}, loading: false })),
+  session: {} as Record<string, unknown>,
 }));
 
 vi.mock("@/features/activity/useActivitySession", () => ({
@@ -42,6 +44,7 @@ vi.mock("@/features/activity/useActivitySession", () => ({
     begin: mocks.begin,
     sync: mocks.sync,
     markManualEnd: vi.fn(),
+    ...mocks.session,
   }),
 }));
 vi.mock("@/features/activity/components/ActivityShell", () => ({ default: ({ children }: { children: ReactNode }) => <div>{children}</div> }));
@@ -208,6 +211,26 @@ describe("PersonaggioMisteriosoPage", () => {
     pickAll();
     await start();
     expect(screen.getByText(/7 questions/)).toBeTruthy();
+  });
+});
+
+describe("PersonaggioMisteriosoPage list of characters", () => {
+  afterEach(() => {
+    mocks.session = {};
+    vi.restoreAllMocks();
+  });
+
+  it("goes on from the characters the student finished on another computer", async () => {
+    const characters = [{ title: "Person A" }, { title: "Person B" }, { title: "Person C" }];
+    mocks.session = { user: { id: 9 }, assignment: { id: 4, appType: "personaggio-misterioso", config: { characters } } };
+    const get = vi.spyOn(api, "get").mockResolvedValue([
+      { id: 1, assignmentId: 4, appType: "personaggio-misterioso", status: "goal_reached", character: "Person A" },
+    ]);
+    await act(async () => {
+      render(<PersonaggioMisteriosoPage />);
+    });
+    expect(get).toHaveBeenCalledWith("/api/me/sessions");
+    expect(screen.getByText("Character 2 of 3")).toBeTruthy();
   });
 });
 
