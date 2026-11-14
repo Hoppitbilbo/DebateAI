@@ -8,11 +8,14 @@ import type { ActivitySession, EndReason } from "./useActivitySession";
 import { ActivityMessage, newId } from "./types";
 import { useMessageState } from "./useMessageState";
 
-interface LiveConfig {
+export interface LiveConfig {
   /** The server writes the voice instructions from it. */
   recipe?: PromptRecipe;
+  /** The real name, used to choose the voice. */
   characterName?: string;
   characterBio?: string;
+  /** The name shown on the voice replies, when it must stay hidden (e.g. "???"); characterName otherwise. */
+  shownName?: string;
 }
 
 interface Options {
@@ -176,7 +179,7 @@ export const useChatEngine = ({ session, live, context, onEnded }: Options) => {
     onAssistantText: (text, isNew) => {
       liveUserId.current = null;
       if (isNew || !liveAssistantId.current) {
-        liveAssistantId.current = addMessage({ role: "assistant", content: text, name: live?.characterName, streaming: true }).id;
+        liveAssistantId.current = addMessage({ role: "assistant", content: text, name: live?.shownName ?? live?.characterName, streaming: true }).id;
       } else {
         const id = liveAssistantId.current;
         streamMessages((prev) => prev.map((m) => (m.id === id ? { ...m, content: m.content + text } : m)));

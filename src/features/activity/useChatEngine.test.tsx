@@ -125,6 +125,17 @@ describe("useChatEngine", () => {
     expect(vi.getTimerCount()).toBe(0);
   });
 
+  it("shows a hidden character's voice replies under the shown name, keeping the real one for the voice only", () => {
+    const { result } = renderHook(
+      () => useChatEngine({ session: fakeSession(), live: { characterName: "Galileo Galilei", shownName: "???" } }),
+      { wrapper: withAi },
+    );
+    const live = (): UseLiveAiOptions => mocks.liveOptions.mock.lastCall![0];
+    expect(live().characterName).toBe("Galileo Galilei");
+    act(() => live().onAssistantText("Sono nato nel 1564", true));
+    expect(result.current.messagesRef.current[0].name).toBe("???");
+  });
+
   it("runs a turn: user message, reply, then sync with context", async () => {
     const session = fakeSession({ sync: vi.fn().mockResolvedValue("goal_reached") });
     const onEnded = vi.fn();

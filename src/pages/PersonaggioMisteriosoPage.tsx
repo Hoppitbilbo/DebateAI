@@ -78,7 +78,7 @@ const PersonaggioMisteriosoPage = () => {
   const flow = useActivityFlow(app.type, {
     characters: [character],
     live: (phase, assignment, bio) =>
-      phase === "chat" && character && !guessing ? { recipe: recipeOf(assignment, bio), characterName: character.title, characterBio: bio(character) } : null,
+      phase === "chat" && character && !guessing ? { recipe: recipeOf(assignment, bio), characterName: character.title, characterBio: bio(character), shownName: "???" } : null,
     // The character is saved too, so that a reload can take the game up again.
     context: (assignment) => ({ character: character?.title, questions: availableQuestions(chosenQuestions, assignment?.maxTurns), difficulty: levelFor(assignment) }),
     onEnded,
