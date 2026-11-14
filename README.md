@@ -129,4 +129,4 @@ API keys never leave the server. Conversations are stored only for logged-in use
 
 ## License & contributions
 
-Open source: issues and pull requests are welcome on GitHub. Thanks to Google (Gemini), OpenCode/TypeSafe AI (Jev) and Wikipedia.
+Open source under the [GNU Affero General Public License v3.0](LICENSE) (AGPL-3.0): you may use, study, modify and share it; if you run a modified version for others over a network, you must offer them its source code under the same license. Issues and pull requests are welcome on GitHub. Thanks to Google (Gemini), OpenCode/TypeSafe AI (Jev) and Wikipedia.
