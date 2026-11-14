@@ -1,0 +1,48 @@
+# Load test: DebateAI limited to 1 CPU and 1 GB, a fake AI provider and k6.
+# Usage: see loadtest/README.md
+services:
+  debateai:
+    build:
+      context: ..
+    image: debateai:loadtest
+    cpus: 1.0
+    mem_limit: 1g
+    memswap_limit: 1g
+    environment:
+      ADMIN_EMAIL: admin@load.test
+      ADMIN_PASSWORD: load-test-admin
+      APP_SECRET: load-test-secret-not-for-production
+      DATA_DIR: /data
+    volumes:
+      - loadtest-data:/data
+    ports:
+      - "18080:8080"
+    depends_on:
+      - mockai
+
+  # Stands in for Gemini/OpenRouter: not limited, like an external provider.
+  mockai:
+    image: golang:1.26-alpine
+    working_dir: /src
+    volumes:
+      - ../server:/src:ro
+    environment:
+      GOFLAGS: -buildvcs=false
+      GOCACHE: /tmp/gocache
+      MOCK_FIRST_TOKEN_MS: ${MOCK_FIRST_TOKEN_MS:-800}
+      MOCK_TOKENS: ${MOCK_TOKENS:-60}
+      MOCK_TOKEN_MS: ${MOCK_TOKEN_MS:-30}
+    command: ["go", "run", "./cmd/mockai"]
+
+  k6:
+    image: grafana/k6:0.54.0
+    profiles: ["k6"]
+    volumes:
+      - ./:/scripts
+    environment:
+      BASE_URL: http://debateai:8080
+    depends_on:
+      - debateai
+
+volumes:
+  loadtest-data:
