@@ -41,10 +41,28 @@ const identifyingWords = (normalized: string) => {
 };
 
 /**
- * Strict name match: the guess is right when it holds the full name as whole
- * words, or one of the identifying words of the answer ("Vinci", "Leonardo";
- * not "Inghilterra" or "great"). Fragments ("Da", "Leo") and misspellings are
- * wrong.
+ * An identifying word this long is still found with one typo (a letter
+ * changed, added, or two swapped); shorter words must be exact, so "tante"
+ * never wins for Dante. A cut word ("Galile") is never a typo.
+ */
+const MIN_TYPO_WORD = 7;
+
+/** Whether w is name with one letter changed, one added, or two neighbours swapped. */
+const oneTypo = (w: string, name: string) => {
+  if (w.length === name.length) {
+    const diff = [...w].flatMap((c, i) => (c !== name[i] ? [i] : []));
+    return diff.length === 1 ||
+      (diff.length === 2 && diff[1] === diff[0] + 1 && w[diff[0]] === name[diff[1]] && w[diff[1]] === name[diff[0]]);
+  }
+  if (w.length === name.length + 1) return [...w].some((_, i) => w.slice(0, i) + w.slice(i + 1) === name);
+  return false;
+};
+
+/**
+ * Name match: the guess is right when it holds the full name as whole words,
+ * or one of the identifying words of the answer ("Vinci", "Leonardo"; not
+ * "Inghilterra" or "great"), long ones even with one typo ("Einstien").
+ * Fragments ("Da", "Leo", "Galile") are wrong.
  */
 export const isCorrectGuess = (guess: string, answer: string) => {
   const g = normalize(guess);
@@ -52,7 +70,8 @@ export const isCorrectGuess = (guess: string, answer: string) => {
   if (!g || !name) return false;
   if (` ${g} `.includes(` ${name} `)) return true;
   const guessWords = new Set(g.split(" "));
-  return identifyingWords(name).some((w) => guessWords.has(w));
+  return identifyingWords(name).some((w) =>
+    guessWords.has(w) || (w.length >= MIN_TYPO_WORD && [...guessWords].some((t) => oneTypo(t, w))));
 };
 
 /**

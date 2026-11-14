@@ -74,8 +74,37 @@ func normalizeName(s string) string {
 	return strings.TrimSpace(nameSpaces.ReplaceAllString(s, " "))
 }
 
+// minTypoWord: an identifying word this long is still found with one typo
+// (a letter changed, added, or two swapped); shorter words must be exact, so
+// "tante" never wins for Dante. A cut word ("Galile") is never a typo.
+const minTypoWord = 7
+
+// oneTypo is whether w is name with one letter changed, one letter added, or
+// two neighbouring letters swapped (ASCII, as normalizeName leaves it).
+func oneTypo(w, name string) bool {
+	switch len(w) - len(name) {
+	case 0:
+		diff := []int{}
+		for i := range len(w) {
+			if w[i] != name[i] {
+				diff = append(diff, i)
+			}
+		}
+		return len(diff) == 1 ||
+			(len(diff) == 2 && diff[1] == diff[0]+1 && w[diff[0]] == name[diff[1]] && w[diff[1]] == name[diff[0]])
+	case 1:
+		for i := range len(w) {
+			if w[:i]+w[i+1:] == name {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 // namesCharacter is isCorrectGuess in features/activity/mystery.ts: the full
-// name as whole words of the text, or one of its identifying words.
+// name as whole words of the text, or one of its identifying words (with one
+// typo when long, see minTypoWord).
 func namesCharacter(text, answer string) bool {
 	t := normalizeName(text)
 	name := normalizeName(answer)
@@ -92,6 +121,14 @@ func namesCharacter(text, answer string) bool {
 	for _, w := range identifyingWords(name) {
 		if words[w] {
 			return true
+		}
+		if len(w) < minTypoWord {
+			continue
+		}
+		for t := range words {
+			if oneTypo(t, w) {
+				return true
+			}
 		}
 	}
 	return false

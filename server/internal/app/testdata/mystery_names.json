@@ -29,5 +29,13 @@
   { "message": "Eri in Svevia?", "answer": "Federico II di Svevia", "expected": false },
   { "message": "Was she a queen?", "answer": "Queen Victoria", "expected": false },
   { "message": "Eri una regina?", "answer": "Regina Vittoria", "expected": false },
-  { "message": "Eri un re?", "answer": "Re Sole", "expected": false }
+  { "message": "Eri un re?", "answer": "Re Sole", "expected": false },
+  { "message": "Sei Einstien?", "answer": "Albert Einstein", "expected": true },
+  { "message": "Sei Galilie?", "answer": "Galileo Galilei", "expected": true },
+  { "message": "Sei Beethowen?", "answer": "Ludwig van Beethoven", "expected": true },
+  { "message": "Sei Shakespeeare?", "answer": "William Shakespeare", "expected": true },
+  { "message": "Hai tante domande?", "answer": "Dante Alighieri", "expected": false },
+  { "message": "Sei Galileo Galilie?", "answer": "Galileo Galilei", "expected": true },
+  { "message": "Sei Einst?", "answer": "Albert Einstein", "expected": false },
+  { "message": "Sei Eisntien?", "answer": "Albert Einstein", "expected": false }
 ]
