@@ -80,7 +80,7 @@ func (svc *sessionService) Evaluate(ctx context.Context, u *domain.User, d *doma
 		if in.Mystery != nil {
 			r = *in.Mystery
 		}
-		if grade, graded = gradeMystery(mysteryAnswer(a, d.Context), msgs, r); graded {
+		if grade, graded = gradeMystery(mysteryAnswer(a, d.Context), msgs, r, d.Voice); graded {
 			in.ExtraFacts = append([]string{grade.Fact}, in.ExtraFacts...)
 		}
 	}

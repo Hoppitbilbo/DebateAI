@@ -170,6 +170,10 @@ type TranscriptUpdate struct {
 	// BaseRevision is the revision the client last saw (optional, see
 	// domain.TranscriptSave).
 	BaseRevision *int64 `json:"baseRevision"`
+	// VoiceIdentified: the mystery game's voice character confirmed the
+	// name (see MysteryIdentifiedFunction). Counts only for an attempt that
+	// opened a voice conversation.
+	VoiceIdentified bool `json:"voiceIdentified"`
 }
 
 // SaveTranscript stores the conversation of session d, owned by u, and for
@@ -234,7 +238,7 @@ func (svc *sessionService) SaveTranscript(ctx context.Context, u *domain.User, d
 	}
 
 	// The platform, not the AI's reply, decides that the character was found.
-	if d.AppType == domain.AppMystery && namedAtTurn(msgs, mysteryAnswer(a, firstNonEmpty(in.Context, d.Context))) > 0 {
+	if d.AppType == domain.AppMystery && ((in.VoiceIdentified && d.Voice) || namedAtTurn(msgs, mysteryAnswer(a, firstNonEmpty(in.Context, d.Context))) > 0) {
 		outcome.Identified = true
 	}
 

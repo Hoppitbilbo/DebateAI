@@ -179,11 +179,13 @@ func namedAtTurn(msgs []TranscriptMessage, answer string) int {
 }
 
 // MysteryResult is what the browser reports about the end of a mystery game:
-// the final guess (empty when the name came up in the chat) and the hints
-// the student asked for.
+// the final guess (empty when the name came up in the chat), the hints the
+// student asked for, and the question at which the voice character
+// confirmed the name (0 if it did not; see MysteryIdentifiedFunction).
 type MysteryResult struct {
-	Guess string `json:"guess"`
-	Hints int    `json:"hints"`
+	Guess     string `json:"guess"`
+	Hints     int    `json:"hints"`
+	VoiceTurn int    `json:"voiceTurn"`
 }
 
 // platformFactStyle keeps the wording of the platform's notes out of what
@@ -211,14 +213,20 @@ type mysteryGrade struct {
 }
 
 // gradeMystery grades the game whose hidden character is answer; false when
-// the character is unknown, and the model's score is kept.
-func gradeMystery(answer string, msgs []TranscriptMessage, r MysteryResult) (mysteryGrade, bool) {
+// the character is unknown, and the model's score is kept. With voice (the
+// attempt opened a voice conversation) the voice character's confirmation
+// counts as the name said at that question.
+func gradeMystery(answer string, msgs []TranscriptMessage, r MysteryResult, voice bool) (mysteryGrade, bool) {
 	if answer == "" {
 		return mysteryGrade{}, false
 	}
 	turns := countStudentTurns(msgs)
 	hints := min(max(r.Hints, 0), turns)
 	at := namedAtTurn(msgs, answer)
+	byVoice := at == 0 && voice && r.VoiceTurn >= 1 && r.VoiceTurn <= turns
+	if byVoice {
+		at = r.VoiceTurn
+	}
 	guessed := at == 0 && namesCharacter(r.Guess, answer)
 	if at == 0 && !guessed {
 		guess := "none"
@@ -231,6 +239,9 @@ func gradeMystery(answer string, msgs []TranscriptMessage, r MysteryResult) (mys
 	}
 	score := mysteryBestScore
 	how := fmt.Sprintf("named in the chat at question %d", at)
+	if byVoice {
+		how = fmt.Sprintf("named by voice at question %d (confirmed by the voice character)", at)
+	}
 	if guessed {
 		how = fmt.Sprintf("final guess after %d questions", turns)
 	}

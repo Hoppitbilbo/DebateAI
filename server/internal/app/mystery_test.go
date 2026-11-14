@@ -73,19 +73,39 @@ func TestGradeMysteryRubric(t *testing.T) {
 		{"wrong", chat("Sei italiana?"), MysteryResult{Guess: "Rita Levi-Montalcini"}, false, mysteryWrongScoreCap},
 	}
 	for _, c := range cases {
-		g, ok := gradeMystery(answer, c.msgs, c.r)
+		g, ok := gradeMystery(answer, c.msgs, c.r, false)
 		if !ok || g.Correct != c.correct || g.Score != c.score {
 			t.Errorf("%s: %+v ok=%v, want correct=%v score=%d", c.name, g, ok, c.correct, c.score)
 		}
 	}
-	if g, _ := gradeMystery(answer, chat("Sei Marie Curie?"), MysteryResult{}); !strings.Contains(g.Fact, "first attempt") {
+	if g, _ := gradeMystery(answer, chat("Sei Marie Curie?"), MysteryResult{}, false); !strings.Contains(g.Fact, "first attempt") {
 		t.Errorf("the first attempt is named to the evaluator: %q", g.Fact)
 	}
-	if g, _ := gradeMystery(answer, chat("Sei italiana?"), MysteryResult{Guess: "Rita Levi-Montalcini"}); !strings.Contains(g.Fact, `final guess: "Rita Levi-Montalcini"`) || !strings.Contains(g.Fact, `"Marie Curie"`) {
+	if g, _ := gradeMystery(answer, chat("Sei italiana?"), MysteryResult{Guess: "Rita Levi-Montalcini"}, false); !strings.Contains(g.Fact, `final guess: "Rita Levi-Montalcini"`) || !strings.Contains(g.Fact, `"Marie Curie"`) {
 		t.Errorf("a wrong guess and the answer are named to the evaluator: %q", g.Fact)
 	}
-	if _, ok := gradeMystery("", chat("Sei Marie Curie?"), MysteryResult{}); ok {
+	if _, ok := gradeMystery("", chat("Sei Marie Curie?"), MysteryResult{}, false); ok {
 		t.Error("an unknown character is not graded")
+	}
+}
+
+// A game won by voice is graded at the question where the voice character
+// confirmed the name (the transcription may not hold it), and only for an
+// attempt that used voice.
+func TestGradeMysteryWonByVoice(t *testing.T) {
+	const answer = "Frida Kahlo"
+	misheard := chat("Sei messicana?", "Sabes por ida, Carlo?")
+	if g, ok := gradeMystery(answer, misheard, MysteryResult{VoiceTurn: 2}, true); !ok || !g.Correct || g.Score != 9 || !strings.Contains(g.Fact, "voice") {
+		t.Errorf("won by voice at question 2: %+v", g)
+	}
+	if g, _ := gradeMystery(answer, chat("Por ida, Carlo?"), MysteryResult{VoiceTurn: 1}, true); !g.Correct || g.Score != 10 {
+		t.Errorf("won by voice at the first question: %+v", g)
+	}
+	if g, _ := gradeMystery(answer, misheard, MysteryResult{VoiceTurn: 2}, false); g.Correct {
+		t.Errorf("no voice conversation: the claim does not count: %+v", g)
+	}
+	if g, _ := gradeMystery(answer, misheard, MysteryResult{VoiceTurn: 5}, true); g.Correct {
+		t.Errorf("a question that was never asked: %+v", g)
 	}
 }
 

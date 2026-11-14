@@ -5,6 +5,7 @@ import (
 	"sort"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/Hoppitbilbo/DebateAI/server/internal/ai"
 	"github.com/Hoppitbilbo/DebateAI/server/internal/app"
@@ -304,5 +305,29 @@ func TestSaveTranscriptMysteryEndsWhenTheJudgeIdentifiesTheCharacter(t *testing.
 	out := f.save(t, map[string]any{"messages": msgs, "context": map[string]any{"character": "Napoleone Bonaparte"}, "judge": true})
 	if out["ended"] != true || out["reason"] != "identified" {
 		t.Fatalf("identified by the judge: %v", out)
+	}
+}
+
+// By voice the server never hears the name: the character calls a function
+// in the browser, which reports it with the save. The claim counts only for
+// an attempt that opened a voice conversation.
+func TestSaveTranscriptMysteryEndsWhenTheVoiceCharacterConfirms(t *testing.T) {
+	f := newTranscriptFixture(t, map[string]any{"appType": "personaggio-misterioso", "instructions": "", "goals": []string{}, "autoEnd": false}, 0)
+	ctx := map[string]any{"character": "Frida Kahlo"}
+	msgs := []map[string]string{{"role": "user", "content": "¿Sabes por ida, Carlo?"}, {"role": "assistant", "content": "Sì, sono io!"}}
+	if out := f.save(t, map[string]any{"messages": msgs, "context": ctx, "voiceIdentified": true}); out["ended"] == true {
+		t.Fatalf("no voice conversation was opened: the claim does not count: %v", out)
+	}
+	var owner struct{ User struct{ ID int64 } }
+	f.owner.do("GET", "/api/auth/me", nil, &owner)
+	providerID := f.s.addFake(t, "fake-live", ai.KindGemini, nil)
+	now := time.Now().UTC()
+	if err := f.s.LiveGrants.Create(domain.LiveGrant{ID: "voice-1", UserID: &owner.User.ID, SessionID: &f.session, ProviderID: providerID, Model: "m",
+		CreatedAt: now.Format(time.RFC3339), ExpiresAt: now.Add(time.Hour).Format(time.RFC3339)}); err != nil {
+		t.Fatal(err)
+	}
+	out := f.save(t, map[string]any{"messages": msgs, "context": ctx, "voiceIdentified": true})
+	if out["ended"] != true || out["reason"] != "identified" || out["status"] != "goal_reached" {
+		t.Fatalf("confirmed by the voice character: %v", out)
 	}
 }
