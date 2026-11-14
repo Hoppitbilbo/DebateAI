@@ -1,45 +1,55 @@
 {
-  "title": "Acerca de AI-Debate.Tech",
-  "section1": {
-    "title": "Nuestro Propósito Social: Rediseñando el Aprendizaje para Todos",
-    "content": "Transformamos las tareas de obligaciones en emocionantes oportunidades de crecimiento. Nuestra misión es hacer que la educación sea más accesible, efectiva y, seamos sinceros, más divertida, aprovechando el potencial de la Inteligencia Artificial."
+  "title": "Quiénes somos",
+  "lead": "AI-Debate es un proyecto de tesis: actividades con inteligencia artificial para las tareas en casa, pensadas para que los estudiantes razonen y para dar a los docentes una ayuda concreta en la evaluación. Es gratuito, de código abierto y cuesta poco incluso a las escuelas que no tienen dinero que gastar.",
+  "origin": {
+    "title": "De dónde nace",
+    "p1": "Me llamo Andres Moles y AI-Debate es el proyecto de mi tesis. Todo empezó con una pregunta: si los estudiantes ya usan la IA para hacer las tareas, ¿se puede crear una tarea en la que la IA no dé la respuesta, sino que obligue a pensar?",
+    "p2": "Las seis actividades del sitio son mi intento de respuesta. El estudiante tiene que convencer a un personaje histórico, entrevistar a dos que piensan de forma opuesta, adivinar quién se esconde detrás de las respuestas, ponerse en el lugar de otro o moderar un debate. Los personajes se basan en Wikipedia, así que el tema puede ser de historia, literatura, ciencias o geografía."
   },
-  "section2": {
-    "title": "Más Allá de las Tareas: Experiencias Interactivas con IA",
-    "content": "Imagine ejercicios que se adaptan a su ritmo, desafíos que estimulan la curiosidad y un apoyo siempre presente. No estamos hablando de reemplazar la enseñanza, sino de mejorarla. Creamos nuevos ejercicios, tanto para el aula como para el hogar, diseñados para ser interactivos y profundamente atractivos."
+  "homework": {
+    "title": "Por qué las tareas en casa",
+    "p1": "En clase está el docente. En casa el estudiante está solo y, cada vez más a menudo, tiene delante un chatbot que puede escribir la redacción por él. Las investigaciones recientes van en la misma dirección: un chatbot genérico mejora el trabajo entregado pero no lo que se aprende, y cuando se retira la ayuda los resultados pueden empeorar (Bastani et al., 2025; OCDE, 2026). Las herramientas creadas con un fin didáctico funcionan mejor.",
+    "p2": "AI-Debate intenta ser una de ellas. El personaje no hace el ejercicio: pregunta, objeta, pide pruebas. El estudiante aprende haciendo, dentro de una situación concreta, y no leyendo una respuesta ya hecha (Chi y Wylie, 2014; Lave y Wenger, 1991). Cada actividad termina con una reflexión escrita en la que el estudiante juzga cómo ha ido."
   },
-  "section3": {
-    "title": "El Papel Central de los Profesores",
-    "content": "Creemos firmemente que la tecnología debe ser una herramienta en manos de expertos. Nuestra plataforma está diseñada para trabajar con los profesores, no en su lugar. La IA proporciona apoyo personalizado a los estudiantes, mientras que los profesores mantienen la supervisión y guían el camino del aprendizaje, liberando tiempo valioso para centrarse en las necesidades individuales y la interacción humana."
+  "assessment": {
+    "title": "Una ayuda para quien evalúa",
+    "p1": "Leer y corregir treinta conversaciones lleva horas. Por eso, al final de cada actividad, la IA propone una evaluación razonada y el estudiante escribe su autoevaluación. El docente tiene delante la conversación completa, la reflexión y la propuesta: puede aceptarla, cambiarla o ignorarla. La nota sigue siendo una decisión suya.",
+    "p2": "La idea viene de la investigación sobre la evaluación formativa. Una retroalimentación ayuda si llega pronto y dice qué mejorar (Black y Wiliam, 1998; Hattie y Timperley, 2007), y valorar el propio trabajo forma parte de aprender (Zimmerman, 2002)."
   },
-  "section4": {
-    "title": "Arraigados en la Investigación, Enfocados en el Impacto",
-    "content": "La nuestra no es solo tecnología por sí misma. Cada herramienta, cada algoritmo, cada ejercicio se basa en una sólida investigación científica y en metodologías de enseñanza validadas. Nuestro compromiso principal es comprender a fondo qué aplicaciones de la IA tienen un impacto positivo real en el aprendizaje de los estudiantes. Invertimos constantemente en investigación para garantizar que nuestras soluciones no solo sean innovadoras, sino sobre todo, efectivas."
+  "cost": {
+    "title": "Pensado para escuelas sin presupuesto",
+    "p1": "Muchas escuelas no pueden pagar una suscripción por cada estudiante. AI-Debate no tiene suscripciones: se conecta directamente a las API de los modelos y la escuela paga solo lo que usa. Con los modelos gratuitos disponibles hoy, puede incluso no pagar nada.",
+    "p2": "El administrador fija un límite de gasto mensual. Cuando se alcanza, los modelos de pago se detienen y los gratuitos siguen funcionando. Cada petición se registra con sus tokens y su coste, así siempre se sabe cuánto se está gastando y para qué clase."
   },
-  "section5": {
-    "title": "IA Democrática y Accesible: Un Compromiso Concreto",
-    "content": "Queremos que una educación mejorada por la IA esté al alcance de todos. Por esta razón, nos comprometemos a mantener nuestra tecnología accesible y asequible. Nuestra elección de utilizar recursos como Wikipedia, por ahora, no es aleatoria: creemos en el conocimiento compartido y en la importancia de las herramientas universalmente disponibles. Para apoyar esta visión, donamos el 1.5% de nuestras ganancias a Wikipedia, ayudando a sostener la enciclopedia libre más grande del mundo y su invaluable contribución a la educación global."
+  "local": {
+    "title": "Y algún día, todo en local",
+    "p1": "El servidor ya sabe usar Ollama y LM Studio, es decir, modelos que funcionan en un ordenador de la escuela sin enviar nada fuera. Hoy, sin embargo, un modelo local capaz de sostener un debate en la lengua de los estudiantes necesita un hardware que casi ninguna escuela tiene. No sé cuánto tardará, pero los modelos pequeños mejoran rápido. Cuando baste un PC normal, AI-Debate tendrá que funcionar también así: sin costes y sin datos que salgan del centro."
   },
-  "section6": {
-    "title": "Un Futuro de Aprendizaje Colaborativo e Inclusivo",
-    "content": "Nuestro propósito social es construir un futuro en el que la IA sea un poderoso aliado para estudiantes y profesores, haciendo del aprendizaje una aventura emocionante, personalizada y, sobre todo, accesible para todos."
+  "limits": {
+    "title": "Lo que todavía no sé",
+    "p1": "Todavía no tengo datos sobre cuánto aprenden de verdad los estudiantes con estas actividades. Las pruebas en clase hechas hasta ahora sirven para encontrar errores y ver si las actividades se sostienen, no para demostrar que funcionan. También la evaluación que propone la IA puede equivocarse, y por eso la última palabra la tiene el docente."
   },
-  "supportButton": "Apóyanos",
-  "section7": {
-    "title": "De la teoría a la práctica: nuestro marco educativo",
-    "paragraph1": "La rápida difusión de la inteligencia artificial generativa ha situado a la educación en una encrucijada, con oportunidades pero también con desafíos. Aunque se reconoce ampliamente el potencial de la IA generativa para mejorar el diseño del aprendizaje y ofrecer retroalimentación personalizada, existe una brecha crítica entre los modelos teóricos y las herramientas prácticas, diseñadas éticamente, para el aula.",
-    "paragraph2": "AIDebate.Tech es un paso importante para cerrar esta brecha entre teoría y práctica. Al convertir teorías del aprendizaje consolidadas, como el aprendizaje situado y el razonamiento de doble proceso, en un conjunto de herramientas transparente y guiado por el docente, nuestra plataforma ofrece un modelo para usar la IA generativa no como simple dispensador de información, sino como catalizador de habilidades de pensamiento de orden superior.",
-    "paragraph3": "Aplicaciones como 'Convénceme TÚ' e 'Interpreta TÚ' sumergen al alumnado en una práctica auténtica, que exige aplicar conocimientos en contextos históricos y culturales concretos. El estudiante deja de ser un receptor pasivo de datos y se convierte en un agente activo que debe encarnar otras visiones del mundo para construir argumentos persuasivos.",
-    "paragraph4": "La plataforma está pensada para fomentar un pensamiento crítico complejo que el uso no guiado de la IA puede inhibir. Actividades como 'Modera TÚ' y 'Doble Entrevista' crean situaciones de fricción intelectual que obligan a mediar debates o comparar perspectivas divergentes, activando un razonamiento deliberado y analítico.",
-    "paragraph5": "Cada actividad culmina en una fase estructurada de metarreflexión crítica, clave para transformar la experiencia en conocimiento duradero. Los estudiantes evalúan el desempeño de la IA con preguntas como '¿Interpretó bien la IA al personaje?' o '¿Qué aspectos de su argumento no fueron convincentes?'.",
-    "paragraph6": "La flexibilidad de la plataforma, basada en la integración con la API de Wikipedia, la hace independiente de la materia. Se pueden interpretar personajes literarios, comparar perspectivas geográficas o moderar debates científicos: su valor está en el proceso de indagación crítica que promueve.",
-    "paragraph7": "Como proyecto de código abierto que puede instalarse en los servidores del centro sin recopilar el historial de los chats, ofrecemos una alternativa segura a las plataformas comerciales y un espacio donde el profesorado puede compartir experiencias y críticas para construir juntos un uso eficaz y ético de la IA en la educación."
+  "code": {
+    "title": "El código",
+    "p1": "El código es público en GitHub con licencia AGPL-3.0. Cualquiera puede leerlo, instalarlo en el servidor de su escuela y modificarlo, siempre que comparta los cambios con la misma licencia.",
+    "p2": "El servidor es un único programa en Go con una base de datos SQLite y se instala con Docker. En el repositorio está también el artículo «From Theory to Practice», que describe los principios didácticos del proyecto.",
+    "button": "El código en GitHub"
   },
-  "helpDevelopment": {
-    "title": "Ayúdanos a desarrollar AIDebate.Tech",
-    "description": "Únete a nuestra comunidad para ayudar a añadir modelos locales, nuevos idiomas, mejorar la documentación y compartir experiencias de aula. Tu contribución hace que la educación con IA sea más accesible para todos.",
-    "redditButton": "Únete a la comunidad de Reddit",
-    "githubButton": "Contribuye en GitHub",
-    "linkedinButton": "Conecta en LinkedIn"
+  "cta": {
+    "title": "Pruébala con tu clase",
+    "p1": "Elige una actividad, ponla como tarea para casa y luego cuéntame cómo ha ido: qué ha funcionado, qué no, qué han dicho los estudiantes. Los comentarios de los docentes son la parte más útil de esta tesis.",
+    "apps": "Elige una actividad",
+    "guide": "Guía para docentes"
+  },
+  "references": {
+    "title": "Bibliografía",
+    "note": "Las fuentes en las que se basan las decisiones del proyecto. Los títulos están en su idioma original.",
+    "groups": {
+      "guidelines": "Directrices y documentos institucionales",
+      "mit": "Informes y estudios del MIT",
+      "interactive": "Aprendizaje activo e interactivo",
+      "assessment": "Evaluación formativa y autoevaluación",
+      "genai": "IA generativa y aprendizaje"
+    }
   }
 }

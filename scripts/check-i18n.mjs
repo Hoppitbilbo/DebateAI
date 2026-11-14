@@ -59,6 +59,7 @@ const dyn = {
   "platform.invite.status": ["invited", "error"],
   "platform.difficulty.levels": ["easy", "medium", "hard", "free"],
   ...Object.fromEntries(["personaggioMisterioso", "convinciTu", "impersonaTu"].map((a) => [`platform.difficulty.notes.${a}`, ["easy", "medium", "hard", "free"]])),
+  "aboutPage.references.groups": ["guidelines", "mit", "interactive", "assessment", "genai"],
   "room.wizard.steps": ["theme", "path", "launch"],
   "room.wizard.titles": ["theme", "path", "launch"],
   "room.wizard.subtitles": ["theme", "path", "launch"],

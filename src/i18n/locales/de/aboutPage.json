@@ -1,45 +1,55 @@
 {
-  "title": "Über AI-Debate.Tech",
-  "section1": {
-    "title": "Unser sozialer Zweck: Lernen für alle neu gestalten",
-    "content": "Wir verwandeln Hausaufgaben von Verpflichtungen in aufregende Wachstumschancen. Unsere Mission ist es, Bildung zugänglicher, effektiver und, seien wir ehrlich, unterhaltsamer zu machen, indem wir das Potenzial der künstlichen Intelligenz nutzen."
+  "title": "Über uns",
+  "lead": "AI-Debate ist ein Abschlussarbeitsprojekt: Aktivitäten mit künstlicher Intelligenz für die Hausaufgaben, die Schülerinnen und Schüler zum Nachdenken bringen und Lehrkräften bei der Bewertung konkret helfen sollen. Es ist kostenlos, Open Source und auch für Schulen ohne Geld günstig zu betreiben.",
+  "origin": {
+    "title": "Wie es entstanden ist",
+    "p1": "Ich heiße Andres Moles, und AI-Debate ist das Projekt meiner Abschlussarbeit. Am Anfang stand eine Frage: Wenn Schülerinnen und Schüler KI ohnehin für ihre Hausaufgaben nutzen, kann man dann eine Aufgabe bauen, bei der die KI nicht die Antwort liefert, sondern zum Denken zwingt?",
+    "p2": "Die sechs Aktivitäten auf dieser Seite sind mein Versuch einer Antwort. Man muss eine historische Figur überzeugen, zwei Menschen mit gegensätzlichen Ansichten interviewen, erraten, wer hinter den Antworten steckt, in die Rolle eines anderen schlüpfen oder eine Debatte moderieren. Die Figuren beruhen auf Wikipedia, das Thema kann also aus Geschichte, Literatur, Naturwissenschaften oder Geografie kommen."
   },
-  "section2": {
-    "title": "Über die Hausaufgaben hinaus: Interaktive Erlebnisse mit KI",
-    "content": "Stellen Sie sich Übungen vor, die sich Ihrem Tempo anpassen, Herausforderungen, die die Neugier wecken, und allgegenwärtige Unterstützung. Wir sprechen nicht davon, den Unterricht zu ersetzen, sondern ihn zu verbessern. Wir erstellen neue Übungen für den Unterricht und für zu Hause, die interaktiv und tiefgreifend fesselnd gestaltet sind."
+  "homework": {
+    "title": "Warum gerade Hausaufgaben",
+    "p1": "Im Unterricht ist die Lehrkraft da. Zu Hause sind die Schülerinnen und Schüler allein, und immer öfter haben sie einen Chatbot vor sich, der den Aufsatz für sie schreiben kann. Neuere Studien zeigen in dieselbe Richtung: Ein allgemeiner Chatbot verbessert die abgegebene Arbeit, aber nicht das Gelernte, und wenn die Hilfe wegfällt, können die Ergebnisse schlechter werden (Bastani et al., 2025; OECD, 2026). Werkzeuge mit einem didaktischen Ziel schneiden besser ab.",
+    "p2": "AI-Debate versucht, so ein Werkzeug zu sein. Die Figur löst die Aufgabe nicht: Sie fragt nach, widerspricht, verlangt Belege. Gelernt wird durch Tun, in einer konkreten Situation, nicht durch das Lesen einer fertigen Antwort (Chi & Wylie, 2014; Lave & Wenger, 1991). Jede Aktivität endet mit einer schriftlichen Reflexion, in der die Schülerin oder der Schüler beurteilt, wie es gelaufen ist."
   },
-  "section3": {
-    "title": "Die zentrale Rolle der Lehrer",
-    "content": "Wir sind fest davon überzeugt, dass Technologie ein Werkzeug in Expertenhänden sein sollte. Unsere Plattform ist darauf ausgelegt, mit Lehrern zusammenzuarbeiten, nicht an ihrer Stelle. Die KI bietet den Schülern personalisierte Unterstützung, während die Lehrer die Aufsicht behalten und den Lernweg leiten, wodurch wertvolle Zeit für die Konzentration auf individuelle Bedürfnisse und menschliche Interaktion frei wird."
+  "assessment": {
+    "title": "Hilfe für alle, die bewerten",
+    "p1": "Dreißig Gespräche zu lesen und zu bewerten kostet Stunden. Deshalb schlägt die KI am Ende jeder Aktivität eine begründete Bewertung vor, und die Schülerin oder der Schüler schreibt eine Selbsteinschätzung. Die Lehrkraft sieht das ganze Gespräch, die Reflexion und den Vorschlag und kann ihn übernehmen, ändern oder ignorieren. Die Note bleibt ihre Entscheidung.",
+    "p2": "Die Idee stammt aus der Forschung zur formativen Bewertung. Rückmeldung hilft, wenn sie früh kommt und sagt, was sich verbessern lässt (Black & Wiliam, 1998; Hattie & Timperley, 2007), und die eigene Arbeit einzuschätzen gehört zum Lernen dazu (Zimmerman, 2002)."
   },
-  "section4": {
-    "title": "In der Forschung verwurzelt, auf die Wirkung ausgerichtet",
-    "content": "Unsere Technologie ist nicht nur ein Selbstzweck. Jedes Werkzeug, jeder Algorithmus, jede Übung basiert auf solider wissenschaftlicher Forschung und validierten Lehrmethoden. Unser Hauptanliegen ist es, tiefgreifend zu verstehen, welche KI-Anwendungen einen echten positiven Einfluss auf das Lernen der Schüler haben. Wir investieren ständig in die Forschung, um sicherzustellen, dass unsere Lösungen nicht nur innovativ, sondern vor allem effektiv sind."
+  "cost": {
+    "title": "Gedacht für Schulen ohne Budget",
+    "p1": "Viele Schulen können kein Abo für jede Schülerin und jeden Schüler bezahlen. AI-Debate hat keine Abos: Es verbindet sich direkt mit den APIs der Modelle, und die Schule zahlt nur, was sie verbraucht. Mit den heute verfügbaren kostenlosen Modellen zahlt sie womöglich gar nichts.",
+    "p2": "Die Administration legt eine monatliche Ausgabengrenze fest. Ist sie erreicht, stoppen die kostenpflichtigen Modelle, die kostenlosen laufen weiter. Jede Anfrage wird mit Tokens und Kosten protokolliert, so weiß man immer, wie viel man ausgibt und für welche Klasse."
   },
-  "section5": {
-    "title": "Demokratische und zugängliche KI: Ein konkretes Engagement",
-    "content": "Wir möchten, dass eine KI-gestützte Bildung für alle erreichbar ist. Aus diesem Grund verpflichten wir uns, unsere Technologie zugänglich und erschwinglich zu halten. Unsere Entscheidung, vorerst Ressourcen wie Wikipedia zu nutzen, ist kein Zufall: Wir glauben an geteiltes Wissen und die Bedeutung universell verfügbarer Werkzeuge. Um diese Vision zu unterstützen, spenden wir 1,5 % unserer Einnahmen an Wikipedia und tragen so dazu bei, die größte freie Enzyklopädie der Welt und ihren unschätzbaren Beitrag zur globalen Bildung zu erhalten."
+  "local": {
+    "title": "Und eines Tages komplett lokal",
+    "p1": "Der Server kann bereits Ollama und LM Studio nutzen, also Modelle, die auf einem Schulrechner laufen, ohne etwas nach außen zu schicken. Heute braucht ein lokales Modell, das eine Debatte in der Sprache der Schülerinnen und Schüler führen kann, allerdings Hardware, die kaum eine Schule hat. Ich weiß nicht, wie lange es dauern wird, aber kleine Modelle werden schnell besser. Sobald ein normaler PC reicht, soll AI-Debate auch so funktionieren: ohne Kosten und ohne Daten, die die Schule verlassen."
   },
-  "section6": {
-    "title": "Eine Zukunft des kollaborativen und inklusiven Lernens",
-    "content": "Unser sozialer Zweck ist es, eine Zukunft zu schaffen, in der KI ein starker Verbündeter für Schüler und Lehrer ist und das Lernen zu einem aufregenden, personalisierten und vor allem für jeden zugänglichen Abenteuer macht."
+  "limits": {
+    "title": "Was ich noch nicht weiß",
+    "p1": "Ich habe noch keine Daten dazu, wie viel Schülerinnen und Schüler mit diesen Aktivitäten wirklich lernen. Die bisherigen Tests im Unterricht dienen dazu, Fehler zu finden und zu prüfen, ob die Aktivitäten tragen, nicht dazu, zu beweisen, dass sie wirken. Auch die von der KI vorgeschlagene Bewertung kann falsch sein, deshalb hat die Lehrkraft das letzte Wort."
   },
-  "section7": {
-    "title": "Von der Theorie zur Praxis: Unser Bildungsrahmen",
-    "paragraph1": "Die rasche Verbreitung der generativen künstlichen Intelligenz hat die Bildung an einen entscheidenden Punkt gebracht und bietet Chancen, aber auch erhebliche Herausforderungen. Während das Potenzial der generativen KI zur Verbesserung des Lerndesigns und zur Bereitstellung personalisierter Rückmeldungen weithin anerkannt ist, besteht eine kritische Diskrepanz zwischen theoretischen Modellen und praktischen, ethisch gestalteten Werkzeugen für den Klassenraum.",
-    "paragraph2": "AIDebate.Tech stellt einen bedeutenden Schritt zur Überbrückung dieser Theorie-Praxis-Lücke dar. Durch die Operationalisierung etablierter Lerntheorien (wie situiertes Lernen und duales Prozessdenken) in ein transparentes, lehrergeführtes Toolkit bietet unsere Plattform ein überzeugendes Modell für die Nutzung generativer KI nicht als bloßen Informationsspender, sondern als Katalysator für die Entwicklung höherer Denkfähigkeiten.",
-    "paragraph3": "Unsere Anwendungen wie 'Convince YOU' und 'You Impersonate' tauchen Schüler in authentische Praxis ein und verlangen von ihnen, Wissen in spezifischen historischen und kulturellen Kontexten anzuwenden. Schüler sind nicht mehr passive Empfänger von Fakten, sondern aktive Akteure, die verschiedene Weltanschauungen verkörpern müssen, um überzeugende Argumente zu konstruieren, wodurch das Lernen von deklarativ zu prozedural transformiert wird.",
-    "paragraph4": "Die Plattform ist darauf ausgelegt, komplexe kritische Denkfähigkeiten zu fördern, die ungeleitete KI-Nutzung unbeabsichtigt unterdrücken kann. Aktivitäten wie 'You Moderate' und 'Double Interview' schaffen Szenarien intellektueller Reibung und zwingen Schüler dazu, Debatten zu moderieren oder divergierende Perspektiven zu vergleichen, Kennzeichen komplexen kritischen Denkens, die bewusstes, analytisches Denken aktivieren.",
-    "paragraph5": "Jede Aktivität gipfelt in einer strukturierten kritischen Meta-Reflexionsphase, die entscheidend für die Transformation von Erfahrung in dauerhaftes Wissen ist. Schüler bewerten die Leistung der KI durch Fragen wie 'Hat die KI den Charakter gut verkörpert?' oder 'Welche Aspekte ihres Arguments waren unüberzeugend?' Dies verlagert den Fokus von der Aufgabenerledigung zur kritischen Prozessbewertung.",
-    "paragraph6": "Die Flexibilität der Plattform, basierend auf der Wikipedia-API-Integration, macht sie von Natur aus domänenagnostisch. Schüler können literarische Charaktere verkörpern, geografische Perspektiven vergleichen oder wissenschaftliche Debatten moderieren. Diese interdisziplinäre Vielseitigkeit zeigt, dass unser Kernwert nicht in spezifischen Inhalten liegt, sondern in dem Prozess kritischer Untersuchung, den wir fördern.",
-    "paragraph7": "Als Open-Source-Projekt, das auf lokalen Schulservern installiert werden kann, ohne Chat-Verläufe zu sammeln, bieten wir eine sichere Alternative zu kommerziellen Plattformen. Durch die Bereitstellung eines Forums für Pädagogen zum Teilen von Experimenten und Kritiken erleichtert AIDebate.Tech die kollaborative, gemeinschaftsgetriebene Forschung, die erforderlich ist, um ein gemeinsames Verständnis für den effektiven und ethischen Einsatz von KI in der Bildung aufzubauen."
+  "code": {
+    "title": "Der Code",
+    "p1": "Der Code ist öffentlich auf GitHub unter der Lizenz AGPL-3.0. Alle können ihn lesen, auf dem Server ihrer Schule installieren und verändern, solange sie ihre Änderungen unter derselben Lizenz teilen.",
+    "p2": "Der Server ist ein einzelnes Go-Programm mit einer SQLite-Datenbank und wird mit Docker installiert. Im Repository liegt auch der Artikel „From Theory to Practice“, der die didaktischen Grundsätze des Projekts beschreibt.",
+    "button": "Der Code auf GitHub"
   },
-  "helpDevelopment": {
-    "title": "Helfen Sie uns, AIDebate.Tech zu entwickeln",
-    "description": "Treten Sie unserer Gemeinschaft bei, um bei der Entwicklung von Ollama-Unterstützung zu helfen, neue Sprachen hinzuzufügen, die Dokumentation zu verbessern und Klassenzimmererfahrungen zu teilen. Ihr Beitrag macht KI-Bildung für alle zugänglicher.",
-    "redditButton": "Reddit-Community beitreten",
-    "githubButton": "Auf GitHub beitragen",
-    "linkedinButton": "Auf LinkedIn verbinden"
+  "cta": {
+    "title": "Probieren Sie es mit Ihrer Klasse aus",
+    "p1": "Wählen Sie eine Aktivität, geben Sie sie als Hausaufgabe auf und erzählen Sie mir dann, wie es gelaufen ist: was funktioniert hat, was nicht, was die Schülerinnen und Schüler gesagt haben. Die Rückmeldungen von Lehrkräften sind der nützlichste Teil dieser Arbeit.",
+    "apps": "Aktivität wählen",
+    "guide": "Leitfaden für Lehrkräfte"
   },
-  "supportButton": "Unterstützen Sie uns"
+  "references": {
+    "title": "Literatur",
+    "note": "Die Quellen, auf denen die Entscheidungen des Projekts beruhen. Die Titel stehen in der Originalsprache.",
+    "groups": {
+      "guidelines": "Leitlinien und institutionelle Dokumente",
+      "mit": "Berichte und Studien des MIT",
+      "interactive": "Aktives und interaktives Lernen",
+      "assessment": "Formative Bewertung und Selbsteinschätzung",
+      "genai": "Generative KI und Lernen"
+    }
+  }
 }
