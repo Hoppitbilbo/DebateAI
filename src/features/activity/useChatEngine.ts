@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import i18n from "@/i18n";
 import type { ChatMessage, PromptRecipe } from "@/services/aiService";
 import { useAiClient } from "@/services/aiClient";
 import { useLiveAi } from "@/hooks/useLiveAi";
@@ -7,11 +8,14 @@ import type { ActivitySession, EndReason } from "./useActivitySession";
 import { ActivityMessage, newId } from "./types";
 import { useMessageState } from "./useMessageState";
 
-interface LiveConfig {
+export interface LiveConfig {
   /** The server writes the voice instructions from it. */
   recipe?: PromptRecipe;
+  /** The real name, used to choose the voice. */
   characterName?: string;
   characterBio?: string;
+  /** The name shown on the voice replies, when it must stay hidden (e.g. "???"); characterName otherwise. */
+  shownName?: string;
 }
 
 interface Options {
@@ -31,8 +35,12 @@ interface RespondArgs {
   name?: string;
   speakerKey?: string;
   maxTokens?: number;
-  /** Replaces the reply if it fails, instead of an error (e.g. the old canned intro). */
-  fallback?: Pick<ActivityMessage, "role" | "content">;
+  /**
+   * If the reply fails, a note in the interface language replaces it instead
+   * of an error: it says the character did not answer, then this text. The
+   * model never sees it (it is a system message).
+   */
+  fallback?: string;
 }
 
 /** Converts the visible conversation into the history seen by one AI speaker. */
@@ -130,7 +138,7 @@ export const useChatEngine = ({ session, live, context, onEnded }: Options) => {
         return null;
       }
       if (args.fallback) {
-        patchMessage(msg.id, { ...args.fallback, streaming: false });
+        patchMessage(msg.id, { role: "system", name: undefined, content: `${i18n.t("platform.activity.openingFailed")} ${args.fallback}`, streaming: false });
         return null;
       }
       console.error("AI reply failed:", e);
@@ -146,12 +154,16 @@ export const useChatEngine = ({ session, live, context, onEnded }: Options) => {
   /**
    * The character speaks first, in its own voice, prompted by a hidden stage
    * direction the server writes from the recipe; `fallback` is shown if no
-   * model answers.
+   * model answers. The opening is saved at once, without a judgement, so a
+   * reload before the first question still shows it.
    */
   const open = useCallback(
-    (args: Omit<RespondArgs, "history"> & { fallback: RespondArgs["fallback"] }) =>
-      withBusy(() => respond({ ...args, recipe: { ...args.recipe, kind: "opening" }, history: [] })),
-    [withBusy, respond],
+    async (args: Omit<RespondArgs, "history"> & { fallback: string }) => {
+      const before = messagesRef.current.length;
+      await withBusy(() => respond({ ...args, recipe: { ...args.recipe, kind: "opening" }, history: [] }));
+      if (messagesRef.current.length > before) await afterTurn({ judge: false }); // nothing to save if stopped before any word
+    },
+    [withBusy, respond, messagesRef, afterTurn],
   );
 
   // ----- Live voice mode -----
@@ -167,7 +179,7 @@ export const useChatEngine = ({ session, live, context, onEnded }: Options) => {
     onAssistantText: (text, isNew) => {
       liveUserId.current = null;
       if (isNew || !liveAssistantId.current) {
-        liveAssistantId.current = addMessage({ role: "assistant", content: text, name: live?.characterName, streaming: true }).id;
+        liveAssistantId.current = addMessage({ role: "assistant", content: text, name: live?.shownName ?? live?.characterName, streaming: true }).id;
       } else {
         const id = liveAssistantId.current;
         streamMessages((prev) => prev.map((m) => (m.id === id ? { ...m, content: m.content + text } : m)));

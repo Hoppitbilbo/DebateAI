@@ -155,3 +155,34 @@ func TestBestPerStudentKeepsTheBestAttemptOfEach(t *testing.T) {
 		t.Fatalf("cells %v, want %v (best first)", got, want)
 	}
 }
+
+// The mystery character of each attempt is listed, so the game can take a
+// student's list up again on another computer (TODO 1b.5). Other apps, and a
+// context without a text character, list none.
+func TestListForUserNamesTheMysteryCharacter(t *testing.T) {
+	db := openTestDB(t)
+	stud, _ := NewUsers(db).Create("s@x.it", "Sara", "", domain.RoleStudent, "it")
+	r := NewActivitySessions(db)
+	create := func(app, context string) {
+		t.Helper()
+		if _, err := r.Create(domain.NewSession{UserID: stud, AppType: app, Title: "x", Context: context}); err != nil {
+			t.Fatal(err)
+		}
+	}
+	create(domain.AppMystery, `{"character":"Leonardo da Vinci","questions":7}`)
+	create(domain.AppMystery, `{"character":{"title":"odd"}}`)
+	create(domain.AppMystery, `not json`)
+	create("convinci-tu", `{"character":"Napoleone"}`)
+	list, err := r.ListForUser(stud, 10)
+	if err != nil || len(list) != 4 {
+		t.Fatal(err, list)
+	}
+	got := map[string]int{}
+	for _, s := range list {
+		got[s.AppType+"|"+s.Character]++
+	}
+	want := map[string]int{domain.AppMystery + "|Leonardo da Vinci": 1, domain.AppMystery + "|": 2, "convinci-tu|": 1}
+	if len(got) != len(want) || got[domain.AppMystery+"|Leonardo da Vinci"] != 1 || got[domain.AppMystery+"|"] != 2 || got["convinci-tu|"] != 1 {
+		t.Fatalf("characters: %v", got)
+	}
+}

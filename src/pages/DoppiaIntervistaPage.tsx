@@ -54,7 +54,7 @@ const DoppiaIntervistaPage = () => {
         recipe: recipeOf(me, other),
         name: me.title,
         speakerKey: key,
-        fallback: { role: "assistant", content: t("platform.apps.doppiaIntervista.greeting", { name: me.title }) },
+        fallback: t("platform.apps.doppiaIntervista.greeting", { name: me.title }),
       });
     }
   };

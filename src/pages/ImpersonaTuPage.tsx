@@ -68,7 +68,7 @@ const ImpersonaTuPage = () => {
     await engine.open({
       recipe,
       name: aiChar.title,
-      fallback: { role: "assistant", content: t("platform.apps.impersonaTu.greeting", { ai: aiChar.title, user: userChar.title, topic }) },
+      fallback: t("platform.apps.impersonaTu.greeting", { ai: aiChar.title, user: userChar.title, topic }),
     });
   };
 

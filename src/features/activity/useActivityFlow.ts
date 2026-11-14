@@ -2,20 +2,13 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import type { AppType, Assignment, TranscriptMessage, WikiRef } from "@/lib/api";
-import type { PromptRecipe } from "@/services/aiService";
 import type { EvaluationInput } from "@/utils/evaluationUtils";
 import { type ActivityMessage, type ActivityPhase, newId } from "./types";
 import { EndReason, useActivitySession } from "./useActivitySession";
-import { useChatEngine } from "./useChatEngine";
+import { type LiveConfig, useChatEngine } from "./useChatEngine";
 import { useEvaluationFlow } from "./useEvaluationFlow";
 import { practiceLanguage } from "./language";
 import { bioOf, useWikiSummaries } from "./wiki";
-
-interface LiveConfig {
-  recipe?: PromptRecipe;
-  characterName?: string;
-  characterBio?: string;
-}
 
 /** A character's biography for the prompts, in the activity's language (see wiki.ts bioOf). */
 export type BioOf = (ref: WikiRef | null | undefined) => string;

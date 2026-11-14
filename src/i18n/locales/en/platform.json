@@ -180,7 +180,8 @@
     "dictationFailed": {
       "denied": "Microphone not available: check the browser permissions. You can type your message meanwhile.",
       "failed": "Dictation stopped: you can type your message."
-    }
+    },
+    "openingFailed": "The character didn't answer."
   },
   "assignment": {
     "label": "Assignment",
@@ -264,14 +265,14 @@
       "setupTitle": "Choose a topic",
       "setupDescription": "Any Wikipedia page comes to life and answers your questions.",
       "topicLabel": "Wikipedia page",
-      "welcome": "Hello! I am {{title}}. What would you like to know?",
+      "welcome": "Ask {{title}} your first question.",
       "placeholder": "Ask {{title}} a question…",
       "reflectionPrompt": "What did you learn about {{title}}? What surprised you? What would you still like to know?"
     },
     "doppiaIntervista": {
       "setupTitle": "Choose two characters",
       "setupDescription": "Interview two figures at the same time and compare their answers.",
-      "greeting": "Hello, I am {{name}}. Ask me anything.",
+      "greeting": "You can ask {{name}} your questions.",
       "placeholder": "Your question…",
       "askTo": "Ask:",
       "both": "Both",
@@ -285,7 +286,7 @@
       "characterHint": "Pick one for a classmate, or use the random button to play on your own.",
       "random": "Surprise character (stays hidden)",
       "questionsLabel": "Questions available: {{count}}",
-      "intro": "I am a mysterious character… You have {{count}} questions to find out who I am. Ask away!",
+      "intro": "You have {{count}} questions to find out who the mystery character is.",
       "placeholder": "Ask a question to discover the character…",
       "questionsLeft": "Questions left: {{count}}",
       "noQuestionsLeft": "No questions left: time to guess!",
@@ -325,7 +326,7 @@
       "topicLabel": "Topic of the conversation",
       "topicPlaceholder": "e.g. the role of science in society",
       "roleNotice": "You are {{user}}. You talk with {{ai}} about \"{{topic}}\". Stay in character!",
-      "greeting": "Greetings, {{user}}. I am {{ai}}. I would like to hear your thoughts on {{topic}}.",
+      "greeting": "You are {{user}}, talking with {{ai}} about {{topic}}.",
       "placeholder": "Speak as {{name}}…",
       "reflectionPrompt": "How did you play {{user}}? How did {{ai}} react, and what did you learn about both?",
       "evalActivity": "role-play: the student plays {{user}} talking with {{ai}}"

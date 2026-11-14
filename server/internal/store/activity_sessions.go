@@ -15,7 +15,13 @@ type ActivitySessions struct{ db *sql.DB }
 func NewActivitySessions(db *sql.DB) *ActivitySessions { return &ActivitySessions{db: db} }
 
 const sessionSummaryCols = `s.id, s.user_id, COALESCE(u.name,''), s.assignment_id, COALESCE(a.title,''), s.app_type, s.title, s.status, s.turns, s.progress,
-	s.score_conversation, s.score_reflection, s.teacher_score, s.cost_usd, s.started_at, s.updated_at, s.completed_at, s.unverified_lines`
+	s.score_conversation, s.score_reflection, s.teacher_score, s.cost_usd, s.started_at, s.updated_at, s.completed_at, s.unverified_lines,
+	` + mysteryCharacterCol
+
+// mysteryCharacterCol reads the character of a mystery game from the saved
+// context (a text "character"); empty for the other apps or another shape.
+const mysteryCharacterCol = `CASE WHEN s.app_type = '` + domain.AppMystery + `' AND json_valid(s.context_json) AND json_type(s.context_json, '$.character') = 'text'
+	THEN json_extract(s.context_json, '$.character') ELSE '' END`
 const sessionJoins = ` LEFT JOIN users u ON u.id = s.user_id LEFT JOIN assignments a ON a.id = s.assignment_id`
 const sessionFrom = ` FROM activity_sessions s` + sessionJoins
 
@@ -30,7 +36,7 @@ func scanSummary(row interface{ Scan(...any) error }, extra ...any) (*domain.Ses
 	var ss domain.SessionSummary
 	var uid, aid, sc, sr, ts sql.NullInt64
 	var comp sql.NullString
-	dest := []any{&ss.ID, &uid, &ss.UserName, &aid, &ss.AssignmentTitle, &ss.AppType, &ss.Title, &ss.Status, &ss.Turns, &ss.Progress, &sc, &sr, &ts, &ss.CostUSD, &ss.StartedAt, &ss.UpdatedAt, &comp, &ss.UnverifiedLines}
+	dest := []any{&ss.ID, &uid, &ss.UserName, &aid, &ss.AssignmentTitle, &ss.AppType, &ss.Title, &ss.Status, &ss.Turns, &ss.Progress, &sc, &sr, &ts, &ss.CostUSD, &ss.StartedAt, &ss.UpdatedAt, &comp, &ss.UnverifiedLines, &ss.Character}
 	if err := row.Scan(append(dest, extra...)...); err != nil {
 		return nil, err
 	}

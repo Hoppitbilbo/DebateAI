@@ -1,4 +1,4 @@
-import type { AssignmentConfig, WikiRef } from "@/lib/api";
+import type { AssignmentConfig, SessionSummary, WikiRef } from "@/lib/api";
 
 // Several mystery characters in one assignment: each student plays them in
 // turn. With shuffle on, every student gets their own order, the same each
@@ -35,6 +35,20 @@ export const characterOrder = <T>(list: readonly T[], shuffle: boolean, seed: st
   }
   return out;
 };
+
+/** Attempts that finished their character: won, out of questions, or handed in. */
+const FINISHED: ReadonlySet<SessionSummary["status"]> = new Set(["goal_reached", "turn_limit", "completed"]);
+
+/**
+ * The round after the furthest character of `order` this student finished
+ * on the assignment, from their attempts on the server (0 if none): so the
+ * list goes on from where they left it on another computer.
+ */
+export const playedRounds = (order: readonly WikiRef[], attempts: readonly SessionSummary[], assignmentId: number): number =>
+  attempts.reduce((round, s) => {
+    if (s.assignmentId !== assignmentId || !FINISHED.has(s.status) || !s.character) return round;
+    return Math.max(round, order.findIndex((c) => c.title === s.character) + 1);
+  }, 0);
 
 /** How many characters of an assignment this browser has already played. */
 const roundKey = (assignmentId: number, userId: number) => `debateai-mystery-round:${assignmentId}:${userId}`;

@@ -29,9 +29,12 @@ type SessionSummary struct {
 	ScoreReflection   *int    `json:"scoreReflection,omitempty"`
 	TeacherScore      *int    `json:"teacherScore,omitempty"` // 0-10, given by the teacher
 	CostUSD           float64 `json:"costUsd"`
-	StartedAt         string  `json:"startedAt"`
-	UpdatedAt         string  `json:"updatedAt"`
-	CompletedAt       *string `json:"completedAt,omitempty"`
+	// Character is the mystery game's character, from the saved context
+	// ("" for the other apps).
+	Character   string  `json:"character,omitempty"`
+	StartedAt   string  `json:"startedAt"`
+	UpdatedAt   string  `json:"updatedAt"`
+	CompletedAt *string `json:"completedAt,omitempty"`
 	// UnverifiedLines counts the AI lines of the saved conversation that the
 	// server did not produce (after the student's first message): edited or
 	// invented lines, or voice lines, which the server never sees.

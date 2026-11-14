@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
-import type { Assignment, WikiRef } from "@/lib/api";
+import { api, type Assignment, type SessionSummary, type WikiRef } from "@/lib/api";
 import ActivityRunner from "@/features/activity/components/ActivityRunner";
 import { CharacterPicker, SetupCard } from "@/features/activity/components/SetupCard";
 import { type BioOf, refOf, useActivityFlow } from "@/features/activity/useActivityFlow";
@@ -15,7 +15,7 @@ import type { EndReason } from "@/features/activity/useActivitySession";
 import { recipeFor } from "@/features/activity/recipe";
 import { APPS } from "@/features/activity/types";
 import { availableQuestions, isCorrectGuess, nextTeacherHint, QUESTIONS, RANDOM_CHARACTERS, winningQuestion } from "@/features/activity/mystery";
-import { characterOrder, mysteryCharacters, mysteryRounds } from "@/features/activity/characterOrder";
+import { characterOrder, mysteryCharacters, mysteryRounds, playedRounds } from "@/features/activity/characterOrder";
 import { Difficulty, difficultyOf, isDifficulty } from "@/features/activity/difficulty";
 import DifficultyPicker from "@/features/activity/components/DifficultyPicker";
 import RoundDots from "@/features/activity/components/RoundDots";
@@ -78,7 +78,7 @@ const PersonaggioMisteriosoPage = () => {
   const flow = useActivityFlow(app.type, {
     characters: [character],
     live: (phase, assignment, bio) =>
-      phase === "chat" && character && !guessing ? { recipe: recipeOf(assignment, bio), characterName: character.title, characterBio: bio(character) } : null,
+      phase === "chat" && character && !guessing ? { recipe: recipeOf(assignment, bio), characterName: character.title, characterBio: bio(character), shownName: "???" } : null,
     // The character is saved too, so that a reload can take the game up again.
     context: (assignment) => ({ character: character?.title, questions: availableQuestions(chosenQuestions, assignment?.maxTurns), difficulty: levelFor(assignment) }),
     onEnded,
@@ -128,11 +128,27 @@ const PersonaggioMisteriosoPage = () => {
   const maxQuestions = availableQuestions(chosenQuestions, turnCap);
   const questionsLeft = Math.max(0, maxQuestions - session.turns);
 
-  // Where this student left the teacher's list (kept in this browser).
+  // Where this student left the teacher's list: kept in this browser, and
+  // taken from their finished attempts on the server, so another computer
+  // goes on from there too. A resumed attempt sets its own round (restore).
   const assignmentId = session.assignment?.id;
+  const orderRef = useRef(order);
+  orderRef.current = order;
+  const resuming = !!session.resumeId;
   useEffect(() => {
-    if (assignmentId && user) setRound(mysteryRounds.get(assignmentId, user.id));
-  }, [assignmentId, user]);
+    if (!assignmentId || !user) return;
+    setRound(mysteryRounds.get(assignmentId, user.id));
+    if (resuming || orderRef.current.length < 2) return;
+    let cancelled = false;
+    api.get<SessionSummary[]>("/api/me/sessions")
+      .then((attempts) => {
+        if (!cancelled) setRound((r) => Math.max(r, playedRounds(orderRef.current, attempts, assignmentId)));
+      })
+      .catch(() => undefined); // the browser's count still applies
+    return () => {
+      cancelled = true;
+    };
+  }, [assignmentId, user, resuming]);
 
   const roundTitle = roundCharacter?.title;
   useEffect(() => {
@@ -174,7 +190,7 @@ const PersonaggioMisteriosoPage = () => {
     await engine.open({
       recipe,
       name: "???",
-      fallback: { role: "assistant", content: t("platform.apps.personaggioMisterioso.intro", { count: maxQuestions }) },
+      fallback: t("platform.apps.personaggioMisterioso.intro", { count: maxQuestions }),
     });
   };
 

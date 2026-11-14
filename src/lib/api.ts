@@ -124,6 +124,8 @@ export interface SessionSummary {
   /** 0-10, given by the teacher. */
   teacherScore?: number;
   costUsd: number;
+  /** The mystery game's character (only for that app). */
+  character?: string;
   startedAt: string;
   updatedAt: string;
   completedAt?: string;

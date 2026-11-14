@@ -8,6 +8,7 @@ import type { AiClient } from "@/services/aiClient";
 import AiClientProvider from "@/services/AiClientProvider";
 import type { UseLiveAiOptions } from "@/hooks/useLiveAi";
 import type { PromptRecipe } from "@/services/aiService";
+import i18n from "@/i18n";
 
 // Characterization tests for useChatEngine (refactoring task 0.4).
 
@@ -122,6 +123,17 @@ describe("useChatEngine", () => {
     expect(result.current.messages[1].streaming).toBe(false);
     expect(session.sync).toHaveBeenCalledWith(result.current.messagesRef.current, undefined, {});
     expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it("shows a hidden character's voice replies under the shown name, keeping the real one for the voice only", () => {
+    const { result } = renderHook(
+      () => useChatEngine({ session: fakeSession(), live: { characterName: "Galileo Galilei", shownName: "???" } }),
+      { wrapper: withAi },
+    );
+    const live = (): UseLiveAiOptions => mocks.liveOptions.mock.lastCall![0];
+    expect(live().characterName).toBe("Galileo Galilei");
+    act(() => live().onAssistantText("Sono nato nel 1564", true));
+    expect(result.current.messagesRef.current[0].name).toBe("???");
   });
 
   it("runs a turn: user message, reply, then sync with context", async () => {
@@ -241,17 +253,50 @@ describe("useChatEngine", () => {
   it("opens with the character's own words, from a stage direction the server writes", async () => {
     const { result } = renderHook(() => useChatEngine({ session: fakeSession() }), { wrapper: withAi });
     mocks.generateStream.mockResolvedValueOnce("Sono Napoleone!");
-    await act(() => result.current.open({ recipe, name: "Napoleone", fallback: { role: "system", content: "intro" } }));
+    await act(() => result.current.open({ recipe, name: "Napoleone", fallback: "intro" }));
     const sent = mocks.generateStream.mock.calls[0][0];
     expect(sent.recipe).toEqual({ ...recipe, kind: "opening" });
     expect(sent.messages).toEqual([]);
     expect(sent.system).toBeUndefined();
     expect(result.current.messages).toMatchObject([{ role: "assistant", name: "Napoleone", content: "Sono Napoleone!" }]);
+  });
 
+  it("says the character did not answer when the opening fails, in a note the model never sees", async () => {
+    const { result } = renderHook(() => useChatEngine({ session: fakeSession() }), { wrapper: withAi });
     mocks.generateStream.mockRejectedValueOnce(new Error("down"));
-    await act(() => result.current.open({ recipe, name: "Napoleone", fallback: { role: "system", content: "intro" } }));
-    expect(result.current.messages[1]).toMatchObject({ role: "system", content: "intro" });
+    await act(() => result.current.open({ recipe, name: "Napoleone", fallback: "intro" }));
+    expect(result.current.messages).toMatchObject([{ role: "system", content: `${i18n.t("platform.activity.openingFailed")} intro` }]);
+    expect(i18n.t("platform.activity.openingFailed")).not.toBe("platform.activity.openingFailed");
+    expect(toHistory(result.current.messages)).toEqual([]);
     expect(mocks.toastError).not.toHaveBeenCalled();
+  });
+
+  it("saves the opening at once, without a judgement, so a reload before the first question keeps it", async () => {
+    const session = fakeSession();
+    const { result } = renderHook(() => useChatEngine({ session }), { wrapper: withAi });
+    mocks.generateStream.mockResolvedValueOnce("Sono Napoleone!");
+    await act(() => result.current.open({ recipe, name: "Napoleone", fallback: "intro" }));
+    expect(session.sync).toHaveBeenCalledTimes(1);
+    const [saved, , opts] = (session.sync as ReturnType<typeof vi.fn>).mock.calls[0];
+    expect(saved).toMatchObject([{ role: "assistant", content: "Sono Napoleone!" }]);
+    expect(opts).toEqual({ judge: false });
+  });
+
+  it("saves nothing when the opening is stopped before any word", async () => {
+    mocks.generateStream.mockImplementation((o: { signal?: AbortSignal }) =>
+      new Promise((_, reject) => o.signal?.addEventListener("abort", () => reject(new DOMException("aborted", "AbortError")))));
+    const session = fakeSession();
+    const { result } = renderHook(() => useChatEngine({ session }), { wrapper: withAi });
+    let opening: Promise<unknown> = Promise.resolve();
+    act(() => {
+      opening = result.current.open({ recipe, name: "Napoleone", fallback: "intro" });
+    });
+    await act(async () => {
+      result.current.stop();
+      await opening;
+    });
+    expect(result.current.messages).toEqual([]);
+    expect(session.sync).not.toHaveBeenCalled();
   });
 });
 
