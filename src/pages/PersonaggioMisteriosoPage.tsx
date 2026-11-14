@@ -174,7 +174,7 @@ const PersonaggioMisteriosoPage = () => {
     await engine.open({
       recipe,
       name: "???",
-      fallback: { role: "assistant", content: t("platform.apps.personaggioMisterioso.intro", { count: maxQuestions }) },
+      fallback: t("platform.apps.personaggioMisterioso.intro", { count: maxQuestions }),
     });
   };
 

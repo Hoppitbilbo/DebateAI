@@ -180,7 +180,8 @@
     "dictationFailed": {
       "denied": "Mikrofon nicht verfügbar: Prüfe die Berechtigungen des Browsers. Du kannst die Nachricht inzwischen schreiben.",
       "failed": "Das Diktat wurde unterbrochen: Du kannst die Nachricht schreiben."
-    }
+    },
+    "openingFailed": "Die Figur hat nicht geantwortet."
   },
   "assignment": {
     "label": "Aufgabe",
@@ -264,14 +265,14 @@
       "setupTitle": "Wähle ein Thema",
       "setupDescription": "Jede Wikipedia-Seite wird lebendig und beantwortet deine Fragen.",
       "topicLabel": "Wikipedia-Seite",
-      "welcome": "Hallo! Ich bin {{title}}. Was möchtest du wissen?",
+      "welcome": "Stell {{title}} deine erste Frage.",
       "placeholder": "Stelle {{title}} eine Frage…",
       "reflectionPrompt": "Was hast du über {{title}} gelernt? Was hat dich überrascht? Was möchtest du noch wissen?"
     },
     "doppiaIntervista": {
       "setupTitle": "Wähle zwei Personen",
       "setupDescription": "Interviewe zwei Personen gleichzeitig und vergleiche ihre Antworten.",
-      "greeting": "Hallo, ich bin {{name}}. Frag mich ruhig.",
+      "greeting": "Du kannst {{name}} deine Fragen stellen.",
       "placeholder": "Deine Frage…",
       "askTo": "Fragen an:",
       "both": "Beide",
@@ -285,7 +286,7 @@
       "characterHint": "Wähle sie für eine Mitschülerin/einen Mitschüler oder nutze die Überraschungstaste, um allein zu spielen.",
       "random": "Überraschungsperson (bleibt verborgen)",
       "questionsLabel": "Verfügbare Fragen: {{count}}",
-      "intro": "Ich bin eine geheimnisvolle Person… Du hast {{count}} Fragen, um herauszufinden, wer ich bin. Los geht's!",
+      "intro": "Du hast {{count}} Fragen, um herauszufinden, wer die geheimnisvolle Person ist.",
       "placeholder": "Stelle eine Frage, um die Person zu erraten…",
       "questionsLeft": "Verbleibende Fragen: {{count}}",
       "noQuestionsLeft": "Keine Fragen mehr: Zeit zum Raten!",
@@ -325,7 +326,7 @@
       "topicLabel": "Thema des Gesprächs",
       "topicPlaceholder": "z. B. die Rolle der Wissenschaft in der Gesellschaft",
       "roleNotice": "Du bist {{user}}. Du sprichst mit {{ai}} über „{{topic}}“. Bleib in deiner Rolle!",
-      "greeting": "Seid gegrüßt, {{user}}. Ich bin {{ai}}. Ich würde gern eure Gedanken zu {{topic}} hören.",
+      "greeting": "Du bist {{user}} und sprichst mit {{ai}} über {{topic}}.",
       "placeholder": "Sprich als {{name}}…",
       "reflectionPrompt": "Wie hast du {{user}} gespielt? Wie hat {{ai}} reagiert, und was hast du über beide gelernt?",
       "evalActivity": "Rollenspiel: der/die Schüler/in spielt {{user}} im Gespräch mit {{ai}}"

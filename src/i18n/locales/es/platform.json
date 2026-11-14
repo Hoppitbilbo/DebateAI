@@ -180,7 +180,8 @@
     "dictationFailed": {
       "denied": "Micrófono no disponible: revisa los permisos del navegador. Mientras tanto puedes escribir el mensaje.",
       "failed": "El dictado se ha interrumpido: puedes escribir el mensaje."
-    }
+    },
+    "openingFailed": "El personaje no ha respondido."
   },
   "assignment": {
     "label": "Tarea",
@@ -264,14 +265,14 @@
       "setupTitle": "Elige un tema",
       "setupDescription": "Cualquier página de Wikipedia cobra vida y responde a tus preguntas.",
       "topicLabel": "Página de Wikipedia",
-      "welcome": "¡Hola! Soy {{title}}. ¿Qué te gustaría saber?",
+      "welcome": "Hazle tu primera pregunta a {{title}}.",
       "placeholder": "Haz una pregunta a {{title}}…",
       "reflectionPrompt": "¿Qué aprendiste sobre {{title}}? ¿Qué te sorprendió? ¿Qué te gustaría saber aún?"
     },
     "doppiaIntervista": {
       "setupTitle": "Elige dos personajes",
       "setupDescription": "Entrevista a dos personajes a la vez y compara sus respuestas.",
-      "greeting": "Hola, soy {{name}}. Pregúntame lo que quieras.",
+      "greeting": "Puedes hacerle tus preguntas a {{name}}.",
       "placeholder": "Tu pregunta…",
       "askTo": "Preguntar a:",
       "both": "Ambos",
@@ -285,7 +286,7 @@
       "characterHint": "Elígelo para un compañero o usa el botón sorpresa para jugar solo.",
       "random": "Personaje sorpresa (queda oculto)",
       "questionsLabel": "Preguntas disponibles: {{count}}",
-      "intro": "Soy un personaje misterioso… Tienes {{count}} preguntas para descubrir quién soy. ¡Adelante!",
+      "intro": "Tienes {{count}} preguntas para descubrir quién es el personaje misterioso.",
       "placeholder": "Haz una pregunta para descubrir al personaje…",
       "questionsLeft": "Preguntas restantes: {{count}}",
       "noQuestionsLeft": "Se acabaron las preguntas: ¡hora de adivinar!",
@@ -325,7 +326,7 @@
       "topicLabel": "Tema de la conversación",
       "topicPlaceholder": "p. ej. el papel de la ciencia en la sociedad",
       "roleNotice": "Eres {{user}}. Hablas con {{ai}} sobre \"{{topic}}\". ¡No salgas del personaje!",
-      "greeting": "Saludos, {{user}}. Soy {{ai}}. Me gustaría conocer vuestra opinión sobre {{topic}}.",
+      "greeting": "Eres {{user}} y hablas con {{ai}} sobre {{topic}}.",
       "placeholder": "Habla como {{name}}…",
       "reflectionPrompt": "¿Cómo interpretaste a {{user}}? ¿Cómo reaccionó {{ai}} y qué aprendiste de ambos?",
       "evalActivity": "juego de rol: el estudiante interpreta a {{user}} y dialoga con {{ai}}"

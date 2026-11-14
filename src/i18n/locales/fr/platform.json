@@ -180,7 +180,8 @@
     "dictationFailed": {
       "denied": "Micro indisponible : vérifie les autorisations du navigateur. En attendant, tu peux écrire ton message.",
       "failed": "La dictée s'est interrompue : tu peux écrire ton message."
-    }
+    },
+    "openingFailed": "Le personnage n'a pas répondu."
   },
   "assignment": {
     "label": "Devoir",
@@ -264,14 +265,14 @@
       "setupTitle": "Choisissez un sujet",
       "setupDescription": "N'importe quelle page Wikipédia prend vie et répond à vos questions.",
       "topicLabel": "Page Wikipédia",
-      "welcome": "Bonjour ! Je suis {{title}}. Que voulez-vous savoir ?",
+      "welcome": "Posez votre première question à {{title}}.",
       "placeholder": "Posez une question à {{title}}…",
       "reflectionPrompt": "Qu'avez-vous appris sur {{title}} ? Qu'est-ce qui vous a surpris ? Que voudriez-vous encore savoir ?"
     },
     "doppiaIntervista": {
       "setupTitle": "Choisissez deux personnages",
       "setupDescription": "Interviewez deux personnages en même temps et comparez leurs réponses.",
-      "greeting": "Bonjour, je suis {{name}}. Posez-moi vos questions.",
+      "greeting": "Vous pouvez poser vos questions à {{name}}.",
       "placeholder": "Votre question…",
       "askTo": "Demander à :",
       "both": "Les deux",
@@ -285,7 +286,7 @@
       "characterHint": "Choisissez-le pour un camarade, ou utilisez le bouton surprise pour jouer seul.",
       "random": "Personnage surprise (reste caché)",
       "questionsLabel": "Questions disponibles : {{count}}",
-      "intro": "Je suis un personnage mystérieux… Vous avez {{count}} questions pour découvrir qui je suis. Allez-y !",
+      "intro": "Vous avez {{count}} questions pour découvrir qui est le personnage mystérieux.",
       "placeholder": "Posez une question pour découvrir le personnage…",
       "questionsLeft": "Questions restantes : {{count}}",
       "noQuestionsLeft": "Plus de questions : à vous de deviner !",
@@ -325,7 +326,7 @@
       "topicLabel": "Sujet de la conversation",
       "topicPlaceholder": "ex. le rôle de la science dans la société",
       "roleNotice": "Vous êtes {{user}}. Vous parlez avec {{ai}} de « {{topic}} ». Restez dans le personnage !",
-      "greeting": "Salutations, {{user}}. Je suis {{ai}}. J'aimerais connaître votre avis sur {{topic}}.",
+      "greeting": "Vous êtes {{user}} et vous parlez avec {{ai}} de {{topic}}.",
       "placeholder": "Parlez en tant que {{name}}…",
       "reflectionPrompt": "Comment avez-vous incarné {{user}} ? Comment {{ai}} a-t-il réagi et qu'avez-vous appris sur les deux ?",
       "evalActivity": "jeu de rôle : l'élève incarne {{user}} et dialogue avec {{ai}}"

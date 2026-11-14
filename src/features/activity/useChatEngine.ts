@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import i18n from "@/i18n";
 import type { ChatMessage, PromptRecipe } from "@/services/aiService";
 import { useAiClient } from "@/services/aiClient";
 import { useLiveAi } from "@/hooks/useLiveAi";
@@ -31,8 +32,12 @@ interface RespondArgs {
   name?: string;
   speakerKey?: string;
   maxTokens?: number;
-  /** Replaces the reply if it fails, instead of an error (e.g. the old canned intro). */
-  fallback?: Pick<ActivityMessage, "role" | "content">;
+  /**
+   * If the reply fails, a note in the interface language replaces it instead
+   * of an error: it says the character did not answer, then this text. The
+   * model never sees it (it is a system message).
+   */
+  fallback?: string;
 }
 
 /** Converts the visible conversation into the history seen by one AI speaker. */
@@ -130,7 +135,7 @@ export const useChatEngine = ({ session, live, context, onEnded }: Options) => {
         return null;
       }
       if (args.fallback) {
-        patchMessage(msg.id, { ...args.fallback, streaming: false });
+        patchMessage(msg.id, { role: "system", name: undefined, content: `${i18n.t("platform.activity.openingFailed")} ${args.fallback}`, streaming: false });
         return null;
       }
       console.error("AI reply failed:", e);
@@ -146,12 +151,16 @@ export const useChatEngine = ({ session, live, context, onEnded }: Options) => {
   /**
    * The character speaks first, in its own voice, prompted by a hidden stage
    * direction the server writes from the recipe; `fallback` is shown if no
-   * model answers.
+   * model answers. The opening is saved at once, without a judgement, so a
+   * reload before the first question still shows it.
    */
   const open = useCallback(
-    (args: Omit<RespondArgs, "history"> & { fallback: RespondArgs["fallback"] }) =>
-      withBusy(() => respond({ ...args, recipe: { ...args.recipe, kind: "opening" }, history: [] })),
-    [withBusy, respond],
+    async (args: Omit<RespondArgs, "history"> & { fallback: string }) => {
+      const before = messagesRef.current.length;
+      await withBusy(() => respond({ ...args, recipe: { ...args.recipe, kind: "opening" }, history: [] }));
+      if (messagesRef.current.length > before) await afterTurn({ judge: false }); // nothing to save if stopped before any word
+    },
+    [withBusy, respond, messagesRef, afterTurn],
   );
 
   // ----- Live voice mode -----

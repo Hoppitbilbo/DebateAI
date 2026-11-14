@@ -92,7 +92,7 @@ const YouModeratePage = () => {
       recipe: recipeOf("a", a, b),
       name: a.title,
       speakerKey: "a",
-      fallback: { role: "system", content: t("platform.apps.youModerate.intro", { a: a.title, b: b.title, theme }) },
+      fallback: t("platform.apps.youModerate.intro", { a: a.title, b: b.title, theme }),
     });
     setNextSpeaker("b");
   };

@@ -233,6 +233,7 @@ describe("PersonaggioMisteriosoPage end of game", () => {
     render(<PersonaggioMisteriosoPage />);
     pickAll();
     await start();
+    mocks.sync.mockClear(); // the opening is saved at once
     let answer!: (text: string) => void;
     mocks.generateStream.mockImplementationOnce(() => new Promise((resolve) => (answer = resolve)));
     mocks.sync.mockResolvedValue("turn_limit");

@@ -43,7 +43,7 @@ const WikiChatbotPage = () => {
     await engine.open({
       recipe,
       name: page.title,
-      fallback: { role: "assistant", content: t("platform.apps.wikiChatbot.welcome", { title: page.title }) },
+      fallback: t("platform.apps.wikiChatbot.welcome", { title: page.title }),
     });
   };
 

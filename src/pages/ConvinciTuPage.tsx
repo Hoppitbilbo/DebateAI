@@ -53,7 +53,7 @@ const ConvinciTuPage = () => {
     await engine.open({
       recipe,
       name: character.title,
-      fallback: { role: "system", content: t("platform.apps.convinciTu.intro", { name: character.title, topic }) },
+      fallback: t("platform.apps.convinciTu.intro", { name: character.title, topic }),
     });
   };
 
